@@ -117,11 +117,11 @@ func (core *Core) GetCoinbase() (string, error) {
 //    - none
 // Returns:
 // 	  - Boolean - returns true of the client is mining, otherwise false.
-func (core *Core) IsMining() (bool, error) {
+func (core *Core) Generating() (bool, error) {
 
 	pointer := &dto.RequestResult{}
 
-	err := core.provider.SendRequest(pointer, "core_mining", nil)
+	err := core.provider.SendRequest(pointer, "core_generating", nil)
 
 	if err != nil {
 		return false, err
