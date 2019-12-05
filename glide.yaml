@@ -1,4 +1,4 @@
-package: github.com/regcostajr/go-web3
+package: github.com/bif/bifGo
 import:
 - package: golang.org/x/net
   subpackages:

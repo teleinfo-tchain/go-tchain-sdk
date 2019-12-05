@@ -2,7 +2,7 @@ language: go
 go:
     - 1.8.x
     - 1.10.x
-go_import_path: github.com/regcostajr/go-web3
+go_import_path: github.com/bif/bifGo
 sudo: false
 before_install:
     - sudo apt-get install software-properties-common -y -qq
@@ -13,7 +13,7 @@ install:
     - sudo apt-get install glide ethereum -y -qq
 before_script:
     - glide install
-    - geth --dev --shh --ws --wsorigins="*" --rpc --rpcapi admin,db,eth,debug,miner,net,shh,txpool,personal,web3 --mine &
+    - geth --dev --shh --ws --wsorigins="*" --rpc --rpcapi admin,db,core,debug,miner,net,shh,txpool,personal,web3 --mine &
     - sleep 5
 script:
     - go test -v ./test/...

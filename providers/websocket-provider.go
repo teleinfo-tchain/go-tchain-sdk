@@ -24,9 +24,9 @@ package providers
 import (
 	"math/rand"
 
-	"github.com/regcostajr/go-web3/constants"
+	"github.com/bif/bifGo/constants"
 
-	"github.com/regcostajr/go-web3/providers/util"
+	"github.com/bif/bifGo/providers/util"
 	"golang.org/x/net/websocket"
 )
 

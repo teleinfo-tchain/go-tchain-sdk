@@ -22,8 +22,8 @@
 package personal
 
 import (
-	"github.com/regcostajr/go-web3/dto"
-	"github.com/regcostajr/go-web3/providers"
+	"github.com/bif/bifGo/dto"
+	"github.com/bif/bifGo/providers"
 )
 
 // Personal - The Personal Module
@@ -90,7 +90,7 @@ func (personal *Personal) NewAccount(password string) (string, error) {
 //    1. Object - The transaction object
 //        - from: Address - 20 Bytes - The address the transaction is send from.
 //        - to: Address - (optional) 20 Bytes - The address the transaction is directed to.
-//        - gas: Quantity - (optional) Integer of the gas provided for the transaction execution. eth_call consumes zero gas, but this parameter may be needed by some executions.
+//        - gas: Quantity - (optional) Integer of the gas provided for the transaction execution. core_call consumes zero gas, but this parameter may be needed by some executions.
 //        - gasPrice: Quantity - (optional) Integer of the gas price used for each paid gas.
 //        - value: Quantity - (optional) Integer of the value sent with this transaction.
 //        - data: Data - (optional) 4 byte hash of the method signature followed by encoded parameters. For details see Ethereum Contract ABI.

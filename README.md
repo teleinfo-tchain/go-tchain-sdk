@@ -8,7 +8,7 @@ This project is no longer supported, please consider using [go-ethereum](https:/
 
 # Ethereum Go Client
 
-[![Build Status](https://travis-ci.org/regcostajr/go-web3.svg?branch=master)](https://travis-ci.org/regcostajr/go-web3)
+[![Build Status](https://travis-ci.org/bif/go-bif-sdk.svg?branch=master)](https://travis-ci.org/bif/go-bif-sdk)
 
 This is a Ethereum compatible Go Client
 
@@ -27,11 +27,11 @@ This package is not currently under active development. It is not already stable
 bytecode := ... #contract bytecode
 abi := ... #contract abi
 
-var connection = web3.NewWeb3(providers.NewHTTPProvider("127.0.0.1:8545", 10, false))
-contract, err := connection.Eth.NewContract(abi)
+var connection = web3.NewWeb3(providers.NewHTTPProvider("192.168.104.35:33333", 10, false))
+contract, err := connection.core.NewContract(abi)
 
 transaction := new(dto.TransactionParameters)
-coinbase, err := connection.Eth.GetCoinbase()
+coinbase, err := connection.core.GetCoinbase()
 transaction.From = coinbase
 transaction.Gas = big.NewInt(4000000)
 
@@ -67,7 +67,7 @@ GetBalance
 
 ```go
 
-balance, err := connection.Eth.GetBalance(coinbase, block.LATEST)
+balance, err := connection.core.GetBalance(coinbase, block.LATEST)
 
 ```
 
@@ -82,7 +82,7 @@ transaction.Value = big.NewInt(10)
 transaction.Gas = big.NewInt(40000)
 transaction.Data = types.ComplexString("p2p transaction")
 
-txID, err := connection.Eth.SendTransaction(transaction)
+txID, err := connection.core.SendTransaction(transaction)
 
 ```
 
@@ -103,54 +103,54 @@ txID, err := connection.Eth.SendTransaction(transaction)
 
 TODO List
 
-- [x] web3_clientVersion                      
-- [x] web3_sha3                               
+- [x] bif_clientVersion                      
+- [x] bif_sha3                               
 - [x] net_version                             
 - [x] net_peerCount                           
 - [x] net_listening                           
-- [x] eth_protocolVersion                     
-- [x] eth_syncing                             
-- [x] eth_coinbase                            
-- [x] eth_mining                              
-- [x] eth_hashrate                            
-- [x] eth_gasPrice                            
-- [x] eth_accounts                            
-- [x] eth_blockNumber                         
-- [x] eth_getBalance                          
-- [x] eth_getStorageAt (deprecated)
-- [x] eth_getTransactionCount                 
-- [x] eth_getBlockTransactionCountByHash      
-- [x] eth_getBlockTransactionCountByNumber    
-- [x] eth_getUncleCountByBlockHash            
-- [x] eth_getUncleCountByBlockNumber          
-- [x] eth_getCode                             
-- [x] eth_sign                                
-- [x] eth_sendTransaction                     
-- [ ] eth_sendRawTransaction                  
-- [x] eth_call                                
-- [x] eth_estimateGas                         
-- [x] eth_getBlockByHash                      
-- [x] eth_getBlockByNumber                    
-- [x] eth_getTransactionByHash                
-- [x] eth_getTransactionByBlockHashAndIndex   
-- [x] eth_getTransactionByBlockNumberAndIndex 
-- [x] eth_getTransactionReceipt               
-- [ ] eth_getUncleByBlockHashAndIndex         
-- [ ] eth_getUncleByBlockNumberAndIndex       
-- [ ] eth_getCompilers                        
-- [ ] eth_compileLLL                          
-- [x] eth_compileSolidity (deprecated)                    
-- [ ] eth_compileSerpent                      
-- [ ] eth_newFilter                           
-- [ ] eth_newBlockFilter                      
-- [ ] eth_newPendingTransactionFilter         
-- [ ] eth_uninstallFilter                     
-- [ ] eth_getFilterChanges                    
-- [ ] eth_getFilterLogs                       
-- [ ] eth_getLogs                             
-- [ ] eth_getWork                             
-- [ ] eth_submitWork                          
-- [ ] eth_submitHashrate                      
+- [x] core_protocolVersion                     
+- [x] core_syncing                             
+- [x] core_coinbase                            
+- [x] core_mining                              
+- [x] core_hashrate                            
+- [x] core_gasPrice                            
+- [x] core_accounts                            
+- [x] core_blockNumber                         
+- [x] core_getBalance                          
+- [x] core_getStorageAt (deprecated)
+- [x] core_getTransactionCount                 
+- [x] core_getBlockTransactionCountByHash      
+- [x] core_getBlockTransactionCountByNumber    
+- [x] core_getUncleCountByBlockHash            
+- [x] core_getUncleCountByBlockNumber          
+- [x] core_getCode                             
+- [x] core_sign                                
+- [x] core_sendTransaction                     
+- [ ] core_sendRawTransaction                  
+- [x] core_call                                
+- [x] core_estimateGas                         
+- [x] core_getBlockByHash                      
+- [x] core_getBlockByNumber                    
+- [x] core_getTransactionByHash                
+- [x] core_getTransactionByBlockHashAndIndex   
+- [x] core_getTransactionByBlockNumberAndIndex 
+- [x] core_getTransactionReceipt               
+- [ ] core_getUncleByBlockHashAndIndex         
+- [ ] core_getUncleByBlockNumberAndIndex       
+- [ ] core_getCompilers                        
+- [ ] core_compileLLL                          
+- [x] core_compileSolidity (deprecated)                    
+- [ ] core_compileSerpent                      
+- [ ] core_newFilter                           
+- [ ] core_newBlockFilter                      
+- [ ] core_newPendingTransactionFilter         
+- [ ] core_uninstallFilter                     
+- [ ] core_getFilterChanges                    
+- [ ] core_getFilterLogs                       
+- [ ] core_getLogs                             
+- [ ] core_getWork                             
+- [ ] core_submitWork                          
+- [ ] core_submitHashrate                      
 - [ ] db_putString                            
 - [ ] db_getString                            
 - [ ] db_putHex                               
@@ -175,13 +175,13 @@ TODO List
 ### go get
 
 ```bash
-go get -u github.com/regcostajr/go-web3
+go get -u github.com/bif/bifGo
 ```
 
 ### glide
 
 ```bash
-glide get github.com/regcostajr/go-web3
+glide get github.com/bif/bifGo
 ```
 
 ### Requirements
@@ -194,7 +194,7 @@ glide get github.com/regcostajr/go-web3
 Node running in dev mode:
 
 ```bash
-geth --dev --shh --ws --wsorigins="*" --rpc --rpcapi admin,db,eth,debug,miner,net,shh,txpool,personal,web3 --mine
+geth --dev --shh --ws --wsorigins="*" --rpc --rpcapi admin,db,core,debug,miner,net,shh,txpool,personal,web3 --mine
 ```
 
 Full test:
