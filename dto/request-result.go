@@ -23,6 +23,7 @@ package dto
 
 import (
 	"errors"
+	"github.com/bif/go-bif/p2p"
 	"strconv"
 	"strings"
 
@@ -46,6 +47,42 @@ type Error struct {
 	Code    int         `json:"code"`
 	Message string      `json:"message"`
 	Data    interface{} `json:"data"`
+}
+
+func (pointer *RequestResult) ToPeerInfo() ([]*p2p.PeerInfo, error) {
+
+	if err := pointer.checkResponse(); err != nil {
+		return nil, err
+	}
+
+	result_list := (pointer).Result.([]interface{})
+
+	new := make([]*p2p.PeerInfo, len(result_list))
+
+	for i, v := range result_list {
+
+		result := v.(map[string]interface{})
+
+		if len(result) == 0 {
+			return nil, customerror.EMPTYRESPONSE
+		}
+
+		info := &p2p.PeerInfo{}
+
+		marshal, err := json.Marshal(result)
+
+		if err != nil {
+			return nil, customerror.UNPARSEABLEINTERFACE
+		}
+
+		err = json.Unmarshal([]byte(marshal), info)
+
+		new[i] = info
+
+	}
+
+	return new, nil
+
 }
 
 func (pointer *RequestResult) ToStringArray() ([]string, error) {
