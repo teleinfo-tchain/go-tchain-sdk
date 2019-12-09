@@ -24,9 +24,9 @@ package test
 import (
 	"testing"
 
-	bif "github.com/bif/bifGo"
-	"github.com/bif/bifGo/core/block"
-	"github.com/bif/bifGo/providers"
+	bif "github.com/bif/bif-sdk-go"
+	"github.com/bif/bif-sdk-go/core/block"
+	"github.com/bif/bif-sdk-go/providers"
 )
 
 func TestCoreGetBalance(t *testing.T) {

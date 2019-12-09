@@ -23,11 +23,11 @@ package core
 
 import (
 	"errors"
-	"github.com/bif/bifGo/complex/types"
-	"github.com/bif/bifGo/core/block"
-	"github.com/bif/bifGo/dto"
-	"github.com/bif/bifGo/providers"
-	"github.com/bif/bifGo/utils"
+	"github.com/bif/bif-sdk-go/complex/types"
+	"github.com/bif/bif-sdk-go/core/block"
+	"github.com/bif/bif-sdk-go/dto"
+	"github.com/bif/bif-sdk-go/providers"
+	"github.com/bif/bif-sdk-go/utils"
 	"math/big"
 	"strings"
 )

@@ -27,8 +27,8 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/bif/bifGo/complex/types"
-	"github.com/bif/bifGo/constants"
+	"github.com/bif/bif-sdk-go/complex/types"
+	"github.com/bif/bif-sdk-go/constants"
 
 	"encoding/json"
 	"fmt"

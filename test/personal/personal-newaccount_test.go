@@ -23,8 +23,8 @@ package test
 import (
 	"testing"
 
-	"github.com/bif/bifGo"
-	"github.com/bif/bifGo/providers"
+	"github.com/bif/bif-sdk-go"
+	"github.com/bif/bif-sdk-go/providers"
 )
 
 func TestPersonalNewAccount(t *testing.T) {

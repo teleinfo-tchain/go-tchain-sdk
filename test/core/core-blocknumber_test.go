@@ -25,8 +25,8 @@ import (
 	"fmt"
 	"testing"
 
-	"github.com/bif/bifGo"
-	"github.com/bif/bifGo/providers"
+	"github.com/bif/bif-sdk-go"
+	"github.com/bif/bif-sdk-go/providers"
 )
 
 func TestCoreBlockNumber(t *testing.T) {

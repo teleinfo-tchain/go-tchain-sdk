@@ -23,9 +23,9 @@ package test
 
 import (
 	"encoding/json"
-	web3 "github.com/bif/bifGo"
-	"github.com/bif/bifGo/dto"
-	"github.com/bif/bifGo/providers"
+	web3 "github.com/bif/bif-sdk-go"
+	"github.com/bif/bif-sdk-go/dto"
+	"github.com/bif/bif-sdk-go/providers"
 	"io/ioutil"
 	"math/big"
 	"testing"

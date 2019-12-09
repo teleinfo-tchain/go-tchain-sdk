@@ -22,8 +22,8 @@
 package node
 
 import (
-	"github.com/bif/bifGo/dto"
-	"github.com/bif/bifGo/providers"
+	"github.com/bif/bif-sdk-go/dto"
+	"github.com/bif/bif-sdk-go/providers"
 	"github.com/bif/go-bif/p2p"
 )
 

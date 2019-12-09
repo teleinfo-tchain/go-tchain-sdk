@@ -25,11 +25,11 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"github.com/bif/bifGo/complex/types"
-	"github.com/bif/bifGo/dto"
+	"github.com/bif/bif-sdk-go/complex/types"
+	"github.com/bif/bif-sdk-go/dto"
 	"strings"
 
-	"github.com/bif/bifGo/utils"
+	"github.com/bif/bif-sdk-go/utils"
 	"math/big"
 )
 

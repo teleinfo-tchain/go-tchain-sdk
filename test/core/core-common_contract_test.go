@@ -24,9 +24,9 @@ package test
 import (
 	"encoding/json"
 	"fmt"
-	bif "github.com/bif/bifGo"
-	"github.com/bif/bifGo/dto"
-	"github.com/bif/bifGo/providers"
+	bif "github.com/bif/bif-sdk-go"
+	"github.com/bif/bif-sdk-go/dto"
+	"github.com/bif/bif-sdk-go/providers"
 	"io/ioutil"
 	"math/big"
 	"testing"

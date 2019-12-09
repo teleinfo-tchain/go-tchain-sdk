@@ -24,8 +24,8 @@ import (
 	"errors"
 	"testing"
 
-	"github.com/bif/bifGo"
-	"github.com/bif/bifGo/providers"
+	"github.com/bif/bif-sdk-go"
+	"github.com/bif/bif-sdk-go/providers"
 )
 
 func TestPersonalUnlockAccount(t *testing.T) {

@@ -22,8 +22,8 @@
 package gb
 
 import (
-	"github.com/bif/bifGo/dto"
-	"github.com/bif/bifGo/providers"
+	"github.com/bif/bif-sdk-go/dto"
+	"github.com/bif/bif-sdk-go/providers"
 )
 
 // Net - The Net Module

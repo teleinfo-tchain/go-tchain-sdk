@@ -24,8 +24,8 @@ package test
 import (
 	"testing"
 
-	b "github.com/bif/bifGo"
-	"github.com/bif/bifGo/providers"
+	b "github.com/bif/bif-sdk-go"
+	"github.com/bif/bif-sdk-go/providers"
 )
 
 func TestBifClientVersion(t *testing.T) {

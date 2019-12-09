@@ -22,12 +22,12 @@
 package bif
 
 import (
-	"github.com/bif/bifGo/core"
-	"github.com/bif/bifGo/dto"
-	"github.com/bif/bifGo/net"
-	"github.com/bif/bifGo/personal"
-	"github.com/bif/bifGo/providers"
-	"github.com/bif/bifGo/utils"
+	"github.com/bif/bif-sdk-go/core"
+	"github.com/bif/bif-sdk-go/dto"
+	"github.com/bif/bif-sdk-go/net"
+	"github.com/bif/bif-sdk-go/personal"
+	"github.com/bif/bif-sdk-go/providers"
+	"github.com/bif/bif-sdk-go/utils"
 )
 
 // Coin - Ethereum value unity value

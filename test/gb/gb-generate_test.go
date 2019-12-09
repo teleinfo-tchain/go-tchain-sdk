@@ -24,8 +24,8 @@ package test
 import (
 	"testing"
 
-	"github.com/bif/bifGo/gb"
-	"github.com/bif/bifGo/providers"
+	"github.com/bif/bif-sdk-go/gb"
+	"github.com/bif/bif-sdk-go/providers"
 )
 
 func TestGbStart(t *testing.T) {

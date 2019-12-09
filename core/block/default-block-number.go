@@ -22,7 +22,7 @@
 package block
 
 import (
-	"github.com/bif/bifGo/utils"
+	"github.com/bif/bif-sdk-go/utils"
 	"math/big"
 )
 

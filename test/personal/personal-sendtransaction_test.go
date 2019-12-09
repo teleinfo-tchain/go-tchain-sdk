@@ -23,9 +23,9 @@ package test
 import (
 	"testing"
 
-	"github.com/bif/bifGo"
-	"github.com/bif/bifGo/dto"
-	"github.com/bif/bifGo/providers"
+	"github.com/bif/bif-sdk-go"
+	"github.com/bif/bif-sdk-go/dto"
+	"github.com/bif/bif-sdk-go/providers"
 	"math/big"
 )
 

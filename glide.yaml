@@ -1,4 +1,4 @@
-package: github.com/bif/bifGo
+package: github.com/bif/bif-sdk-go
 import:
 - package: golang.org/x/net
   subpackages:

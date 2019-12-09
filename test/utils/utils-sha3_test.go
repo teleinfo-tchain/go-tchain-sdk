@@ -26,8 +26,8 @@ import (
 	"strings"
 	"testing"
 
-	bif "github.com/bif/bifGo"
-	"github.com/bif/bifGo/providers"
+	bif "github.com/bif/bif-sdk-go"
+	"github.com/bif/bif-sdk-go/providers"
 )
 
 func TestUtilsSha3(t *testing.T) {

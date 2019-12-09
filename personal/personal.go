@@ -22,8 +22,8 @@
 package personal
 
 import (
-	"github.com/bif/bifGo/dto"
-	"github.com/bif/bifGo/providers"
+	"github.com/bif/bif-sdk-go/dto"
+	"github.com/bif/bif-sdk-go/providers"
 )
 
 // Personal - The Personal Module

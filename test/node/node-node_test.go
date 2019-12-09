@@ -25,8 +25,8 @@ import (
 	"fmt"
 	"testing"
 
-	"github.com/bif/bifGo/node"
-	"github.com/bif/bifGo/providers"
+	"github.com/bif/bif-sdk-go/node"
+	"github.com/bif/bif-sdk-go/providers"
 )
 
 func TestNodePeers(t *testing.T) {

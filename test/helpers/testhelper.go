@@ -1,7 +1,7 @@
 package helpers
 
 import (
-	"github.com/bif/bifGo/dto"
+	"github.com/bif/bif-sdk-go/dto"
 	"math/big"
 )
 

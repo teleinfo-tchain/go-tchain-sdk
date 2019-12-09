@@ -175,13 +175,13 @@ TODO List
 ### go get
 
 ```bash
-go get -u github.com/bif/bifGo
+go get -u github.com/bif/bif-sdk-go
 ```
 
 ### glide
 
 ```bash
-glide get github.com/bif/bifGo
+glide get github.com/bif/bif-sdk-go
 ```
 
 ### Requirements

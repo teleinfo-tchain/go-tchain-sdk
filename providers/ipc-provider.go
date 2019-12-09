@@ -29,7 +29,7 @@ import (
 
 	"log"
 
-	"github.com/bif/bifGo/providers/util"
+	"github.com/bif/bif-sdk-go/providers/util"
 )
 
 type IPCProvider struct {

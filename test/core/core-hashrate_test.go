@@ -24,8 +24,8 @@ package test
 import (
 	"testing"
 
-	web3 "github.com/bif/bifGo"
-	"github.com/bif/bifGo/providers"
+	web3 "github.com/bif/bif-sdk-go"
+	"github.com/bif/bif-sdk-go/providers"
 )
 
 func TestCoreHashrate(t *testing.T) {

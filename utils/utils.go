@@ -22,9 +22,9 @@
 package utils
 
 import (
-	"github.com/bif/bifGo/complex/types"
-	"github.com/bif/bifGo/dto"
-	"github.com/bif/bifGo/providers"
+	"github.com/bif/bif-sdk-go/complex/types"
+	"github.com/bif/bif-sdk-go/dto"
+	"github.com/bif/bif-sdk-go/providers"
 )
 
 // Utils - The Utils Module

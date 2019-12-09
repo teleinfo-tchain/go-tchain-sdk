@@ -24,10 +24,10 @@ import (
 	"testing"
 
 	"fmt"
-	"github.com/bif/bifGo"
-	"github.com/bif/bifGo/complex/types"
-	"github.com/bif/bifGo/dto"
-	"github.com/bif/bifGo/providers"
+	"github.com/bif/bif-sdk-go"
+	"github.com/bif/bif-sdk-go/complex/types"
+	"github.com/bif/bif-sdk-go/dto"
+	"github.com/bif/bif-sdk-go/providers"
 	"math/big"
 )
 
