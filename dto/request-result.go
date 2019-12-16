@@ -23,6 +23,7 @@ package dto
 
 import (
 	"errors"
+	"github.com/bif/go-bif/common/hexutil"
 	"github.com/bif/go-bif/p2p"
 	"strconv"
 	"strings"
@@ -270,6 +271,55 @@ func (pointer *RequestResult) ToTransactionReceipt() (*TransactionReceipt, error
 
 	return transactionReceipt, err
 
+}
+
+func (pointer *RequestResult) ToTxpoolInspect() (map[string]map[string]map[string]string, error) {
+	if err := pointer.checkResponse(); err != nil {
+		return nil, err
+	}
+
+	result := (pointer).Result.(map[string]interface{})
+
+	if len(result) == 0 {
+		return nil, customerror.EMPTYRESPONSE
+	}
+
+	inspect := make(map[string]map[string]map[string]string, len(result))
+
+	marshal, err := json.Marshal(result)
+
+	if err != nil {
+		return nil, customerror.UNPARSEABLEINTERFACE
+	}
+
+	err = json.Unmarshal([]byte(marshal), &inspect)
+
+	return inspect, err
+}
+
+
+func (pointer *RequestResult) ToTxpoolStatus() (map[string]hexutil.Uint, error) {
+	if err := pointer.checkResponse(); err != nil {
+		return nil, err
+	}
+
+	result := (pointer).Result.(map[string]interface{})
+
+	if len(result) == 0 {
+		return nil, customerror.EMPTYRESPONSE
+	}
+
+	status := make(map[string]hexutil.Uint, len(result))
+
+	marshal, err := json.Marshal(result)
+
+	if err != nil {
+		return nil, customerror.UNPARSEABLEINTERFACE
+	}
+
+	err = json.Unmarshal([]byte(marshal), &status)
+
+	return status, err
 }
 
 func (pointer *RequestResult) ToBlock() (*Block, error) {
