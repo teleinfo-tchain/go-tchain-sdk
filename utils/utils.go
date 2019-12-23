@@ -60,3 +60,20 @@ func (utils *Utils) Sha3(data types.ComplexString) (string, error) {
 	return pointer.ToString()
 
 }
+
+func (utils *Utils) Sha3Bytes(data types.ComplexString) ([]byte, error) {
+
+	params := make([]string, 1)
+	params[0] = data.ToHex()
+
+	pointer := &dto.RequestResult{}
+
+	err := utils.provider.SendRequest(pointer, "bif_sha3", params)
+
+	if err != nil {
+		return nil, err
+	}
+
+	return pointer.Result.([]byte), nil
+
+}

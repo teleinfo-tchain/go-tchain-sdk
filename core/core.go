@@ -455,6 +455,23 @@ func (core *Core) SendTransaction(transaction *dto.TransactionParameters) (strin
 
 }
 
+func (core *Core) SendRawTransaction(encodedTx string) (string, error) {
+
+	params := make([]string, 1)
+	params[0] = encodedTx
+
+	pointer := &dto.RequestResult{}
+
+	err := core.provider.SendRequest(&pointer, "core_sendRawTransaction", params)
+
+	if err != nil {
+		return "", err
+	}
+
+	return pointer.ToString()
+
+}
+
 // SignTransaction - Signs transactions without dispatching it to the network. It can be later submitted using core_sendRawTransaction.
 // Reference: https://wiki.parity.io/JSONRPC-core-module.html#core_signtransaction
 // Parameters:
