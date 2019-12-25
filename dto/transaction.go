@@ -76,6 +76,11 @@ func (params *TransactionParameters) Transform() *RequestTransactionParameters {
 	return request
 }
 
+func (params *TransactionParameters) String() string {
+	return fmt.Sprintf("From: %s, To: %s, Value:%d, Gas: %d, GasPrice: %d, Nonce: %d, Data: %s",
+		params.From, params.To, params.Value, params.Gas, params.GasPrice, params.Nonce, params.Data)
+}
+
 type SignTransactionResponse struct {
 	Raw         types.ComplexString     `json:"raw"`
 	Transaction SignedTransactionParams `json:"tx"`
