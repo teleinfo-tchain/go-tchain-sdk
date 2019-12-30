@@ -383,6 +383,93 @@ func (pointer *RequestResult) ToSyncingResponse() (*SyncingResponse, error) {
 
 }
 
+func (pointer *RequestResult) ToCandidatesResponse() ([]*CandidateResponse, error) {
+
+	if err := pointer.checkResponse(); err != nil {
+		return nil, err
+	}
+
+	resultList := (pointer).Result.([]interface{})
+
+	new := make([]*CandidateResponse, len(resultList))
+
+	for i, v := range resultList {
+
+		result := v.(map[string]interface{})
+
+		if len(result) == 0 {
+			return nil, customerror.EMPTYRESPONSE
+		}
+
+		var candidate CandidateResponse
+
+		marshal, err := json.Marshal(result)
+
+		if err != nil {
+			return nil, customerror.UNPARSEABLEINTERFACE
+		}
+
+		err = json.Unmarshal([]byte(marshal), &candidate)
+
+		new[i] = &candidate
+	}
+
+	return new, nil
+
+}
+
+func (pointer *RequestResult) ToVoterResponse() (*VoterResponse, error) {
+
+	if err := pointer.checkResponse(); err != nil {
+		return nil, err
+	}
+
+	result := (pointer).Result.(map[string]interface{})
+
+	if len(result) == 0 {
+		return nil, customerror.EMPTYRESPONSE
+	}
+
+	data := &VoterResponse{}
+
+	marshal, err := json.Marshal(result)
+
+	if err != nil {
+		return nil, customerror.UNPARSEABLEINTERFACE
+	}
+
+	err = json.Unmarshal([]byte(marshal), data)
+
+	return data, err
+
+}
+
+func (pointer *RequestResult) ToStakeResponse() (*StakeResponse, error) {
+
+	if err := pointer.checkResponse(); err != nil {
+		return nil, err
+	}
+
+	result := (pointer).Result.(map[string]interface{})
+
+	if len(result) == 0 {
+		return nil, customerror.EMPTYRESPONSE
+	}
+
+	data := &StakeResponse{}
+
+	marshal, err := json.Marshal(result)
+
+	if err != nil {
+		return nil, customerror.UNPARSEABLEINTERFACE
+	}
+
+	err = json.Unmarshal([]byte(marshal), data)
+
+	return data, err
+
+}
+
 // To avoid a conversion of a nil interface
 func (pointer *RequestResult) checkResponse() error {
 

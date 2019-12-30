@@ -90,16 +90,7 @@ func (contract *Contract) prepareTransaction(transaction *dto.TransactionParamet
 		return nil, errors.New("Function not finded on passed abi")
 	}
 
-	fullFunction := functionName + "("
-
-	comma := ""
-	for arg := range function {
-		fullFunction += comma + function[arg]
-		comma = ","
-	}
-
-	fullFunction += ")"
-
+	fullFunction := fmt.Sprintf("%s(%s)", functionName, strings.Join(function, ","))
 	utils := utils.NewUtils(contract.super.provider)
 	sha3Function, err := utils.Sha3(types.ComplexString(fullFunction))
 
@@ -107,7 +98,7 @@ func (contract *Contract) prepareTransaction(transaction *dto.TransactionParamet
 		return nil, err
 	}
 
-	var data string
+	var builder strings.Builder
 
 	for index := 0; index < len(function); index++ {
 		currentData, err := contract.getHexValue(function[index], args[index])
@@ -116,10 +107,14 @@ func (contract *Contract) prepareTransaction(transaction *dto.TransactionParamet
 			return nil, err
 		}
 
-		data += currentData
+		builder.WriteString(currentData)
 	}
 
-	transaction.Data = types.ComplexString(sha3Function[0:10] + data)
+	data := fmt.Sprintf("%s%s", sha3Function[0:10], builder.String())
+	transaction.Data = types.ComplexString(data)
+
+	fmt.Println([]byte(data))
+	fmt.Println(data)
 
 	return transaction, nil
 
@@ -171,7 +166,7 @@ func (contract *Contract) Deploy(transaction *dto.TransactionParameters, bytecod
 
 func (contract *Contract) getHexValue(inputType string, value interface{}) (string, error) {
 
-	var data string
+	var builder strings.Builder
 
 	if strings.HasPrefix(inputType, "int") ||
 		strings.HasPrefix(inputType, "uint") ||
@@ -193,17 +188,21 @@ func (contract *Contract) getHexValue(inputType string, value interface{}) (stri
 			}
 		}
 
-		data += fmt.Sprintf("%064s", fmt.Sprintf("%x", bigVal.String()))
+		builder.WriteString(fmt.Sprintf("%064s", fmt.Sprintf("%x", bigVal.String())))
 	}
 
 	if strings.Compare("address", inputType) == 0 {
-		data += fmt.Sprintf("%064s", value.(string)[:])
+		builder.WriteString(fmt.Sprintf("%064d", len(value.(string)[:])))
+		builder.WriteString(fmt.Sprintf("%064d", len(value.(string)[:])))
+		builder.WriteString(fmt.Sprintf("%064s", value.(string)[:]))
 	}
 
 	if strings.Compare("string", inputType) == 0 {
-		data += fmt.Sprintf("%064s", fmt.Sprintf("%x", value.(string)))
+		builder.WriteString(fmt.Sprintf("%064s", fmt.Sprintf("%x", 32)))
+		builder.WriteString(fmt.Sprintf("%064s", fmt.Sprintf("%x", 32)))
+		builder.WriteString(fmt.Sprintf("%064s", fmt.Sprintf("%x", value.(string))))
 	}
 
-	return data, nil
+	return builder.String(), nil
 
 }

@@ -794,3 +794,48 @@ func (core *Core) GetCode(address string, defaultBlockParameter string) (string,
 
 	return pointer.ToString()
 }
+
+func (core *Core) GetAllCandidates() ([]*dto.CandidateResponse, error) {
+
+	pointer := &dto.RequestResult{}
+
+	err := core.provider.SendRequest(pointer, "core_getAllCandidates", nil)
+
+	if err != nil {
+		return nil, err
+	}
+
+	return pointer.ToCandidatesResponse()
+}
+
+func (core *Core) GetVoter(address string) (*dto.VoterResponse, error) {
+
+	params := make([]string, 1)
+	params[0] = address
+
+	pointer := &dto.RequestResult{}
+
+	err := core.provider.SendRequest(pointer, "core_getVoter", params)
+
+	if err != nil {
+		return nil, err
+	}
+
+	return pointer.ToVoterResponse()
+}
+
+func (core *Core) GetStake(address string) (*dto.StakeResponse, error) {
+
+	params := make([]string, 1)
+	params[0] = address
+
+	pointer := &dto.RequestResult{}
+
+	err := core.provider.SendRequest(pointer, "core_getStake", params)
+
+	if err != nil {
+		return nil, err
+	}
+
+	return pointer.ToStakeResponse()
+}
