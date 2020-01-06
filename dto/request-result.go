@@ -297,7 +297,6 @@ func (pointer *RequestResult) ToTxpoolInspect() (map[string]map[string]map[strin
 	return inspect, err
 }
 
-
 func (pointer *RequestResult) ToTxpoolStatus() (map[string]hexutil.Uint, error) {
 	if err := pointer.checkResponse(); err != nil {
 		return nil, err

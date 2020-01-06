@@ -143,33 +143,33 @@ type TransactionLogs struct {
 }
 
 type CandidateResponse struct {
-	Owner           string   `json:"owner"`           // 候选人地址
-	Name            string   `json:"name"`            // 候选人名称
-	Active          bool     `json:"active"`          // 当前是否是候选人
-	Url             string   `json:"url"`             // 节点的URL
-	VoteCount       string `json:"voteCount"`       // 收到的票数
-	TotalBounty     string `json:"totalBounty"`     // 总奖励金额
-	ExtractedBounty string `json:"extractedBounty"` // 已提取奖励金额
-	LastExtractTime string `json:"lastExtractTime"` // 上次提权时间
-	Website         string   `json:"website"`         // 见证人网站
+	Owner           string `json:"owner"`           // 候选人地址
+	Name            string `json:"name"`            // 候选人名称
+	Active          bool   `json:"active"`          // 当前是否是候选人
+	Url             string `json:"url"`             // 节点的URL
+	VoteCount       int64  `json:"voteCount"`       // 收到的票数
+	TotalBounty     int64  `json:"totalBounty"`     // 总奖励金额
+	ExtractedBounty int64  `json:"extractedBounty"` // 已提取奖励金额
+	LastExtractTime int64  `json:"lastExtractTime"` // 上次提权时间
+	Website         string `json:"website"`         // 见证人网站
 }
 
 // Voter is the information of who has vote witness candidate
 type VoterResponse struct {
 	Owner             string   `json:"owner"`             // 投票人的地址
 	IsProxy           bool     `json:"isProxy"`           // 是否是代理人
-	ProxyVoteCount    string `json:"proxyVoteCount"`    // 收到的代理的票数
+	ProxyVoteCount    int64    `json:"proxyVoteCount"`    // 收到的代理的票数
 	Proxy             string   `json:"proxy"`             // 该节点设置的代理人
-	LastVoteCount     string `json:"lastVoteCount"`     // 上次投的票数
-	LastVoteTimeStamp string `json:"lastVoteTimeStamp"` // 上次投票时间戳
+	LastVoteCount     int64    `json:"lastVoteCount"`     // 上次投的票数
+	LastVoteTimeStamp int64    `json:"lastVoteTimeStamp"` // 上次投票时间戳
 	VoteCandidates    []string `json:"voteCandidates"`    // 投了哪些人
 }
 
 // Stake is the information of a user
 type StakeResponse struct {
-	Owner              string   `json:"owner"`              // 抵押代币的所有人
-	StakeCount         string `json:"stakeCount"`         // 抵押的代币数量
-	LastStakeTimeStamp string `json:"lastStakeTimeStamp"` // 上次抵押时间戳
+	Owner              string `json:"owner"`              // 抵押代币的所有人
+	StakeCount         int64  `json:"stakeCount"`         // 抵押的代币数量
+	LastStakeTimeStamp int64  `json:"lastStakeTimeStamp"` // 上次抵押时间戳
 }
 
 func (t *TransactionResponse) UnmarshalJSON(data []byte) error {
