@@ -65,10 +65,18 @@ func (personal *Personal) ListAccounts() ([]string, error) {
 //    - String - Password for the new account.
 // Returns:
 //	  - Address - 20 Bytes - The identifier of the new account.
-func (personal *Personal) NewAccount(password string) (string, error) {
-
-	params := make([]string, 1)
+func (personal *Personal) NewAccount(password string, cryptoTypeNum uint64) (string, error) {
+	params := make([]interface{}, 2)
 	params[0] = password
+
+	switch cryptoTypeNum {
+	case 0:
+		params[1] = 0
+	case 1:
+		params[1] = 1
+	default:
+		params[1] = 0
+	}
 
 	pointer := &dto.RequestResult{}
 

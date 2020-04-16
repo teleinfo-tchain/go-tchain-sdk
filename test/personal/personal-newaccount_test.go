@@ -29,8 +29,8 @@ import (
 
 func TestPersonalNewAccount(t *testing.T) {
 
-	var connection = bif.NewBif(providers.NewHTTPProvider("192.168.104.35:33333", 10, false))
-	address, err := connection.Personal.NewAccount("node")
+	var connection = bif.NewBif(providers.NewHTTPProvider("192.168.150.41:44002", 10, false))
+	address, err := connection.Personal.NewAccount("node", 0)
 
 	if err != nil {
 		t.Error(err)
