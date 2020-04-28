@@ -30,7 +30,7 @@ import (
 
 func TestCoreSyncing(t *testing.T) {
 
-	var connection = bif.NewBif(providers.NewHTTPProvider("192.168.104.35:33333", 10, false))
+	var connection = bif.NewBif(providers.NewHTTPProvider("192.168.104.35:44002", 10, false))
 
 	_, err := connection.Core.IsSyncing()
 

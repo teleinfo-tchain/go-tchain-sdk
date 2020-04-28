@@ -21,11 +21,11 @@
 package test
 
 import (
+	"github.com/bif/bif-sdk-go/common"
 	"testing"
 
 	"fmt"
 	"github.com/bif/bif-sdk-go"
-	"github.com/bif/bif-sdk-go/complex/types"
 	"github.com/bif/bif-sdk-go/dto"
 	"github.com/bif/bif-sdk-go/providers"
 	"math/big"
@@ -33,23 +33,17 @@ import (
 
 func TestCoreSignTransaction(t *testing.T) {
 
-	var connection = bif.NewBif(providers.NewHTTPProvider("192.168.104.35:33333", 10, false))
+	var connection = bif.NewBif(providers.NewHTTPProvider("192.168.104.35:44002", 10, false))
 
-	coinbase, err := connection.Core.GetCoinbase()
-
-	if err != nil {
-		t.Error(err)
-		t.FailNow()
-	}
-
+	add := common.StringToAddress("did:bid:73890cf407f6c883e9a42735")
 	transaction := new(dto.TransactionParameters)
-	transaction.Nonce = big.NewInt(5)
-	transaction.From = coinbase
-	transaction.To = coinbase
-	transaction.Value = big.NewInt(0).Mul(big.NewInt(500), big.NewInt(1e18))
-	transaction.Gas = big.NewInt(40000)
-	transaction.GasPrice = big.NewInt(1e9)
-	transaction.Data = types.ComplexString("p2p transaction")
+	transaction.Nonce = big.NewInt(2)
+	transaction.From = "0x6469643a6269643a73890cf407f6c883e9a42735"
+	transaction.To = "0x6469643a6269643a73890cf407f6c883e9a42735"
+	transaction.Value = big.NewInt(100000)
+	transaction.Gas = big.NewInt(50000)
+	transaction.GasPrice = big.NewInt(1)
+	transaction.Data = ""
 
 	txID, err := connection.Core.SignTransaction(transaction)
 
@@ -58,13 +52,16 @@ func TestCoreSignTransaction(t *testing.T) {
 		t.FailNow()
 	}
 
+	fmt.Println("to:", txID.Transaction.To)
+	fmt.Println("add:", common.Bytes2Hex(add.Bytes()))
+
 	if txID.Transaction.Nonce.Cmp(transaction.Nonce) != 0 {
 		t.Errorf(fmt.Sprintf("Expected %d | Got: %d", 5, txID.Transaction.Nonce.Uint64()))
 		t.FailNow()
 	}
 
-	if txID.Transaction.To != coinbase {
-		t.Errorf(fmt.Sprintf("Expected %s | Got: %s", coinbase, txID.Transaction.To))
+	if txID.Transaction.To != "0x6469643a6269643a73890cf407f6c883e9a42735" {
+		t.Errorf(fmt.Sprintf("Expected %s | Got: %s", add.Hex(), txID.Transaction.To))
 		t.FailNow()
 	}
 

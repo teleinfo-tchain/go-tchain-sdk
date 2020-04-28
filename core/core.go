@@ -23,7 +23,6 @@ package core
 
 import (
 	"errors"
-	"github.com/bif/bif-sdk-go/complex/types"
 	"github.com/bif/bif-sdk-go/core/block"
 	"github.com/bif/bif-sdk-go/dto"
 	"github.com/bif/bif-sdk-go/providers"
@@ -545,29 +544,6 @@ func (core *Core) Call(transaction *dto.TransactionParameters) (*dto.RequestResu
 
 }
 
-// CompileSolidity - Returns compiled solidity code.
-// Reference: https://github.com/ethereum/wiki/wiki/JSON-RPC#core_compilesolidity
-// Parameters:
-//    1. String - The source code.
-// Returns:
-//	  - DATA - The compiled source code.
-func (core *Core) CompileSolidity(sourceCode string) (types.ComplexString, error) {
-
-	params := make([]string, 1)
-	params[0] = sourceCode
-
-	pointer := &dto.RequestResult{}
-
-	err := core.provider.SendRequest(pointer, "core_compileSolidity", params)
-
-	if err != nil {
-		return "", err
-	}
-
-	return pointer.ToComplexString()
-
-}
-
 // GetTransactionReceipt - Returns compiled solidity code.
 // Reference: https://github.com/ethereum/wiki/wiki/JSON-RPC#core_gettransactionreceipt
 // Parameters:
@@ -711,64 +687,6 @@ func (core *Core) GetBlockByHash(hash string, transactionDetails bool) (*dto.Blo
 	}
 
 	return pointer.ToBlock()
-}
-
-// GetUncleCountByBlockHash - Returns the number of uncles in a block from a block matching the given block hash.
-// Reference: https://github.com/ethereum/wiki/wiki/JSON-RPC#core_getunclecountbyblockhash
-// Parameters:
-//    - DATA, 32 bytes - Hash of a block
-// Returns:
-//    - QUANTITY, number - integer of the number of uncles in this block
-//    - error
-func (core *Core) GetUncleCountByBlockHash(hash string) (*big.Int, error) {
-	// ensure that the hash has been correctly formatted
-	if strings.HasPrefix(hash, "0x") {
-		if len(hash) != 66 {
-			return nil, errors.New("malformed block hash")
-		}
-	} else {
-		if len(hash) != 64 {
-			return nil, errors.New("malformed block hash")
-		}
-		hash = "0x" + hash
-	}
-
-	params := make([]string, 1)
-	params[0] = hash
-
-	pointer := &dto.RequestResult{}
-
-	err := core.provider.SendRequest(pointer, "core_getUncleCountByBlockHash", params)
-
-	if err != nil {
-		return nil, err
-	}
-
-	return pointer.ToBigInt()
-}
-
-// GetUncleCountByBlockNumber - Returns the number of uncles in a block from a block matching the given block number.
-// Reference: https://github.com/ethereum/wiki/wiki/JSON-RPC#core_getunclecountbyblocknumber
-// Parameters:
-//    - QUANTITY, number - integer of a block number
-// Returns:
-//    - QUANTITY, number - integer of the number of uncles in this block
-//    - error
-func (core *Core) GetUncleCountByBlockNumber(quantity *big.Int) (*big.Int, error) {
-	// ensure that the hash has been correctly formatted
-
-	params := make([]string, 1)
-	params[0] = utils.IntToHex(quantity)
-
-	pointer := &dto.RequestResult{}
-
-	err := core.provider.SendRequest(pointer, "core_getUncleCountByBlockNumber", params)
-
-	if err != nil {
-		return nil, err
-	}
-
-	return pointer.ToBigInt()
 }
 
 // GetCode - Returns code at a given address

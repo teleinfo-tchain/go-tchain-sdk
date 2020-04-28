@@ -30,7 +30,7 @@ import (
 
 func TestPersonalUnlockAccount(t *testing.T) {
 
-	var connection = bif.NewBif(providers.NewHTTPProvider("192.168.104.35:33333", 10, false))
+	var connection = bif.NewBif(providers.NewHTTPProvider("192.168.104.35:44002", 10, false))
 
 	accounts, err := connection.Personal.ListAccounts()
 
@@ -39,7 +39,7 @@ func TestPersonalUnlockAccount(t *testing.T) {
 		t.FailNow()
 	}
 
-	result, err := connection.Personal.UnlockAccount(accounts[0], "", 100)
+	result, err := connection.Personal.UnlockAccount(accounts[0], "123456", 100)
 
 	if err != nil {
 		t.Error(err)

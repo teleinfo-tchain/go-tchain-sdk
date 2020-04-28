@@ -24,7 +24,7 @@ package node
 import (
 	"github.com/bif/bif-sdk-go/dto"
 	"github.com/bif/bif-sdk-go/providers"
-	"github.com/bif/go-bif/p2p"
+	"github.com/bif/bif-sdk-go/common"
 )
 
 // Net - The Net Module
@@ -39,7 +39,7 @@ func NewNode(provider providers.ProviderInterface) *Node {
 	return net
 }
 
-func (node *Node) GetPeers() ([]*p2p.PeerInfo, error) {
+func (node *Node) GetPeers() ([]*common.PeerInfo, error) {
 
 	pointer := &dto.RequestResult{}
 

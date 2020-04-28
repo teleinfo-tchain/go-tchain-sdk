@@ -30,7 +30,7 @@ import (
 
 func TestNetPeerCount(t *testing.T) {
 
-	var connection = bif.NewBif(providers.NewHTTPProvider("192.168.104.35:33333", 10, false))
+	var connection = bif.NewBif(providers.NewHTTPProvider("192.168.104.35:44002", 10, false))
 
 	peers, err := connection.Net.GetPeerCount()
 

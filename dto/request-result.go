@@ -23,8 +23,8 @@ package dto
 
 import (
 	"errors"
-	"github.com/bif/go-bif/common/hexutil"
-	"github.com/bif/go-bif/p2p"
+	"github.com/bif/bif-sdk-go/common/hexutil"
+	"github.com/bif/bif-sdk-go/common"
 	"strconv"
 	"strings"
 
@@ -50,7 +50,7 @@ type Error struct {
 	Data    interface{} `json:"data"`
 }
 
-func (pointer *RequestResult) ToPeerInfo() ([]*p2p.PeerInfo, error) {
+func (pointer *RequestResult) ToPeerInfo() ([]*common.PeerInfo, error) {
 
 	if err := pointer.checkResponse(); err != nil {
 		return nil, err
@@ -58,7 +58,7 @@ func (pointer *RequestResult) ToPeerInfo() ([]*p2p.PeerInfo, error) {
 
 	result_list := (pointer).Result.([]interface{})
 
-	new := make([]*p2p.PeerInfo, len(result_list))
+	new := make([]*common.PeerInfo, len(result_list))
 
 	for i, v := range result_list {
 
@@ -68,7 +68,7 @@ func (pointer *RequestResult) ToPeerInfo() ([]*p2p.PeerInfo, error) {
 			return nil, customerror.EMPTYRESPONSE
 		}
 
-		info := &p2p.PeerInfo{}
+		info := &common.PeerInfo{}
 
 		marshal, err := json.Marshal(result)
 

@@ -31,7 +31,7 @@ import (
 
 func TestCoreBlockNumber(t *testing.T) {
 
-	var connection = bif.NewBif(providers.NewHTTPProvider("192.168.150.41:44042", 10, false))
+	var connection = bif.NewBif(providers.NewHTTPProvider("192.168.104.35:44002", 10, false))
 
 	blockNumber, err := connection.Core.GetBlockNumber()
 
