@@ -173,5 +173,5 @@ func SignTransactionWithKey(transaction *Txdata, privKey string, cryType uint, c
 	if err != nil{
 		return "", err
 	}
-	return common.Bytes2Hex(signTx), nil
+	return common.ToHex(signTx), nil
 }
