@@ -76,6 +76,10 @@ func GetPrivateKeyFromFile(addrParse string, privateKeyFile, password string) (s
 	}
 	privKey := hex.EncodeToString(key.PrivateKey.D.Bytes())
 	addrRes := crypto.PubkeyToAddress(key.PrivateKey.PublicKey)
+	if addrParse != addrRes.String(){
+		fmt.Println("addrParse Not Match keyStoreFile")
+		return "", "", errors.New("addrParse Not Match keyStoreFile")
+	}
 	return privKey, addrRes.String(), nil
 }
 //3. 私钥转文件
@@ -91,6 +95,12 @@ func PrivateKeyToKeyStoreFile(keydir string, addrParse string, privKey string, p
 	if err != nil{
 		return "", err
 	}
+	addrRes := crypto.PubkeyToAddress(privateKey.PublicKey)
+	if addrParse != addrRes.String(){
+		fmt.Println("addrParse Not Match privKey")
+		return "", errors.New("addrParse Not Match privKey")
+	}
+
 	check, scryptN, scryptP := preCheck(keydir, password, false)
 	if !check{
 		return "", errors.New("preCheck err")
