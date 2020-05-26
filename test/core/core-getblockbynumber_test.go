@@ -22,6 +22,8 @@
 package test
 
 import (
+	"fmt"
+	"math/big"
 	"testing"
 
 	"github.com/bif/bif-sdk-go"
@@ -30,11 +32,12 @@ import (
 
 func TestCoreGetBlockByNumber(t *testing.T) {
 
-	var connection = bif.NewBif(providers.NewHTTPProvider("192.168.104.35:33333", 10, false))
+	var connection = bif.NewBif(providers.NewHTTPProvider("192.168.104.35:44002", 10, false))
 
-	blockNumber, err := connection.Core.GetBlockNumber()
+	//blockNumber, err := connection.Core.GetBlockNumber()
+	blockNumber := big.NewInt(7603)
 
-	block, err := connection.Core.GetBlockByNumber(blockNumber, false)
+	block, err := connection.Core.GetBlockByNumber(blockNumber, true)
 
 	if err != nil {
 		t.Error(err)
@@ -50,4 +53,12 @@ func TestCoreGetBlockByNumber(t *testing.T) {
 		t.FailNow()
 	}
 
+	fmt.Println("extraData:", block.ExtraData)
+	fmt.Println("LogsBloom:", block.LogsBloom)
+	fmt.Println("MixHash:", block.MixHash)
+	fmt.Println("ReceiptsRoot:", block.ReceiptsRoot)
+	fmt.Println("StateRoot:", block.StateRoot)
+	fmt.Println("transactions:[0]", block.Transactions[0])
+	fmt.Println("transactionLen:", len(block.Transactions))
+	fmt.Println("TransactionsRoot:", block.TransactionsRoot)
 }

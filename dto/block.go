@@ -29,15 +29,22 @@ import (
 )
 
 type Block struct {
-	Number     *big.Int `json:"number"`
-	Hash       string   `json:"hash"`
-	ParentHash string   `json:"parentHash"`
-	Author     string   `json:"author,omitempty"`
-	Miner      string   `json:"miner,omitempty"`
-	Size       *big.Int `json:"size"`
-	GasUsed    *big.Int `json:"gasUsed"`
-	Nonce      *big.Int `json:"nonce"`
-	Timestamp  *big.Int `json:"timestamp"`
+	Number           *big.Int              `json:"number"`
+	Hash             string                `json:"hash"`
+	ParentHash       string                `json:"parentHash"`
+	Author           string                `json:"author,omitempty"`
+	Miner            string                `json:"miner,omitempty"`
+	Size             *big.Int              `json:"size"`
+	GasUsed          *big.Int              `json:"gasUsed"`
+	Nonce            *big.Int              `json:"nonce"`
+	Timestamp        *big.Int              `json:"timestamp"`
+	ExtraData        string                `json:extraData`
+	LogsBloom        string                `json:logsBloom`
+	MixHash          string                `json:mixHash`
+	ReceiptsRoot     string                `json:receiptsRoot`
+	StateRoot        string                `json:stateRoot`
+	Transactions     []TransactionResponse `json:transactions`
+	TransactionsRoot string                `json:transactionsRoot`
 }
 
 /**
