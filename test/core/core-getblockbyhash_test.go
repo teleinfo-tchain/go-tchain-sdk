@@ -22,6 +22,7 @@
 package test
 
 import (
+	"github.com/bif/bif-sdk-go/dto"
 	"testing"
 
 	"github.com/bif/bif-sdk-go"
@@ -34,14 +35,15 @@ func TestCoreGetBlockByHash(t *testing.T) {
 
 	blockNumber, err := connection.Core.GetBlockNumber()
 
-	blockByNumber, err := connection.Core.GetBlockByNumber(blockNumber, false)
+	transactionDetails := false
+	blockByNumber, err := connection.Core.GetBlockByNumber(blockNumber, transactionDetails)
 
 	if err != nil {
 		t.Error(err)
 		t.FailNow()
 	}
 
-	blockByHash, err := connection.Core.GetBlockByHash(blockByNumber.Hash, false)
+	blockByHash, err := connection.Core.GetBlockByHash(blockByNumber.(*dto.BlockNoDetails).Hash, transactionDetails)
 
 	if err != nil {
 		t.Error(err)
@@ -49,17 +51,17 @@ func TestCoreGetBlockByHash(t *testing.T) {
 	}
 
 	// Ensure it's the same block
-	if (blockByNumber.Number.Cmp(blockByHash.Number)) != 0 ||
-		(blockByNumber.Miner != blockByHash.Miner) ||
-		(blockByNumber.Hash != blockByHash.Hash) {
+	if (blockByNumber.(*dto.BlockNoDetails).Number.Cmp(blockByHash.(*dto.BlockNoDetails).Number)) != 0 ||
+		(blockByNumber.(*dto.BlockNoDetails).Miner != blockByHash.(*dto.BlockNoDetails).Miner) ||
+		(blockByNumber.(*dto.BlockNoDetails).Hash != blockByHash.(*dto.BlockNoDetails).Hash) {
 		t.Errorf("Not same block returned")
 		t.FailNow()
 		t.FailNow()
 	}
 
-	t.Log(blockByHash.Hash, blockByNumber.Hash)
+	t.Log(blockByHash.(*dto.BlockNoDetails).Hash, blockByNumber.(*dto.BlockNoDetails).Hash)
 
-	_, err = connection.Core.GetBlockByHash("0x1234", false)
+	_, err = connection.Core.GetBlockByHash("0x1234", transactionDetails)
 
 	if err == nil {
 		t.Errorf("Invalid hash not rejected")

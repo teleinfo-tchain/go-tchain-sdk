@@ -23,8 +23,8 @@ package dto
 
 import (
 	"errors"
-	"github.com/bif/bif-sdk-go/common/hexutil"
 	"github.com/bif/bif-sdk-go/common"
+	"github.com/bif/bif-sdk-go/common/hexutil"
 	"strconv"
 	"strings"
 
@@ -321,7 +321,7 @@ func (pointer *RequestResult) ToTxpoolStatus() (map[string]hexutil.Uint, error) 
 	return status, err
 }
 
-func (pointer *RequestResult) ToBlock() (*Block, error) {
+func (pointer *RequestResult) ToBlock(transactionDetails bool) (interface{}, error) {
 
 	if err := pointer.checkResponse(); err != nil {
 		return nil, err
@@ -333,16 +333,20 @@ func (pointer *RequestResult) ToBlock() (*Block, error) {
 		return nil, customerror.EMPTYRESPONSE
 	}
 
-	block := &Block{}
-
 	marshal, err := json.Marshal(result)
 
 	if err != nil {
 		return nil, customerror.UNPARSEABLEINTERFACE
 	}
 
-	err = json.Unmarshal([]byte(marshal), block)
-
+	var block interface{}
+	if transactionDetails {
+		block = &BlockDetails{}
+		err = json.Unmarshal([]byte(marshal), block)
+	} else {
+		block = &BlockNoDetails{}
+		err = json.Unmarshal([]byte(marshal), block)
+	}
 	return block, err
 
 }

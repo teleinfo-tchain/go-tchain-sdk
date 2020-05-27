@@ -21,6 +21,7 @@
 package test
 
 import (
+	"fmt"
 	"github.com/bif/bif-sdk-go"
 	"github.com/bif/bif-sdk-go/dto"
 	"github.com/bif/bif-sdk-go/providers"
@@ -31,7 +32,7 @@ import (
 
 func TestGetTransactionByHash(t *testing.T) {
 
-	var connection = bif.NewBif(providers.NewHTTPProvider("192.168.104.35:33333", 10, false))
+	var connection = bif.NewBif(providers.NewHTTPProvider("192.168.104.35:44002", 10, false))
 
 	coinbase, err := connection.Core.GetCoinbase()
 
@@ -48,6 +49,7 @@ func TestGetTransactionByHash(t *testing.T) {
 
 	txID, err := connection.Core.SendTransaction(transaction)
 
+	fmt.Println("txID:", txID)
 	// Wait for a block
 	time.Sleep(time.Second)
 

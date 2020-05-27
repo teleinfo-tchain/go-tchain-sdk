@@ -23,6 +23,7 @@ package test
 
 import (
 	"fmt"
+	"github.com/bif/bif-sdk-go/dto"
 	"math/big"
 	"testing"
 
@@ -36,8 +37,9 @@ func TestCoreGetBlockByNumber(t *testing.T) {
 
 	//blockNumber, err := connection.Core.GetBlockNumber()
 	blockNumber := big.NewInt(7603)
+	transactionDetails := true
 
-	block, err := connection.Core.GetBlockByNumber(blockNumber, true)
+	block, err := connection.Core.GetBlockByNumber(blockNumber, transactionDetails)
 
 	if err != nil {
 		t.Error(err)
@@ -48,17 +50,27 @@ func TestCoreGetBlockByNumber(t *testing.T) {
 		t.FailNow()
 	}
 
-	if block.Number.Int64() == 0 {
-		t.Error("Block not found")
-		t.FailNow()
+	if transactionDetails {
+		fmt.Println("extraData:", block.(*dto.BlockDetails).ExtraData)
+		fmt.Println("LogsBloom:", block.(*dto.BlockDetails).LogsBloom)
+		fmt.Println("MixHash:", block.(*dto.BlockDetails).MixHash)
+		fmt.Println("ReceiptsRoot:", block.(*dto.BlockDetails).ReceiptsRoot)
+		fmt.Println("StateRoot:", block.(*dto.BlockDetails).StateRoot)
+		for _, val := range block.(*dto.BlockDetails).Transactions {
+			fmt.Println("transactions:", val.Hash)
+		}
+		fmt.Println("transactionLen:", len(block.(*dto.BlockDetails).Transactions))
+		fmt.Println("TransactionsRoot:", block.(*dto.BlockDetails).TransactionsRoot)
+	} else {
+		fmt.Println("extraData:", block.(*dto.BlockNoDetails).ExtraData)
+		fmt.Println("LogsBloom:", block.(*dto.BlockNoDetails).LogsBloom)
+		fmt.Println("MixHash:", block.(*dto.BlockNoDetails).MixHash)
+		fmt.Println("ReceiptsRoot:", block.(*dto.BlockNoDetails).ReceiptsRoot)
+		fmt.Println("StateRoot:", block.(*dto.BlockNoDetails).StateRoot)
+		for idx, val := range block.(*dto.BlockNoDetails).Transactions {
+			fmt.Println("transactions:[0]", val[idx])
+		}
+		fmt.Println("transactionLen:", len(block.(*dto.BlockNoDetails).Transactions))
+		fmt.Println("TransactionsRoot:", block.(*dto.BlockNoDetails).TransactionsRoot)
 	}
-
-	fmt.Println("extraData:", block.ExtraData)
-	fmt.Println("LogsBloom:", block.LogsBloom)
-	fmt.Println("MixHash:", block.MixHash)
-	fmt.Println("ReceiptsRoot:", block.ReceiptsRoot)
-	fmt.Println("StateRoot:", block.StateRoot)
-	fmt.Println("transactions:[0]", block.Transactions[0])
-	fmt.Println("transactionLen:", len(block.Transactions))
-	fmt.Println("TransactionsRoot:", block.TransactionsRoot)
 }

@@ -583,7 +583,7 @@ func (core *Core) GetTransactionReceipt(hash string) (*dto.TransactionReceipt, e
 // Returns:
 //    1. Object - A block object, or null when no transaction was found
 //    2. error
-func (core *Core) GetBlockByNumber(number *big.Int, transactionDetails bool) (*dto.Block, error) {
+func (core *Core) GetBlockByNumber(number *big.Int, transactionDetails bool) (interface{}, error) {
 
 	params := make([]interface{}, 2)
 	params[0] = utils.IntToHex(number)
@@ -597,7 +597,7 @@ func (core *Core) GetBlockByNumber(number *big.Int, transactionDetails bool) (*d
 		return nil, err
 	}
 
-	return pointer.ToBlock()
+	return pointer.ToBlock(transactionDetails)
 }
 
 // GetBlockTransactionCountByHash
@@ -661,7 +661,7 @@ func (core *Core) GetBlockTransactionCountByNumber(defaultBlockParameter string)
 // Returns:
 //    1. Object - A block object, or null when no transaction was found
 //    2. error
-func (core *Core) GetBlockByHash(hash string, transactionDetails bool) (*dto.Block, error) {
+func (core *Core) GetBlockByHash(hash string, transactionDetails bool) (interface{}, error) {
 	// ensure that the hash is correctlyformatted
 	if strings.HasPrefix(hash, "0x") {
 		if len(hash) != 66 {
@@ -686,7 +686,7 @@ func (core *Core) GetBlockByHash(hash string, transactionDetails bool) (*dto.Blo
 		return nil, err
 	}
 
-	return pointer.ToBlock()
+	return pointer.ToBlock(transactionDetails)
 }
 
 // GetCode - Returns code at a given address
