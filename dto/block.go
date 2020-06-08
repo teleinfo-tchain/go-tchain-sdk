@@ -35,6 +35,7 @@ type BlockDetails struct {
 	Author           string                `json:"author,omitempty"`
 	Miner            string                `json:"miner,omitempty"`
 	Size             *big.Int              `json:"size"`
+	GasLimit         *big.Int              `json:"gasLimit"`
 	GasUsed          *big.Int              `json:"gasUsed"`
 	Nonce            *big.Int              `json:"nonce"`
 	Timestamp        *big.Int              `json:"timestamp"`
@@ -54,6 +55,7 @@ type BlockNoDetails struct {
 	Author           string   `json:"author,omitempty"`
 	Miner            string   `json:"miner,omitempty"`
 	Size             *big.Int `json:"size"`
+	GasLimit         *big.Int `json:"gasLimit"`
 	GasUsed          *big.Int `json:"gasUsed"`
 	Nonce            *big.Int `json:"nonce"`
 	Timestamp        *big.Int `json:"timestamp"`
@@ -75,6 +77,7 @@ func (b *BlockDetails) UnmarshalJSON(data []byte) error {
 	temp := &struct {
 		Number    string `json:"number"`
 		Size      string `json:"size"`
+		GasLimit  string `json:"gasLimit"`
 		GasUsed   string `json:"gasUsed"`
 		Nonce     string `json:"nonce"`
 		Timestamp string `json:"timestamp"`
@@ -99,6 +102,12 @@ func (b *BlockDetails) UnmarshalJSON(data []byte) error {
 		return errors.New(fmt.Sprintf("Error converting %s to bigInt", temp.Size))
 	}
 
+	gasLimit, success := big.NewInt(0).SetString(temp.GasLimit[2:], 16)
+
+	if !success {
+		return errors.New(fmt.Sprintf("Error converting %s to bigInt", temp.GasLimit))
+	}
+
 	gas, success := big.NewInt(0).SetString(temp.GasUsed[2:], 16)
 
 	if !success {
@@ -119,6 +128,7 @@ func (b *BlockDetails) UnmarshalJSON(data []byte) error {
 
 	b.Number = num
 	b.Size = size
+	b.GasLimit = gasLimit
 	b.GasUsed = gas
 	b.Nonce = nonce
 	b.Timestamp = timestamp
@@ -131,6 +141,7 @@ func (b *BlockNoDetails) UnmarshalJSON(data []byte) error {
 	temp := &struct {
 		Number    string `json:"number"`
 		Size      string `json:"size"`
+		GasLimit  string `json:"gasLimit"`
 		GasUsed   string `json:"gasUsed"`
 		Nonce     string `json:"nonce"`
 		Timestamp string `json:"timestamp"`
@@ -155,6 +166,12 @@ func (b *BlockNoDetails) UnmarshalJSON(data []byte) error {
 		return errors.New(fmt.Sprintf("Error converting %s to bigInt", temp.Size))
 	}
 
+	gasLimit, success := big.NewInt(0).SetString(temp.GasLimit[2:], 16)
+
+	if !success {
+		return errors.New(fmt.Sprintf("Error converting %s to bigInt", temp.GasLimit))
+	}
+
 	gas, success := big.NewInt(0).SetString(temp.GasUsed[2:], 16)
 
 	if !success {
@@ -175,6 +192,7 @@ func (b *BlockNoDetails) UnmarshalJSON(data []byte) error {
 
 	b.Number = num
 	b.Size = size
+	b.GasLimit = gasLimit
 	b.GasUsed = gas
 	b.Nonce = nonce
 	b.Timestamp = timestamp

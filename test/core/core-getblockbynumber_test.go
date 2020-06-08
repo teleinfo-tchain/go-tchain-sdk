@@ -51,6 +51,7 @@ func TestCoreGetBlockByNumber(t *testing.T) {
 	}
 
 	if transactionDetails {
+		fmt.Println("gasLimit:", block.(*dto.BlockDetails).GasLimit)
 		fmt.Println("extraData:", block.(*dto.BlockDetails).ExtraData)
 		fmt.Println("LogsBloom:", block.(*dto.BlockDetails).LogsBloom)
 		fmt.Println("MixHash:", block.(*dto.BlockDetails).MixHash)
@@ -62,6 +63,7 @@ func TestCoreGetBlockByNumber(t *testing.T) {
 		fmt.Println("transactionLen:", len(block.(*dto.BlockDetails).Transactions))
 		fmt.Println("TransactionsRoot:", block.(*dto.BlockDetails).TransactionsRoot)
 	} else {
+		fmt.Println("gasLimit:", block.(*dto.BlockNoDetails).GasLimit)
 		fmt.Println("extraData:", block.(*dto.BlockNoDetails).ExtraData)
 		fmt.Println("LogsBloom:", block.(*dto.BlockNoDetails).LogsBloom)
 		fmt.Println("MixHash:", block.(*dto.BlockNoDetails).MixHash)
