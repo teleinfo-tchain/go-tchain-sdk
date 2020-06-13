@@ -399,3 +399,15 @@ func (sp *SignedTransactionParams) UnmarshalJSON(data []byte) error {
 
 	return nil
 }
+
+// PeerCertificate is the information of a peer certificate
+type PeerCertificate struct {
+	Id          string   `json:"id"`          //唯一索引
+	Issuer      string   `json:"issuer"`      //颁发者地址
+	PublicKey   string   `json:"publicKey"`   //节点公钥
+	CompanyName string   `json:"companyName"` //公司名称
+	CompanyCode string   `json:"companyCode"` //公司信用代码
+	IssuedTime  *big.Int `json:"issuedTime"`  //颁发时间
+	Period      uint64   `json:"period"`      //有效期
+	IsEnable    bool     `json:"isEnable"`    //true 凭证有效，false 凭证已撤销
+}
