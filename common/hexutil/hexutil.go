@@ -34,7 +34,10 @@ import (
 	"encoding/hex"
 	"fmt"
 	"math/big"
+	"math/rand"
+	"regexp"
 	"strconv"
+	"time"
 )
 
 const uintBits = 32 << (uint64(^uint(0)) >> 63)
@@ -237,4 +240,92 @@ func mapError(err error) error {
 		return ErrOddLength
 	}
 	return err
+}
+
+// web3.js对于hex string奇偶没有判定，因此只是使用正则进行匹配
+func IsHex(input string) bool {
+	r, _ := regexp.Compile("^(0[x,X])?[A-F, a-f, 0-9]+$")
+	return r.MatchString(input)
+}
+
+func IsHexStrict(input string) bool {
+	r, _ := regexp.Compile("^(0[x,X])[A-F, a-f, 0-9]+$")
+	return r.MatchString(input)
+}
+
+// 给定的字节大小生成伪随机HEX字符串
+func  RandomHex(size int) string {
+	str := "0123456789abcdef"
+	bytes := []byte(str)
+	var result []byte
+	r := rand.New(rand.NewSource(time.Now().UnixNano()))
+	for i := 0; i < size*2; i++ {
+		fmt.Println(bytes[r.Intn(len(bytes))], result)
+		result = append(result, bytes[r.Intn(len(bytes))])
+	}
+	return "0x"+string(result)
+}
+
+func HexToBytes(input interface{}) ([]byte, error){
+	switch input.(type) {
+	case string:
+		return Decode(input.(string))
+	case int:
+		return hex.DecodeString(strconv.FormatInt(int64(input.(int)), 16))
+	default:
+		return nil, ErrSyntax
+	}
+}
+
+func HexToUtf8(input string) (string, error){
+	res, err := Decode(input)
+	if err != nil{
+		return "", err
+	}else {
+		return string(res), nil
+	}
+}
+
+func HexToAscii(input string) (string, error){
+	res, err := Decode(input)
+	if err != nil{
+		return "", err
+	}else {
+		return string(res), nil
+	}
+}
+
+func HexToNumberString(input string) (string, error){
+	if !has0xPrefix(input){
+		return "", ErrMissingPrefix
+	}
+	input = input[2:]
+	res, error :=strconv.ParseInt(input, 16, 32)
+	if error != nil{
+		fmt.Println("1111")
+		return "", error
+	}else {
+		return strconv.FormatInt(res,10), nil
+	}
+}
+
+func HexToNumber(input string) (interface{}, error){
+	if !has0xPrefix(input){
+		return "", ErrMissingPrefix
+	}
+	input = input[2:]
+	res, error :=strconv.ParseInt(input, 16, 32)
+	if error != nil{
+		return "", error
+	}else {
+		return res, nil
+	}
+}
+
+func AsciiToHex(input string) string{
+	return "0x"+hex.EncodeToString([]byte(input))
+}
+
+func Utf8ToHex(input string) string{
+	return "0x"+hex.EncodeToString([]byte(input))
 }
