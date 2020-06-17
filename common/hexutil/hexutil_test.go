@@ -27,11 +27,6 @@ type marshalTest struct {
 	want  string
 }
 
-type marshalTest1 struct {
-	input interface{}
-	want  interface{}
-}
-
 type unmarshalTest struct {
 	input        string
 	want         interface{}
@@ -140,29 +135,6 @@ var (
 		{input: `0xffffffffffffffff`, want: uint64(0xffffffffffffffff)},
 	}
 
-	isHexTests = []unmarshalTest{
-		// false
-		{input: `0xZ1912`, want: false},
-		{input: `Hello`, want: false},
-		// true
-		{input: `0xc1912`, want: true},
-		{input: `c1912`, want: true},
-	}
-
-	isHexStrictTests = []unmarshalTest{
-		// false
-		{input: `0xZ1912`, want: false},
-		{input: `Hello`, want: false},
-		{input: `c1912`, want: false},
-		// true
-		{input: `0xc1912`, want: true},
-	}
-
-	HexToBytesTests = []marshalTest1{
-		{input: `0x000000ea`, want: []byte{0, 0, 0, 234}},
-		{input: 0x000000ea, want: []byte{234}},
-	}
-
 )
 
 func TestEncode(t *testing.T) {
@@ -231,32 +203,5 @@ func TestDecodeUint64(t *testing.T) {
 	}
 }
 
-func TestIsHex(t *testing.T){
-	for _, test := range isHexTests {
-		res := IsHex(test.input)
-		if res != test.want.(bool) {
-			t.Errorf("input %s: value mismatch: got %t, want %t", test.input, res, test.want)
-			continue
-		}
-	}
-}
 
-func TestIsHexStrict(t *testing.T){
-	for _, test := range isHexStrictTests {
-		res := IsHexStrict(test.input)
-		if res != test.want.(bool) {
-			t.Errorf("input %s: value mismatch: got %t, want %t", test.input, res, test.want)
-			continue
-		}
-	}
-}
 
-func TestHexToBytes(t *testing.T){
-	for _, test := range HexToBytesTests {
-		res, _:= HexToBytes(test.input)
-		if !bytes.Equal(test.want.([]byte), res) {
-			t.Errorf("input %v: value mismatch: got %x, want %x", test.input, res, test.want)
-			continue
-		}
-	}
-}
