@@ -45,6 +45,7 @@ var (
 
 	hexToBytesTests = []test1{
 		{input: `0x000000ea`, want: []byte{0, 0, 0, 234}},
+		{input: `0x48656c6c6f2125`, want: []byte{72,101,108,108,111,33,37}},
 	}
 
 	hexToUtf8Tests = []test1{
@@ -108,7 +109,7 @@ func TestHexToBytes(t *testing.T){
 	for _, test := range hexToBytesTests {
 		res, _:= HexToBytes(test.input)
 		if !bytes.Equal(test.want.([]byte), res) {
-			t.Errorf("input %v: value mismatch: got %x, want %x", test.input, res, test.want)
+			t.Errorf("input %s: value mismatch: got %v, want %v", test.input, res, test.want)
 			continue
 		}
 	}
