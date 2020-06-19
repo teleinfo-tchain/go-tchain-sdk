@@ -6,45 +6,39 @@ import (
 )
 
 type test3 struct {
-	input        string
-	want         interface{}
-	wantErr      error // if set, decoding must fail on any platform
-	wantErr32bit error // if set, decoding must fail on 32bit platforms (used for Uint tests)
-}
-type test4 struct {
 	input        [] byte
 	want         interface{}
 	wantErr      error // if set, decoding must fail on any platform
 	wantErr32bit error // if set, decoding must fail on 32bit platforms (used for Uint tests)
 }
 
-type test5 struct {
+type test4 struct {
 	input        interface{}
 	want         interface{}
 	wantErr      error // if set, decoding must fail on any platform
 	wantErr32bit error // if set, decoding must fail on 32bit platforms (used for Uint tests)
 }
 var (
-	byteToHexTests = []test4{
+	byteToHexTests = []test3{
 		{input: []byte{72, 101, 108, 108, 111, 33, 37} , want: "0x48656c6c6f2125"},
 	}
-	sha3Tests = []test3{
+	sha3Tests = []test1{
 		{input:`234`, want: "0xc1912fee45d61c87cc5ea59dae311904cd86b84fee17cc96966216f811ce6a79"},
 		{input:`0xea`, want: "0x2f20677459120677484f7104c76deb6846a2c071f9b3152c103bb12cd54d1a4a"},
 	}
 
-	sha3RawTests = []test3{
+	sha3RawTests = []test1{
 		{input:`234`, want: "0xc1912fee45d61c87cc5ea59dae311904cd86b84fee17cc96966216f811ce6a79"},
 		{input:`0xea`, want: "0x2f20677459120677484f7104c76deb6846a2c071f9b3152c103bb12cd54d1a4a"},
 	}
-	checkAddressSumTests  = []test3{
+	checkAddressSumTests  = []test1{
 		{input:`0xc1912fEE45d61C87Cc5EA59DaE31190FFFFf232d`, want: true},
 	}
-	toChecksumAddressTests  = []test3{
+	toChecksumAddressTests  = []test1{
 		{input:`0XC1912FEE45D61C87CC5EA59DAE31190FFFFF232D`, want: "0xc1912fEE45d61C87Cc5EA59DaE31190FFFFf232d"},
 	}
 
-	numberToHexTests  = []test5{
+	numberToHexTests  = []test4{
 		{input:`234`, want: "0xea"},
 		{input:`0x123`, want: "0x123"},
 		{input: 234, want: "0xea"},

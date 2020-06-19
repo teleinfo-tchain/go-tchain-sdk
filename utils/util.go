@@ -4,7 +4,6 @@ import (
 	"encoding/hex"
 	"fmt"
 	"github.com/bif/bif-sdk-go/common"
-	"github.com/bif/bif-sdk-go/common/hexutil"
 	"github.com/bif/bif-sdk-go/crypto"
 	"math/big"
 	"regexp"
@@ -41,7 +40,7 @@ func IsBigNumber() bool{
 // 应该是和Sha3类似吧？只是加密的方式不同
 func Sm2(str string) (string, error){
 	var hexBytes []byte
-	if hexutil.IsHexStrict(str){
+	if IsHexStrict(str){
 		hexBytes = common.Hex2Bytes(str[2:])
 	}else{
 		hexBytes = []byte(str)
@@ -72,7 +71,7 @@ func Sm2(str string) (string, error){
 // 如果是big Number的话
 func Sha3(str string) (string,error){
 	var hexBytes []byte
-	if hexutil.IsHexStrict(str){
+	if IsHexStrict(str){
 		hexBytes = common.Hex2Bytes(str[2:])
 	}else{
 		hexBytes = []byte(str)
@@ -87,7 +86,7 @@ func Sha3(str string) (string,error){
 
 func Sha3Raw(str string) string{
 	var hexBytes []byte
-	if hexutil.IsHexStrict(str){
+	if IsHexStrict(str){
 		hexBytes = common.Hex2Bytes(str[2:])
 	}else{
 		hexBytes = []byte(str)
@@ -170,7 +169,7 @@ func BigIntToHex(number *big.Int) string{
 // 只是10进制和16进制的str
 func StrToHex(str string) (string, error){
 	n := new(big.Int)
-	if hexutil.IsHexStrict(str){
+	if IsHexStrict(str){
 		n, ok := n.SetString(str[2:], 16)
 		if !ok{
 			return "", ErrNumberString
