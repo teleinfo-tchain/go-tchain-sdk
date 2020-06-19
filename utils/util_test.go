@@ -2,6 +2,7 @@ package utils
 
 import (
 	"fmt"
+	"math/big"
 	"testing"
 )
 
@@ -39,11 +40,51 @@ var (
 	}
 
 	numberToHexTests  = []test4{
-		{input:`234`, want: "0xea"},
-		{input:`0x123`, want: "0x123"},
-		{input: 234, want: "0xea"},
-		{input: 123, want: "0x7b"},
-		{input: "sss", wantErr: ErrNumberString},
+		{input:`234`,     want: "0xea"},
+		{input:`0x123`,   want: "0x123"},
+		{input: 234,      want: "0xea"},
+		{input: 123,      want: "0x7b"},
+		{input: "sss",    wantErr: ErrNumberString},
+		{input: -1,       wantErr: ErrNegInt},
+		{input: "-1",     wantErr: ErrNumberString},
+	}
+
+	toHexTests  = []test4{
+		{input:`234`,               want: "0xea"},
+		{input: 234,                want: "0xea"},
+		{input: "I have 100€",      want: "0x49206861766520313030e282ac"},
+		{input: "sss",              want: "0x737373"},
+		{input: -1,                 wantErr: ErrNegInt},
+		{input: "-1",               want: "0x2d31"},
+		{input: big.NewInt(-2),  wantErr: ErrBigNegInt},
+		{input: 1.2,                wantErr: ErrNumberInput},
+	}
+
+	toBNTests = []test4{
+		{input:`1234`,                  want: big.NewInt(1234)},
+		{input:`0xea`,                  want: big.NewInt(234)},
+		{input: 234,                    want: big.NewInt(234)},
+		{input: 0x2,                    want: big.NewInt(2)},
+		{input: -1,                     want: big.NewInt(-1)},
+		{input: big.NewRat(2,1),  wantErr:  ErrNumberInput},
+		{input: "sss",                  wantErr: ErrNumberString},
+	}
+
+	isBNTests   = []test4{
+		{input:`-1`,                    want:  false},
+		{input:`-asd`,                  want:  false},
+		{input: 0x1,                    want:  false},
+		{input: big.NewInt(2),       want:  true},
+		{input: big.NewFloat(2),     want:  false},
+		{input: big.NewRat(2,1),  want:  false},
+	}
+	toTwosComplementTests  = []test4{
+		{input:`-1`, want: "0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff"},
+		{input: -1, want: "0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff"},
+		{input: 0x1, want: "0x0000000000000000000000000000000000000000000000000000000000000001"},
+		{input: -15, want: "0xfffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff1"},
+		{input: -0x1, want: "0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff"},
+		{input: "asd", wantErr: ErrNumberInput},
 	}
 )
 
@@ -123,7 +164,7 @@ func TestCheckAddressSum(t *testing.T){
 	}
 }
 
-// 该测试还是有问题的，因为函数的sha3转换需要注意
+// 该测试还是有问题的，因为函数的sha3转换需要注意!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 func TestToChecksumAddress(t *testing.T){
 	for _, test := range toChecksumAddressTests {
 		res, _ := ToChecksumAddress(test.input)
@@ -144,3 +185,51 @@ func TestNumberToHex(t *testing.T){
 	}
 }
 
+func TestToHex(t *testing.T){
+	for _, test := range toHexTests {
+		res, err := ToHex(test.input)
+		if !checkNumberError(t, test.input, err, test.wantErr) {
+			continue
+		}
+		if res != test.want.(string) {
+			t.Errorf("input %v: value mismatch: got %s, want %s", test.input, res, test.want)
+			continue
+		}
+	}
+}
+
+func TestToBN(t *testing.T){
+	for _, test := range toBNTests {
+		res, err := ToBN(test.input)
+		if !checkNumberError(t, test.input, err, test.wantErr) {
+			continue
+		}
+		if res.Cmp(test.want.(*big.Int)) != 0 {
+			t.Errorf("input %v: value mismatch: got %v, want %v", test.input, res, test.want)
+			continue
+		}
+	}
+}
+
+func TestIsBN(t *testing.T){
+	for _, test := range isBNTests {
+		res := IsBN(test.input)
+		if res != test.want.(bool) {
+			t.Errorf("input %v: value mismatch: got %t, want %t", test.input, res, test.want)
+			continue
+		}
+	}
+}
+
+func TestToTwosComplement(t *testing.T){
+	for _, test := range toTwosComplementTests {
+		res, err := ToTwosComplement(test.input)
+		if !checkNumberError(t, test.input, err, test.wantErr) {
+			continue
+		}
+		if res != test.want.(string) {
+			t.Errorf("input %v: value mismatch: got %s, want %s", test.input, res, test.want)
+			continue
+		}
+	}
+}
