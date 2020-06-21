@@ -112,20 +112,15 @@ func CheckAddressChecksum(address string) bool{
 	address = address[2:]
 	addressHash, _ := Sha3(strings.ToLower(address))
 	addressHash = addressHash[2:]
-	//fmt.Println(address)
-	//fmt.Println(strings.ToLower(address))
-	//fmt.Println(addressHash)
 	for i := 0; i < 40; i++ {
 		//the nth letter should be uppercase if the nth digit of casemap is 1
-		// 关于校验和的判断依据为什么是这个？？
+		// 校验和的判断依据是根据其生成的方式判断的
 		char := string(address[i])
 		hashChar:= string(addressHash[i])
 		upperChar := strings.ToUpper(char)
 		lowerChar := strings.ToLower(char)
-		//replace(/^0x/i,'')
 		parseHashChar, _ := strconv.ParseUint(hashChar, 16, 64)
 		if parseHashChar>7 && upperChar != char || parseHashChar <= 7 && lowerChar != char {
-			fmt.Println(i, char, hashChar,upperChar, lowerChar, parseHashChar)
 			return false
 		}
 	}
@@ -152,8 +147,8 @@ func ToChecksumAddress(address string) (string, error){
 	}
 	address = strings.ToLower(address)[2:]
 	addressHash , _:= Sha3(address)
+	addressHash = addressHash[2:]
 	checkSumAddress := "0x"
-	fmt.Println(addressHash)
 	for i := 0; i < len(address); i++ {
 		hashChar:= string(addressHash[i])
 		parseHashChar, _ := strconv.ParseUint(hashChar, 16, 64)
@@ -163,7 +158,6 @@ func ToChecksumAddress(address string) (string, error){
 			checkSumAddress += string(address[i])
 		}
 	}
-	fmt.Println(checkSumAddress)
 	return checkSumAddress, nil
 }
 

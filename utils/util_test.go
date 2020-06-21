@@ -1,7 +1,6 @@
 package utils
 
 import (
-	"fmt"
 	"math/big"
 	"testing"
 )
@@ -26,17 +25,31 @@ var (
 	sha3Tests = []test1{
 		{input:`234`, want: "0xc1912fee45d61c87cc5ea59dae311904cd86b84fee17cc96966216f811ce6a79"},
 		{input:`0xea`, want: "0x2f20677459120677484f7104c76deb6846a2c071f9b3152c103bb12cd54d1a4a"},
+		{input:`c1912fee45d61c87cc5ea59dae31190fffff232d`, want: "0x4fb647abf5735d02e3a8a6c94c29977abed5bcc26e646c8e079e46759c1e0b04"},
 	}
 
 	sha3RawTests = []test1{
 		{input:`234`, want: "0xc1912fee45d61c87cc5ea59dae311904cd86b84fee17cc96966216f811ce6a79"},
 		{input:`0xea`, want: "0x2f20677459120677484f7104c76deb6846a2c071f9b3152c103bb12cd54d1a4a"},
 	}
-	checkAddressSumTests  = []test1{
+
+	checkAddressChecksumTests  = []test1{
 		{input:`0xc1912fEE45d61C87Cc5EA59DaE31190FFFFf232d`, want: true},
 	}
+
+	isAddressTests  = []test1{
+		{input:`0xc1912fee45d61c87cc5ea59dae31190fffff232d`,   want: true},
+		{input:`c1912fee45d61c87cc5ea59dae31190fffff232d`,     want: true},
+		{input:`0XC1912FEE45D61C87CC5EA59DAE31190FFFFF232D`,   want: true},
+		{input:`0xc1912fEE45d61C87Cc5EA59DaE31190FFFFf232d`,   want: true},
+		{input:`0xC1912fEE45d61C87Cc5EA59DaE31190FFFFf232d`,   want: false },
+	}
+
 	toChecksumAddressTests  = []test1{
+		{input:`0xc1912fee45d61c87cc5ea59dae31190fffff232d`, want: "0xc1912fEE45d61C87Cc5EA59DaE31190FFFFf232d"},
 		{input:`0XC1912FEE45D61C87CC5EA59DAE31190FFFFF232D`, want: "0xc1912fEE45d61C87Cc5EA59DaE31190FFFFf232d"},
+		{input:`0Xaaa`,                                      wantErr: ErrInvalidAddress},
+		{input:`0xcg912fee45d61c87cc5ea59dae31190fffff232d`, wantErr: ErrInvalidAddress},
 	}
 
 	numberToHexTests  = []test4{
@@ -119,7 +132,7 @@ func checkNumberError(t *testing.T, input interface{}, got, want error) bool {
 	}
 	return false
 }
-// web3js 的字节数组可能给错了[72, 101, 108, 108, 111, 33, 36] 最后的应该是37不是36? 还是说是其他问题？
+
 func TestByteToHex(t *testing.T) {
 	for _, test := range byteToHexTests {
 		res := ByteToHex(test.input)
@@ -130,6 +143,7 @@ func TestByteToHex(t *testing.T) {
 		}
 	}
 }
+
 func TestSha3(t *testing.T){
 	for _, test := range sha3Tests {
 		res, err := Sha3(test.input)
@@ -154,8 +168,8 @@ func TestSha3Raw(t *testing.T){
 	}
 }
 
-func TestCheckAddressSum(t *testing.T){
-	for _, test := range checkAddressSumTests {
+func TestCheckAddressChecksum(t *testing.T){
+	for _, test := range checkAddressChecksumTests {
 		res := CheckAddressChecksum(test.input)
 		if res != test.want.(bool) {
 			t.Errorf("input %s: value mismatch: got %t, want %t", test.input, res, test.want)
@@ -164,11 +178,26 @@ func TestCheckAddressSum(t *testing.T){
 	}
 }
 
-// 该测试还是有问题的，因为函数的sha3转换需要注意!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+func TestIsAddress(t *testing.T){
+	for _, test := range isAddressTests {
+		res := IsAddress(test.input)
+		if res != test.want.(bool) {
+			t.Errorf("input %s: value mismatch: got %t, want %t", test.input, res, test.want)
+			continue
+		}
+	}
+}
+
 func TestToChecksumAddress(t *testing.T){
 	for _, test := range toChecksumAddressTests {
-		res, _ := ToChecksumAddress(test.input)
-		fmt.Println(res)
+		res, err := ToChecksumAddress(test.input)
+		if !checkNumberError(t, test.input, err, test.wantErr) {
+			continue
+		}
+		if res != test.want.(string) {
+			t.Errorf("input %v: value mismatch: got %s, want %s", test.input, res, test.want)
+			continue
+		}
 	}
 }
 

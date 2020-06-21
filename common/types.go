@@ -420,3 +420,31 @@ func (ma *MixedcaseAddress) ValidChecksum() bool {
 func (ma *MixedcaseAddress) Original() string {
 	return ma.original
 }
+
+// origin
+func OriHexToAddress(s string) Address { return OriBytesToAddress(OriFromHex(s)) }
+
+func (a *Address) OriSetBytes(b []byte) {
+	if len(b) > len(a) {
+		b = b[len(b)-AddressLength:]
+	}
+	copy(a[AddressLength-len(b):], b)
+}
+
+func OriBytesToAddress(b []byte) Address {
+	var a Address
+	a.OriSetBytes(b)
+	return a
+}
+
+func OriFromHex(s string) []byte {
+	if len(s) > 1 {
+		if s[0:2] == "0x" || s[0:2] == "0X" {
+			s = s[2:]
+		}
+	}
+	if len(s)%2 == 1 {
+		s = "0" + s
+	}
+	return Hex2Bytes(s)
+}
