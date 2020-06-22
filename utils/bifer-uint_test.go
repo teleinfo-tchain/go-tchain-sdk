@@ -4,14 +4,6 @@ import (
 	"testing"
 )
 
-type test5 struct {
-	inputOne     string
-	inputTwo     []string
-	want         interface{}
-	wantErr      error // if set, decoding must fail on any platform
-	wantErr32bit error // if set, decoding must fail on 32bit platforms (used for Uint tests)
-}
-
 var (
 	toWeiTests = []test5{
 		{inputOne: `1`, inputTwo: []string{}, want: "1e+18"},

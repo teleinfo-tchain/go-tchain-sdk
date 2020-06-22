@@ -5,19 +5,6 @@ import (
 	"testing"
 )
 
-type test3 struct {
-	input        [] byte
-	want         interface{}
-	wantErr      error // if set, decoding must fail on any platform
-	wantErr32bit error // if set, decoding must fail on 32bit platforms (used for Uint tests)
-}
-
-type test4 struct {
-	input        interface{}
-	want         interface{}
-	wantErr      error // if set, decoding must fail on any platform
-	wantErr32bit error // if set, decoding must fail on 32bit platforms (used for Uint tests)
-}
 var (
 	byteToHexTests = []test3{
 		{input: []byte{72, 101, 108, 108, 111, 33, 37} , want: "0x48656c6c6f2125"},
@@ -69,7 +56,7 @@ var (
 		{input: "sss",              want: "0x737373"},
 		{input: -1,                 wantErr: ErrNegInt},
 		{input: "-1",               want: "0x2d31"},
-		{input: big.NewInt(-2),  wantErr: ErrBigNegInt},
+		{input: big.NewInt(-2),  want: "-0x2"},
 		{input: 1.2,                wantErr: ErrNumberInput},
 	}
 

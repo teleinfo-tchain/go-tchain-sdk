@@ -6,7 +6,6 @@ import (
 	"math/big"
 	"math/rand"
 	"regexp"
-	"strconv"
 	"strings"
 	"time"
 )
@@ -15,7 +14,6 @@ func has0xPrefix(input string) bool {
 	return len(input) >= 2 && input[0] == '0' && (input[1] == 'x' || input[1] == 'X')
 }
 
-// web3.js对于hex string奇偶没有判定，是否还需要对数值类型的判断？
 func IsHex(input string) bool {
 	r, _ := regexp.Compile("^(0[x,X])?[A-F, a-f, 0-9]+$")
 	return r.MatchString(input)
@@ -26,7 +24,7 @@ func IsHexStrict(input string) bool {
 	return r.MatchString(input)
 }
 
-// 给定的字节大小生成伪随机HEX字符串
+// generate cryptographically strong pseudo-random HEX strings from a given byte size
 func  RandomHex(size int) string {
 	str := "0123456789abcdef"
 	bytes := []byte(str)
@@ -39,7 +37,7 @@ func  RandomHex(size int) string {
 }
 
 
-// 是否需要接收hex数值？？
+// hexString to byte
 func HexToBytes(input string) ([]byte, error){
 	return hexutil.Decode(input)
 }
@@ -62,7 +60,8 @@ func HexToAscii(input string) (string, error){
 	}
 }
 
-// 是否接收hex数值？？
+
+// hexutil.DecodeUint64和hexutil.DecodeBig
 func HexToNumberString(input string) (string, error){
 	if len(input) == 0 {
 		return "", hexutil.ErrEmptyString
@@ -79,18 +78,16 @@ func HexToNumberString(input string) (string, error){
 	return bigint.String(), nil
 }
 
-// hex 应该是将hex转换为十进制数，不支持big.int
-func HexToNumber(input string) (interface{}, error){
-	if !has0xPrefix(input){
-		return "", hexutil.ErrMissingPrefix
-	}
-	input = input[2:]
-	res, error :=strconv.ParseInt(input, 16, 64)
-	if error != nil{
-		return "", hexutil.ErrUint64Range
-	}else {
-		return res, nil
-	}
+// 将HexToNumber 变成两个， HexToUint64Number， HexToBigNumber
+
+// hexStr 应该是将hex转换为uint64
+func HexToUint64Number(input string) (uint64, error){
+	return hexutil.DecodeUint64(input)
+}
+
+// hexStr 应该是将hex转换为uint64
+func HexToBigNumber(input string) (*big.Int, error){
+	return hexutil.DecodeBig(input)
 }
 
 func AsciiToHex(input string) string{

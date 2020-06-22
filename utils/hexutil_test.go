@@ -2,23 +2,12 @@ package utils
 
 import (
 	"bytes"
+	"fmt"
 	"github.com/bif/bif-sdk-go/common/hexutil"
+	"math/big"
 	"testing"
 )
 
-type test1 struct {
-	input        string
-	want         interface{}
-	wantErr      error // if set, decoding must fail on any platform
-	wantErr32bit error // if set, decoding must fail on 32bit platforms (used for Uint tests)
-}
-
-type test2 struct {
-	input1 string
-	input2 int
-	input3 []string
-	want  interface{}
-}
 
 var (
 	isHexTests = []test1{
@@ -55,11 +44,19 @@ var (
 	hexToNumberStringTests = []test1{
 		{input: `0xea`, want: "234"},
 	}
-	hexToNumberTests = []test1{
-		{input: `0xea`, want: int64(234)},
-		{input: `0xc1912fee45d61c8`, want: int64(871748888835219912)},
+
+	hexToUint64NumberTests = []test1{
+		{input: `0xea`, want: uint64(234)},
+		{input: `0xc1912fee45d61c8`, want: uint64(871748888835219912)},
 		{input: `0xc1912fee45d61c8111111`, wantErr: hexutil.ErrUint64Range},
 	}
+
+	hexToBigNumberTests = []test1{
+		{input: `0xea`, want: big.NewInt(234)},
+		{input: `0xc1912fee45d61c8`, want: big.NewInt(871748888835219912)},
+		{input: `0xc1912fee45d61c8000000000000000000000000000000000000000000000000000`, wantErr: hexutil.ErrBig256Range},
+	}
+
 	asciiToHexTests = []test1{
 		{input: `I have 100!`, want: "0x4920686176652031303021"},
 	}
@@ -114,6 +111,7 @@ func TestHexToBytes(t *testing.T){
 func TestHexToUtf8(t *testing.T){
 	for _, test := range hexToUtf8Tests {
 		res, _:= HexToUtf8(test.input)
+		fmt.Println(res)
 		if res != test.want.(string) {
 			t.Errorf("input %s: value mismatch: got %s, want %s", test.input, res, test.want)
 			continue
@@ -141,14 +139,27 @@ func TestHexToNumberString(t *testing.T){
 	}
 }
 
-func TestHexToNumber(t *testing.T){
-	for _, test := range hexToNumberTests {
-		res,err := HexToNumber(test.input)
+func TestHexToUint64Number(t *testing.T){
+	for _, test := range hexToUint64NumberTests {
+		res,err := HexToUint64Number(test.input)
 		if !checkError(t, test.input, err, test.wantErr) {
 			continue
 		}
-		if res != test.want.(int64) {
+		if res != test.want.(uint64) {
 			t.Errorf("input %s: value mismatch: got %d, want %d", test.input, res, test.want)
+			continue
+		}
+	}
+}
+
+func TestHexToBigNumber(t *testing.T){
+	for _, test := range hexToBigNumberTests {
+		res,err := HexToBigNumber(test.input)
+		if !checkError(t, test.input, err, test.wantErr) {
+			continue
+		}
+		if res.Cmp(test.want.(*big.Int)) != 0 {
+			t.Errorf("input %s: value mismatch: got %v, want %v", test.input, res, test.want)
 			continue
 		}
 	}
@@ -193,8 +204,3 @@ func TestPadRight(t *testing.T){
 		}
 	}
 }
-
-//Converts a negative numer into a two’s complement.
-//func ToTwosComplement() string{
-//
-//}

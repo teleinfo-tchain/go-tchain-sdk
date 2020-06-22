@@ -5,28 +5,22 @@ import (
 	"errors"
 	"fmt"
 	"github.com/bif/bif-sdk-go/common"
+	"github.com/bif/bif-sdk-go/common/hexutil"
+	"github.com/bif/bif-sdk-go/common/math"
 	"github.com/bif/bif-sdk-go/crypto"
 	"math/big"
 	"regexp"
 	"strconv"
 	"strings"
 )
+
 type StringType uint8
+
 const (
 	Hex       StringType = 0 // 十六进制
 	Decimal   StringType= 1 // 十进制
 	OtherStr  StringType= 2 // 其他类型（当做字符串处理）
 )
-
-var (
-	tt256     = BigPow(2, 256)
-	tt256m1   = new(big.Int).Sub(tt256, big.NewInt(1))
-)
-
-func BigPow(a, b int64) *big.Int {
-	r := big.NewInt(a)
-	return r.Exp(r, big.NewInt(b), nil)
-}
 
 // Errors
 var (
@@ -39,15 +33,15 @@ var (
 )
 
 const Sha3Null = "0xc5d2460186f7233c927e7db2dcc703c0e500b653ca82273b7bfad8045d85a470"
-// Sm的null是什么？？？
-const Sm2Null = "?????"
+
+//  ????
+const Sm3Null = "0xc5d2460186f7233c927e7db2dcc703c0e500b653ca82273b7bfad8045d85a470"
 
 func ByteToHex(byteArr []byte) string{
 	return "0x"+hex.EncodeToString(byteArr)
 }
 
-// 应该是和Sha3类似吧？只是加密的方式不同
-func Sm2(str string) (string, error){
+func Sm3(str string) (string, error){
 	var hexBytes []byte
 	if IsHexStrict(str){
 		hexBytes = common.Hex2Bytes(str[2:])
@@ -55,33 +49,18 @@ func Sm2(str string) (string, error){
 		hexBytes = []byte(str)
 	}
 	resStr := ByteToHex(crypto.Keccak256(crypto.SM2, hexBytes))
-	if resStr == Sm2Null {
+	if resStr == Sm3Null {
 		return "", ErrInvalidSha3
 	}else{
 		return resStr, nil
 	}
 }
 
-//func Sha3Big(str string) (string,error){
-//	var hexBytes []byte
-//	if hexutil.IsHexStrict(str){
-//		hexBytes = common.Hex2Bytes(str[2:])
-//	}else{
-//		hexBytes = []byte(str)
-//	}
-//	resStr := ByteToHex(crypto.Keccak256(crypto.SECP256K1, hexBytes))
-//	if resStr == Sha3Null {
-//		return "", ErrInvalidSha3
-//	}else{
-//		return resStr, nil
-//	}
-//}
-
-// 如果是big Number的话
+// 是否还处理bigNumber
 func Sha3(str string) (string,error){
 	var hexBytes []byte
 	if IsHexStrict(str){
-		hexBytes = common.Hex2Bytes(str[2:])
+		hexBytes, _ = hex.DecodeString(str[2:])
 	}else{
 		hexBytes = []byte(str)
 	}
@@ -96,7 +75,7 @@ func Sha3(str string) (string,error){
 func Sha3Raw(str string) string{
 	var hexBytes []byte
 	if IsHexStrict(str){
-		hexBytes = common.Hex2Bytes(str[2:])
+		hexBytes, _ = hex.DecodeString(str[2:])
 	}else{
 		hexBytes = []byte(str)
 	}
@@ -110,7 +89,6 @@ func CheckAddressChecksum(address string) bool{
 	addressHash, _ := Sha3(strings.ToLower(address))
 	addressHash = addressHash[2:]
 	for i := 0; i < 40; i++ {
-		//the nth letter should be uppercase if the nth digit of casemap is 1
 		// 校验和的判断依据是根据其生成的方式判断的
 		char := string(address[i])
 		hashChar:= string(addressHash[i])
@@ -159,23 +137,15 @@ func ToChecksumAddress(address string) (string, error){
 }
 
 // 如果是负数则不转换，提示错误
-func intToHex(number interface{}) (string,error){
-	str := fmt.Sprintf("%x", number)
+func intToHex(int interface{}) (string,error){
+	str := fmt.Sprintf("%x", int)
 	// represent  char "-"
-	if str[0] == 45 {
+	if string(str[0]) == "-" {
 		return "", ErrNegInt
 	}
 	return "0x"+str, nil
 }
 
-// web3 js 怎么处理大整型的负数hex？？？？
-// 不处理负数的整型转hex,是否在链中有这个需求，应该没有
-func BigIntToHex(number *big.Int) (string,error){
-	if number.IsUint64(){
-		return fmt.Sprintf("0x%x", number), nil
-	}
-	return "", ErrBigNegInt
-}
 
 // 判断字符串为10进制还是16进制(只是正数)，不支持其他进制判断
 func judgeStrNumber(str string) StringType {
@@ -188,6 +158,7 @@ func judgeStrNumber(str string) StringType {
 	}
 	return  OtherStr
 }
+
 // decimal str to hex str
 func DecimalStrToHex(str string) (string, error){
 	n := new(big.Int)
@@ -215,7 +186,7 @@ func StrToHex(str string) (string, error){
 	if strType == Decimal{
 		return DecimalStrToHex(str)
 	} else if strType == Hex{
-		return "0x"+str[2:], nil
+		return "0x"+str[2:], nil //hex ,hexutil
 	}else {
 		return "0x"+hex.EncodeToString([]byte(str)), nil
 	}
@@ -228,7 +199,7 @@ func NumberToHex(input interface{}) (string, error){
 	case uint, int, uint8,uint16,uint32,uint64, int8, int16, int32,int64:
 		return intToHex(input)
 	case *big.Int:
-		return BigIntToHex(input.(*big.Int))
+		return hexutil.EncodeBig(input.(*big.Int)), nil
 	default:
 		return "", ErrNumberInput
 	}
@@ -242,7 +213,7 @@ func ToHex(input interface{}) (string, error){
 	case uint, int, uint8,uint16,uint32,uint64, int8, int16, int32,int64:
 		return intToHex(input)
 	case *big.Int:
-		return BigIntToHex(input.(*big.Int))
+		return hexutil.EncodeBig(input.(*big.Int)), nil
 	default:
 		return "", ErrNumberInput
 	}
@@ -259,6 +230,7 @@ func judgeStrNumberNeg(str string) StringType {
 	}
 	return  OtherStr
 }
+
 // 对数值型字符串10进制和16进制(包含正负数)进行处理
 func numberStrToBN(str string) (*big.Int,error){
 	strType := judgeStrNumberNeg(str)
@@ -304,18 +276,13 @@ func ToBN(input interface{}) (*big.Int, error){
 	}
 }
 
-// 有必要存在吗？(big number)
+// judge if is a big.Int
 func IsBN(input interface{}) bool{
 	_, ok := input.(*big.Int)
 	if ok{
 		return true
 	}
 	return false
-}
-
-// U256 encodes as a 256 bit two's complement number. This operation is destructive.
-func U256(x *big.Int) *big.Int {
-	return x.And(x, tt256m1)
 }
 
 // 转换为256位的hex字符串 不支持小数
@@ -329,7 +296,7 @@ func ToTwosComplement(input interface{}) (string, error){
 		// 如果超过64位的话，是否截断？？？
 		return "0x"+nStr, nil
 	}else if bigInt.Sign() == -1 {
-		return "0x"+fmt.Sprintf("%x", U256(bigInt)), nil
+		return "0x"+fmt.Sprintf("%x", math.U256(bigInt)), nil
 	}else {
 		return "0x"+PadLeft("0", 64), nil
 	}

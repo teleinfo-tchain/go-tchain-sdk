@@ -14,6 +14,7 @@ var (
 	ErrParameter     = errors.New("error parameter number")
 )
 
+// bifer uints
 var BiferUint = map[string]string {
 	"nobifer": "0",
 	"wei":        "1",
@@ -52,7 +53,7 @@ func getUintValue(uint string) (string, error){
 	return BiferUint[uint],nil
 }
 
-// 是否只是接收字符串？？另外如果数太大/太小，go自动转换为科学计数法，是否合适
+// Converts any bifer value value into wei
 func ToWei(number string, values ...string) (string, error){
 	if len(values)>1{
 		return "", ErrParameter
@@ -76,6 +77,7 @@ func ToWei(number string, values ...string) (string, error){
 	return resValue.Mul(m,n).String(), nil
 }
 
+// Converts any wei value into a bifer value.
 func FromWei(number string, values ...string) (string, error){
 	if len(values)>1{
 		return "", ErrParameter
@@ -88,13 +90,13 @@ func FromWei(number string, values ...string) (string, error){
 	if err != nil{
 		return "", err
 	}
-	// 被除数
+	// Dividend
 	dividend := new(big.Float)
 	m, ok := dividend.SetString(number)
 	if !ok {
 		return "", ErrNumberString
 	}
-	// 除数
+	// divisor
 	divisor := new(big.Float)
 	n, _ := divisor.SetString(uintValue)
 	resValue := new(big.Float)
