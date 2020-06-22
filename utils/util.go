@@ -2,6 +2,7 @@ package utils
 
 import (
 	"encoding/hex"
+	"errors"
 	"fmt"
 	"github.com/bif/bif-sdk-go/common"
 	"github.com/bif/bif-sdk-go/crypto"
@@ -29,17 +30,13 @@ func BigPow(a, b int64) *big.Int {
 
 // Errors
 var (
-	ErrInvalidSha3    = &decError{"invalid input"}
-	ErrInvalidAddress = &decError{"invalid Bif Address"}
-	ErrNumberString = &decError{"invalid number string"}
-	ErrNumberInput = &decError{"invalid number input"}
-	ErrBigNegInt = &decError{"negative big int"}
-	ErrNegInt = &decError{"negative int"}
+	ErrInvalidSha3    = errors.New("invalid input")
+	ErrInvalidAddress = errors.New("invalid Bif Address")
+	ErrNumberString = errors.New("invalid number string")
+	ErrNumberInput = errors.New("invalid number input")
+	ErrBigNegInt = errors.New("negative big int")
+	ErrNegInt = errors.New("negative int")
 )
-
-type decError struct{ msg string }
-
-func (err decError) Error() string { return err.msg }
 
 const Sha3Null = "0xc5d2460186f7233c927e7db2dcc703c0e500b653ca82273b7bfad8045d85a470"
 // Sm的null是什么？？？

@@ -1,15 +1,17 @@
 package utils
 
 import (
+	"errors"
 	"math/big"
 	"strings"
 )
 
 const bifer string = "bifer"
+
 // Errors
 var (
-	ErrUintNoExist   = &decError{"uint not exist"}
-	ErrParameter   = &decError{"error parameter number"}
+	ErrUintNoExist   = errors.New("uint not exist")
+	ErrParameter     = errors.New("error parameter number")
 )
 
 var BiferUint = map[string]string {
