@@ -2,7 +2,6 @@ package utils
 
 import (
 	"bytes"
-	"fmt"
 	"github.com/bif/bif-sdk-go/common/hexutil"
 	"math/big"
 	"testing"
@@ -111,7 +110,6 @@ func TestHexToBytes(t *testing.T){
 func TestHexToUtf8(t *testing.T){
 	for _, test := range hexToUtf8Tests {
 		res, _:= HexToUtf8(test.input)
-		fmt.Println(res)
 		if res != test.want.(string) {
 			t.Errorf("input %s: value mismatch: got %s, want %s", test.input, res, test.want)
 			continue

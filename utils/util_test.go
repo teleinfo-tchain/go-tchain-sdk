@@ -44,9 +44,9 @@ var (
 		{input:`0x123`,   want: "0x123"},
 		{input: 234,      want: "0xea"},
 		{input: 123,      want: "0x7b"},
+		{input: -1,       want: "-0x1"},
+		{input: "-1",     want: "-0x1"},
 		{input: "sss",    wantErr: ErrNumberString},
-		{input: -1,       wantErr: ErrNegInt},
-		{input: "-1",     wantErr: ErrNumberString},
 	}
 
 	toHexTests  = []test4{
@@ -54,8 +54,8 @@ var (
 		{input: 234,                want: "0xea"},
 		{input: "I have 100€",      want: "0x49206861766520313030e282ac"},
 		{input: "sss",              want: "0x737373"},
-		{input: -1,                 wantErr: ErrNegInt},
-		{input: "-1",               want: "0x2d31"},
+		{input: -1,                 want: "-0x1"},
+		{input: "-1",               want: "-0x1"},
 		{input: big.NewInt(-2),  want: "-0x2"},
 		{input: 1.2,                wantErr: ErrNumberInput},
 	}
@@ -78,12 +78,14 @@ var (
 		{input: big.NewFloat(2),     want:  false},
 		{input: big.NewRat(2,1),  want:  false},
 	}
+
 	toTwosComplementTests  = []test4{
 		{input:`-1`, want: "0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff"},
 		{input: -1, want: "0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff"},
 		{input: 0x1, want: "0x0000000000000000000000000000000000000000000000000000000000000001"},
 		{input: -15, want: "0xfffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff1"},
 		{input: -0x1, want: "0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff"},
+		{input: "0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff", wantErr: ErrBigInt},
 		{input: "asd", wantErr: ErrNumberInput},
 	}
 )

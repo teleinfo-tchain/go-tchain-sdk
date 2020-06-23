@@ -45,6 +45,7 @@ var BiferUint = map[string]string {
 	"tbifer":     "1000000000000000000000000000000",
 }
 
+// get uint value
 func getUintValue(uint string) (string, error){
 	uint = strings.ToLower(uint)
 	if BiferUint[uint]==""{

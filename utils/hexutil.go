@@ -14,11 +14,13 @@ func has0xPrefix(input string) bool {
 	return len(input) >= 2 && input[0] == '0' && (input[1] == 'x' || input[1] == 'X')
 }
 
+// judge if input is hex string with/without prefix 0[x,X]
 func IsHex(input string) bool {
 	r, _ := regexp.Compile("^(0[x,X])?[A-F, a-f, 0-9]+$")
 	return r.MatchString(input)
 }
 
+// judge if input is hex strict string with prefix 0[x,X]
 func IsHexStrict(input string) bool {
 	r, _ := regexp.Compile("^(0[x,X])[A-F, a-f, 0-9]+$")
 	return r.MatchString(input)
@@ -37,11 +39,12 @@ func  RandomHex(size int) string {
 }
 
 
-// hexString to byte
+// convert hex string to byte
 func HexToBytes(input string) ([]byte, error){
 	return hexutil.Decode(input)
 }
 
+// convert hex string to utf8 string
 func HexToUtf8(input string) (string, error){
 	res, err := hexutil.Decode(input)
 	if err != nil{
@@ -51,6 +54,7 @@ func HexToUtf8(input string) (string, error){
 	}
 }
 
+// convert hex string to ascii string
 func HexToAscii(input string) (string, error){
 	res, err := hexutil.Decode(input)
 	if err != nil{
@@ -61,7 +65,7 @@ func HexToAscii(input string) (string, error){
 }
 
 
-// hexutil.DecodeUint64和hexutil.DecodeBig
+// convert hex string to number string
 func HexToNumberString(input string) (string, error){
 	if len(input) == 0 {
 		return "", hexutil.ErrEmptyString
@@ -79,27 +83,27 @@ func HexToNumberString(input string) (string, error){
 }
 
 // 将HexToNumber 变成两个， HexToUint64Number， HexToBigNumber
-
-// hexStr 应该是将hex转换为uint64
+// convert hex string to uint64
 func HexToUint64Number(input string) (uint64, error){
 	return hexutil.DecodeUint64(input)
 }
 
-// hexStr 应该是将hex转换为uint64
+// convert hex string to big.Int
 func HexToBigNumber(input string) (*big.Int, error){
 	return hexutil.DecodeBig(input)
 }
 
+//convert ascii string to hex string
 func AsciiToHex(input string) string{
 	return "0x"+hex.EncodeToString([]byte(input))
 }
 
+//convert utf8 string to hex string
 func Utf8ToHex(input string) string{
 	return "0x"+hex.EncodeToString([]byte(input))
 }
 
 // Adds a padding on the left of a string, Useful for adding paddings to HEX strings.
-// 是否还需考虑接收hex数值
 func PadLeft(str string, characterAmount int, signs ...string) string {
 	sign := "0"
 	if len(signs)>=1{

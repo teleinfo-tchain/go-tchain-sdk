@@ -14,12 +14,11 @@ import (
 	"strings"
 )
 
-type StringType uint8
-
-const (
-	Hex       StringType = 0 // 十六进制
-	Decimal   StringType= 1 // 十进制
-	OtherStr  StringType= 2 // 其他类型（当做字符串处理）
+// Various big integer limit values.
+var (
+	tt255     = math.BigPow(2, 255)
+	MaxBig255   = new(big.Int).Sub(tt255, big.NewInt(1))
+	MinBig255   = new(big.Int).Neg(tt255)
 )
 
 // Errors
@@ -28,18 +27,13 @@ var (
 	ErrInvalidAddress = errors.New("invalid Bif Address")
 	ErrNumberString = errors.New("invalid number string")
 	ErrNumberInput = errors.New("invalid number input")
-	ErrBigNegInt = errors.New("negative big int")
-	ErrNegInt = errors.New("negative int")
+	ErrBigInt = errors.New("big int not in -2*255——2*255-1")
 )
 
 const Sha3Null = "0xc5d2460186f7233c927e7db2dcc703c0e500b653ca82273b7bfad8045d85a470"
 
 //  ????
 const Sm3Null = "0xc5d2460186f7233c927e7db2dcc703c0e500b653ca82273b7bfad8045d85a470"
-
-func ByteToHex(byteArr []byte) string{
-	return "0x"+hex.EncodeToString(byteArr)
-}
 
 func Sm3(str string) (string, error){
 	var hexBytes []byte
@@ -56,7 +50,8 @@ func Sm3(str string) (string, error){
 	}
 }
 
-// 是否还处理bigNumber
+// calculate the sha3 of the input (if input is invalid, it will return error)
+// 是否还处理bigNumber?
 func Sha3(str string) (string,error){
 	var hexBytes []byte
 	if IsHexStrict(str){
@@ -72,6 +67,7 @@ func Sha3(str string) (string,error){
 	}
 }
 
+//calculate the sha3 of the input(if input is invalid, it will return Sha3Null)
 func Sha3Raw(str string) string{
 	var hexBytes []byte
 	if IsHexStrict(str){
@@ -83,7 +79,7 @@ func Sha3Raw(str string) string{
 	return resStr
 }
 
-// address string with "0x"
+// address string with "0x", Checks the checksum of a given address
 func CheckAddressChecksum(address string) bool{
 	address = address[2:]
 	addressHash, _ := Sha3(strings.ToLower(address))
@@ -102,8 +98,9 @@ func CheckAddressChecksum(address string) bool{
 	return true
 }
 
+//Checks if a given string is a valid Bif address. It will also check the checksum, if the address has upper and lowercase letters.
 func IsAddress(address string) bool{
-	res1, _ := regexp.Compile("^(0[x,X])?[A-F, a-f, 0-9]{40}$")
+	res1, _ := regexp.Compile("^(0[x,X])?[A-F, a-f0-9]{40}$")
 	res2, _ := regexp.Compile("^(0[x,X])?[a-f, 0-9]{40}$")
 	res3, _ := regexp.Compile("^(0[x,X])?[A-F, 0-9]{40}$")
 	if !res1.MatchString(address){
@@ -115,8 +112,9 @@ func IsAddress(address string) bool{
 	}
 }
 
+//  convert an upper or lowercase Bif address to a checksum address
 func ToChecksumAddress(address string) (string, error){
-	res, _ := regexp.Compile("^(0[x,X])?[A-F, a-f, 0-9]{40}$")
+	res, _ := regexp.Compile("^(0[x,X])?[A-F, a-f0-9]{40}$")
 	if !res.MatchString(address){
 		return "", ErrInvalidAddress
 	}
@@ -136,68 +134,69 @@ func ToChecksumAddress(address string) (string, error){
 	return checkSumAddress, nil
 }
 
-// 如果是负数则不转换，提示错误
-func intToHex(int interface{}) (string,error){
-	str := fmt.Sprintf("%x", int)
-	// represent  char "-"
-	if string(str[0]) == "-" {
-		return "", ErrNegInt
+// encode int64 to hex string
+func EncodeInt64(i int64) string {
+	prefix := ""
+	if i< 0{
+		i = -i
+		prefix = "-"
 	}
-	return "0x"+str, nil
+	enc := make([]byte, 2, 10)
+	copy(enc, "0x")
+	return prefix+string(strconv.AppendInt(enc, i, 16))
 }
 
-
-// 判断字符串为10进制还是16进制(只是正数)，不支持其他进制判断
-func judgeStrNumber(str string) StringType {
-	if IsHexStrict(str){
-		return Hex
-	}
-	r, _ := regexp.Compile("^[0-9]+$")
-	if r.MatchString(str){
-		return Decimal
-	}
-	return  OtherStr
+// convert byte to hex string
+func ByteToHex(byteArr []byte) string{
+	return "0x"+hex.EncodeToString(byteArr)
 }
 
-// decimal str to hex str
-func DecimalStrToHex(str string) (string, error){
+// convert number string to hex string
+func NumberStrToHex(str string)(string, error){
 	n := new(big.Int)
-	n, ok := n.SetString(str, 10)
+	n, ok := n.SetString(str, 0)
 	if !ok{
 		return "", ErrNumberString
 	}
-	return fmt.Sprintf("0x%x", n), nil
+	return hexutil.EncodeBig(n), nil
 }
 
-func NumberStrToHex(str string)(string, error){
-	strType := judgeStrNumber(str)
-	if strType == Decimal{
-		return DecimalStrToHex(str)
-	} else if strType == Hex{
-		return "0x"+str[2:], nil
-	}else {
-		return "", ErrNumberString
-	}
-}
-
-// 只对十进制和十六进制的字符串进行hex处理
-func StrToHex(str string) (string, error){
-	strType := judgeStrNumber(str)
-	if strType == Decimal{
-		return DecimalStrToHex(str)
-	} else if strType == Hex{
-		return "0x"+str[2:], nil //hex ,hexutil
-	}else {
+// convert string(include number string) to hex string
+func StringToHex(str string) (string, error){
+	n := new(big.Int)
+	n, ok := n.SetString(str, 0)
+	if !ok{
 		return "0x"+hex.EncodeToString([]byte(str)), nil
 	}
+	return hexutil.EncodeBig(n), nil
 }
 
+
+// convert number string/(u)int(8,16,32,64)/big.Int to hex string
 func NumberToHex(input interface{}) (string, error){
 	switch input.(type) {
 	case string:
 		return NumberStrToHex(input.(string))
-	case uint, int, uint8,uint16,uint32,uint64, int8, int16, int32,int64:
-		return intToHex(input)
+	case uint:
+		return hexutil.EncodeUint64(uint64(input.(uint))), nil
+	case uint8:
+		return hexutil.EncodeUint64(uint64(input.(uint8))), nil
+	case uint16:
+		return hexutil.EncodeUint64(uint64(input.(uint16))), nil
+	case uint32:
+		return hexutil.EncodeUint64(uint64(input.(uint32))), nil
+	case uint64:
+		return hexutil.EncodeUint64(input.(uint64)), nil
+	case int:
+		return EncodeInt64(int64(input.(int))), nil
+	case int8:
+		return EncodeInt64(int64(input.(int))), nil
+	case int16:
+		return EncodeInt64(int64(input.(int))), nil
+	case int32:
+		return EncodeInt64(int64(input.(int))), nil
+	case int64:
+		return EncodeInt64(int64(input.(int))), nil
 	case *big.Int:
 		return hexutil.EncodeBig(input.(*big.Int)), nil
 	default:
@@ -205,13 +204,31 @@ func NumberToHex(input interface{}) (string, error){
 	}
 }
 
-
+// convert string/(u)int(8,16,32,64)/big.Int to hex string
 func ToHex(input interface{}) (string, error){
 	switch input.(type) {
 	case string:
-		return StrToHex(input.(string))
-	case uint, int, uint8,uint16,uint32,uint64, int8, int16, int32,int64:
-		return intToHex(input)
+		return StringToHex(input.(string))
+	case uint:
+		return hexutil.EncodeUint64(uint64(input.(uint))), nil
+	case uint8:
+		return hexutil.EncodeUint64(uint64(input.(uint8))), nil
+	case uint16:
+		return hexutil.EncodeUint64(uint64(input.(uint16))), nil
+	case uint32:
+		return hexutil.EncodeUint64(uint64(input.(uint32))), nil
+	case uint64:
+		return hexutil.EncodeUint64(input.(uint64)), nil
+	case int:
+		return EncodeInt64(int64(input.(int))), nil
+	case int8:
+		return EncodeInt64(int64(input.(int))), nil
+	case int16:
+		return EncodeInt64(int64(input.(int))), nil
+	case int32:
+		return EncodeInt64(int64(input.(int))), nil
+	case int64:
+		return EncodeInt64(int64(input.(int))), nil
 	case *big.Int:
 		return hexutil.EncodeBig(input.(*big.Int)), nil
 	default:
@@ -219,64 +236,49 @@ func ToHex(input interface{}) (string, error){
 	}
 }
 
-// 判断字符串为10进制（包含正负数）还是16进制(只是正数)，不支持其他进制判断
-func judgeStrNumberNeg(str string) StringType {
-	if IsHexStrict(str){
-		return Hex
-	}
-	r, _ := regexp.Compile("^(-)?[0-9]+$")
-	if r.MatchString(str){
-		return Decimal
-	}
-	return  OtherStr
-}
-
-// 对数值型字符串10进制和16进制(包含正负数)进行处理
+// convert number string to big.Int
 func numberStrToBN(str string) (*big.Int,error){
-	strType := judgeStrNumberNeg(str)
 	n := new(big.Int)
-	if strType == Decimal{
-		n, ok := n.SetString(str, 10)
-		if ok{
-			return n,nil
-		}
-		return nil, ErrNumberString
-	}else if strType == Hex{
-		n, ok := n.SetString(str[2:], 16)
-		if ok{
-			return n,nil
-		}
-		return nil, ErrNumberString
-	}else {
+	n, ok := n.SetString(str, 0)
+	if !ok{
 		return nil, ErrNumberString
 	}
-
+	return n, nil
 }
 
-func numberToBN(number interface{}) (*big.Int, error){
-	n := new(big.Int)
-	n, ok := n.SetString(fmt.Sprintf("%d", number), 10)
-	if ok{
-		return n,nil
-	}
-	return nil, ErrNumberString
-}
-
-// 转换为大整型，对数值型字符串10进制和16进制(包含正负数)进行处理；  对数值进行大整型转换
+// convert string/(u)int(8,16,32,64)/big.Int to big.Int
 func ToBN(input interface{}) (*big.Int, error){
 	switch input.(type) {
 	case string:
 		return numberStrToBN(input.(string))
 	case *big.Int:
 		return input.(*big.Int), nil
-	case uint, int, uint8,uint16,uint32,uint64, int8, int16, int32,int64:
-		return numberToBN(input)
+	case uint:
+		return new(big.Int).SetUint64(uint64(input.(uint))), nil
+	case uint8:
+		return new(big.Int).SetUint64(uint64(input.(uint8))), nil
+	case uint16:
+		return new(big.Int).SetUint64(uint64(input.(uint16))), nil
+	case uint32:
+		return new(big.Int).SetUint64(uint64(input.(uint32))), nil
+	case uint64:
+		return new(big.Int).SetUint64(input.(uint64)), nil
+	case int:
+		return new(big.Int).SetInt64(int64(input.(int))), nil
+	case int8:
+		return new(big.Int).SetInt64(int64(input.(int))), nil
+	case int16:
+		return new(big.Int).SetInt64(int64(input.(int))), nil
+	case int32:
+		return new(big.Int).SetInt64(int64(input.(int))), nil
+	case int64:
+		return new(big.Int).SetInt64(int64(input.(int))), nil
 	default:
 		return nil, ErrNumberInput
 	}
 }
 
-// judge if is a big.Int
+// judge if input is a big.Int
 func IsBN(input interface{}) bool{
 	_, ok := input.(*big.Int)
 	if ok{
@@ -285,15 +287,18 @@ func IsBN(input interface{}) bool{
 	return false
 }
 
-// 转换为256位的hex字符串 不支持小数
+// 不支持小数，不支持超过256位表示的int补码转换（即从-2*255到2*255-1）
 func ToTwosComplement(input interface{}) (string, error){
 	bigInt, err := ToBN(input)
 	if err != nil{
 		return "", ErrNumberInput
 	}
+	if bigInt.Cmp(MaxBig255)==1 || bigInt.Cmp(MinBig255)==-1{
+		return "", ErrBigInt
+	}
 	if bigInt.Sign() == 1 {
 		nStr := fmt.Sprintf("%064x", bigInt)
-		// 如果超过64位的话，是否截断？？？
+		// 如果超过64位的话, 截断
 		return "0x"+nStr, nil
 	}else if bigInt.Sign() == -1 {
 		return "0x"+fmt.Sprintf("%x", math.U256(bigInt)), nil
