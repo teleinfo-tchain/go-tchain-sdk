@@ -9,36 +9,36 @@ import (
 )
 
 func TestSolSha3Legacy(t *testing.T) {
-	t.Run("address", func(t *testing.T) {
+	t.Run("bid", func(t *testing.T) {
 		for i, tt := range []struct {
 			in  []byte
 			out string
 		}{
 			////由于加上了bid，改变了原有的函数,暂时将原有函数命名前加Ori， 改变的是Common 中的types.go
 			{
-				SoliditySHA3(Address(0)),
+				SoliditySHA3(Bid(0)),
 				"5380c7b7ae81a58eb98d9c78de4a1fd7fd9535fc953ed2be602daaa41767312a",
 			},
 			{
-				SoliditySHA3(Address("0x0a")),
+				SoliditySHA3(Bid("0x0a")),
 
 				"0ef9d8f8804d174666011a394cab7901679a8944d24249fd148a6a36071151f8",
 			},
 			{
-				SoliditySHA3(Address("0x12459c951127e0c374ff9105dda097662a027092")),
+				SoliditySHA3(Bid("0x12459c951127e0c374ff9105dda097662a027092")),
 				"4b998b071d7bb74aee1ce2cdcc268cb0f6409b4a3387fc915617ec08415298ad",
 			},
 			//由于加上了bid，改变了原有的函数,暂时将原有函数命名前加Ori， 改变的是Common 中的types.go
 			{
 				SoliditySHA3(
-					Address(
-						common.OriHexToAddress("0x12459c951127e0c374ff9105dda097662a027092"),
+					Bid(
+						common.OriHexToBid("0x12459c951127e0c374ff9105dda097662a027092"),
 					),
 				),
 				"4b998b071d7bb74aee1ce2cdcc268cb0f6409b4a3387fc915617ec08415298ad",
 			},
 			{
-				SoliditySHA3(Address([]string{"0x0a", "0x0b", "0x0c"})),
+				SoliditySHA3(Bid([]string{"0x0a", "0x0b", "0x0c"})),
 
 				"63f3beae5de2bbda3d06f2c0158ccedcdce66256efcf2f49930ca1c6976979df",
 			},
@@ -299,56 +299,56 @@ func TestSolSha3Legacy(t *testing.T) {
 }
 
 func TestSolSha3(t *testing.T) {
-	//t.Run("address", func(t *testing.T) {
-	//	for i, tt := range []struct {
-	//		in  []byte
-	//		out string
-	//	}{
-	//		{
-	//			SoliditySHA3(
-	//				[]string{"address"},
-	//				"0x0",
-	//			),
-	//			"bc36789e7a1e281436464229828f817d6612f7b477d66591ff96a9e064bcc98a",
-	//		},
-	//		{
-	//			SoliditySHA3(
-	//				[]string{"address"},
-	//				"0x0a",
-	//			),
-	//
-	//			"0ef9d8f8804d174666011a394cab7901679a8944d24249fd148a6a36071151f8",
-	//		},
-	//		{
-	//			SoliditySHA3(
-	//				[]string{"address"},
-	//				"0x12459c951127e0c374ff9105dda097662a027092",
-	//			),
-	//			"4b998b071d7bb74aee1ce2cdcc268cb0f6409b4a3387fc915617ec08415298ad",
-	//		},
-	//		{
-	//			SoliditySHA3(
-	//				[]string{"address"},
-	//				common.OriHexToAddress("0x12459c951127e0c374ff9105dda097662a027092"),
-	//			),
-	//			"4b998b071d7bb74aee1ce2cdcc268cb0f6409b4a3387fc915617ec08415298ad",
-	//		},
-	//		{
-	//			SoliditySHA3(
-	//				[]string{"string[]"},
-	//				[]string{"a", "b", "c"},
-	//			),
-	//			"4e03657aea45a94fc7d47ba826c8d667c0d1e6e33a64a036ec44f58fa12d6c45",
-	//		},
-	//	} {
-	//		t.Run(fmt.Sprintf("%v", i), func(t *testing.T) {
-	//			got := hex.EncodeToString(tt.in)
-	//			if got != tt.out {
-	//				t.Errorf("want %v, got %v", tt.out, got)
-	//			}
-	//		})
-	//	}
-	//})
+	t.Run("bid", func(t *testing.T) {
+		for i, tt := range []struct {
+			in  []byte
+			out string
+		}{
+			{
+				SoliditySHA3(
+					[]string{"bid"},
+					"0x0",
+				),
+				"bc36789e7a1e281436464229828f817d6612f7b477d66591ff96a9e064bcc98a",
+			},
+			{
+				SoliditySHA3(
+					[]string{"bid"},
+					"0x0a",
+				),
+
+				"0ef9d8f8804d174666011a394cab7901679a8944d24249fd148a6a36071151f8",
+			},
+			{
+				SoliditySHA3(
+					[]string{"bid"},
+					"0x12459c951127e0c374ff9105dda097662a027092",
+				),
+				"4b998b071d7bb74aee1ce2cdcc268cb0f6409b4a3387fc915617ec08415298ad",
+			},
+			{
+				SoliditySHA3(
+					[]string{"bid"},
+					common.OriHexToBid("0x12459c951127e0c374ff9105dda097662a027092"),
+				),
+				"4b998b071d7bb74aee1ce2cdcc268cb0f6409b4a3387fc915617ec08415298ad",
+			},
+			{
+				SoliditySHA3(
+					[]string{"string[]"},
+					[]string{"a", "b", "c"},
+				),
+				"4e03657aea45a94fc7d47ba826c8d667c0d1e6e33a64a036ec44f58fa12d6c45",
+			},
+		} {
+			t.Run(fmt.Sprintf("%v", i), func(t *testing.T) {
+				got := hex.EncodeToString(tt.in)
+				if got != tt.out {
+					t.Errorf("want %v, got %v", tt.out, got)
+				}
+			})
+		}
+	})
 
 	t.Run("bytes32", func(t *testing.T) {
 		for i, tt := range []struct {
@@ -645,14 +645,14 @@ func TestSolSha3(t *testing.T) {
 
 	//{
 	//	hash := SoliditySHA3(
-	//		[]string{"address"},
+	//		[]string{"bid"},
 	//		"0x0a",
 	//	)
 	//
 	//	fmt.Println(hex.EncodeToString(hash))
 	//
 	//	hash2 := SoliditySHA3(
-	//		Address("0x0a"),
+	//		Bid("0x0a"),
 	//	)
 	//	fmt.Println(hex.EncodeToString(hash2))
 	//}
@@ -689,7 +689,7 @@ func TestSolSha3(t *testing.T) {
 
 	//{
 	//	hash := SoliditySHA3(
-	//		[]string{"address", "bytes1", "uint8[]", "bytes32", "uint256", "address[]", "uint32"},
+	//		[]string{"bid", "bytes1", "uint8[]", "bytes32", "uint256", "bid[]", "uint32"},
 	//		"0x935F7770265D0797B621c49A5215849c333Cc3ce",
 	//		"0xa",
 	//		[]uint8{128, 255},
@@ -711,7 +711,7 @@ func TestSolSha3(t *testing.T) {
 	//
 	//{
 	//	hash := SoliditySHA3(
-	//		[]string{"address", "uint256"},
+	//		[]string{"bid", "uint256"},
 	//		"0x935F7770265D0797B621c49A5215849c333Cc3ce",
 	//		"100000000000000000",
 	//	)
@@ -725,7 +725,7 @@ func TestSolSha3(t *testing.T) {
 
 	//{
 	//	hash := SoliditySHA3(
-	//		[]string{"address", "uint256"},
+	//		[]string{"bid", "uint256"},
 	//		"0x935F7770265D0797B621c49A5215849c333Cc3ce",
 	//		"100000000000000000",
 	//	)
@@ -738,7 +738,7 @@ func TestSolSha3(t *testing.T) {
 	//}
 
 	//{
-	//	types := []string{"address", "uint256"}
+	//	types := []string{"bid", "uint256"}
 	//	inputs := []interface{}{
 	//		"0x935F7770265D0797B621c49A5215849c333Cc3ce",
 	//		"100000000000000000",
@@ -755,7 +755,7 @@ func TestSolSha3(t *testing.T) {
 
 	//{
 	//	hash := SoliditySHA3(
-	//		[]string{"address", "bytes1", "uint8[]", "bytes32", "uint256", "address[]", "uint32"},
+	//		[]string{"bid", "bytes1", "uint8[]", "bytes32", "uint256", "bid[]", "uint32"},
 	//		"0x935F7770265D0797B621c49A5215849c333Cc3ce",
 	//		"0xa",
 	//		[]uint8{128, 255},
@@ -892,7 +892,7 @@ func TestSolSha3(t *testing.T) {
 
 	//// 测试8 noPass
 	//{
-	//	types := []string{"address"}
+	//	types := []string{"bid"}
 	//	inputs := []interface{}{
 	//		"0x407D73d8a49eeb85D32Cf465507dd71d507100c1",
 	//	}
@@ -925,7 +925,7 @@ func TestSolSha3(t *testing.T) {
 
 	//// 测试10 noPass
 	//{
-	//	types := []string{"address"}
+	//	types := []string{"bid"}
 	//	inputs := []interface{}{
 	//		"0x407D73d8a49eeb85D32Cf465507dd71d507100c1",
 	//	}
@@ -957,7 +957,7 @@ func TestSolSha3(t *testing.T) {
 
 	//// 测试12 Pass
 	//{
-	//	types := []string{"string", "int8", "address"}
+	//	types := []string{"string", "int8", "bid"}
 	//	inputs := []interface{}{
 	//		"Hello!%",
 	//		-23,

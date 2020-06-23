@@ -422,7 +422,7 @@ func (ma *MixedcaseAddress) Original() string {
 }
 
 // origin
-func OriHexToAddress(s string) Address { return OriBytesToAddress(OriFromHex(s)) }
+func OriHexToBid(s string) Address { return OriBytesToBid(OriFromHex(s)) }
 
 func (a *Address) OriSetBytes(b []byte) {
 	if len(b) > len(a) {
@@ -431,7 +431,7 @@ func (a *Address) OriSetBytes(b []byte) {
 	copy(a[AddressLength-len(b):], b)
 }
 
-func OriBytesToAddress(b []byte) Address {
+func OriBytesToBid(b []byte) Address {
 	var a Address
 	a.OriSetBytes(b)
 	return a

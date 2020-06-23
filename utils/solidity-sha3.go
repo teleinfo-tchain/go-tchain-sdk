@@ -18,10 +18,10 @@ import (
 
 // TODO: refactor and remove duplicated code
 
-// Address address
-func Address(input interface{}) []byte {
+// Bid bid
+func Bid(input interface{}) []byte {
 	switch v := input.(type) {
-	// 是否一定是有效的address，这里没有校验和
+	// 是否一定是有效的bid，这里没有校验和
 	case common.Address:
 		return v.Bytes()[:]
 	case string:
@@ -46,19 +46,19 @@ func Address(input interface{}) []byte {
 	}
 
 	if isArray(input) {
-		return AddressArray(input)
+		return BidArray(input)
 	}
 	//由于加上了bid，改变了原有的函数,暂时将原有函数命名前加Ori， 改变的是Common 中的types.go
-	return common.OriHexToAddress("").Bytes()[:]
+	return common.OriHexToBid("").Bytes()[:]
 }
 
-// AddressArray address
-func AddressArray(input interface{}) []byte {
+// BidArray bid
+func BidArray(input interface{}) []byte {
 	var values []byte
 	s := reflect.ValueOf(input)
 	for i := 0; i < s.Len(); i++ {
 		val := s.Index(i).Interface()
-		result := common.LeftPadBytes(Address(val), 32)
+		result := common.LeftPadBytes(Bid(val), 32)
 		values = append(values, result...)
 	}
 	return values
@@ -860,12 +860,12 @@ var zeros = "0000000000000000000000000000000000000000000000000000000000000000"
 func pack(typ string, value interface{}, _isArray bool) []byte {
 	//fmt.Printf("pack input typ is %v, value is %v \n", typ, value)
 	switch typ {
-	case "address":
+	case "bid":
 		if _isArray {
-			return padZeros(Address(value), 32)
+			return padZeros(Bid(value), 32)
 		}
-		//fmt.Println("Address value is ", Address(value))
-		return Address(value)
+		//fmt.Println("Bid value is ", Bid(value))
+		return Bid(value)
 	case "string":
 		return String(value)
 	case "bool":

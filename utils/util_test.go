@@ -20,11 +20,11 @@ var (
 		{input:`0xea`, want: "0x2f20677459120677484f7104c76deb6846a2c071f9b3152c103bb12cd54d1a4a"},
 	}
 
-	checkAddressChecksumTests  = []test1{
+	checkBidChecksumTests  = []test1{
 		{input:`0xc1912fEE45d61C87Cc5EA59DaE31190FFFFf232d`, want: true},
 	}
 
-	isAddressTests  = []test1{
+	isBidTests  = []test1{
 		{input:`0xc1912fee45d61c87cc5ea59dae31190fffff232d`,   want: true},
 		{input:`c1912fee45d61c87cc5ea59dae31190fffff232d`,     want: true},
 		{input:`0XC1912FEE45D61C87CC5EA59DAE31190FFFFF232D`,   want: true},
@@ -32,11 +32,11 @@ var (
 		{input:`0xC1912fEE45d61C87Cc5EA59DaE31190FFFFf232d`,   want: false },
 	}
 
-	toChecksumAddressTests  = []test1{
+	toChecksumBidTests  = []test1{
 		{input:`0xc1912fee45d61c87cc5ea59dae31190fffff232d`, want: "0xc1912fEE45d61C87Cc5EA59DaE31190FFFFf232d"},
 		{input:`0XC1912FEE45D61C87CC5EA59DAE31190FFFFF232D`, want: "0xc1912fEE45d61C87Cc5EA59DaE31190FFFFf232d"},
-		{input:`0Xaaa`,                                      wantErr: ErrInvalidAddress},
-		{input:`0xcg912fee45d61c87cc5ea59dae31190fffff232d`, wantErr: ErrInvalidAddress},
+		{input:`0Xaaa`,                                      wantErr: ErrInvalidBid},
+		{input:`0xcg912fee45d61c87cc5ea59dae31190fffff232d`, wantErr: ErrInvalidBid},
 	}
 
 	numberToHexTests  = []test4{
@@ -157,9 +157,9 @@ func TestSha3Raw(t *testing.T){
 	}
 }
 
-func TestCheckAddressChecksum(t *testing.T){
-	for _, test := range checkAddressChecksumTests {
-		res := CheckAddressChecksum(test.input)
+func TestCheckBidChecksum(t *testing.T){
+	for _, test := range checkBidChecksumTests {
+		res := CheckBidChecksum(test.input)
 		if res != test.want.(bool) {
 			t.Errorf("input %s: value mismatch: got %t, want %t", test.input, res, test.want)
 			continue
@@ -167,9 +167,9 @@ func TestCheckAddressChecksum(t *testing.T){
 	}
 }
 
-func TestIsAddress(t *testing.T){
-	for _, test := range isAddressTests {
-		res := IsAddress(test.input)
+func TestIsBid(t *testing.T){
+	for _, test := range isBidTests {
+		res := IsBid(test.input)
 		if res != test.want.(bool) {
 			t.Errorf("input %s: value mismatch: got %t, want %t", test.input, res, test.want)
 			continue
@@ -177,9 +177,9 @@ func TestIsAddress(t *testing.T){
 	}
 }
 
-func TestToChecksumAddress(t *testing.T){
-	for _, test := range toChecksumAddressTests {
-		res, err := ToChecksumAddress(test.input)
+func TestToChecksumBid(t *testing.T){
+	for _, test := range toChecksumBidTests {
+		res, err := ToChecksumBid(test.input)
 		if !checkNumberError(t, test.input, err, test.wantErr) {
 			continue
 		}

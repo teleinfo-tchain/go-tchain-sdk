@@ -24,7 +24,7 @@ var (
 // Errors
 var (
 	ErrInvalidSha3    = errors.New("invalid input")
-	ErrInvalidAddress = errors.New("invalid Bif Address")
+	ErrInvalidBid = errors.New("invalid Bif Bid")
 	ErrNumberString = errors.New("invalid number string")
 	ErrNumberInput = errors.New("invalid number input")
 	ErrBigInt = errors.New("big int not in -2*255——2*255-1")
@@ -79,15 +79,15 @@ func Sha3Raw(str string) string{
 	return resStr
 }
 
-// address string with "0x", Checks the checksum of a given address
-func CheckAddressChecksum(address string) bool{
-	address = address[2:]
-	addressHash, _ := Sha3(strings.ToLower(address))
-	addressHash = addressHash[2:]
+// bid string with "0x", Checks the checksum of a given Bid
+func CheckBidChecksum(bid string) bool{
+	bid = bid[2:]
+	bidHash, _ := Sha3(strings.ToLower(bid))
+	bidHash = bidHash[2:]
 	for i := 0; i < 40; i++ {
 		// 校验和的判断依据是根据其生成的方式判断的
-		char := string(address[i])
-		hashChar:= string(addressHash[i])
+		char := string(bid[i])
+		hashChar:= string(bidHash[i])
 		upperChar := strings.ToUpper(char)
 		lowerChar := strings.ToLower(char)
 		parseHashChar, _ := strconv.ParseUint(hashChar, 16, 64)
@@ -98,40 +98,40 @@ func CheckAddressChecksum(address string) bool{
 	return true
 }
 
-//Checks if a given string is a valid Bif address. It will also check the checksum, if the address has upper and lowercase letters.
-func IsAddress(address string) bool{
+//Checks if a given string is a valid Bif bid. It will also check the checksum, if the bid has upper and lowercase letters.
+func IsBid(bid string) bool{
 	res1, _ := regexp.Compile("^(0[x,X])?[A-F, a-f0-9]{40}$")
 	res2, _ := regexp.Compile("^(0[x,X])?[a-f, 0-9]{40}$")
 	res3, _ := regexp.Compile("^(0[x,X])?[A-F, 0-9]{40}$")
-	if !res1.MatchString(address){
+	if !res1.MatchString(bid){
 		return false
-	}else if res2.MatchString(address) || res3.MatchString(address) {
+	}else if res2.MatchString(bid) || res3.MatchString(bid) {
 		return true
 	}else {
-		return CheckAddressChecksum(address)
+		return CheckBidChecksum(bid)
 	}
 }
 
-//  convert an upper or lowercase Bif address to a checksum address
-func ToChecksumAddress(address string) (string, error){
+//  convert an upper or lowercase Bif bid to a checksum bid
+func ToChecksumBid(bid string) (string, error){
 	res, _ := regexp.Compile("^(0[x,X])?[A-F, a-f0-9]{40}$")
-	if !res.MatchString(address){
-		return "", ErrInvalidAddress
+	if !res.MatchString(bid){
+		return "", ErrInvalidBid
 	}
-	address = strings.ToLower(address)[2:]
-	addressHash , _:= Sha3(address)
-	addressHash = addressHash[2:]
-	checkSumAddress := "0x"
-	for i := 0; i < len(address); i++ {
-		hashChar:= string(addressHash[i])
+	bid = strings.ToLower(bid)[2:]
+	bidHash , _:= Sha3(bid)
+	bidHash = bidHash[2:]
+	checkSumBid := "0x"
+	for i := 0; i < len(bid); i++ {
+		hashChar:= string(bidHash[i])
 		parseHashChar, _ := strconv.ParseUint(hashChar, 16, 64)
 		if parseHashChar >7 {
-			checkSumAddress += strings.ToUpper(string(address[i]))
+			checkSumBid += strings.ToUpper(string(bid[i]))
 		}else{
-			checkSumAddress += string(address[i])
+			checkSumBid += string(bid[i])
 		}
 	}
-	return checkSumAddress, nil
+	return checkSumBid, nil
 }
 
 // encode int64 to hex string
