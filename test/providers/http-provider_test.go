@@ -29,7 +29,7 @@ import (
 
 func Test_HttpProvider(t *testing.T) {
 
-	var coreClient = bif.NewBif(providers.NewHTTPProvider("192.168.104.35:33333", 10, false))
+	var coreClient = bif.NewBif(providers.NewHTTPProvider("172.20.3.21:44032", 10, false))
 
 	var _, error = coreClient.ClientVersion()
 

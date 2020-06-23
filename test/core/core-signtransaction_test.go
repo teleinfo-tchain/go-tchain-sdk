@@ -33,7 +33,7 @@ import (
 
 func TestCoreSignTransaction(t *testing.T) {
 
-	var connection = bif.NewBif(providers.NewHTTPProvider("192.168.104.35:44002", 10, false))
+	var connection = bif.NewBif(providers.NewHTTPProvider("172.20.3.21:44032", 10, false))
 
 	add := common.StringToAddress("did:bid:73890cf407f6c883e9a42735")
 	transaction := new(dto.TransactionParameters)

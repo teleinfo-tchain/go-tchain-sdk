@@ -30,7 +30,7 @@ import (
 
 func TestTxpoolStatus(t *testing.T) {
 
-	var connection = txpool.NewTxpool(providers.NewHTTPProvider("192.168.104.35:44002", 10, false))
+	var connection = txpool.NewTxpool(providers.NewHTTPProvider("172.20.3.21:44032", 10, false))
 
 	 _, err := connection.Status()
 
@@ -43,7 +43,7 @@ func TestTxpoolStatus(t *testing.T) {
 
 func TestTxpoolInspect(t *testing.T) {
 
-	var connection = txpool.NewTxpool(providers.NewHTTPProvider("192.168.104.35:44002", 10, false))
+	var connection = txpool.NewTxpool(providers.NewHTTPProvider("172.20.3.21:44032", 10, false))
 
 	_, err := connection.Inspect()
 
