@@ -17,8 +17,8 @@ import (
 // define some const
 const bifer string = "bifer"
 const Sha3Null = "0xc5d2460186f7233c927e7db2dcc703c0e500b653ca82273b7bfad8045d85a470"
-// ??
-const Sm3Null = "0xc5d2460186f7233c927e7db2dcc703c0e500b653ca82273b7bfad8045d85a470"
+// 现在的测试不能确保正确，因为没有一个100%确定正确的做对照
+const Sm3Null = "0x1ab21d8355cfa17f8e61194831e81a8f22bec8c728fefb747ed035eb5082aa2b"
 
 // Various big integer limit values.
 var (
@@ -29,7 +29,8 @@ var (
 
 // Errors
 var (
-	ErrInvalidSha3    = errors.New("invalid input")
+	ErrInvalidSha3    = errors.New("invalid input, input is null")
+	ErrInvalidSm3    = errors.New("invalid input, input is null")
 	ErrInvalidBid = errors.New("invalid Bif Bid")
 	ErrNumberString = errors.New("invalid number string")
 	ErrNumberInput = errors.New("invalid number input")
@@ -149,14 +150,13 @@ func (util *Utils) Sm3(str string) (string, error){
 	}
 	resStr := util.ByteToHex(crypto.Keccak256(crypto.SM2, hexBytes))
 	if resStr == Sm3Null {
-		return "", ErrInvalidSha3
+		return "", ErrInvalidSm3
 	}else{
 		return resStr, nil
 	}
 }
 
 // calculate the sha3 of the input (if input is invalid, it will return error)
-// 是否还处理bigNumber?
 func (util *Utils) Sha3(str string) (string,error){
 	var hexBytes []byte
 	if util.IsHexStrict(str){

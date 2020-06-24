@@ -35,15 +35,23 @@ var (
 		{input: []byte{72, 101, 108, 108, 111, 33, 37} , want: "0x48656c6c6f2125"},
 	}
 
+	sm3Tests = []test1{
+		{input:`234`, want: "0x4910a0057a0cf8c5297f47bc650a1e080c2f33cc5d6fd6a7428ef63d3e3a6e29"},
+		{input:`0xea`, want: "0x04991392012bc6618739cf856ca07878283b310b45aada09bcfaab1420aa72c0"},
+		{input:``, wantErr: utils.ErrInvalidSm3},
+	}
+
 	sha3Tests = []test1{
 		{input:`234`, want: "0xc1912fee45d61c87cc5ea59dae311904cd86b84fee17cc96966216f811ce6a79"},
 		{input:`0xea`, want: "0x2f20677459120677484f7104c76deb6846a2c071f9b3152c103bb12cd54d1a4a"},
 		{input:`c1912fee45d61c87cc5ea59dae31190fffff232d`, want: "0x4fb647abf5735d02e3a8a6c94c29977abed5bcc26e646c8e079e46759c1e0b04"},
+		{input:``, wantErr: utils.ErrInvalidSha3},
 	}
 
 	sha3RawTests = []test1{
 		{input:`234`, want: "0xc1912fee45d61c87cc5ea59dae311904cd86b84fee17cc96966216f811ce6a79"},
 		{input:`0xea`, want: "0x2f20677459120677484f7104c76deb6846a2c071f9b3152c103bb12cd54d1a4a"},
+		{input:``, want: "0xc5d2460186f7233c927e7db2dcc703c0e500b653ca82273b7bfad8045d85a470"},
 	}
 
 	checkBidChecksumTests  = []test1{
@@ -198,6 +206,19 @@ func TestByteToHex(t *testing.T) {
 	}
 }
 
+func TestSm3(t *testing.T){
+	for _, test := range sm3Tests {
+		res, err := util.Sm3(test.input)
+		if !checkError(t, test.input, err, test.wantErr) {
+			continue
+		}
+		if res != test.want.(string) {
+			t.Errorf("input %s: value mismatch: got %s, want %s", test.input, res, test.want)
+			continue
+		}
+	}
+}
+
 func TestSha3(t *testing.T){
 	for _, test := range sha3Tests {
 		res, err := util.Sha3(test.input)
@@ -210,7 +231,6 @@ func TestSha3(t *testing.T){
 		}
 	}
 }
-
 
 func TestSha3Raw(t *testing.T){
 	for _, test := range sha3RawTests {
