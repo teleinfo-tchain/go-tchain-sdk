@@ -1,12 +1,13 @@
-package utils
+package test
 
 import (
+	"github.com/bif/bif-sdk-go/utils"
 	"math/big"
 	"testing"
 )
 
 var (
-	utils = NewUtils()
+	util = utils.NewUtils()
 
 	toWeiTests = []test5{
 		{inputOne: `1`, inputTwo: []string{}, want: "1e+18"},
@@ -14,9 +15,9 @@ var (
 		{inputOne: `1`, inputTwo: []string{"finney"}, want: "1e+15"},
 		{inputOne: `1`, inputTwo: []string{"szabo"}, want: "1e+12"},
 		{inputOne: `1`, inputTwo: []string{"shannon"}, want: "1000000000"},
-		{inputOne: `1`, inputTwo: []string{"shannon", "bifer"}, wantErr: ErrParameter},
-		{inputOne: `1`, inputTwo: []string{"shan"}, wantErr: ErrUintNoExist},
-		{inputOne: `1asd`, inputTwo: []string{}, wantErr: ErrNumberString},
+		{inputOne: `1`, inputTwo: []string{"shannon", "bifer"}, wantErr: utils.ErrParameter},
+		{inputOne: `1`, inputTwo: []string{"shan"}, wantErr: utils.ErrUintNoExist},
+		{inputOne: `1asd`, inputTwo: []string{}, wantErr: utils.ErrNumberString},
 	}
 
 	fromWeiTests = []test5{
@@ -25,9 +26,9 @@ var (
 		{inputOne: `1`, inputTwo: []string{"finney"}, want: "1e-15"},
 		{inputOne: `1`, inputTwo: []string{"szabo"}, want: "1e-12"},
 		{inputOne: `1`, inputTwo: []string{"shannon"}, want: "1e-09"},
-		{inputOne: `1`, inputTwo: []string{"shannon", "bifer"}, wantErr: ErrParameter},
-		{inputOne: `1`, inputTwo: []string{"shan"}, wantErr: ErrUintNoExist},
-		{inputOne: `1asd`, inputTwo: []string{}, wantErr: ErrNumberString},
+		{inputOne: `1`, inputTwo: []string{"shannon", "bifer"}, wantErr: utils.ErrParameter},
+		{inputOne: `1`, inputTwo: []string{"shan"}, wantErr: utils.ErrUintNoExist},
+		{inputOne: `1asd`, inputTwo: []string{}, wantErr: utils.ErrNumberString},
 	}
 
 	byteToHexTests = []test3{
@@ -60,8 +61,8 @@ var (
 	toChecksumBidTests  = []test1{
 		{input:`0xc1912fee45d61c87cc5ea59dae31190fffff232d`, want: "0xc1912fEE45d61C87Cc5EA59DaE31190FFFFf232d"},
 		{input:`0XC1912FEE45D61C87CC5EA59DAE31190FFFFF232D`, want: "0xc1912fEE45d61C87Cc5EA59DaE31190FFFFf232d"},
-		{input:`0Xaaa`,                                      wantErr: ErrInvalidBid},
-		{input:`0xcg912fee45d61c87cc5ea59dae31190fffff232d`, wantErr: ErrInvalidBid},
+		{input:`0Xaaa`,                                      wantErr: utils.ErrInvalidBid},
+		{input:`0xcg912fee45d61c87cc5ea59dae31190fffff232d`, wantErr: utils.ErrInvalidBid},
 	}
 
 	numberToHexTests  = []test4{
@@ -71,7 +72,7 @@ var (
 		{input: 123,      want: "0x7b"},
 		{input: -1,       want: "-0x1"},
 		{input: "-1",     want: "-0x1"},
-		{input: "sss",    wantErr: ErrNumberString},
+		{input: "sss",    wantErr: utils.ErrNumberString},
 	}
 
 	toHexTests  = []test4{
@@ -82,7 +83,7 @@ var (
 		{input: -1,                 want: "-0x1"},
 		{input: "-1",               want: "-0x1"},
 		{input: big.NewInt(-2),  want: "-0x2"},
-		{input: 1.2,                wantErr: ErrNumberInput},
+		{input: 1.2,                wantErr: utils.ErrNumberInput},
 	}
 
 	toBNTests = []test4{
@@ -91,8 +92,8 @@ var (
 		{input: 234,                    want: big.NewInt(234)},
 		{input: 0x2,                    want: big.NewInt(2)},
 		{input: -1,                     want: big.NewInt(-1)},
-		{input: big.NewRat(2,1),  wantErr:  ErrNumberInput},
-		{input: "sss",                  wantErr: ErrNumberString},
+		{input: big.NewRat(2,1),  wantErr: utils.ErrNumberInput},
+		{input: "sss",                  wantErr: utils.ErrNumberString},
 	}
 
 	isBNTests   = []test4{
@@ -123,8 +124,8 @@ var (
 		{input: 0x1, want: "0x0000000000000000000000000000000000000000000000000000000000000001"},
 		{input: -15, want: "0xfffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff1"},
 		{input: -0x1, want: "0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff"},
-		{input: "0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff", wantErr: ErrBigInt},
-		{input: "asd", wantErr: ErrNumberInput},
+		{input: "0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff", wantErr: utils.ErrBigInt},
+		{input: "asd", wantErr: utils.ErrNumberInput},
 	}
 )
 
@@ -162,7 +163,7 @@ func checkNumberError(t *testing.T, input interface{}, got, want error) bool {
 
 func TestToWei(t *testing.T){
 	for _, test := range toWeiTests {
-		res, err := utils.ToWei(test.inputOne, test.inputTwo...)
+		res, err := util.ToWei(test.inputOne, test.inputTwo...)
 		if !checkError(t, test.inputOne, err, test.wantErr) {
 			continue
 		}
@@ -175,7 +176,7 @@ func TestToWei(t *testing.T){
 
 func TestFromWei(t *testing.T){
 	for _, test := range fromWeiTests {
-		res, err := utils.FromWei(test.inputOne, test.inputTwo...)
+		res, err := util.FromWei(test.inputOne, test.inputTwo...)
 		if !checkError(t, test.inputOne, err, test.wantErr) {
 			continue
 		}
@@ -188,7 +189,7 @@ func TestFromWei(t *testing.T){
 
 func TestByteToHex(t *testing.T) {
 	for _, test := range byteToHexTests {
-		res := utils.ByteToHex(test.input)
+		res := util.ByteToHex(test.input)
 
 		if res != test.want.(string) {
 			t.Errorf("input %v: value mismatch: got %s, want %s", test.input, res, test.want)
@@ -199,7 +200,7 @@ func TestByteToHex(t *testing.T) {
 
 func TestSha3(t *testing.T){
 	for _, test := range sha3Tests {
-		res, err := utils.Sha3(test.input)
+		res, err := util.Sha3(test.input)
 		if !checkError(t, test.input, err, test.wantErr) {
 			continue
 		}
@@ -213,7 +214,7 @@ func TestSha3(t *testing.T){
 
 func TestSha3Raw(t *testing.T){
 	for _, test := range sha3RawTests {
-		res := utils.Sha3Raw(test.input)
+		res := util.Sha3Raw(test.input)
 		if res != test.want.(string) {
 			t.Errorf("input %s: value mismatch: got %s, want %s", test.input, res, test.want)
 			continue
@@ -223,7 +224,7 @@ func TestSha3Raw(t *testing.T){
 
 func TestCheckBidChecksum(t *testing.T){
 	for _, test := range checkBidChecksumTests {
-		res := utils.CheckBidChecksum(test.input)
+		res := util.CheckBidChecksum(test.input)
 		if res != test.want.(bool) {
 			t.Errorf("input %s: value mismatch: got %t, want %t", test.input, res, test.want)
 			continue
@@ -233,7 +234,7 @@ func TestCheckBidChecksum(t *testing.T){
 
 func TestIsBid(t *testing.T){
 	for _, test := range isBidTests {
-		res := utils.IsBid(test.input)
+		res := util.IsBid(test.input)
 		if res != test.want.(bool) {
 			t.Errorf("input %s: value mismatch: got %t, want %t", test.input, res, test.want)
 			continue
@@ -243,7 +244,7 @@ func TestIsBid(t *testing.T){
 
 func TestToChecksumBid(t *testing.T){
 	for _, test := range toChecksumBidTests {
-		res, err := utils.ToChecksumBid(test.input)
+		res, err := util.ToChecksumBid(test.input)
 		if !checkNumberError(t, test.input, err, test.wantErr) {
 			continue
 		}
@@ -256,7 +257,7 @@ func TestToChecksumBid(t *testing.T){
 
 func TestNumberToHex(t *testing.T){
 	for _, test := range numberToHexTests {
-		res, err := utils.NumberToHex(test.input)
+		res, err := util.NumberToHex(test.input)
 		if !checkNumberError(t, test.input, err, test.wantErr) {
 			continue
 		}
@@ -269,7 +270,7 @@ func TestNumberToHex(t *testing.T){
 
 func TestToHex(t *testing.T){
 	for _, test := range toHexTests {
-		res, err := utils.ToHex(test.input)
+		res, err := util.ToHex(test.input)
 		if !checkNumberError(t, test.input, err, test.wantErr) {
 			continue
 		}
@@ -282,7 +283,7 @@ func TestToHex(t *testing.T){
 
 func TestToBN(t *testing.T){
 	for _, test := range toBNTests {
-		res, err := utils.ToBN(test.input)
+		res, err := util.ToBN(test.input)
 		if !checkNumberError(t, test.input, err, test.wantErr) {
 			continue
 		}
@@ -295,7 +296,7 @@ func TestToBN(t *testing.T){
 
 func TestIsBN(t *testing.T){
 	for _, test := range isBNTests {
-		res := utils.IsBN(test.input)
+		res := util.IsBN(test.input)
 		if res != test.want.(bool) {
 			t.Errorf("input %v: value mismatch: got %t, want %t", test.input, res, test.want)
 			continue
@@ -305,7 +306,7 @@ func TestIsBN(t *testing.T){
 
 func TestPadLeft(t *testing.T){
 	for _, test := range padLeftTests {
-		res := utils.PadLeft(test.input1, test.input2, test.input3...)
+		res := util.PadLeft(test.input1, test.input2, test.input3...)
 		if res != test.want.(string) {
 			t.Errorf("input %s:  number %d  value mismatch: got %s, want %s", test.input1, test.input2, res, test.want)
 			continue
@@ -315,7 +316,7 @@ func TestPadLeft(t *testing.T){
 
 func TestPadRight(t *testing.T){
 	for _, test := range padRightTests {
-		res := utils.PadRight(test.input1, test.input2, test.input3...)
+		res := util.PadRight(test.input1, test.input2, test.input3...)
 		if res != test.want.(string) {
 			t.Errorf("input %s:  number %d  value mismatch: got %s, want %s", test.input1, test.input2, res, test.want)
 			continue
@@ -325,7 +326,7 @@ func TestPadRight(t *testing.T){
 
 func TestToTwosComplement(t *testing.T){
 	for _, test := range toTwosComplementTests {
-		res, err := utils.ToTwosComplement(test.input)
+		res, err := util.ToTwosComplement(test.input)
 		if !checkNumberError(t, test.input, err, test.wantErr) {
 			continue
 		}

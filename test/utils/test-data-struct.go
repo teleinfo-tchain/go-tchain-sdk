@@ -1,4 +1,4 @@
-package utils
+package test
 
 type test1 struct {
 	input        string
