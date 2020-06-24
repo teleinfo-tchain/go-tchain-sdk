@@ -13,4 +13,5 @@ require (
 	golang.org/x/net v0.0.0-20200222125558-5a598a2470a0
 	golang.org/x/sys v0.0.0-20200219091948-cb0a6d8edb6c
 	gopkg.in/check.v1 v1.0.0-20200227125254-8fa46927fb4f
+	gopkg.in/yaml.v2 v2.2.8
 )

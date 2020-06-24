@@ -22,6 +22,7 @@
 package net
 
 import (
+	"github.com/bif/bif-sdk-go/common"
 	"github.com/bif/bif-sdk-go/dto"
 	"github.com/bif/bif-sdk-go/providers"
 	"math/big"
@@ -102,4 +103,49 @@ func (net *Net) GetVersion() (string, error) {
 
 	return pointer.ToString()
 
+}
+
+func (net *Net) GetPeers() ([]*common.PeerInfo, error) {
+
+	pointer := &dto.RequestResult{}
+
+	err := net.provider.SendRequest(pointer, "admin_peers", nil)
+
+	if err != nil {
+		return nil, err
+	}
+
+	return pointer.ToPeerInfo()
+}
+
+func (net *Net) AddPeer(url string) (bool, error) {
+
+	pointer := &dto.RequestResult{}
+
+	params := make([]string, 1)
+	params[0] = url
+
+	err := net.provider.SendRequest(pointer, "admin_addPeer", params)
+
+	if err != nil {
+		return false, err
+	}
+
+	return pointer.ToBoolean()
+}
+
+func (net *Net) RemovePeer(url string) (bool, error) {
+
+	pointer := &dto.RequestResult{}
+
+	params := make([]string, 1)
+	params[0] = url
+
+	err := net.provider.SendRequest(pointer, "admin_removePeer", params)
+
+	if err != nil {
+		return false, err
+	}
+
+	return pointer.ToBoolean()
 }

@@ -6,7 +6,6 @@ import (
 	"math/big"
 	"math/rand"
 	"regexp"
-	"strings"
 	"time"
 )
 
@@ -15,19 +14,19 @@ func has0xPrefix(input string) bool {
 }
 
 // judge if input is hex string with/without prefix 0[x,X]
-func IsHex(input string) bool {
+func (util *Utils) IsHex(input string) bool {
 	r, _ := regexp.Compile("^(0[x,X])?[A-F, a-f, 0-9]+$")
 	return r.MatchString(input)
 }
 
 // judge if input is hex strict string with prefix 0[x,X]
-func IsHexStrict(input string) bool {
+func (util *Utils) IsHexStrict(input string) bool {
 	r, _ := regexp.Compile("^(0[x,X])[A-F, a-f, 0-9]+$")
 	return r.MatchString(input)
 }
 
 // generate cryptographically strong pseudo-random HEX strings from a given byte size
-func  RandomHex(size int) string {
+func (util *Utils) RandomHex(size int) string {
 	str := "0123456789abcdef"
 	bytes := []byte(str)
 	var result []byte
@@ -40,12 +39,12 @@ func  RandomHex(size int) string {
 
 
 // convert hex string to byte
-func HexToBytes(input string) ([]byte, error){
+func (util *Utils) HexToBytes(input string) ([]byte, error){
 	return hexutil.Decode(input)
 }
 
 // convert hex string to utf8 string
-func HexToUtf8(input string) (string, error){
+func (util *Utils) HexToUtf8(input string) (string, error){
 	res, err := hexutil.Decode(input)
 	if err != nil{
 		return "", err
@@ -55,7 +54,7 @@ func HexToUtf8(input string) (string, error){
 }
 
 // convert hex string to ascii string
-func HexToAscii(input string) (string, error){
+func (util *Utils) HexToAscii(input string) (string, error){
 	res, err := hexutil.Decode(input)
 	if err != nil{
 		return "", err
@@ -66,7 +65,7 @@ func HexToAscii(input string) (string, error){
 
 
 // convert hex string to number string
-func HexToNumberString(input string) (string, error){
+func (util *Utils) HexToNumberString(input string) (string, error){
 	if len(input) == 0 {
 		return "", hexutil.ErrEmptyString
 	}
@@ -84,63 +83,21 @@ func HexToNumberString(input string) (string, error){
 
 // 将HexToNumber 变成两个， HexToUint64Number， HexToBigNumber
 // convert hex string to uint64
-func HexToUint64Number(input string) (uint64, error){
+func (util *Utils) HexToUint64Number(input string) (uint64, error){
 	return hexutil.DecodeUint64(input)
 }
 
 // convert hex string to big.Int
-func HexToBigNumber(input string) (*big.Int, error){
+func (util *Utils) HexToBigNumber(input string) (*big.Int, error){
 	return hexutil.DecodeBig(input)
 }
 
 //convert ascii string to hex string
-func AsciiToHex(input string) string{
+func (util *Utils) AsciiToHex(input string) string{
 	return "0x"+hex.EncodeToString([]byte(input))
 }
 
 //convert utf8 string to hex string
-func Utf8ToHex(input string) string{
+func (util *Utils) Utf8ToHex(input string) string{
 	return "0x"+hex.EncodeToString([]byte(input))
-}
-
-// Adds a padding on the left of a string, Useful for adding paddings to HEX strings.
-func PadLeft(str string, characterAmount int, signs ...string) string {
-	sign := "0"
-	if len(signs)>=1{
-		sign = signs[0]
-	}
-	if has0xPrefix(str){
-		count := characterAmount+2-len([]rune(str))
-		if count>0{
-			return "0x"+strings.Repeat(sign, count)[:count] +str[2:]
-		}
-		return "0x"+ str[2:]
-	}else {
-		count := characterAmount-len([]rune(str))
-		if count>0{
-			return strings.Repeat(sign, count)[:count] +str
-		}
-		return str
-	}
-}
-
-// Adds a padding on the right of a string, Useful for adding paddings to HEX strings.
-func PadRight(str string, characterAmount int, signs ...string) string {
-	sign := "0"
-	if len(signs)>=1{
-		sign = signs[0]
-	}
-	if has0xPrefix(str){
-		count := characterAmount+2-len([]rune(str))
-		if count>0{
-			return str+ strings.Repeat(sign, count)[:count]
-		}
-		return "0x"+ str[2:]
-	}else {
-		count := characterAmount-len([]rune(str))
-		if count>0{
-			return str+ strings.Repeat(sign, count)[:count]
-		}
-		return str
-	}
 }

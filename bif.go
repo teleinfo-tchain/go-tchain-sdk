@@ -51,7 +51,7 @@ func NewBif(provider providers.ProviderInterface) *Bif {
 	bif.Core = core.NewEth(provider)
 	bif.Net = net.NewNet(provider)
 	bif.Personal = personal.NewPersonal(provider)
-	bif.Utils = utils.NewUtils(provider)
+	bif.Utils = utils.NewUtils()
 	return bif
 }
 

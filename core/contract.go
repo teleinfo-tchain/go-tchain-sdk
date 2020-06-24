@@ -91,8 +91,7 @@ func (contract *Contract) prepareTransaction(transaction *dto.TransactionParamet
 	}
 
 	fullFunction := fmt.Sprintf("%s(%s)", functionName, strings.Join(function, ","))
-	utils := utils.NewUtils(contract.super.provider)
-	sha3Function, err := utils.Sha3(types.ComplexString(fullFunction))
+	sha3Function, err := utils.NewUtils().Sha3(types.ComplexString(fullFunction).ToString())
 
 	if err != nil {
 		return nil, err
