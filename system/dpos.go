@@ -3,6 +3,8 @@ package system
 import (
 	"github.com/bif/bif-sdk-go/dto"
 	"github.com/bif/bif-sdk-go/providers"
+	"github.com/bif/bif-sdk-go/utils"
+	"math/big"
 )
 
 type Dpos struct {
@@ -15,9 +17,9 @@ func NewDpos(provider providers.ProviderInterface) *Dpos {
 	return dpos
 }
 
-func (dpos *Dpos) GetValidators(defaultBlockParameter string) ([]string, error){
+func (dpos *Dpos) GetValidators(blockNumber *big.Int) ([]string, error){
 	params := make([]interface{}, 1)
-	params[0] = defaultBlockParameter
+	params[0] = utils.IntToHex(blockNumber)
 
 	pointer := &dto.RequestResult{}
 
