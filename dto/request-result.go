@@ -513,3 +513,108 @@ func (pointer *RequestResult) checkResponse() error {
 	return nil
 
 }
+
+
+func (pointer *RequestResult) ToValidators() ([]string, error) {
+	if err := pointer.checkResponse(); err != nil {
+		return nil, err
+	}
+
+	result := (pointer).Result.([]interface{})
+
+	if len(result) == 0 {
+		return nil, customerror.EMPTYRESPONSE
+	}
+
+	validators := make([]string, len(result))
+	for i, v := range result {
+		validators[i] = v.(string)
+	}
+
+	return validators, nil
+}
+
+func (pointer *RequestResult) ToValidatorsAtHash()([]string, error){
+	if err := pointer.checkResponse(); err != nil {
+		return nil, err
+	}
+
+	result := (pointer).Result.([]interface{})
+
+	if len(result) == 0 {
+		return nil, customerror.EMPTYRESPONSE
+	}
+
+	validators := make([]string, len(result))
+	for i, v := range result {
+		validators[i] = v.(string)
+	}
+
+	return validators, nil
+}
+
+func(pointer *RequestResult) ToRoundStateInfo() (*RoundStateInfo, error){
+	if err := pointer.checkResponse(); err != nil {
+		return nil, err
+	}
+
+	result := (pointer).Result.(map[string]interface{})
+
+	if len(result) == 0 {
+		return nil, customerror.EMPTYRESPONSE
+	}
+
+	roundStateInfo := &RoundStateInfo{}
+
+	marshal, err := json.Marshal(result)
+
+	err = json.Unmarshal([]byte(marshal), roundStateInfo)
+
+	return roundStateInfo, err
+}
+
+
+func(pointer *RequestResult) ToRoundChangeSetInfo() (*RoundChangeSetInfo, error){
+	if err := pointer.checkResponse(); err != nil {
+		return nil, err
+	}
+
+	result := (pointer).Result.(map[string]interface{})
+
+	if len(result) == 0 {
+		return nil, customerror.EMPTYRESPONSE
+	}
+
+	roundChangeSetInfo := &RoundChangeSetInfo{}
+
+	marshal, err := json.Marshal(result)
+
+	err = json.Unmarshal([]byte(marshal), roundChangeSetInfo)
+
+	return roundChangeSetInfo, err
+}
+
+
+func(pointer *RequestResult) ToBacklogs() (map[string][]*Message, error){
+	if err := pointer.checkResponse(); err != nil {
+		return nil, err
+	}
+
+	result := (pointer).Result.(map[string]interface{})
+
+	if len(result) == 0 {
+		return nil, customerror.EMPTYRESPONSE
+	}
+
+	backlogs := make(map[string][]*Message, len(result))
+
+	marshal, err := json.Marshal(result)
+
+	if err != nil {
+		return nil, customerror.UNPARSEABLEINTERFACE
+	}
+
+	err = json.Unmarshal([]byte(marshal), &backlogs)
+
+	return backlogs, err
+}

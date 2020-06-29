@@ -28,6 +28,7 @@ import (
 	"github.com/bif/bif-sdk-go/net"
 	"github.com/bif/bif-sdk-go/personal"
 	"github.com/bif/bif-sdk-go/providers"
+	"github.com/bif/bif-sdk-go/system"
 	"github.com/bif/bif-sdk-go/utils"
 	"gopkg.in/yaml.v2"
 	"io/ioutil"
@@ -80,6 +81,7 @@ type Bif struct {
 	Net      *net.Net
 	Personal *personal.Personal
 	Utils    *utils.Utils
+	System    *system.System
 }
 
 // NewBif - Web3 Module constructor to set the default provider, Core, Net and Personal
@@ -90,6 +92,7 @@ func NewBif(provider providers.ProviderInterface) *Bif {
 	bif.Net = net.NewNet(provider)
 	bif.Personal = personal.NewPersonal(provider)
 	bif.Utils = utils.NewUtils()
+	bif.System = system.NewSystem(provider)
 	return bif
 }
 
