@@ -23,6 +23,7 @@ func TestGetValidatorsAtHash(t *testing.T){
 
 	//input block hash
 	validators, err := connection.System.Dpos.GetValidatorsAtHash(block.(*dto.BlockNoDetails).Hash)
+	//missing trie node ???? 最初测试可行，现在为什么报错？？？
 
 	if err != nil{
 		t.Error(err)

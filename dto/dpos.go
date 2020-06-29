@@ -1,36 +1,41 @@
 package dto
 
-import "math/big"
+import (
+	"github.com/bif/bif-sdk-go/common"
+	"math/big"
+)
+
+type Message struct {
+	Code          uint64 `json:"code"`
+	Msg           []byte `json:"message"`
+	Address       string `json:"address"`
+	Signature     []byte `json:"signature"`
+	CommittedSeal []byte `json:"committedSeal"`
+}
+
+type View struct {
+	Round    *big.Int `json:"round"`
+	Sequence *big.Int `json:"sequence"`
+}
+
+type MessageSet struct {
+	View     *View      `json:"view"`
+	ValSet   []string   `json:"valSet"`
+	Messages []*Message `json:"messages"`
+}
 
 // RoundStateInfoResponse is the information of RoundState
-// 数据类型定义是否合适？？
 type RoundStateInfo struct {
-	Commits          *stageInfo     `json:"commits"`
-	LockedHash       string         `json:"lockedHash"`
-	Prepares         *stageInfo     `json:"prepares"`
-	Proposer         string         `json:"proposer"`
-	Round            *big.Int       `json:"round"`
-	Sequence         *big.Int       `json:"sequence"`
-	View             string         `json:"view"`      // string的数据类型待确认!!!!!!
+	Commits    *MessageSet `json:"commits"`
+	LockedHash common.Hash `json:"lockedHash"`
+	Prepares   *MessageSet `json:"prepares"`
+	Proposer   string      `json:"proposer"`
+	Round      *big.Int    `json:"round"`
+	Sequence   *big.Int    `json:"sequence"`
+	View       *View       `json:"view"`
 }
-
-type stageInfo struct {
-	Messages        []string        `json:"messages"`  // message的数据类型待确认!!!!!!
-	ValSet          []string        `json:"valSet"`
-	View            *view           `json:"view"`
-}
-
-type view struct {
-	Round        	*big.Int        `json:"round"`
-	Sequence     	*big.Int        `json:"sequence"`
-}
-
 
 type RoundChangeSetInfo struct {
-	RoundChanges     interface{}     `json:"roundChanges"` // message的数据结构待确认!!!!!!
-	Validates        []string         `json:"validates"`
-}
-
-// 数据结构待确认
-type Message struct {
+	RoundChanges map[uint64]*MessageSet `json:"roundChanges"`
+	Validates    []string               `json:"validates"`
 }
