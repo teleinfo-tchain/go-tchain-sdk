@@ -455,6 +455,7 @@ func (core *Core) SendTransaction(transaction *dto.TransactionParameters) (strin
 
 }
 
+// encodedTx, The signed transaction data
 func (core *Core) SendRawTransaction(encodedTx string) (string, error) {
 
 	params := make([]string, 1)
