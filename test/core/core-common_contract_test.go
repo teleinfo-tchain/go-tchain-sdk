@@ -27,6 +27,7 @@ import (
 	bif "github.com/bif/bif-sdk-go"
 	"github.com/bif/bif-sdk-go/dto"
 	"github.com/bif/bif-sdk-go/providers"
+	"github.com/bif/bif-sdk-go/test/resources"
 	"io/ioutil"
 	"math/big"
 	"testing"
@@ -45,7 +46,7 @@ func TestCoreContract(t *testing.T) {
 
 	json.Unmarshal(content, &unmarshalResponse)
 
-	var connection = bif.NewBif(providers.NewHTTPProvider("172.20.3.21:44032", 10, false))
+	var connection = bif.NewBif(providers.NewHTTPProvider(resources.IP+":"+resources.Port, 10, false))
 	bytecode := unmarshalResponse.Bytecode
 	contract, err := connection.Core.NewContract(unmarshalResponse.Abi)
 

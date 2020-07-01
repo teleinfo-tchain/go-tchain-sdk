@@ -169,13 +169,13 @@ func (core *Core) GetGasPrice() (*big.Int, error) {
 	return pointer.ToBigInt()
 }
 
-// ListAccounts - Returns a list of addresses owned by client.
+// GetAccounts - Returns a list of addresses owned by client.
 // Reference: https://github.com/ethereum/wiki/wiki/JSON-RPC#core_accounts
 // Parameters:
 //    - none
 // Returns:
 //    - Array of DATA, 20 Bytes - addresses owned by the client.
-func (core *Core) ListAccounts() ([]string, error) {
+func (core *Core) GetAccounts() ([]string, error) {
 
 	pointer := &dto.RequestResult{}
 

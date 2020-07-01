@@ -13,7 +13,7 @@
 *********************************************************************************/
 
 /**
- * @file core-coinbase_test.go
+ * @file core-getAccounts_test.go
  * @authors:
  *   Reginaldo Costa <regcostajr@gmail.com>
  * @date 2017
@@ -22,23 +22,23 @@
 package test
 
 import (
+	"github.com/bif/bif-sdk-go/test/resources"
 	"testing"
 
 	bif "github.com/bif/bif-sdk-go"
 	"github.com/bif/bif-sdk-go/providers"
 )
 
-func TestListAccounts(t *testing.T) {
+func TestGetAccounts(t *testing.T) {
 
-	var connection = bif.NewBif(providers.NewHTTPProvider("172.20.3.21:44032", 10, false))
+	var connection = bif.NewBif(providers.NewHTTPProvider(resources.IP+":"+resources.Port, 10, false))
 
-	accounts, err := connection.Core.ListAccounts()
+	accounts, err := connection.Core.GetAccounts()
 
 	if err != nil {
 		t.Error(err)
 		t.FailNow()
 	}
 
-	t.Log(accounts[0])
-
+	t.Log(accounts)
 }

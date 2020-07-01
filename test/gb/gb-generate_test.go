@@ -22,6 +22,7 @@
 package test
 
 import (
+	"github.com/bif/bif-sdk-go/test/resources"
 	"testing"
 
 	"github.com/bif/bif-sdk-go/gb"
@@ -30,7 +31,7 @@ import (
 
 func TestGbStart(t *testing.T) {
 
-	var connection = gb.NewGB(providers.NewHTTPProvider("172.20.3.21:44032", 10, false))
+	var connection = gb.NewGB(providers.NewHTTPProvider(resources.IP+":"+resources.Port, 10, false))
 
 	err := connection.Start()
 
@@ -42,7 +43,7 @@ func TestGbStart(t *testing.T) {
 
 func TestGbStop(t *testing.T) {
 
-	var connection = gb.NewGB(providers.NewHTTPProvider("172.20.3.21:44032", 10, false))
+	var connection = gb.NewGB(providers.NewHTTPProvider(resources.IP+":"+resources.Port, 10, false))
 
 	err := connection.Stop()
 

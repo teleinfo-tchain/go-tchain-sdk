@@ -22,6 +22,7 @@
 package test
 
 import (
+	"github.com/bif/bif-sdk-go/test/resources"
 	"testing"
 
 	b "github.com/bif/bif-sdk-go"
@@ -30,7 +31,7 @@ import (
 
 func TestBifClientVersion(t *testing.T) {
 
-	var connection = b.NewBif(providers.NewHTTPProvider("172.20.3.21:44032", 10, false))
+	var connection = b.NewBif(providers.NewHTTPProvider(resources.IP+":"+resources.Port, 10, false))
 
 	client, err := connection.ClientVersion()
 

@@ -28,6 +28,7 @@ import (
 	"github.com/bif/bif-sdk-go/core/block"
 	"github.com/bif/bif-sdk-go/dto"
 	"github.com/bif/bif-sdk-go/providers"
+	"github.com/bif/bif-sdk-go/test/resources"
 	"math/big"
 	"testing"
 	"time"
@@ -35,7 +36,7 @@ import (
 
 func TestCoreGetTransactionCount(t *testing.T) {
 
-	var connection = bif.NewBif(providers.NewHTTPProvider("172.20.3.21:44032", 10, false))
+	var connection = bif.NewBif(providers.NewHTTPProvider(resources.IP+":"+resources.Port, 10, false))
 
 	coinbase, _ := connection.Core.GetCoinbase()
 

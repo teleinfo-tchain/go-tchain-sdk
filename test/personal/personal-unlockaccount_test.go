@@ -22,6 +22,7 @@ package test
 
 import (
 	"errors"
+	"github.com/bif/bif-sdk-go/test/resources"
 	"testing"
 
 	"github.com/bif/bif-sdk-go"
@@ -30,7 +31,7 @@ import (
 
 func TestPersonalUnlockAccount(t *testing.T) {
 
-	var connection = bif.NewBif(providers.NewHTTPProvider("172.20.3.21:44032", 10, false))
+	var connection = bif.NewBif(providers.NewHTTPProvider(resources.IP+":"+resources.Port, 10, false))
 
 	accounts, err := connection.Personal.ListAccounts()
 

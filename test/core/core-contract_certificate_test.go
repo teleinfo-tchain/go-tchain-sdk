@@ -26,6 +26,7 @@ import (
 	bif "github.com/bif/bif-sdk-go"
 	"github.com/bif/bif-sdk-go/dto"
 	"github.com/bif/bif-sdk-go/providers"
+	"github.com/bif/bif-sdk-go/test/resources"
 	"math/big"
 	"testing"
 )
@@ -45,7 +46,7 @@ func TestCoreCertificateContract(t *testing.T) {
 ]`
 	)
 
-	var connection = bif.NewBif(providers.NewHTTPProvider("172.20.3.21:44032", 10, false))
+	var connection = bif.NewBif(providers.NewHTTPProvider(resources.IP+":"+resources.Port, 10, false))
 	contract, err := connection.Core.NewContract(AbiJSON)
 
 	transaction := new(dto.TransactionParameters)

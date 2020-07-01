@@ -23,6 +23,7 @@ package test
 
 import (
 	"encoding/json"
+	"github.com/bif/bif-sdk-go/test/resources"
 	"io/ioutil"
 	"math/big"
 	"testing"
@@ -53,7 +54,7 @@ func TestCoreGetcode(t *testing.T) {
 
 	json.Unmarshal(content, &unmarshalResponse)
 
-	var connection = bif.NewBif(providers.NewHTTPProvider("172.20.3.21:44032", 10, false))
+	var connection = bif.NewBif(providers.NewHTTPProvider(resources.IP+":"+resources.Port, 10, false))
 	bytecode := unmarshalResponse.Bytecode
 	deployedBytecode := unmarshalResponse.DeployedBytecode
 

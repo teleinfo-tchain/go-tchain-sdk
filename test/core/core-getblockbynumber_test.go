@@ -24,6 +24,7 @@ package test
 import (
 	"fmt"
 	"github.com/bif/bif-sdk-go/dto"
+	"github.com/bif/bif-sdk-go/test/resources"
 	"math/big"
 	"testing"
 
@@ -33,7 +34,7 @@ import (
 
 func TestCoreGetBlockByNumber(t *testing.T) {
 
-	var connection = bif.NewBif(providers.NewHTTPProvider("172.20.3.21:44032", 10, false))
+	var connection = bif.NewBif(providers.NewHTTPProvider(resources.IP+":"+resources.Port, 10, false))
 
 	//blockNumber, err := connection.Core.GetBlockNumber()
 	blockNumber := big.NewInt(7603)

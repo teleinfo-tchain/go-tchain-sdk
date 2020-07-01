@@ -22,6 +22,7 @@
 package test
 
 import (
+	"github.com/bif/bif-sdk-go/test/resources"
 	"math/big"
 	"testing"
 	"time"
@@ -34,7 +35,7 @@ import (
 
 func TestGetBlockTransactionCountByNumber(t *testing.T) {
 
-	var connection = bif.NewBif(providers.NewHTTPProvider("172.20.3.21:44032", 10, false))
+	var connection = bif.NewBif(providers.NewHTTPProvider(resources.IP+":"+resources.Port, 10, false))
 
 	// submit a transaction, wait for the block and there should be 1 tx.
 	coinbase, err := connection.Core.GetCoinbase()

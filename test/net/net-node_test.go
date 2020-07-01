@@ -23,6 +23,7 @@ package test
 
 import (
 	"fmt"
+	"github.com/bif/bif-sdk-go/test/resources"
 	"testing"
 
 	"github.com/bif/bif-sdk-go/net"
@@ -31,7 +32,7 @@ import (
 
 func TestNodePeers(t *testing.T) {
 
-	var connection = net.NewNet(providers.NewHTTPProvider("172.20.3.21:44032", 10, false))
+	var connection = net.NewNet(providers.NewHTTPProvider(resources.IP+":"+resources.Port, 10, false))
 
 	peers, err := connection.GetPeers()
 
@@ -51,7 +52,7 @@ func TestAddPeer(t *testing.T) {
 
 	url := "enode://fc83863fcd8bce46b4a722894c4c70bc5ca74cd12fa32974a84163d002a7c12b7ad28479e414c25ec355857221af4ae8f5d28a0fa8d752308a7ecf4e8eb720bd@192.168.150.20:51260"
 
-	var connection = net.NewNet(providers.NewHTTPProvider("172.20.3.21:44032", 10, false))
+	var connection = net.NewNet(providers.NewHTTPProvider(resources.IP+":"+resources.Port, 10, false))
 
 	r, err := connection.AddPeer(url)
 
@@ -67,7 +68,7 @@ func TestRemovePeer(t *testing.T) {
 
 	url := "enode://fc83863fcd8bce46b4a722894c4c70bc5ca74cd12fa32974a84163d002a7c12b7ad28479e414c25ec355857221af4ae8f5d28a0fa8d752308a7ecf4e8eb720bd@192.168.150.20:51260"
 
-	var connection = net.NewNet(providers.NewHTTPProvider("172.20.3.21:44032", 10, false))
+	var connection = net.NewNet(providers.NewHTTPProvider(resources.IP+":"+resources.Port, 10, false))
 
 	r, err := connection.RemovePeer(url)
 

@@ -22,6 +22,7 @@
 package test
 
 import (
+	"github.com/bif/bif-sdk-go/test/resources"
 	"testing"
 
 	web3 "github.com/bif/bif-sdk-go"
@@ -30,7 +31,7 @@ import (
 
 func TestCoreHashrate(t *testing.T) {
 
-	var connection = web3.NewBif(providers.NewHTTPProvider("172.20.3.21:44032", 10, false))
+	var connection = web3.NewBif(providers.NewHTTPProvider(resources.IP+":"+resources.Port, 10, false))
 
 	rate, err := connection.Core.GetHashRate()
 
