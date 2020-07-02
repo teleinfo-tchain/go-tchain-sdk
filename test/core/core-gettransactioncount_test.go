@@ -80,6 +80,7 @@ func TestCoreGetTransactionCount(t *testing.T) {
 
 	newCount, err := connection.Core.GetTransactionCount(coinbase, block.LATEST)
 
+	// if it fails, it may be that the time is too short and the transaction has not been executed
 	if err != nil {
 		t.Error(err)
 		t.FailNow()
