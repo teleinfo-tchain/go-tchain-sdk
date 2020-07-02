@@ -796,3 +796,15 @@ func (core *Core) GetCanTrust(address, defaultBlockParameter string) (*big.Int, 
 
 	return pointer.ToBigInt()
 }
+
+func (core *Core) GetChainId() (uint64, error) {
+	pointer := &dto.RequestResult{}
+
+	err := core.provider.SendRequest(pointer, "core_chainId", nil)
+
+	if err != nil{
+		return 0, err
+	}
+
+	return pointer.ToChainID()
+}
