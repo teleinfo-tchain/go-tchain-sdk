@@ -618,3 +618,12 @@ func(pointer *RequestResult) ToBacklogs() (map[string][]*Message, error){
 
 	return backlogs, err
 }
+
+func(pointer *RequestResult) ToChainID() (uint64, error){
+	if err := pointer.checkResponse(); err != nil {
+		return 0, err
+	}
+
+	result := (pointer).Result.(interface{})
+	return strconv.ParseUint(result.(string)[2:], 16, 64)
+}
