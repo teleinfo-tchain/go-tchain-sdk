@@ -7,6 +7,7 @@ import (
 	"github.com/bif/bif-sdk-go/core/block"
 	"github.com/bif/bif-sdk-go/providers"
 	"github.com/bif/bif-sdk-go/test/resources"
+	"github.com/bif/bif-sdk-go/utils"
 	"math/big"
 	"testing"
 )
@@ -16,12 +17,28 @@ func TestCoreSignTransactionSm2(t *testing.T) {
 	var connection = bif.NewBif(providers.NewHTTPProvider(resources.IP+":"+resources.Port, 10, false))
 	nonce, err := connection.Core.GetTransactionCount(resources.AddressSM2, block.LATEST)
 	if err != nil {
+		t.Errorf("Failed connection")
 		t.Error(err)
 		t.FailNow()
 	}
+
+	chainId, err := connection.Core.GetChainId()
+	if err != nil {
+		t.Errorf("Failed getChainId")
+		t.Error(err)
+		t.FailNow()
+	}
+
 	//fmt.Println("nonce is ",nonce.Uint64())
 	privKey := resources.AddressPriKey
-	from := common.StringToAddress(resources.AddressSM2)
+	var cryType uint = 0
+	sender, err := utils.GetAddressFromPrivate(privKey, cryType)
+	if err != nil {
+		t.Error(err)
+		t.FailNow()
+	}
+
+	from := common.StringToAddress(sender)
 	to := common.StringToAddress(resources.AddressTwo)
 	tx := &core.Txdata{
 		AccountNonce: nonce.Uint64(),
@@ -37,7 +54,7 @@ func TestCoreSignTransactionSm2(t *testing.T) {
 		T: big.NewInt(0),
 	}
 
-	res, _ := core.SignTransaction(tx, privKey, 666)
+	res, _ := core.SignTransaction(tx, privKey, int64(chainId))
 	//fmt.Printf("%#v \n", res.Tx)
 
 	txIDRaw, err := connection.Core.SendRawTransaction(common.ToHex(res.Raw))
@@ -57,9 +74,24 @@ func TestCoreSignTransactionNoSm2(t *testing.T) {
 		t.Error(err)
 		t.FailNow()
 	}
+
+	chainId, err := connection.Core.GetChainId()
+	if err != nil {
+		t.Errorf("Failed getChainId")
+		t.Error(err)
+		t.FailNow()
+	}
+
 	//fmt.Println("nonce is ",nonce.Uint64())
 	privKey := resources.CoinBasePriKey
-	from := common.StringToAddress(resources.CoinBase)
+	var cryType uint = 1
+	sender, err := utils.GetAddressFromPrivate(privKey, cryType)
+	if err != nil {
+		t.Error(err)
+		t.FailNow()
+	}
+
+	from := common.StringToAddress(sender)
 	to := common.StringToAddress(resources.AddressTwo)
 	tx := &core.Txdata{
 		AccountNonce: nonce.Uint64(),
@@ -75,7 +107,8 @@ func TestCoreSignTransactionNoSm2(t *testing.T) {
 		S: new(big.Int),
 		T: big.NewInt(0),
 	}
-	res, _ := core.SignTransaction(tx, privKey, 666)
+
+	res, _ := core.SignTransaction(tx, privKey, int64(chainId))
 	//fmt.Printf("%#v \n", res.Tx)
 
 	txIDRaw, err := connection.Core.SendRawTransaction(common.ToHex(res.Raw))
