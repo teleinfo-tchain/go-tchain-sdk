@@ -21,6 +21,7 @@
 package test
 
 import (
+	"encoding/json"
 	"fmt"
 	"github.com/bif/bif-sdk-go"
 	"github.com/bif/bif-sdk-go/complex/types"
@@ -29,6 +30,7 @@ import (
 	"github.com/bif/bif-sdk-go/providers"
 	"github.com/bif/bif-sdk-go/test/resources"
 	"github.com/bif/bif-sdk-go/utils"
+	"io/ioutil"
 	"math/big"
 	"testing"
 	"time"
@@ -39,13 +41,12 @@ func TestCoreSendTransaction(t *testing.T) {
 
 	var connection = bif.NewBif(providers.NewHTTPProvider(resources.IP+":"+resources.Port, 10, false))
 	coinbase, err := connection.Core.GetCoinbase()
-	// coinbase address is did:bid:6cc796b8d6e2fbebc9b3cf9e
 	if err != nil {
 		t.Error(err)
 		t.FailNow()
 	}
 
-	toAddress := "did:bid:c117c1794fc7a27bd301ae52"
+	toAddress := resources.AddressTwo
 	balance, err := connection.Core.GetBalance(toAddress, block.LATEST)
 	if err == nil {
 		util := utils.NewUtils()
@@ -70,24 +71,29 @@ func TestCoreSendTransaction(t *testing.T) {
 		t.Error(err)
 		t.FailNow()
 	}
+
 	// if success, get transaction hash
 	t.Log(txID)
-
-	time.Sleep(time.Second)
-
-	tx, err := connection.Core.GetTransactionByHash("0xc8e0815167040fc13421e3b3d2ec38188ee0ac4a8afad6c5fe71a4f5451b7691")
-
-	if err != nil {
-		t.Errorf("Failed GetTransactionByHash")
-		t.Error(err)
-		t.FailNow()
-	}
-
-	t.Log(tx.BlockNumber)
 }
 
 // test deploy contract
 func TestCoreSendTransactionDeployContract(t *testing.T){
+	content, err := ioutil.ReadFile("../resources/simple-contract.json")
+
+	type Contract struct {
+		Abi      string `json:"abi"`
+		Bytecode string `json:"bytecode"`
+	}
+
+	var unmarshalResponse Contract
+
+	json.Unmarshal(content, &unmarshalResponse)
+	byteCode, err := utils.NewUtils().ByteCodeDeploy(unmarshalResponse.Abi, unmarshalResponse.Bytecode, big.NewInt(2))
+	if err != nil{
+		t.Error(err)
+		t.FailNow()
+	}
+
 	var connection = bif.NewBif(providers.NewHTTPProvider(resources.IP+":"+resources.Port, 10, false))
 	fromAddress, err := connection.Core.GetCoinbase()
 	if err != nil {
@@ -97,9 +103,8 @@ func TestCoreSendTransactionDeployContract(t *testing.T){
 
 	transaction := new(dto.TransactionParameters)
 	transaction.From = fromAddress
-	// data is compiled by contract
-	// "contract Multiply7 { event Print(uint); function multiply(uint input) returns (uint) { Print(input * 7); return input * 7; } }
-	transaction.Data = "0x6060604052605f8060106000396000f3606060405260e060020a6000350463c6888fa18114601a575b005b60586004356007810260609081526000907f24abdb5865df5079dcc5ac590ff6f01d5c16edbc5fab4e195d9febd1114503da90602090a15060070290565b5060206060f3"
+
+	transaction.Data = types.ComplexString(byteCode)
 
 	// estimate the gas required to deploy the contract
 	gas, err := connection.Core.EstimateGas(transaction)
@@ -110,6 +115,7 @@ func TestCoreSendTransactionDeployContract(t *testing.T){
 	}
 	t.Log(gas)
 
+	//transaction.Gas = big.NewInt(1000000)
 	transaction.Gas = gas
 	txID, err := connection.Core.SendTransaction(transaction)
 
@@ -133,7 +139,7 @@ func TestCoreSendTransactionDeployContract(t *testing.T){
 		t.FailNow()
 	}
 
-	//did:bid:0ad33772c600c61b184919d7
+	//did:bid:29e92743850b4c7473f2aafa
 	t.Log("contract Address is ", receipt.ContractAddress)
 
 }
@@ -141,6 +147,23 @@ func TestCoreSendTransactionDeployContract(t *testing.T){
 // test interaction with contract
 // its content is decided by specific contract
 func TestCoreSendTransactionInteractContract(t *testing.T) {
+	content, err := ioutil.ReadFile("../resources/simple-contract.json")
+
+	type Contract struct {
+		Abi      string `json:"abi"`
+		Bytecode string `json:"bytecode"`
+	}
+
+	var unmarshalResponse Contract
+
+	json.Unmarshal(content, &unmarshalResponse)
+	// for more information, please check https://solidity.readthedocs.io/en/v0.6.10/abi-spec.html
+	byteCode, err := utils.NewUtils().ByteCodeInteract(unmarshalResponse.Abi, "multiply", big.NewInt(2))
+	if err != nil{
+		t.Error(err)
+		t.FailNow()
+	}
+
 	var connection = bif.NewBif(providers.NewHTTPProvider(resources.IP+":"+resources.Port, 10, false))
 	fromAddress, err := connection.Core.GetCoinbase()
 	if err != nil {
@@ -148,22 +171,13 @@ func TestCoreSendTransactionInteractContract(t *testing.T) {
 		t.FailNow()
 	}
 
-	// for more information, please check https://solidity.readthedocs.io/en/v0.6.10/abi-spec.html
-	util := utils.NewUtils()
-	funcEncode, _ := util.Sha3("multiply(uint256)")
-	// 32 bytes
-	paramsEncode, _ := util.ToTwosComplement(6)
-
 	transaction := new(dto.TransactionParameters)
 	transaction.From = fromAddress
 	// To is contract address
-	transaction.To = "did:bid:0ad33772c600c61b184919d7"
-	transaction.Data = types.ComplexString("0x" + funcEncode[2:10] + paramsEncode[2:])
+	transaction.To = "did:bid:23bfc0ad7cfa209523193dfd"
+	transaction.Data = types.ComplexString(byteCode)
 
 	txID, err := connection.Core.SendTransaction(transaction)
-
-	// Wait for a block
-	time.Sleep(time.Second)
 
 	if err != nil {
 		t.Errorf("Failed SendTransaction")
@@ -171,7 +185,7 @@ func TestCoreSendTransactionInteractContract(t *testing.T) {
 		t.FailNow()
 	}
 
-	t.Log(txID)
+	t.Log("transaction hash is ", txID)
 
 	// wait too long
 	time.Sleep(time.Second*8)
@@ -184,3 +198,23 @@ func TestCoreSendTransactionInteractContract(t *testing.T) {
 
 	t.Log("receipt logs data is ", receipt.Logs[0].Data)
 }
+
+
+func TestCoreSendTransactionResult(t *testing.T) {
+	var connection = bif.NewBif(providers.NewHTTPProvider(resources.IP+":"+resources.Port, 10, false))
+	_, err := connection.Core.GetCoinbase()
+	if err != nil {
+		t.Error(err)
+		t.FailNow()
+	}
+	tx, err := connection.Core.GetTransactionByHash("0x6c04bc524b5376d5b6d6ef580ae1bb9573bf3e316806cfca72e6fc71566705c7")
+
+	if err != nil {
+		t.Error(err)
+		t.FailNow()
+	}
+
+	t.Log(tx.BlockNumber)
+}
+
+
