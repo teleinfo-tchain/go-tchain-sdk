@@ -1,7 +1,10 @@
 package test
 
 import (
+	"encoding/json"
+	"fmt"
 	"github.com/bif/bif-sdk-go/utils"
+	"io/ioutil"
 	"math/big"
 	"testing"
 )
@@ -355,4 +358,56 @@ func TestToTwosComplement(t *testing.T){
 			continue
 		}
 	}
+}
+
+func TestByteCodeDeploy(t *testing.T){
+	content, err := ioutil.ReadFile("../resources/simple-contract.json")
+	if err != nil {
+		t.Errorf("File not exist")
+		t.Error(err)
+		t.FailNow()
+	}
+
+	type Contract struct {
+		Abi      string `json:"abi"`
+		Bytecode string `json:"bytecode"`
+	}
+
+	var unmarshalResponse Contract
+
+	err = json.Unmarshal(content, &unmarshalResponse)
+
+	if err != nil {
+		t.Error(err)
+		t.FailNow()
+	}
+
+	res, err := util.ByteCodeDeploy(unmarshalResponse.Abi, unmarshalResponse.Bytecode, big.NewInt(2))
+	fmt.Println(res,err)
+}
+
+func TestByteCodeInteract(t *testing.T){
+	content, err := ioutil.ReadFile("../resources/simple-contract.json")
+	if err != nil {
+		t.Errorf("File not exist")
+		t.Error(err)
+		t.FailNow()
+	}
+
+	type Contract struct {
+		Abi      string `json:"abi"`
+		Bytecode string `json:"bytecode"`
+	}
+
+	var unmarshalResponse Contract
+
+	err = json.Unmarshal(content, &unmarshalResponse)
+
+	if err != nil {
+		t.Error(err)
+		t.FailNow()
+	}
+
+	res, err := util.ByteCodeInteract(unmarshalResponse.Abi, "multiply", big.NewInt(2))
+	fmt.Println(res,err)
 }

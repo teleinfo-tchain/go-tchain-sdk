@@ -2,6 +2,7 @@ package utils
 
 import (
 	"encoding/hex"
+	"encoding/json"
 	"errors"
 	"fmt"
 	"github.com/bif/bif-sdk-go/common"
@@ -453,3 +454,147 @@ func (util *Utils) ToTwosComplement(input interface{}) (string, error){
 	}
 }
 
+
+
+func (util *Utils) ByteCodeDeploy(abi string, byteCode string, args ...interface{}) (string, error) {
+	functions, err := getFunctions(abi)
+	if err != nil {
+		return "", err
+	}
+
+	funcTypeArr, ok := functions["constructor"]
+	if !ok {
+		return "", errors.New("not exist constructor")
+	}
+
+	if len(args) != len(funcTypeArr){
+		return "", errors.New("the number of function parameters does not match")
+	}
+
+	for index := 0; index < len(funcTypeArr); index++ {
+		tmpBytes, err := getHexValue(funcTypeArr[index], args[index])
+
+		if err != nil {
+			return "", err
+		}
+		//fmt.Println("tmpBytes ", tmpBytes)
+		byteCode += tmpBytes
+	}
+
+	//fmt.Println("byteCode is ", byteCode)
+	return byteCode, nil
+
+}
+
+func (util *Utils) ByteCodeInteract(abi string, functionName string, args ...interface{}) (string, error) {
+	functions, err := getFunctions(abi)
+	if err != nil {
+		return "", err
+	}
+
+	funcTypeArr, ok := functions[functionName]
+	if !ok {
+		return "", errors.New("not exist functionName")
+	}
+
+	if len(args) != len(funcTypeArr){
+		return "", errors.New("the number of function parameters does not match")
+	}
+
+	fullFunction := fmt.Sprintf("%s(%s)", functionName, strings.Join(funcTypeArr, ","))
+	sha3Function, err := NewUtils().Sha3(fullFunction)
+	if err != nil {
+		return "", err
+	}
+
+	var builder strings.Builder
+	for index := 0; index < len(funcTypeArr); index++ {
+		currentData, err := getHexValue(funcTypeArr[index], args[index])
+
+		if err != nil {
+			return "", err
+		}
+		builder.WriteString(currentData)
+	}
+
+	byteCode := fmt.Sprintf("%s%s", sha3Function[0:10], builder.String())
+	return byteCode, nil
+
+}
+
+
+func getFunctions(abi string) (map[string][]string,error){
+	var mockInterface interface{}
+	err := json.Unmarshal([]byte(abi), &mockInterface)
+
+	if err != nil {
+		return nil, err
+	}
+
+	jsonInterface := mockInterface.([]interface{})
+	functions := make(map[string][]string)
+	for index := 0; index < len(jsonInterface); index++ {
+		function := jsonInterface[index].(map[string]interface{})
+
+		if function["type"] == "constructor" || function["type"] == "fallback" {
+			function["name"] = function["type"]
+		}
+
+		functionName := function["name"].(string)
+		functions[functionName] = make([]string, 0)
+
+		if function["inputs"] == nil {
+			continue
+		}
+
+		inputs := function["inputs"].([]interface{})
+		for paramIndex := 0; paramIndex < len(inputs); paramIndex++ {
+			params := inputs[paramIndex].(map[string]interface{})
+			functions[functionName] = append(functions[functionName], params["type"].(string))
+		}
+
+	}
+	return functions, nil
+}
+
+func getHexValue(inputType string, value interface{}) (string, error) {
+
+	var builder strings.Builder
+	if strings.HasPrefix(inputType, "int") ||
+		strings.HasPrefix(inputType, "uint") ||
+		strings.HasPrefix(inputType, "fixed") ||
+		strings.HasPrefix(inputType, "ufixed") {
+
+		bigVal := value.(*big.Int)
+
+		// Checking that the string actually is the correct inputType
+		if strings.Contains(inputType, "128") {
+			// 128 bit
+			if bigVal.BitLen() > 128 {
+				return "", errors.New(fmt.Sprintf("Input type %s not met", inputType))
+			}
+		} else if strings.Contains(inputType, "256") {
+			// 256 bit
+			if bigVal.BitLen() > 256 {
+				return "", errors.New(fmt.Sprintf("Input type %s not met", inputType))
+			}
+		}
+
+		builder.WriteString(fmt.Sprintf("%064s", fmt.Sprintf("%x", bigVal)))
+	}
+
+	if strings.Compare("address", inputType) == 0 {
+		builder.WriteString(fmt.Sprintf("%064d", len(value.(string)[:])))
+		builder.WriteString(fmt.Sprintf("%064d", len(value.(string)[:])))
+		builder.WriteString(fmt.Sprintf("%064s", value.(string)[:]))
+	}
+
+	if strings.Compare("string", inputType) == 0 {
+		builder.WriteString(fmt.Sprintf("%064s", fmt.Sprintf("%x", 32)))
+		builder.WriteString(fmt.Sprintf("%064s", fmt.Sprintf("%x", 32)))
+		builder.WriteString(fmt.Sprintf("%064s", fmt.Sprintf("%x", value.(string))))
+	}
+
+	return builder.String(), nil
+
+}
