@@ -22,6 +22,7 @@
 package test
 
 import (
+	"fmt"
 	"github.com/bif/bif-sdk-go/test/resources"
 	"github.com/bif/bif-sdk-go/txpool"
 	"testing"
@@ -33,12 +34,13 @@ func TestTxpoolStatus(t *testing.T) {
 
 	var connection = txpool.NewTxpool(providers.NewHTTPProvider(resources.IP+":"+resources.Port, 10, false))
 
-	 _, err := connection.Status()
-
+	 status, err := connection.Status()
 	if err != nil {
 		t.Error(err)
 		t.FailNow()
 	}
+	fmt.Printf("pending is %d\n", status["pending"])
+	fmt.Printf("queued is %d\n", status["queued"])
 
 }
 
