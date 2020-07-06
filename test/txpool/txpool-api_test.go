@@ -48,10 +48,10 @@ func TestTxpoolInspect(t *testing.T) {
 
 	var connection = txpool.NewTxpool(providers.NewHTTPProvider(resources.IP+":"+resources.Port, 10, false))
 
-	_, err := connection.Inspect()
-
+	inspect, err := connection.Inspect()
 	if err != nil {
 		t.Error(err)
 		t.FailNow()
 	}
+	fmt.Println(inspect)
 }
