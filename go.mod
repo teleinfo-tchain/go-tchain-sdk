@@ -5,6 +5,7 @@ go 1.13
 require (
 	github.com/aristanetworks/goarista v0.0.0-20200423211322-0b5ff220aee9
 	github.com/btcsuite/btcd v0.20.1-beta
+	github.com/davecgh/go-spew v1.1.1
 	github.com/niemeyer/pretty v0.0.0-20200227124842-a10e7caefd8e // indirect
 	github.com/pborman/uuid v1.2.0
 	github.com/stretchr/testify v1.5.1
