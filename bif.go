@@ -52,6 +52,7 @@ type conf struct {
 }
 
 var ConfigPathName = "rpc-method-config.yaml"
+
 //var yamlPath string
 //flag.StringVar(&yamlPath, "yaml-path", "yaml-path", "config rpc yaml path")
 //flag.Parse()
@@ -81,7 +82,7 @@ type Bif struct {
 	Net      *net.Net
 	Personal *personal.Personal
 	Utils    *utils.Utils
-	System    *system.System
+	System   *system.System
 }
 
 // NewBif - Web3 Module constructor to set the default provider, Core, Net and Personal
