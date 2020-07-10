@@ -2,28 +2,27 @@ package system
 
 import (
 	"github.com/bif/bif-sdk-go/dto"
-	"github.com/bif/bif-sdk-go/providers"
 	"github.com/bif/bif-sdk-go/utils"
 	"math/big"
 )
 
 type Dpos struct {
-	provider providers.ProviderInterface
+	super *System
 }
 
-func NewDpos(provider providers.ProviderInterface) *Dpos {
-	dpos := new(Dpos)
-	dpos.provider = provider
-	return dpos
+func (system *System) NewDpos() *Dpos {
+	Dpos := new(Dpos)
+	Dpos.super = system
+	return Dpos
 }
 
-func (dpos *Dpos) GetValidators(blockNumber *big.Int) ([]string, error){
+func (dpos *Dpos) GetValidators(blockNumber *big.Int) ([]string, error) {
 	params := make([]interface{}, 1)
 	params[0] = utils.IntToHex(blockNumber)
 
 	pointer := &dto.RequestResult{}
 
-	err := dpos.provider.SendRequest(pointer, "dpos_getValidators", params)
+	err := dpos.super.provider.SendRequest(pointer, "dpos_getValidators", params)
 
 	if err != nil {
 		return nil, err
@@ -32,13 +31,13 @@ func (dpos *Dpos) GetValidators(blockNumber *big.Int) ([]string, error){
 	return pointer.ToValidators()
 }
 
-func (dpos *Dpos) GetValidatorsAtHash(hash string)([]string,error){
+func (dpos *Dpos) GetValidatorsAtHash(hash string) ([]string, error) {
 	params := make([]interface{}, 1)
 	params[0] = hash
 
 	pointer := &dto.RequestResult{}
 
-	err := dpos.provider.SendRequest(pointer, "dpos_getValidatorsAtHash", params)
+	err := dpos.super.provider.SendRequest(pointer, "dpos_getValidatorsAtHash", params)
 
 	if err != nil {
 		return nil, err
@@ -47,10 +46,10 @@ func (dpos *Dpos) GetValidatorsAtHash(hash string)([]string,error){
 	return pointer.ToValidatorsAtHash()
 }
 
-func(dpos *Dpos) RoundStateInfo() (*dto.RoundStateInfo, error){
+func (dpos *Dpos) RoundStateInfo() (*dto.RoundStateInfo, error) {
 	pointer := &dto.RequestResult{}
 
-	err := dpos.provider.SendRequest(pointer, "dpos_roundStateInfo", nil)
+	err := dpos.super.provider.SendRequest(pointer, "dpos_roundStateInfo", nil)
 
 	if err != nil {
 		return nil, err
@@ -59,10 +58,10 @@ func(dpos *Dpos) RoundStateInfo() (*dto.RoundStateInfo, error){
 	return pointer.ToRoundStateInfo()
 }
 
-func(dpos *Dpos) RoundChangeSetInfo() (*dto.RoundChangeSetInfo, error){
+func (dpos *Dpos) RoundChangeSetInfo() (*dto.RoundChangeSetInfo, error) {
 	pointer := &dto.RequestResult{}
 
-	err := dpos.provider.SendRequest(pointer, "dpos_roundChangeSetInfo", nil)
+	err := dpos.super.provider.SendRequest(pointer, "dpos_roundChangeSetInfo", nil)
 
 	if err != nil {
 		return nil, err
@@ -71,11 +70,10 @@ func(dpos *Dpos) RoundChangeSetInfo() (*dto.RoundChangeSetInfo, error){
 	return pointer.ToRoundChangeSetInfo()
 }
 
-
-func(dpos *Dpos) Backlogs() (map[string][]*dto.Message, error){
+func (dpos *Dpos) Backlogs() (map[string][]*dto.Message, error) {
 	pointer := &dto.RequestResult{}
 
-	err := dpos.provider.SendRequest(pointer, "dpos_backlogs", nil)
+	err := dpos.super.provider.SendRequest(pointer, "dpos_backlogs", nil)
 
 	if err != nil {
 		return nil, err
