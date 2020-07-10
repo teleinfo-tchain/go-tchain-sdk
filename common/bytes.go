@@ -47,18 +47,19 @@ func ToHexArray(b [][]byte) []string {
 // FromHex returns the bytes represented by the hexadecimal string s.
 // s may be prefixed with "0x".
 func FromHex(s string) []byte {
-	if len(s) > 1 {
-		if s[0:2] == "0x" || s[0:2] == "0X" {
-			s = s[2:]
-		} else if strings.HasPrefix(s, "did:bid:") {
-			s = s[8:]
-		}
+	var buffer bytes.Buffer
+
+	if has0xPrefix(s) {
+		s = s[2:]
+	} else if hasDidBidPrefix(s){
+		s = s[8:]
+		buffer.Write([]byte("did:bid:"))
 	}
+
 	if len(s)%2 == 1 {
 		s = "0" + s
 	}
-	var buffer bytes.Buffer
-	buffer.Write([]byte("did:bid:"))
+
 	buffer.Write(Hex2Bytes(s))
 	return buffer.Bytes()
 }
@@ -88,8 +89,8 @@ func CopyBytes(b []byte) (copiedBytes []byte) {
 	return
 }
 
-// hasHexPrefix validates str begins with '0x' or '0X'.
-func hasHexPrefix(str string) bool {
+// has0xPrefix validates str begins with '0x' or '0X'.
+func has0xPrefix(str string) bool {
 	return len(str) >= 2 && str[0] == '0' && (str[1] == 'x' || str[1] == 'X')
 }
 
