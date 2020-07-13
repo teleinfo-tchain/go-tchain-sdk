@@ -2,7 +2,6 @@ package system
 
 import (
 	"errors"
-	"fmt"
 	"github.com/bif/bif-sdk-go/abi"
 	"github.com/bif/bif-sdk-go/common"
 	"github.com/bif/bif-sdk-go/common/hexutil"
@@ -75,10 +74,8 @@ func (certificate *Certificate) GetPeriod(from common.Address, id string) (uint6
 	if err != nil {
 		return 0, err
 	}
-	transaction := new(dto.TransactionParameters)
-	transaction.From = from.String()
-	transaction.To = CertificateContractAddr
-	transaction.Data = types.ComplexString(hexutil.Encode(inputEncode))
+
+	transaction := certificate.super.PrePareTransaction(from, CertificateContractAddr, types.ComplexString(hexutil.Encode(inputEncode)))
 	requestResult, err := certificate.super.Call(transaction)
 	if err != nil {
 		return 0, err
@@ -104,10 +101,8 @@ func (certificate *Certificate) GetActive(from common.Address, id string) (bool,
 	if err != nil {
 		return false, err
 	}
-	transaction := new(dto.TransactionParameters)
-	transaction.From = from.String()
-	transaction.To = CertificateContractAddr
-	transaction.Data = types.ComplexString(hexutil.Encode(inputEncode))
+
+	transaction := certificate.super.PrePareTransaction(from, CertificateContractAddr, types.ComplexString(hexutil.Encode(inputEncode)))
 	requestResult, err := certificate.super.Call(transaction)
 	if err != nil {
 		return false, err
@@ -130,10 +125,8 @@ func (certificate *Certificate) GetIssuer(from common.Address, id string) (strin
 	if err != nil {
 		return "", err
 	}
-	transaction := new(dto.TransactionParameters)
-	transaction.From = from.String()
-	transaction.To = CertificateContractAddr
-	transaction.Data = types.ComplexString(hexutil.Encode(inputEncode))
+
+	transaction := certificate.super.PrePareTransaction(from, CertificateContractAddr, types.ComplexString(hexutil.Encode(inputEncode)))
 	requestResult, err := certificate.super.Call(transaction)
 	if err != nil {
 		return "", err
@@ -155,10 +148,8 @@ func (certificate *Certificate) GetIssuerSignature(from common.Address, id strin
 	if err != nil {
 		return nil, err
 	}
-	transaction := new(dto.TransactionParameters)
-	transaction.From = from.String()
-	transaction.To = CertificateContractAddr
-	transaction.Data = types.ComplexString(hexutil.Encode(inputEncode))
+
+	transaction := certificate.super.PrePareTransaction(from, CertificateContractAddr, types.ComplexString(hexutil.Encode(inputEncode)))
 	requestResult, err := certificate.super.Call(transaction)
 	if err != nil {
 		return nil, err
@@ -183,15 +174,14 @@ func (certificate *Certificate) GetSubjectSignature(from common.Address, id stri
 	if err != nil {
 		return nil, err
 	}
-	transaction := new(dto.TransactionParameters)
-	transaction.From = from.String()
-	transaction.To = CertificateContractAddr
-	transaction.Data = types.ComplexString(hexutil.Encode(inputEncode))
+
+	transaction := certificate.super.PrePareTransaction(from, CertificateContractAddr, types.ComplexString(hexutil.Encode(inputEncode)))
 	requestResult, err := certificate.super.Call(transaction)
 	if err != nil {
 		return nil, err
 	}
-	fmt.Println("result string is ", requestResult.Result.(string))
+
+	//fmt.Println("result string is ", requestResult.Result.(string))
 	var subjectSignature Signature
 	err = certificate.abi.Methods["querySubjectSignature"].Outputs.Unpack(&subjectSignature, common.FromHex(requestResult.Result.(string)))
 	// 解码不应该出错，除非底层逻辑变更
