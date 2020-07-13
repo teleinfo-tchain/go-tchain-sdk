@@ -6,14 +6,21 @@ import (
 	"github.com/bif/bif-sdk-go/dto"
 	"github.com/bif/bif-sdk-go/providers"
 	"github.com/bif/bif-sdk-go/test/resources"
-	"math/big"
 	"testing"
 )
 
-//missing trie node????
 func TestGetValidators(t *testing.T) {
 	var connection = bif.NewBif(providers.NewHTTPProvider(resources.IP+":"+resources.Port, 10, false))
-	blockNumber := big.NewInt(157532)
+	// 距离最新区块间隔数超过126会报错，因此测试最新区块
+	blockNumber, err := connection.Core.GetBlockNumber()
+	//fmt.Println("blockNumber is ", blockNumber)
+	//blockNumberOld := new(big.Int)
+	//fmt.Println("blockNumberOld is ", blockNumberOld.Sub(blockNumber, big.NewInt(127)))
+	if err != nil {
+		t.Error(err)
+		t.FailNow()
+	}
+
 	Dpos := connection.System.NewDpos()
 	validators, err := Dpos.GetValidators(blockNumber)
 
@@ -24,10 +31,15 @@ func TestGetValidators(t *testing.T) {
 	fmt.Println(validators)
 }
 
-//missing trie node ???? 最初测试可行，现在为什么报错？？？
 func TestGetValidatorsAtHash(t *testing.T) {
 	var connection = bif.NewBif(providers.NewHTTPProvider(resources.IP+":"+resources.Port, 10, false))
-	blockNumber := big.NewInt(157532)
+
+	// 距离最新区块间隔数超过126会报错，因此测试最新区块
+	blockNumber, err := connection.Core.GetBlockNumber()
+	if err != nil {
+		t.Error(err)
+		t.FailNow()
+	}
 
 	block, err := connection.Core.GetBlockByNumber(blockNumber, false)
 	if err != nil {
@@ -43,7 +55,7 @@ func TestGetValidatorsAtHash(t *testing.T) {
 		t.Error(err)
 		t.FailNow()
 	}
-	fmt.Println(validators)
+	t.Log(validators)
 }
 
 func TestRoundStateInfo(t *testing.T) {
