@@ -87,7 +87,7 @@ func TestUnRegisterTrustAnchor(t *testing.T) {
 		t.FailNow()
 	}
 
-	transactionHash, err := anchor.UnRegisterTrustAnchor(common.StringToAddress(coinBase), BaseAnchorAddr)
+	transactionHash, err := anchor.UnRegisterTrustAnchor(common.StringToAddress(coinBase), coinBase)
 	if err != nil {
 		t.Error(err)
 		t.FailNow()
@@ -107,7 +107,7 @@ func TestIsTrustAnchor(t *testing.T) {
 		t.Error(err)
 		t.FailNow()
 	}
-	trustAnchor, err := anchor.IsTrustAnchor(common.StringToAddress(coinBase), ExtendAnchorAddr)
+	trustAnchor, err := anchor.IsTrustAnchor(common.StringToAddress(coinBase), coinBase)
 	if err != nil && err != system.ErrCertificateNotExist {
 		t.Error(err)
 		t.FailNow()
@@ -326,6 +326,7 @@ func TestGetExpendTrustAnchorNum(t *testing.T) {
 	t.Log(expendListNum)
 }
 
+// 投票超过2/3才能激活信任锚(现在有5个超级节点，超过2/3就是需要有至少4个投票)
 func TestVoteElect(t *testing.T) {
 	var connection = bif.NewBif(providers.NewHTTPProvider(resources.IP+":"+resources.Port, 10, false))
 	coinBase, err := connection.Core.GetCoinbase()
