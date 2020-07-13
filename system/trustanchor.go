@@ -128,10 +128,10 @@ func (system *System) NewTrustAnchor() (*Anchor, error) {
 		return nil, err
 	}
 
-	Anchor := new(Anchor)
-	Anchor.abi = parsedAbi
-	Anchor.super = system
-	return Anchor, nil
+	anchor := new(Anchor)
+	anchor.abi = parsedAbi
+	anchor.super = system
+	return anchor, nil
 }
 
 // 是否让用户可以自定义gas和gasPrice？

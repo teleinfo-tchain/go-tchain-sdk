@@ -62,10 +62,10 @@ func (system *System) NewCertificate() (*Certificate, error) {
 		return nil, err
 	}
 
-	Certificate := new(Certificate)
-	Certificate.abi = parsedAbi
-	Certificate.super = system
-	return Certificate, nil
+	certificate := new(Certificate)
+	certificate.abi = parsedAbi
+	certificate.super = system
+	return certificate, nil
 }
 
 //"inputs":[{"name":"id", "type":"string"}],"outputs":[{"name":"period","type":"uint64"}]
