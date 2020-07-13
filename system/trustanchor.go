@@ -147,11 +147,8 @@ func (anchorTrust *Anchor) RegisterTrustAnchor(from common.Address, registerAnch
 	}
 
 	transaction := anchorTrust.super.PrePareTransaction(from, TrustAnchorContractAddr, types.ComplexString(hexutil.Encode(inputEncode)))
-	transactionHash, err := anchorTrust.super.SendTransaction(transaction)
-	if err != nil {
-		return "", err
-	}
-	return transactionHash, err
+
+	return anchorTrust.super.SendTransaction(transaction)
 }
 
 //"unRegisterTrustAnchor","inputs":[{"name":"anchor","type":"string"}],"outputs":[]
@@ -163,11 +160,8 @@ func (anchorTrust *Anchor) UnRegisterTrustAnchor(from common.Address, anchor str
 	}
 
 	transaction := anchorTrust.super.PrePareTransaction(from, TrustAnchorContractAddr, types.ComplexString(hexutil.Encode(inputEncode)))
-	transactionHash, err := anchorTrust.super.SendTransaction(transaction)
-	if err != nil {
-		return "", err
-	}
-	return transactionHash, err
+
+	return anchorTrust.super.SendTransaction(transaction)
 }
 
 //"isTrustAnchor","inputs":[{"name":"address","type":"string"}],"outputs":[{"name":"trustanchor","type":"bool"}]
@@ -206,11 +200,8 @@ func (anchorTrust *Anchor) UpdateBaseAnchorInfo(from common.Address, updateAncho
 	}
 
 	transaction := anchorTrust.super.PrePareTransaction(from, TrustAnchorContractAddr, types.ComplexString(hexutil.Encode(inputEncode)))
-	transactionHash, err := anchorTrust.super.SendTransaction(transaction)
-	if err != nil {
-		return "", err
-	}
-	return transactionHash, err
+
+	return anchorTrust.super.SendTransaction(transaction)
 }
 
 //"inputs":[{"name":"companyUrl","type":"string"},{"name":"website","type":"string"},{"name":"documentUrl","type":"string"},{"name":"serverUrl","type":"string"},{"name":"email","type":"string"},{"name":"desc","type":"string"}],"outputs":[]
@@ -225,11 +216,8 @@ func (anchorTrust *Anchor) UpdateExtendAnchorInfo(from common.Address, extendAnc
 	}
 
 	transaction := anchorTrust.super.PrePareTransaction(from, TrustAnchorContractAddr, types.ComplexString(hexutil.Encode(inputEncode)))
-	transactionHash, err := anchorTrust.super.SendTransaction(transaction)
-	if err != nil {
-		return "", err
-	}
-	return transactionHash, err
+
+	return anchorTrust.super.SendTransaction(transaction)
 }
 
 //"extractOwnBounty","inputs":[{"name":"anchor","type":"string"}],"outputs":[]
@@ -241,11 +229,8 @@ func (anchorTrust *Anchor) ExtractOwnBounty(from common.Address, anchor string) 
 	}
 
 	transaction := anchorTrust.super.PrePareTransaction(from, TrustAnchorContractAddr, types.ComplexString(hexutil.Encode(inputEncode)))
-	transactionHash, err := anchorTrust.super.SendTransaction(transaction)
-	if err != nil {
-		return "", err
-	}
-	return transactionHash, err
+
+	return  anchorTrust.super.SendTransaction(transaction)
 }
 
 //"inputs":[{"name":"anchor","type":"string"}],"outputs":[{"name":"id","type":"string"},{"name":"name","type":"string"},{"name":"company","type":"string"},{"name":"CompanyUrl","type":"string"},{"name":"website","type":"string"},{"name":"ServerUrl","type":"string"},{"name":"DocumentUrl","type":"string"},{"name":"email","type":"string"},{"name":"desc","type":"string"},{"name":"TrustAnchorType","type":"uint64"},{"name":"status","type":"uint64"},{"name":"active","type":"bool"},{"name":"totalbounty","type":"uint64"},{"name":"extractedBounty","type":"uint64"},{"name":"lastExtracTime","type":"uint64"},{"name":"votecount","type":"uint64"},{"name":"stake","type":"uint64"},{"name":"createDate","type":"uint64"},{"name":"certificateAcount","type":"uint64"}]
@@ -417,11 +402,8 @@ func (anchorTrust *Anchor) VoteElect(from common.Address, candidate string) (str
 	}
 
 	transaction := anchorTrust.super.PrePareTransaction(from, TrustAnchorContractAddr, types.ComplexString(hexutil.Encode(inputEncode)))
-	transactionHash, err := anchorTrust.super.SendTransaction(transaction)
-	if err != nil {
-		return "", err
-	}
-	return transactionHash, err
+
+	return anchorTrust.super.SendTransaction(transaction)
 }
 
 
@@ -434,11 +416,8 @@ func (anchorTrust *Anchor) CancelVote(from common.Address, candidate string) (st
 	}
 
 	transaction := anchorTrust.super.PrePareTransaction(from, TrustAnchorContractAddr, types.ComplexString(hexutil.Encode(inputEncode)))
-	transactionHash, err := anchorTrust.super.SendTransaction(transaction)
-	if err != nil {
-		return "", err
-	}
-	return transactionHash, err
+
+	return anchorTrust.super.SendTransaction(transaction)
 }
 
 //"queryVoter","inputs":[{"name":"voterAddress","type":"string"}],"outputs":[{"name":"voterInfo","type":"string"}]
