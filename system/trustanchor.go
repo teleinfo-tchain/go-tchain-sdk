@@ -171,6 +171,7 @@ func (anchorTrust *Anchor) UnRegisterTrustAnchor(from common.Address, anchor str
 }
 
 //"isTrustAnchor","inputs":[{"name":"address","type":"string"}],"outputs":[{"name":"trustanchor","type":"bool"}]
+// 基础信任锚和扩展信任锚的注册后，初始化时，为false;
 func (anchorTrust *Anchor) IsTrustAnchor(from common.Address, address string) (bool, error) {
 	// encoding
 	inputEncode, err := anchorTrust.abi.Pack("isTrustAnchor", address)
