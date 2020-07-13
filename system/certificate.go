@@ -73,7 +73,7 @@ func (certificate *Certificate) GetPeriod(from common.Address, id string) (uint6
 	// encoding
 	inputEncode, err := certificate.abi.Pack("queryPeriod", id)
 	if err != nil {
-		panic(err)
+		return 0, err
 	}
 	transaction := new(dto.TransactionParameters)
 	transaction.From = from.String()
@@ -102,7 +102,7 @@ func (certificate *Certificate) GetActive(from common.Address, id string) (bool,
 	// encoding
 	inputEncode, err := certificate.abi.Pack("queryActive", id)
 	if err != nil {
-		panic(err)
+		return false, err
 	}
 	transaction := new(dto.TransactionParameters)
 	transaction.From = from.String()
@@ -128,7 +128,7 @@ func (certificate *Certificate) GetIssuer(from common.Address, id string) (strin
 	// encoding
 	inputEncode, err := certificate.abi.Pack("queryIssuer", id)
 	if err != nil {
-		panic(err)
+		return "", err
 	}
 	transaction := new(dto.TransactionParameters)
 	transaction.From = from.String()
@@ -153,7 +153,7 @@ func (certificate *Certificate) GetIssuerSignature(from common.Address, id strin
 	// encoding
 	inputEncode, err := certificate.abi.Pack("queryIssuerSignature", id)
 	if err != nil {
-		panic(err)
+		return nil, err
 	}
 	transaction := new(dto.TransactionParameters)
 	transaction.From = from.String()
@@ -181,7 +181,7 @@ func (certificate *Certificate) GetSubjectSignature(from common.Address, id stri
 	// encoding
 	inputEncode, err := certificate.abi.Pack("querySubjectSignature", id)
 	if err != nil {
-		panic(err)
+		return nil, err
 	}
 	transaction := new(dto.TransactionParameters)
 	transaction.From = from.String()
@@ -212,7 +212,7 @@ func (certificate *Certificate) RegisterCertificate(from common.Address, registe
 	values = certificate.super.StructToInterface(*registerCertificate,values)
 	inputEncode, err := certificate.abi.Pack("registerCertificate", values...)
 	if err != nil {
-		panic(err)
+		return "", err
 	}
 	transaction := new(dto.TransactionParameters)
 	transaction.From = from.String()
@@ -226,7 +226,7 @@ func (certificate *Certificate) RevokedCertificate(from common.Address, id strin
 	// encoding
 	inputEncode, err := certificate.abi.Pack("revokedCertificate", id)
 	if err != nil {
-		panic(err)
+		return "", err
 	}
 	transaction := new(dto.TransactionParameters)
 	transaction.From = from.String()

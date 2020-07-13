@@ -143,7 +143,7 @@ func (anchorTrust *Anchor) RegisterTrustAnchor(from common.Address, registerAnch
 	values = anchorTrust.super.StructToInterface(*registerAnchor,values)
 	inputEncode, err := anchorTrust.abi.Pack("registerTrustAnchor", values...)
 	if err != nil {
-		panic(err)
+		return "", err
 	}
 
 	transaction := anchorTrust.super.PrePareTransaction(from, TrustAnchorContractAddr, types.ComplexString(hexutil.Encode(inputEncode)))
@@ -159,7 +159,7 @@ func (anchorTrust *Anchor) UnRegisterTrustAnchor(from common.Address, anchor str
 	// encoding
 	inputEncode, err := anchorTrust.abi.Pack("unRegisterTrustAnchor", anchor)
 	if err != nil {
-		panic(err)
+		return "", err
 	}
 
 	transaction := anchorTrust.super.PrePareTransaction(from, TrustAnchorContractAddr, types.ComplexString(hexutil.Encode(inputEncode)))
@@ -176,7 +176,7 @@ func (anchorTrust *Anchor) IsTrustAnchor(from common.Address, address string) (b
 	// encoding
 	inputEncode, err := anchorTrust.abi.Pack("isTrustAnchor", address)
 	if err != nil {
-		panic(err)
+		return false, err
 	}
 	transaction := anchorTrust.super.PrePareTransaction(from, TrustAnchorContractAddr, types.ComplexString(hexutil.Encode(inputEncode)))
 	requestResult, err := anchorTrust.super.Call(transaction)
@@ -185,13 +185,13 @@ func (anchorTrust *Anchor) IsTrustAnchor(from common.Address, address string) (b
 	}
 	//fmt.Println("result is ", requestResult.Result.(string))
 
-	var trustanchor bool
-	err = anchorTrust.abi.Methods["isTrustAnchor"].Outputs.Unpack(&trustanchor, common.FromHex(requestResult.Result.(string)))
+	var trustAnchor bool
+	err = anchorTrust.abi.Methods["isTrustAnchor"].Outputs.Unpack(&trustAnchor, common.FromHex(requestResult.Result.(string)))
 	// 解码不应该出错，除非底层逻辑变更
 	if err != nil {
 		return false, err
 	}
-	return trustanchor, nil
+	return trustAnchor, nil
 }
 
 //"updateBaseAnchorInfo","inputs":[{"name":"anchor","type":"string"},{"name":"companyUrl","type":"string"},{"name":"website","type":"string"},{"name":"documentUrl","type":"string"},{"name":"serverUrl","type":"string"},{"name":"email","type":"string"},{"name":"desc","type":"string"}],"outputs":[]
@@ -202,7 +202,7 @@ func (anchorTrust *Anchor) UpdateBaseAnchorInfo(from common.Address, updateAncho
 	values = anchorTrust.super.StructToInterface(*updateAnchor, values)
 	inputEncode, err := anchorTrust.abi.Pack("updateBaseAnchorInfo", values...)
 	if err != nil {
-		panic(err)
+		return "", err
 	}
 
 	transaction := anchorTrust.super.PrePareTransaction(from, TrustAnchorContractAddr, types.ComplexString(hexutil.Encode(inputEncode)))
@@ -221,7 +221,7 @@ func (anchorTrust *Anchor) UpdateExtendAnchorInfo(from common.Address, extendAnc
 	values = anchorTrust.super.StructToInterface(*extendAnchorInfo, values)
 	inputEncode, err := anchorTrust.abi.Pack("updateExtendAnchorInfo", values...)
 	if err != nil {
-		panic(err)
+		return "", err
 	}
 
 	transaction := anchorTrust.super.PrePareTransaction(from, TrustAnchorContractAddr, types.ComplexString(hexutil.Encode(inputEncode)))
@@ -237,7 +237,7 @@ func (anchorTrust *Anchor) ExtractOwnBounty(from common.Address, anchor string) 
 	// encoding
 	inputEncode, err := anchorTrust.abi.Pack("extractOwnBounty", anchor)
 	if err != nil {
-		panic(err)
+		return "", err
 	}
 
 	transaction := anchorTrust.super.PrePareTransaction(from, TrustAnchorContractAddr, types.ComplexString(hexutil.Encode(inputEncode)))
@@ -253,7 +253,7 @@ func (anchorTrust *Anchor) GetTrustAnchor(from common.Address, anchor string) (*
 	// encoding
 	inputEncode, err := anchorTrust.abi.Pack("queryTrustAnchor", anchor)
 	if err != nil {
-		panic(err)
+		return nil, err
 	}
 
 	transaction := anchorTrust.super.PrePareTransaction(from, TrustAnchorContractAddr, types.ComplexString(hexutil.Encode(inputEncode)))
@@ -279,7 +279,7 @@ func (anchorTrust *Anchor) GetTrustAnchorStatus(from common.Address, anchor stri
 	// encoding
 	inputEncode, err := anchorTrust.abi.Pack("queryTrustAnchorStatus", anchor)
 	if err != nil {
-		panic(err)
+		return 0, err
 	}
 
 	transaction := anchorTrust.super.PrePareTransaction(from, TrustAnchorContractAddr, types.ComplexString(hexutil.Encode(inputEncode)))
@@ -303,7 +303,7 @@ func (anchorTrust *Anchor) GetBaseTrustAnchorList(from common.Address) ([]string
 	// encoding
 	inputEncode, err := anchorTrust.abi.Pack("queryBaseTrustAnchorList")
 	if err != nil {
-		panic(err)
+		return nil, err
 	}
 
 	transaction := anchorTrust.super.PrePareTransaction(from, TrustAnchorContractAddr, types.ComplexString(hexutil.Encode(inputEncode)))
@@ -334,7 +334,7 @@ func (anchorTrust *Anchor) GetBaseTrustAnchorNum(from common.Address) (uint64, e
 	// encoding
 	inputEncode, err := anchorTrust.abi.Pack("queryBaseTrustAnchorNum")
 	if err != nil {
-		panic(err)
+		return 0, err
 	}
 
 	transaction := anchorTrust.super.PrePareTransaction(from, TrustAnchorContractAddr, types.ComplexString(hexutil.Encode(inputEncode)))
@@ -358,7 +358,7 @@ func (anchorTrust *Anchor) GetExpendTrustAnchorList(from common.Address) ([]stri
 	// encoding
 	inputEncode, err := anchorTrust.abi.Pack("queryExpendTrustAnchorList")
 	if err != nil {
-		panic(err)
+		return nil, err
 	}
 
 	transaction := anchorTrust.super.PrePareTransaction(from, TrustAnchorContractAddr, types.ComplexString(hexutil.Encode(inputEncode)))
@@ -389,7 +389,7 @@ func (anchorTrust *Anchor) GetExpendTrustAnchorNum(from common.Address) (uint64,
 	// encoding
 	inputEncode, err := anchorTrust.abi.Pack("queryExpendTrustAnchorNum")
 	if err != nil {
-		panic(err)
+		return 0, err
 	}
 
 	transaction := anchorTrust.super.PrePareTransaction(from, TrustAnchorContractAddr, types.ComplexString(hexutil.Encode(inputEncode)))
@@ -413,7 +413,7 @@ func (anchorTrust *Anchor) VoteElect(from common.Address, candidate string) (str
 	// encoding
 	inputEncode, err := anchorTrust.abi.Pack("voteElect", candidate)
 	if err != nil {
-		panic(err)
+		return "", err
 	}
 
 	transaction := anchorTrust.super.PrePareTransaction(from, TrustAnchorContractAddr, types.ComplexString(hexutil.Encode(inputEncode)))
@@ -430,7 +430,7 @@ func (anchorTrust *Anchor) CancelVote(from common.Address, candidate string) (st
 	// encoding
 	inputEncode, err := anchorTrust.abi.Pack("cancelVote", candidate)
 	if err != nil {
-		panic(err)
+		return "", err
 	}
 
 	transaction := anchorTrust.super.PrePareTransaction(from, TrustAnchorContractAddr, types.ComplexString(hexutil.Encode(inputEncode)))
@@ -446,7 +446,7 @@ func (anchorTrust *Anchor) GetVoter(from common.Address, voterAddress string) (*
 	// encoding
 	inputEncode, err := anchorTrust.abi.Pack("queryVoter", voterAddress)
 	if err != nil {
-		panic(err)
+		return nil, err
 	}
 
 	transaction := anchorTrust.super.PrePareTransaction(from, TrustAnchorContractAddr, types.ComplexString(hexutil.Encode(inputEncode)))
@@ -478,7 +478,7 @@ func (anchorTrust *Anchor) CheckSenderAddress(from common.Address, address strin
 	// encoding
 	inputEncode, err := anchorTrust.abi.Pack("checkSenderAddress", address)
 	if err != nil {
-		panic(err)
+		return false, err
 	}
 
 	transaction := anchorTrust.super.PrePareTransaction(from, TrustAnchorContractAddr, types.ComplexString(hexutil.Encode(inputEncode)))
