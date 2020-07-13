@@ -45,6 +45,17 @@ type Signature struct {
 	Signature string
 }
 
+type RegisterCertificate struct {
+	Id string
+	Context string
+	Subject string
+	Period uint64
+	IssuerAlgorithm string
+	IssuerSignature string
+	SubjectPublicKey string
+	SubjectAlgorithm string
+	SubjectSignature string
+}
 func (system *System) NewCertificate() (*Certificate, error) {
 	parsedAbi, err := abi.JSON(strings.NewReader(CertificateAbiJSON))
 	if err != nil {
@@ -193,11 +204,13 @@ func (certificate *Certificate) GetSubjectSignature(from common.Address, id stri
 	return &subjectSignature, err
 }
 
-// 这个还有问题，后面实现！！！！！！
 //"inputs":[{"name":"Id","type":"string"},{"name":"Context","type":"string"},{"name":"Subject","type":"string"},{"name":"Period","type":"uint64"},{"name":"IssuerAlgorithm","type":"string"},{"name":"IssuerSignature","type":"string"},{"name":"SubjectPublicKey","type":"string"},{"name":"SubjectAlgorithm","type":"string"},{"name":"SubjectSignature","type":"string"}],"outputs":[]
-func (certificate *Certificate) RegisterCertificate(from common.Address, id string) (string, error) {
+func (certificate *Certificate) RegisterCertificate(from common.Address, registerCertificate *RegisterCertificate) (string, error) {
 	// encoding
-	inputEncode, err := certificate.abi.Pack("registerCertificate", id)
+	// registerCertificate is a struct we need to use the components.
+	var values []interface{}
+	values = certificate.super.StructToInterface(*registerCertificate,values)
+	inputEncode, err := certificate.abi.Pack("registerCertificate", values...)
 	if err != nil {
 		panic(err)
 	}

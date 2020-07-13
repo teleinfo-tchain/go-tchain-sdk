@@ -22,7 +22,7 @@ func TestGetPeriod(t *testing.T) {
 		t.Error(err)
 		t.FailNow()
 	}
-	period, err := cer.GetPeriod(common.StringToAddress(coinBase), "0")
+	period, err := cer.GetPeriod(common.StringToAddress(coinBase), coinBase)
 	if err != nil && err != system.ErrCertificateNotExist {
 		t.Error(err)
 		t.FailNow()
@@ -33,6 +33,7 @@ func TestGetPeriod(t *testing.T) {
 	t.Log(period)
 }
 
+// 如何激活证书？？？
 func TestGetActive(t *testing.T) {
 	var connection = bif.NewBif(providers.NewHTTPProvider(resources.IP+":"+resources.Port, 10, false))
 	coinBase, err := connection.Core.GetCoinbase()
@@ -45,7 +46,7 @@ func TestGetActive(t *testing.T) {
 		t.Error(err)
 		t.FailNow()
 	}
-	isEnable, err := cer.GetActive(common.StringToAddress(coinBase), "0")
+	isEnable, err := cer.GetActive(common.StringToAddress(coinBase), coinBase)
 	if err != nil && err != system.ErrCertificateNotExist {
 		t.Error(err)
 		t.FailNow()
@@ -69,7 +70,7 @@ func TestGetIssuer(t *testing.T) {
 		t.Log(err)
 		t.FailNow()
 	}
-	issuer, err := cer.GetIssuer(common.StringToAddress(coinBase), "0")
+	issuer, err := cer.GetIssuer(common.StringToAddress(coinBase), coinBase)
 	if err != nil {
 		t.Error(err)
 		t.FailNow()
@@ -90,7 +91,7 @@ func TestGetIssuerSignature(t *testing.T) {
 		t.Log(err)
 		t.FailNow()
 	}
-	issuerSignature, err := cer.GetIssuerSignature(common.StringToAddress(coinBase), "0")
+	issuerSignature, err := cer.GetIssuerSignature(common.StringToAddress(coinBase), coinBase)
 	if err != nil  && err != system.ErrCertificateNotExist {
 		t.Error(err)
 		t.FailNow()
@@ -102,6 +103,9 @@ func TestGetIssuerSignature(t *testing.T) {
 
 	if issuerSignature != nil{
 		t.Log(issuerSignature.Id)
+		t.Log(issuerSignature.PublicKey)
+		t.Log(issuerSignature.Algorithm)
+		t.Log(issuerSignature.Signature)
 	}
 }
 
@@ -117,7 +121,7 @@ func TestGetSubjectSignature(t *testing.T) {
 		t.Log(err)
 		t.FailNow()
 	}
-	subjectSignature, err := cer.GetSubjectSignature(common.StringToAddress(coinBase), "1")
+	subjectSignature, err := cer.GetSubjectSignature(common.StringToAddress(coinBase), coinBase)
 	if err != nil  && err != system.ErrCertificateNotExist {
 		t.Error(err)
 		t.FailNow()
@@ -129,28 +133,45 @@ func TestGetSubjectSignature(t *testing.T) {
 
 	if subjectSignature != nil{
 		t.Log(subjectSignature.Id)
+		t.Log(subjectSignature.PublicKey)
+		t.Log(subjectSignature.Algorithm)
+		t.Log(subjectSignature.Signature)
 	}
 }
 
-//func TestRegisterCertificate(t *testing.T) {
-//	var connection = bif.NewBif(providers.NewHTTPProvider(resources.IP+":"+resources.Port, 10, false))
-//	coinBase, err := connection.Core.GetCoinbase()
-//	if err != nil {
-//		t.Log(err)
-//		t.FailNow()
-//	}
-//	cer, err := connection.System.NewCertificate()
-//	if err != nil {
-//		t.Log(err)
-//		t.FailNow()
-//	}
-//	transactionHash, err := cer.RegisterCertificate(common.StringToAddress(coinBase), "0")
-//	if err != nil {
-//		t.Error(err)
-//		t.FailNow()
-//	}
-//	t.Log(transactionHash, err)
-//}
+// 经过超级节点投票，已经将基础信任锚did:bid:c935bd29a90fbeea87badf3e 激活
+// 证书的颁布，
+func TestRegisterCertificate(t *testing.T) {
+	var connection = bif.NewBif(providers.NewHTTPProvider(resources.IP+":"+resources.Port, 10, false))
+	coinBase, err := connection.Core.GetCoinbase()
+	if err != nil {
+		t.Log(err)
+		t.FailNow()
+	}
+	cer, err := connection.System.NewCertificate()
+	if err != nil {
+		t.Log(err)
+		t.FailNow()
+	}
+
+	registerCertificate := new(system.RegisterCertificate)
+	registerCertificate.Id = common.StringToAddress(coinBase).String()
+	registerCertificate.Context = "context_test"
+	registerCertificate.Subject = "did:bid:6cc796b8d6e2fbebc9b3cf9e"
+	registerCertificate.Period = 3
+	registerCertificate.IssuerAlgorithm = ""
+	registerCertificate.IssuerSignature = ""
+	registerCertificate.SubjectPublicKey = ""
+	registerCertificate.SubjectAlgorithm = ""
+	registerCertificate.SubjectSignature = ""
+	//registerCertificate
+	registerCertificateHash, err := cer.RegisterCertificate(common.StringToAddress(coinBase), registerCertificate)
+	if err != nil {
+		t.Error(err)
+		t.FailNow()
+	}
+	t.Log(registerCertificateHash, err)
+}
 
 func TestRevokedCertificate(t *testing.T) {
 	var connection = bif.NewBif(providers.NewHTTPProvider(resources.IP+":"+resources.Port, 10, false))
@@ -164,7 +185,7 @@ func TestRevokedCertificate(t *testing.T) {
 		t.Log(err)
 		t.FailNow()
 	}
-	transactionHash, err := cer.RevokedCertificate(common.StringToAddress(coinBase), "0")
+	transactionHash, err := cer.RevokedCertificate(common.StringToAddress(coinBase), coinBase)
 	if err != nil {
 		t.Error(err)
 		t.FailNow()
