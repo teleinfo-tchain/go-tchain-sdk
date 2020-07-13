@@ -248,7 +248,6 @@ func (anchorTrust *Anchor) ExtractOwnBounty(from common.Address, anchor string) 
 	return transactionHash, err
 }
 
-
 //"inputs":[{"name":"anchor","type":"string"}],"outputs":[{"name":"id","type":"string"},{"name":"name","type":"string"},{"name":"company","type":"string"},{"name":"CompanyUrl","type":"string"},{"name":"website","type":"string"},{"name":"ServerUrl","type":"string"},{"name":"DocumentUrl","type":"string"},{"name":"email","type":"string"},{"name":"desc","type":"string"},{"name":"TrustAnchorType","type":"uint64"},{"name":"status","type":"uint64"},{"name":"active","type":"bool"},{"name":"totalbounty","type":"uint64"},{"name":"extractedBounty","type":"uint64"},{"name":"lastExtracTime","type":"uint64"},{"name":"votecount","type":"uint64"},{"name":"stake","type":"uint64"},{"name":"createDate","type":"uint64"},{"name":"certificateAcount","type":"uint64"}]
 func (anchorTrust *Anchor) GetTrustAnchor(from common.Address, anchor string) (*TrustAnchor, error) {
 	// encoding
