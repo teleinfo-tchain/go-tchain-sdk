@@ -2,7 +2,6 @@ package system
 
 import (
 	"encoding/json"
-	"errors"
 	"github.com/bif/bif-sdk-go/abi"
 	"github.com/bif/bif-sdk-go/common"
 	"github.com/bif/bif-sdk-go/common/hexutil"
@@ -13,45 +12,45 @@ import (
 
 const (
 	TrustAnchorContractAddr = "did:bid:00000000000000000000000c"
-	AnchorStatusUnknow      = 0
-	AnchorStatusOK          = 1
-	AnchorStatusErr         = 2
-	AnchorStatusDelete      = 3
-
-	BaseAnchor                 = 10
-	ExtendAnchor               = 11
-	UnknowAnchorType           = 2
-	Day                        = 86400        //24*60*60秒，每次提取积分的最小时间间隔
-	Bifer                      = 100000000    //10^9
-	MiniExtractAmount          = 100 * Bifer  //每次提取积分的最小额度是100
-	BaseTrustAnchorPledge      = 1000 * Bifer //注册根信任锚抵押的积分
-	ExtendTrustAnchorPledge    = 100 * Bifer  //注册扩展信任锚抵押的积分
-	IncentivesToExtendIssueCer = 1 * Bifer    //颁发一个证书获得的奖励
-	IncentivesToBaseIssueCer   = 2 * Bifer    //颁发一个证书获得的奖励
-	EmptyUrl                   = ""
+	//AnchorStatusUnknow      = 0
+	//AnchorStatusOK          = 1
+	//AnchorStatusErr         = 2
+	//AnchorStatusDelete      = 3
+	//
+	//BaseAnchor                 = 10
+	//ExtendAnchor               = 11
+	//UnknowAnchorType           = 2
+	//Day                        = 86400        //24*60*60秒，每次提取积分的最小时间间隔
+	//Bifer                      = 100000000    //10^9
+	//MiniExtractAmount          = 100 * Bifer  //每次提取积分的最小额度是100
+	//BaseTrustAnchorPledge      = 1000 * Bifer //注册根信任锚抵押的积分
+	//ExtendTrustAnchorPledge    = 100 * Bifer  //注册扩展信任锚抵押的积分
+	//IncentivesToExtendIssueCer = 1 * Bifer    //颁发一个证书获得的奖励
+	//IncentivesToBaseIssueCer   = 2 * Bifer    //颁发一个证书获得的奖励
+	//EmptyUrl                   = ""
 )
 
-var (
-	ErrIllExtracAmout    = errors.New("积分总额不足100，无法提取")
-	ErrIllExtracTime     = errors.New("距离上次提取不足24小时，无法提取")
-	ErrIllAnchorType     = errors.New("未知的信任锚类型，10 代表根信任锚，11代表扩展信任锚")
-	ErrAnchorExist       = errors.New("该地址已存在于信任锚列表中")
-	ErrAnchorNoExist     = errors.New("信任锚不存在")
-	ErrIllegalAnchor     = errors.New("信任锚字段不能为空")
-	ErrIllegalBalance    = errors.New("账户内积分不足，注册根信任锚需要抵押1000积分，注册扩展信任锚需要抵押100积分")
-	ErrIllegalVote       = errors.New("信任锚不存在或不是基础信任锚")
-	ErrIllegalRepeatVote = errors.New("同一个基础信任锚能且仅能投一票")
-)
+//var (
+//	ErrIllExtracAmout    = errors.New("积分总额不足100，无法提取")
+//	ErrIllExtracTime     = errors.New("距离上次提取不足24小时，无法提取")
+//	ErrIllAnchorType     = errors.New("未知的信任锚类型，10 代表根信任锚，11代表扩展信任锚")
+//	ErrAnchorExist       = errors.New("该地址已存在于信任锚列表中")
+//	ErrAnchorNoExist     = errors.New("信任锚不存在")
+//	ErrIllegalAnchor     = errors.New("信任锚字段不能为空")
+//	ErrIllegalBalance    = errors.New("账户内积分不足，注册根信任锚需要抵押1000积分，注册扩展信任锚需要抵押100积分")
+//	ErrIllegalVote       = errors.New("信任锚不存在或不是基础信任锚")
+//	ErrIllegalRepeatVote = errors.New("同一个基础信任锚能且仅能投一票")
+//)
 
 const TrustAnchorAbiJSON = `[
-{"constant": false,"name":"registerTrustAnchor","inputs":[{"name":"anchor","type":"string"},{"name":"anchortype","type":"uint64"},{"name":"anchorname","type":"string"},{"name":"company","type":"string"},{"name":"companyurl","type":"string"},{"name":"website","type":"string"},{"name":"documenturl","type":"string"},{"name":"serverUrl","type":"string"},{"name":"email","type":"string"},{"name":"desc","type":"string"}],"outputs":[],"type":"function"},
+{"constant": false,"name":"registerTrustAnchor","inputs":[{"name":"anchor","type":"string"},{"name":"anchorType","type":"uint64"},{"name":"anchorName","type":"string"},{"name":"company","type":"string"},{"name":"companyUrl","type":"string"},{"name":"website","type":"string"},{"name":"documentUrl","type":"string"},{"name":"serverUrl","type":"string"},{"name":"email","type":"string"},{"name":"desc","type":"string"}],"outputs":[],"type":"function"},
 {"constant": false,"name":"unRegisterTrustAnchor","inputs":[{"name":"anchor","type":"string"}],"outputs":[],"type":"function"},
-{"constant": true,"name":"isTrustAnchor","inputs":[{"name":"address","type":"string"}],"outputs":[{"name":"trustanchor","type":"bool"}],"type":"function"},
+{"constant": true,"name":"isTrustAnchor","inputs":[{"name":"address","type":"string"}],"outputs":[{"name":"trustAnchor","type":"bool"}],"type":"function"},
 {"constant": false,"name":"updateBaseAnchorInfo","inputs":[{"name":"anchor","type":"string"},{"name":"companyUrl","type":"string"},{"name":"website","type":"string"},{"name":"documentUrl","type":"string"},{"name":"serverUrl","type":"string"},{"name":"email","type":"string"},{"name":"desc","type":"string"}],"outputs":[],"type":"function"},
 {"constant": false,"name":"updateExtendAnchorInfo","inputs":[{"name":"companyUrl","type":"string"},{"name":"website","type":"string"},{"name":"documentUrl","type":"string"},{"name":"serverUrl","type":"string"},{"name":"email","type":"string"},{"name":"desc","type":"string"}],"outputs":[],"type":"function"},
 {"constant": false,"name":"extractOwnBounty","inputs":[{"name":"anchor","type":"string"}],"outputs":[],"type":"function"},
-{"constant": true,"name":"queryTrustAnchor","inputs":[{"name":"anchor","type":"string"}],"outputs":[{"name":"id","type":"string"},{"name":"name","type":"string"},{"name":"company","type":"string"},{"name":"CompanyUrl","type":"string"},{"name":"website","type":"string"},{"name":"ServerUrl","type":"string"},{"name":"DocumentUrl","type":"string"},{"name":"email","type":"string"},{"name":"desc","type":"string"},{"name":"TrustAnchorType","type":"uint64"},{"name":"status","type":"uint64"},{"name":"active","type":"bool"},{"name":"totalbounty","type":"uint64"},{"name":"extractedBounty","type":"uint64"},{"name":"lastExtracTime","type":"uint64"},{"name":"votecount","type":"uint64"},{"name":"stake","type":"uint64"},{"name":"createDate","type":"uint64"},{"name":"certificateAcount","type":"uint64"}],"type":"function"},
-{"constant": true,"name":"queryTrustAnchorStatus","inputs":[{"name":"anchor","type":"string"}],"outputs":[{"name":"anchorstatus","type":"uint64"}],"type":"function"},
+{"constant": true,"name":"queryTrustAnchor","inputs":[{"name":"anchor","type":"string"}],"outputs":[{"name":"id","type":"string"},{"name":"name","type":"string"},{"name":"company","type":"string"},{"name":"CompanyUrl","type":"string"},{"name":"website","type":"string"},{"name":"ServerUrl","type":"string"},{"name":"DocumentUrl","type":"string"},{"name":"email","type":"string"},{"name":"desc","type":"string"},{"name":"TrustAnchorType","type":"uint64"},{"name":"status","type":"uint64"},{"name":"active","type":"bool"},{"name":"totalBounty","type":"uint64"},{"name":"extractedBounty","type":"uint64"},{"name":"lastExtractTime","type":"uint64"},{"name":"voteCount","type":"uint64"},{"name":"stake","type":"uint64"},{"name":"createDate","type":"uint64"},{"name":"certificateAccount","type":"uint64"}],"type":"function"},
+{"constant": true,"name":"queryTrustAnchorStatus","inputs":[{"name":"anchor","type":"string"}],"outputs":[{"name":"anchorStatus","type":"uint64"}],"type":"function"},
 {"constant": true,"name":"queryBaseTrustAnchorList","inputs":[],"outputs":[{"name":"baseList","type":"string"}],"type":"function"},
 {"constant": true,"name":"queryBaseTrustAnchorNum","inputs":[],"outputs":[{"name":"baseListNum","type":"uint64"}],"type":"function"},
 {"constant": true,"name":"queryExpendTrustAnchorList","inputs":[],"outputs":[{"name":"expendList","type":"string"}],"type":"function"},
@@ -60,7 +59,7 @@ const TrustAnchorAbiJSON = `[
 {"constant": false,"name":"voteElect","inputs":[{"name":"candidate","type":"string"}],"outputs":[],"type":"function"},
 {"constant": false,"name":"cancelVote","inputs":[{"name":"candidate","type":"string"}],"outputs":[],"type":"function"},
 {"constant": false,"name":"queryVoter","inputs":[{"name":"voterAddress","type":"string"}],"outputs":[{"name":"voterInfo","type":"string"}],"type":"function"},
-{"constant": true,"name":"checkSenderAddress","inputs":[{"name":"address","type":"string"}],"outputs":[{"name":"supernode","type":"bool"}],"type":"function"}
+{"constant": true,"name":"checkSenderAddress","inputs":[{"name":"address","type":"string"}],"outputs":[{"name":"superNode","type":"bool"}],"type":"function"}
 ]`
 
 type Anchor struct {
@@ -81,19 +80,19 @@ type TrustAnchor struct {
 	TrustAnchorType   uint64
 	Status            uint64
 	Active            bool
-	Totalbounty       uint64
+	TotalBounty       uint64
 	ExtractedBounty   uint64
-	LastExtracTime    uint64
-	Votecount         uint64
+	LastExtractTime    uint64
+	VoteCount         uint64
 	Stake             uint64
 	CreateDate        uint64
-	CertificateAcount uint64
+	CertificateAccount uint64
 }
 
 type RegisterAnchor struct {
 	Anchor string
-	Anchortype uint64
-	Anchorname string
+	AnchorType uint64
+	AnchorName string
 	Company string
 	ExtendAnchorInfo
 }
@@ -104,9 +103,9 @@ type BaseAnchorInfo struct {
 }
 
 type ExtendAnchorInfo struct{
-	Companyurl string
+	CompanyUrl string
 	Website string
-	Documenturl string
+	DocumentUrl string
 	ServerUrl string
 	Email string
 	Desc string
@@ -135,7 +134,7 @@ func (system *System) NewTrustAnchor() (*Anchor, error) {
 }
 
 // 是否让用户可以自定义gas和gasPrice？
-//"registerTrustAnchor","inputs":[{"name":"anchor","type":"string"},{"name":"anchortype","type":"uint64"},{"name":"anchorname","type":"string"},{"name":"company","type":"string"},{"name":"companyurl","type":"string"},{"name":"website","type":"string"},{"name":"documenturl","type":"string"},{"name":"serverUrl","type":"string"},{"name":"email","type":"string"},{"name":"desc","type":"string"}],"outputs":[]
+//"registerTrustAnchor","inputs":[{"name":"anchor","type":"string"},{"name":"anchorType","type":"uint64"},{"name":"anchorName","type":"string"},{"name":"company","type":"string"},{"name":"companyUrl","type":"string"},{"name":"website","type":"string"},{"name":"documentUrl","type":"string"},{"name":"serverUrl","type":"string"},{"name":"email","type":"string"},{"name":"desc","type":"string"}],"outputs":[]
 func (anchorTrust *Anchor) RegisterTrustAnchor(from common.Address, registerAnchor *RegisterAnchor) (string, error) {
 	// encoding
 	// RegisterAnchor is a struct we need to use the components.
@@ -164,7 +163,7 @@ func (anchorTrust *Anchor) UnRegisterTrustAnchor(from common.Address, anchor str
 	return anchorTrust.super.SendTransaction(transaction)
 }
 
-//"isTrustAnchor","inputs":[{"name":"address","type":"string"}],"outputs":[{"name":"trustanchor","type":"bool"}]
+//"isTrustAnchor","inputs":[{"name":"address","type":"string"}],"outputs":[{"name":"trustAnchor","type":"bool"}]
 // 基础信任锚和扩展信任锚的注册后，初始化时，为false;
 func (anchorTrust *Anchor) IsTrustAnchor(from common.Address, address string) (bool, error) {
 	// encoding
@@ -233,7 +232,7 @@ func (anchorTrust *Anchor) ExtractOwnBounty(from common.Address, anchor string) 
 	return  anchorTrust.super.SendTransaction(transaction)
 }
 
-//"inputs":[{"name":"anchor","type":"string"}],"outputs":[{"name":"id","type":"string"},{"name":"name","type":"string"},{"name":"company","type":"string"},{"name":"CompanyUrl","type":"string"},{"name":"website","type":"string"},{"name":"ServerUrl","type":"string"},{"name":"DocumentUrl","type":"string"},{"name":"email","type":"string"},{"name":"desc","type":"string"},{"name":"TrustAnchorType","type":"uint64"},{"name":"status","type":"uint64"},{"name":"active","type":"bool"},{"name":"totalbounty","type":"uint64"},{"name":"extractedBounty","type":"uint64"},{"name":"lastExtracTime","type":"uint64"},{"name":"votecount","type":"uint64"},{"name":"stake","type":"uint64"},{"name":"createDate","type":"uint64"},{"name":"certificateAcount","type":"uint64"}]
+//"inputs":[{"name":"anchor","type":"string"}],"outputs":[{"name":"id","type":"string"},{"name":"name","type":"string"},{"name":"company","type":"string"},{"name":"CompanyUrl","type":"string"},{"name":"website","type":"string"},{"name":"ServerUrl","type":"string"},{"name":"DocumentUrl","type":"string"},{"name":"email","type":"string"},{"name":"desc","type":"string"},{"name":"TrustAnchorType","type":"uint64"},{"name":"status","type":"uint64"},{"name":"active","type":"bool"},{"name":"totalBounty","type":"uint64"},{"name":"extractedBounty","type":"uint64"},{"name":"lastExtractTime","type":"uint64"},{"name":"voteCount","type":"uint64"},{"name":"stake","type":"uint64"},{"name":"createDate","type":"uint64"},{"name":"certificateAccount","type":"uint64"}]
 func (anchorTrust *Anchor) GetTrustAnchor(from common.Address, anchor string) (*TrustAnchor, error) {
 	// encoding
 	inputEncode, err := anchorTrust.abi.Pack("queryTrustAnchor", anchor)
@@ -259,7 +258,7 @@ func (anchorTrust *Anchor) GetTrustAnchor(from common.Address, anchor string) (*
 	return &trustAnchor, err
 }
 
-//"name":"queryTrustAnchorStatus","inputs":[{"name":"anchor","type":"string"}],"outputs":[{"name":"anchorstatus","type":"uint64"}]
+//"name":"queryTrustAnchorStatus","inputs":[{"name":"anchor","type":"string"}],"outputs":[{"name":"anchorStatus","type":"uint64"}]
 func (anchorTrust *Anchor) GetTrustAnchorStatus(from common.Address, anchor string) (uint64, error) {
 	// encoding
 	inputEncode, err := anchorTrust.abi.Pack("queryTrustAnchorStatus", anchor)
@@ -406,7 +405,6 @@ func (anchorTrust *Anchor) VoteElect(from common.Address, candidate string) (str
 	return anchorTrust.super.SendTransaction(transaction)
 }
 
-
 //"cancelVote","inputs":[{"name":"candidate","type":"string"}],"outputs":[]
 func (anchorTrust *Anchor) CancelVote(from common.Address, candidate string) (string, error) {
 	// encoding
@@ -451,8 +449,7 @@ func (anchorTrust *Anchor) GetVoter(from common.Address, voterAddress string) (*
 	return voteInfo, err
 }
 
-
-//"checkSenderAddress","inputs":[{"name":"address","type":"string"}],"outputs":[{"name":"supernode","type":"bool"}]
+//"checkSenderAddress","inputs":[{"name":"address","type":"string"}],"outputs":[{"name":"superNode","type":"bool"}]
 func (anchorTrust *Anchor) CheckSenderAddress(from common.Address, address string) (bool, error) {
 	// encoding
 	inputEncode, err := anchorTrust.abi.Pack("checkSenderAddress", address)

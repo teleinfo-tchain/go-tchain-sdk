@@ -15,10 +15,10 @@ const (
 )
 
 var (
-	ErrCertificateRegistered  = errors.New("Certificate is already registered")
-	ErrCertificateNotExist    = errors.New("Certificate doesn't exist")
-	ErrIllegalSender          = errors.New("Illegal Sender")
-	ErrIllSenderOrCerNotExist = errors.New("Illegal Sender Or Certificate doesn't exist")
+	//ErrCertificateRegistered  = errors.New("certificate is already registered")
+	ErrCertificateNotExist    = errors.New("certificate doesn't exist")
+	//ErrIllegalSender          = errors.New("illegal sender")
+	//ErrIllSenderOrCerNotExist = errors.New("illegal sender Or certificate doesn't exist")
 )
 
 const CertificateAbiJSON = `[
@@ -55,6 +55,7 @@ type RegisterCertificate struct {
 	SubjectAlgorithm string
 	SubjectSignature string
 }
+
 func (system *System) NewCertificate() (*Certificate, error) {
 	parsedAbi, err := abi.JSON(strings.NewReader(CertificateAbiJSON))
 	if err != nil {
