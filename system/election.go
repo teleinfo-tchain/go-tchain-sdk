@@ -2,6 +2,7 @@ package system
 
 import (
 	"errors"
+	"fmt"
 	"github.com/bif/bif-sdk-go/abi"
 	"github.com/bif/bif-sdk-go/common"
 	"github.com/bif/bif-sdk-go/common/hexutil"
@@ -97,7 +98,8 @@ type candidates struct {
 	Num uint64
 	CandidatesList []string
 }
-type voter struct {
+
+type voterParsing struct {
 	Owner string
 	IsProxy bool
 	ProxyVoteCount uint64
@@ -105,6 +107,16 @@ type voter struct {
 	LastVoteCount uint64
 	Timestamp uint64
 	VoteCandidatesList string
+}
+
+type voter struct {
+	Owner string
+	IsProxy bool
+	ProxyVoteCount uint64
+	Proxy string
+	LastVoteCount uint64
+	Timestamp uint64
+	VoteCandidatesList []string
 }
 
 type votersParsing struct {
@@ -360,14 +372,26 @@ func(election *Election) GetVoter(from common.Address, voterAddress string)(*vot
 	}
 
 	//fmt.Println("result is ", requestResult.Result.(string))
-	var voterInfo voter
+	var voterInfo voterParsing
+	fmt.Println("voter ", voterInfo)
 	err = election.abi.Methods["queryVoter"].Outputs.Unpack(&voterInfo, common.FromHex(requestResult.Result.(string)))
 	// 解码不应该出错，除非底层逻辑变更
 	if err != nil {
 		return nil, err
 	}
 
-	return &voterInfo, err
+	var voter voter
+	voter.Owner = voterInfo.Owner
+	voter.IsProxy = voterInfo.IsProxy
+	voter.ProxyVoteCount = voterInfo.ProxyVoteCount
+	voter.Proxy = voterInfo.Proxy
+	voter.LastVoteCount = voterInfo.LastVoteCount
+	voter.Timestamp = voterInfo.Timestamp
+	for i := 0;i<len(voterInfo.VoteCandidatesList);i++{
+		voter.VoteCandidatesList = append(voter.VoteCandidatesList, voterInfo.VoteCandidatesList[i*32:(i+1)*32-1])
+	}
+
+	return &voter, err
 }
 
 //"queryVoterList","inputs":[{"name":"candidateAddress","type":"string"}],"outputs":[{"name":"candidateAddress","type":"string"},{"name":"voterNum","type":"uint64"},{"name":"voterList","type":"string"}]
