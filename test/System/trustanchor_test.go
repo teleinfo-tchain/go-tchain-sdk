@@ -37,12 +37,12 @@ func TestRegisterTrustAnchor(t *testing.T) {
 	}
 	registerBaseAnchor := new(system.RegisterAnchor)
 	registerBaseAnchor.Anchor = common.StringToAddress(BaseAnchorAddr).String()
-	registerBaseAnchor.Anchortype = BaseAnchorType
-	registerBaseAnchor.Anchorname = TrustAnchorName
+	registerBaseAnchor.AnchorType = BaseAnchorType
+	registerBaseAnchor.AnchorName = TrustAnchorName
 	registerBaseAnchor.Company = TrustAnchorCompany
-	registerBaseAnchor.Companyurl = TrustAnchorCompanyUrl
+	registerBaseAnchor.CompanyUrl = TrustAnchorCompanyUrl
 	registerBaseAnchor.Website = TrustAnchorWebsite
-	registerBaseAnchor.Documenturl = TrustAnchorDocumentUrl
+	registerBaseAnchor.DocumentUrl = TrustAnchorDocumentUrl
 	registerBaseAnchor.ServerUrl = TrustAnchorServerUrl
 	registerBaseAnchor.Email = TrustAnchorEmail
 	registerBaseAnchor.Desc = TrustAnchorDesc
@@ -56,12 +56,12 @@ func TestRegisterTrustAnchor(t *testing.T) {
 
 	registerExtendAnchor := new(system.RegisterAnchor)
 	registerExtendAnchor.Anchor = common.StringToAddress(ExtendAnchorAddr).String()
-	registerExtendAnchor.Anchortype = ExtendAnchorType
-	registerExtendAnchor.Anchorname = TrustAnchorName
+	registerExtendAnchor.AnchorType = ExtendAnchorType
+	registerExtendAnchor.AnchorName = TrustAnchorName
 	registerExtendAnchor.Company = TrustAnchorCompany
-	registerExtendAnchor.Companyurl = TrustAnchorCompanyUrl
+	registerExtendAnchor.CompanyUrl = TrustAnchorCompanyUrl
 	registerExtendAnchor.Website = TrustAnchorWebsite
-	registerExtendAnchor.Documenturl = TrustAnchorDocumentUrl
+	registerExtendAnchor.DocumentUrl = TrustAnchorDocumentUrl
 	registerExtendAnchor.ServerUrl = TrustAnchorServerUrl
 	registerExtendAnchor.Email = TrustAnchorEmail
 	registerExtendAnchor.Desc = TrustAnchorDesc
@@ -133,9 +133,9 @@ func TestUpdateBaseAnchorInfo(t *testing.T) {
 
 	baseAnchorInfo := new(system.BaseAnchorInfo)
 	baseAnchorInfo.Anchor = BaseAnchorAddr
-	baseAnchorInfo.Companyurl = "www.teleinfoTest.cn"
+	baseAnchorInfo.CompanyUrl = "www.teleinfoTest.cn"
 	baseAnchorInfo.Website = "www.server.teleinfoTest.cn"
-	baseAnchorInfo.Documenturl = "www.doc.teleinfoTest.cn"
+	baseAnchorInfo.DocumentUrl = "www.doc.teleinfoTest.cn"
 	baseAnchorInfo.ServerUrl = "2.2.2.2"
 	baseAnchorInfo.Email = "www.email.teleinfoTest.cn"
 	baseAnchorInfo.Desc = "info test Test"
@@ -162,9 +162,9 @@ func TestUpdateExtendAnchorInfo(t *testing.T) {
 	}
 
 	extendAnchorInfo := new(system.ExtendAnchorInfo)
-	extendAnchorInfo.Companyurl = "0www.teleinfo.cn"
+	extendAnchorInfo.CompanyUrl = "0www.teleinfo.cn"
 	extendAnchorInfo.Website = "0www.server.teleinfo.cn"
-	extendAnchorInfo.Documenturl = "0www.doc.teleinfo.cn"
+	extendAnchorInfo.DocumentUrl = "0www.doc.teleinfo.cn"
 	extendAnchorInfo.ServerUrl = "01.1.1.1"
 	extendAnchorInfo.Email = "0www.email.teleinfo.cn"
 	extendAnchorInfo.Desc = "0info test"
