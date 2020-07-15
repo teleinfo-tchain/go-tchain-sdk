@@ -21,8 +21,8 @@ func TestGetValidators(t *testing.T) {
 		t.FailNow()
 	}
 
-	Dpos := connection.System.NewDpos()
-	validators, err := Dpos.GetValidators(blockNumber)
+	DPoS := connection.System.NewDPoS()
+	validators, err := DPoS.GetValidators(blockNumber)
 
 	if err != nil {
 		t.Error(err)
@@ -47,9 +47,9 @@ func TestGetValidatorsAtHash(t *testing.T) {
 		t.FailNow()
 	}
 
-	Dpos := connection.System.NewDpos()
+	DPoS := connection.System.NewDPoS()
 	//input block hash
-	validators, err := Dpos.GetValidatorsAtHash(block.(*dto.BlockNoDetails).Hash)
+	validators, err := DPoS.GetValidatorsAtHash(block.(*dto.BlockNoDetails).Hash)
 
 	if err != nil {
 		t.Error(err)
@@ -61,8 +61,8 @@ func TestGetValidatorsAtHash(t *testing.T) {
 func TestRoundStateInfo(t *testing.T) {
 	var connection = bif.NewBif(providers.NewHTTPProvider(resources.IP+":"+resources.Port, 10, false))
 
-	Dpos := connection.System.NewDpos()
-	roundStateInfo, err := Dpos.RoundStateInfo()
+	DPoS := connection.System.NewDPoS()
+	roundStateInfo, err := DPoS.RoundStateInfo()
 
 	if err != nil {
 		t.Error(err)
@@ -74,8 +74,8 @@ func TestRoundStateInfo(t *testing.T) {
 func TestRoundChangeSetInfo(t *testing.T) {
 	var connection = bif.NewBif(providers.NewHTTPProvider(resources.IP+":"+resources.Port, 10, false))
 
-	Dpos := connection.System.NewDpos()
-	roundChangeSetInfo, err := Dpos.RoundChangeSetInfo()
+	DPoS := connection.System.NewDPoS()
+	roundChangeSetInfo, err := DPoS.RoundChangeSetInfo()
 
 	if err != nil {
 		t.Error(err)
@@ -86,8 +86,8 @@ func TestRoundChangeSetInfo(t *testing.T) {
 
 func TestBacklogs(t *testing.T) {
 	var connection = bif.NewBif(providers.NewHTTPProvider(resources.IP+":"+resources.Port, 10, false))
-	Dpos := connection.System.NewDpos()
-	backlogs, err := Dpos.Backlogs()
+	DPoS := connection.System.NewDPoS()
+	backlogs, err := DPoS.Backlogs()
 
 	if err != nil {
 		t.Error(err)

@@ -36,7 +36,7 @@ type RegisterCertificateInfo struct {
 	CompanyCode string
 }
 
-func(system *System) NewPeerCertificate() (*peerCertificate, error){
+func(sys *System) NewPeerCertificate() (*peerCertificate, error){
 	parseAbi, err := abi.JSON(strings.NewReader(PeerCertificateAbiJSON))
 
 	if err != nil{
@@ -44,7 +44,7 @@ func(system *System) NewPeerCertificate() (*peerCertificate, error){
 	}
 
 	peerCertificate := new(peerCertificate)
-	peerCertificate.super = system
+	peerCertificate.super = sys
 	peerCertificate.abi = parseAbi
 	return peerCertificate, nil
 }

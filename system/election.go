@@ -137,49 +137,49 @@ type stake struct {
 	Timestamp uint64
 }
 
-func (system *System) NewElection() *Election {
+func (sys *System) NewElection() *Election {
 	parsedAbi, _ := abi.JSON(strings.NewReader(ElectionAbiJSON))
 
 	election := new(Election)
 	election.abi = parsedAbi
-	election.super = system
+	election.super = sys
 	return election
 }
 
 //"registerWitness","inputs":[{"name":"nodeUrl","type":"string"},{"name":"website","type":"string"},{"name":"name","type":"string"}],"outputs":[]
-func(election *Election) RegisterWitness(from common.Address, witness *RegisterWitness) (string, error){
+func(e *Election) RegisterWitness(from common.Address, witness *RegisterWitness) (string, error){
 	//encode
 	// witness is a struct we need to use the components.
 	var values []interface{}
-	values = election.super.StructToInterface(*witness,values)
-	inputEncode, err := election.abi.Pack("registerWitness", values...)
+	values = e.super.StructToInterface(*witness,values)
+	inputEncode, err := e.abi.Pack("registerWitness", values...)
 	if err != nil {
 		return "", err
 	}
 
-	transaction := election.super.PrePareTransaction(from, ElectionContractAddr, types.ComplexString(hexutil.Encode(inputEncode)))
-	return election.super.SendTransaction(transaction)
+	transaction := e.super.PrePareTransaction(from, ElectionContractAddr, types.ComplexString(hexutil.Encode(inputEncode)))
+	return e.super.SendTransaction(transaction)
 }
 
 //"unregisterWitness","inputs":[],"outputs":[]
-func(election *Election) UnRegisterWitness(from common.Address) (string, error){
+func(e *Election) UnRegisterWitness(from common.Address) (string, error){
 	// encoding
-	inputEncode, _ := election.abi.Pack("unregisterWitness")
+	inputEncode, _ := e.abi.Pack("unregisterWitness")
 
-	transaction := election.super.PrePareTransaction(from, ElectionContractAddr, types.ComplexString(hexutil.Encode(inputEncode)))
-	return election.super.SendTransaction(transaction)
+	transaction := e.super.PrePareTransaction(from, ElectionContractAddr, types.ComplexString(hexutil.Encode(inputEncode)))
+	return e.super.SendTransaction(transaction)
 }
 
 //"queryCandidates","inputs":[{"name":"candidateAddress","type":"string"}],"outputs":[{"name":"owner","type":"string"},{"name":"voteCount","type":"uint64"},{"name":"active","type":"bool"},{"name":"url","type":"string"},{"name":"totalBounty","type":"uint64"},{"name":"extractedBounty","type":"uint64"},{"name":"lastExtractTime","type":"uint64"},{"name":"website","type":"string"},{"name":"name","type":"string"}]
-func(election *Election) GetCandidates(from common.Address, candidateAddress string)(*candidateInfo, error){
+func(e *Election) GetCandidates(from common.Address, candidateAddress string)(*candidateInfo, error){
 	// encoding
-	inputEncode, err := election.abi.Pack("queryCandidates", candidateAddress)
+	inputEncode, err := e.abi.Pack("queryCandidates", candidateAddress)
 	if err != nil{
 		return nil, err
 	}
 
-	transaction := election.super.PrePareTransaction(from, ElectionContractAddr, types.ComplexString(hexutil.Encode(inputEncode)))
-	requestResult, err := election.super.Call(transaction)
+	transaction := e.super.PrePareTransaction(from, ElectionContractAddr, types.ComplexString(hexutil.Encode(inputEncode)))
+	requestResult, err := e.super.Call(transaction)
 
 	if err != nil {
 		return nil, err
@@ -187,7 +187,7 @@ func(election *Election) GetCandidates(from common.Address, candidateAddress str
 
 	//fmt.Println("result is ", requestResult.Result.(string))
 	var candidate candidateInfo
-	err = election.abi.Methods["queryCandidates"].Outputs.Unpack(&candidate, common.FromHex(requestResult.Result.(string)))
+	err = e.abi.Methods["queryCandidates"].Outputs.Unpack(&candidate, common.FromHex(requestResult.Result.(string)))
 	// 解码不应该出错，除非底层逻辑变更
 	if err != nil {
 		return nil, err
@@ -197,12 +197,12 @@ func(election *Election) GetCandidates(from common.Address, candidateAddress str
 }
 
 //"queryAllCandidates","inputs":[],"outputs":[{"name":"listNum","type":"uint64"},{"name":"candidateInfoList","type":"string"}]
-func(election *Election) GetAllCandidates(from common.Address)(*candidates, error){
+func(e *Election) GetAllCandidates(from common.Address)(*candidates, error){
 	// encoding
-	inputEncode, _ := election.abi.Pack("queryAllCandidates")
+	inputEncode, _ := e.abi.Pack("queryAllCandidates")
 
-	transaction := election.super.PrePareTransaction(from, ElectionContractAddr, types.ComplexString(hexutil.Encode(inputEncode)))
-	requestResult, err := election.super.Call(transaction)
+	transaction := e.super.PrePareTransaction(from, ElectionContractAddr, types.ComplexString(hexutil.Encode(inputEncode)))
+	requestResult, err := e.super.Call(transaction)
 
 	if err != nil {
 		return nil, err
@@ -210,7 +210,7 @@ func(election *Election) GetAllCandidates(from common.Address)(*candidates, erro
 
 	//fmt.Println("result is ", requestResult.Result.(string))
 	var candidatesParse candidatesParsing
-	err = election.abi.Methods["queryAllCandidates"].Outputs.Unpack(&candidatesParse, common.FromHex(requestResult.Result.(string)))
+	err = e.abi.Methods["queryAllCandidates"].Outputs.Unpack(&candidatesParse, common.FromHex(requestResult.Result.(string)))
 	// 解码不应该出错，除非底层逻辑变更
 	if err != nil {
 		return nil, err
@@ -225,101 +225,101 @@ func(election *Election) GetAllCandidates(from common.Address)(*candidates, erro
 }
 
 //"voteWitnesses","inputs":[{"name":"candidate","type":"string"}],"outputs":[]
-func(election *Election) VoteWitnesses(from common.Address, candidate string)(string, error){
+func(e *Election) VoteWitnesses(from common.Address, candidate string)(string, error){
 	// encoding
-	inputEncode, _ := election.abi.Pack("voteWitnesses", candidate)
+	inputEncode, _ := e.abi.Pack("voteWitnesses", candidate)
 
-	transaction := election.super.PrePareTransaction(from, ElectionContractAddr, types.ComplexString(hexutil.Encode(inputEncode)))
+	transaction := e.super.PrePareTransaction(from, ElectionContractAddr, types.ComplexString(hexutil.Encode(inputEncode)))
 
-	return election.super.SendTransaction(transaction)
+	return e.super.SendTransaction(transaction)
 }
 
 //"cancelVote","inputs":[],"outputs":[]
-func(election *Election) CancelVote(from common.Address)(string, error){
+func(e *Election) CancelVote(from common.Address)(string, error){
 	// encoding
-	inputEncode, _ := election.abi.Pack("cancelVote")
+	inputEncode, _ := e.abi.Pack("cancelVote")
 
-	transaction := election.super.PrePareTransaction(from, ElectionContractAddr, types.ComplexString(hexutil.Encode(inputEncode)))
+	transaction := e.super.PrePareTransaction(from, ElectionContractAddr, types.ComplexString(hexutil.Encode(inputEncode)))
 
-	return election.super.SendTransaction(transaction)
+	return e.super.SendTransaction(transaction)
 }
 
 //"startProxy","inputs":[],"outputs":[]
-func(election *Election) StartProxy(from common.Address)(string, error){
+func(e *Election) StartProxy(from common.Address)(string, error){
 	// encoding
-	inputEncode, _ := election.abi.Pack("startProxy")
+	inputEncode, _ := e.abi.Pack("startProxy")
 
-	transaction := election.super.PrePareTransaction(from, ElectionContractAddr, types.ComplexString(hexutil.Encode(inputEncode)))
+	transaction := e.super.PrePareTransaction(from, ElectionContractAddr, types.ComplexString(hexutil.Encode(inputEncode)))
 
-	return election.super.SendTransaction(transaction)
+	return e.super.SendTransaction(transaction)
 }
 
 //"stopProxy","inputs":[],"outputs":[]
-func(election *Election) StopProxy(from common.Address)(string, error){
+func(e *Election) StopProxy(from common.Address)(string, error){
 	// encoding
-	inputEncode, _ := election.abi.Pack("stopProxy")
+	inputEncode, _ := e.abi.Pack("stopProxy")
 
-	transaction := election.super.PrePareTransaction(from, ElectionContractAddr, types.ComplexString(hexutil.Encode(inputEncode)))
+	transaction := e.super.PrePareTransaction(from, ElectionContractAddr, types.ComplexString(hexutil.Encode(inputEncode)))
 
-	return election.super.SendTransaction(transaction)
+	return e.super.SendTransaction(transaction)
 }
 
 //"cancelProxy","inputs":[],"outputs":[]
-func(election *Election) CancelProxy(from common.Address)(string, error){
+func(e *Election) CancelProxy(from common.Address)(string, error){
 	// encoding
-	inputEncode, _ := election.abi.Pack("cancelProxy")
+	inputEncode, _ := e.abi.Pack("cancelProxy")
 
-	transaction := election.super.PrePareTransaction(from, ElectionContractAddr, types.ComplexString(hexutil.Encode(inputEncode)))
+	transaction := e.super.PrePareTransaction(from, ElectionContractAddr, types.ComplexString(hexutil.Encode(inputEncode)))
 
-	return election.super.SendTransaction(transaction)
+	return e.super.SendTransaction(transaction)
 }
 
 //"setProxy","inputs":[{"name":"proxy","type":"string"}],"outputs":[]
-func(election *Election) SetProxy(from common.Address, proxy string)(string, error){
+func(e *Election) SetProxy(from common.Address, proxy string)(string, error){
 	// encoding
-	inputEncode, err := election.abi.Pack("setProxy", proxy)
+	inputEncode, err := e.abi.Pack("setProxy", proxy)
 	if err!= nil{
 		return "", err
 	}
 
-	transaction := election.super.PrePareTransaction(from, ElectionContractAddr, types.ComplexString(hexutil.Encode(inputEncode)))
+	transaction := e.super.PrePareTransaction(from, ElectionContractAddr, types.ComplexString(hexutil.Encode(inputEncode)))
 
-	return election.super.SendTransaction(transaction)
+	return e.super.SendTransaction(transaction)
 }
 
 //"stake","inputs":[{"name":"stakeCount","type":"uint256"}],"outputs":[]
-func(election *Election) Stake(from common.Address, stakeCount *big.Int)(string, error){
+func(e *Election) Stake(from common.Address, stakeCount *big.Int)(string, error){
 	// encoding
-	inputEncode, err := election.abi.Pack("stake", stakeCount)
+	inputEncode, err := e.abi.Pack("stake", stakeCount)
 	if err!= nil{
 		return "", err
 	}
 
-	transaction := election.super.PrePareTransaction(from, ElectionContractAddr, types.ComplexString(hexutil.Encode(inputEncode)))
+	transaction := e.super.PrePareTransaction(from, ElectionContractAddr, types.ComplexString(hexutil.Encode(inputEncode)))
 
-	return election.super.SendTransaction(transaction)
+	return e.super.SendTransaction(transaction)
 }
 
 //"unStake","inputs":[],"outputs":[]
-func(election *Election) UnStake(from common.Address)(string, error){
+func(e *Election) UnStake(from common.Address)(string, error){
 	// encoding
-	inputEncode, _ := election.abi.Pack("unStake")
+	inputEncode, _ := e.abi.Pack("unStake")
 
-	transaction := election.super.PrePareTransaction(from, ElectionContractAddr, types.ComplexString(hexutil.Encode(inputEncode)))
+	transaction := e.super.PrePareTransaction(from, ElectionContractAddr, types.ComplexString(hexutil.Encode(inputEncode)))
 
-	return election.super.SendTransaction(transaction)
+	return e.super.SendTransaction(transaction)
 }
 
 //"queryStake","inputs":[{"name":"voterAddress","type":"string"}],"outputs":[{"name":"owner","type":"string"},{"name":"stakeCount","type":"uint64"},{"name":"timestamp","type":"uint64"}]
-func(election *Election) GetStake(from common.Address, voterAddress string)(*stake, error){
+func(e *Election) GetStake(from common.Address, voterAddress string)(*stake, error){
 	// encoding
-	inputEncode, err := election.abi.Pack("queryStake", voterAddress)
+	inputEncode, err := e.abi.Pack("queryStake", voterAddress)
 	if err != nil{
 		return nil, err
 	}
 
-	transaction := election.super.PrePareTransaction(from, ElectionContractAddr, types.ComplexString(hexutil.Encode(inputEncode)))
-	requestResult, err := election.super.Call(transaction)
+	transaction := e.super.PrePareTransaction(from, ElectionContractAddr, types.ComplexString(hexutil.Encode(inputEncode)))
+	requestResult, err := e.super.Call(transaction)
 
 	if err != nil {
 		return nil, err
@@ -327,7 +327,7 @@ func(election *Election) GetStake(from common.Address, voterAddress string)(*sta
 
 	//fmt.Println("result is ", requestResult.Result.(string))
 	var stakeInfo stake
-	err = election.abi.Methods["queryStake"].Outputs.Unpack(&stakeInfo, common.FromHex(requestResult.Result.(string)))
+	err = e.abi.Methods["queryStake"].Outputs.Unpack(&stakeInfo, common.FromHex(requestResult.Result.(string)))
 	// 解码不应该出错，除非底层逻辑变更
 	if err != nil {
 		return nil, err
@@ -337,35 +337,35 @@ func(election *Election) GetStake(from common.Address, voterAddress string)(*sta
 }
 
 //"extractOwnBounty","inputs":[],"outputs":[]
-func(election *Election) ExtractOwnBounty(from common.Address)(string, error){
+func(e *Election) ExtractOwnBounty(from common.Address)(string, error){
 	// encoding
-	inputEncode, _ := election.abi.Pack("extractOwnBounty")
+	inputEncode, _ := e.abi.Pack("extractOwnBounty")
 
-	transaction := election.super.PrePareTransaction(from, ElectionContractAddr, types.ComplexString(hexutil.Encode(inputEncode)))
+	transaction := e.super.PrePareTransaction(from, ElectionContractAddr, types.ComplexString(hexutil.Encode(inputEncode)))
 
-	return election.super.SendTransaction(transaction)
+	return e.super.SendTransaction(transaction)
 }
 
 //"issueAdditionalBounty","inputs":[],"outputs":[]
-func(election *Election) IssueAdditionalBounty(from common.Address)(string, error){
+func(e *Election) IssueAdditionalBounty(from common.Address)(string, error){
 	// encoding
-	inputEncode, _ := election.abi.Pack("issueAdditionalBounty")
+	inputEncode, _ := e.abi.Pack("issueAdditionalBounty")
 
-	transaction := election.super.PrePareTransaction(from, ElectionContractAddr, types.ComplexString(hexutil.Encode(inputEncode)))
+	transaction := e.super.PrePareTransaction(from, ElectionContractAddr, types.ComplexString(hexutil.Encode(inputEncode)))
 
-	return election.super.SendTransaction(transaction)
+	return e.super.SendTransaction(transaction)
 }
 
 //queryVoter","inputs":[{"name":"voterAddress","type":"string"}],"outputs":[{"name":"owner","type":"string"},{"name":"isProxy","type":"bool"},{"name":"proxyVoteCount","type":"uint64"},{"name":"proxy","type":"string"},{"name":"lastVoteCount","type":"uint64"},{"name":"timestamp","type":"uint64"},{"name":"voteCandidatesList","type":"string"}]
-func(election *Election) GetVoter(from common.Address, voterAddress string)(*voter, error){
+func(e *Election) GetVoter(from common.Address, voterAddress string)(*voter, error){
 	// encoding
-	inputEncode, err := election.abi.Pack("queryVoter", voterAddress)
+	inputEncode, err := e.abi.Pack("queryVoter", voterAddress)
 	if err != nil{
 		return nil, err
 	}
 
-	transaction := election.super.PrePareTransaction(from, ElectionContractAddr, types.ComplexString(hexutil.Encode(inputEncode)))
-	requestResult, err := election.super.Call(transaction)
+	transaction := e.super.PrePareTransaction(from, ElectionContractAddr, types.ComplexString(hexutil.Encode(inputEncode)))
+	requestResult, err := e.super.Call(transaction)
 
 	if err != nil {
 		return nil, err
@@ -374,7 +374,7 @@ func(election *Election) GetVoter(from common.Address, voterAddress string)(*vot
 	//fmt.Println("result is ", requestResult.Result.(string))
 	var voterInfo voterParsing
 	fmt.Println("voter ", voterInfo)
-	err = election.abi.Methods["queryVoter"].Outputs.Unpack(&voterInfo, common.FromHex(requestResult.Result.(string)))
+	err = e.abi.Methods["queryVoter"].Outputs.Unpack(&voterInfo, common.FromHex(requestResult.Result.(string)))
 	// 解码不应该出错，除非底层逻辑变更
 	if err != nil {
 		return nil, err
@@ -395,15 +395,15 @@ func(election *Election) GetVoter(from common.Address, voterAddress string)(*vot
 }
 
 //"queryVoterList","inputs":[{"name":"candidateAddress","type":"string"}],"outputs":[{"name":"candidateAddress","type":"string"},{"name":"voterNum","type":"uint64"},{"name":"voterList","type":"string"}]
-func(election *Election) GetVoterList(from common.Address, candidateAddress string)(*Voters, error){
+func(e *Election) GetVoterList(from common.Address, candidateAddress string)(*Voters, error){
 	// encoding
-	inputEncode, err := election.abi.Pack("queryVoterList", candidateAddress)
+	inputEncode, err := e.abi.Pack("queryVoterList", candidateAddress)
 	if err != nil{
 		return nil, err
 	}
 
-	transaction := election.super.PrePareTransaction(from, ElectionContractAddr, types.ComplexString(hexutil.Encode(inputEncode)))
-	requestResult, err := election.super.Call(transaction)
+	transaction := e.super.PrePareTransaction(from, ElectionContractAddr, types.ComplexString(hexutil.Encode(inputEncode)))
+	requestResult, err := e.super.Call(transaction)
 
 	if err != nil {
 		return nil, err
@@ -411,7 +411,7 @@ func(election *Election) GetVoterList(from common.Address, candidateAddress stri
 
 	//fmt.Println("result is ", requestResult.Result.(string))
 	var voterList votersParsing
-	err = election.abi.Methods["queryVoterList"].Outputs.Unpack(&voterList, common.FromHex(requestResult.Result.(string)))
+	err = e.abi.Methods["queryVoterList"].Outputs.Unpack(&voterList, common.FromHex(requestResult.Result.(string)))
 	// 解码不应该出错，除非底层逻辑变更
 	if err != nil {
 		return nil, err

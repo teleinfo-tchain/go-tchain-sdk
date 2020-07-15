@@ -56,34 +56,34 @@ type RegisterCertificate struct {
 	SubjectSignature string
 }
 
-func (system *System) NewCertificate() (*Certificate, error) {
+func (sys *System) NewCertificate() (*Certificate, error) {
 	parsedAbi, err := abi.JSON(strings.NewReader(CertificateAbiJSON))
 	if err != nil {
 		return nil, err
 	}
 
-	certificate := new(Certificate)
-	certificate.abi = parsedAbi
-	certificate.super = system
-	return certificate, nil
+	cer := new(Certificate)
+	cer.abi = parsedAbi
+	cer.super = sys
+	return cer, nil
 }
 
 //"inputs":[{"name":"id", "type":"string"}],"outputs":[{"name":"period","type":"uint64"}]
-func (certificate *Certificate) GetPeriod(from common.Address, id string) (uint64, error) {
+func (cer *Certificate) GetPeriod(from common.Address, id string) (uint64, error) {
 	// encoding
-	inputEncode, err := certificate.abi.Pack("queryPeriod", id)
+	inputEncode, err := cer.abi.Pack("queryPeriod", id)
 	if err != nil {
 		return 0, err
 	}
 
-	transaction := certificate.super.PrePareTransaction(from, CertificateContractAddr, types.ComplexString(hexutil.Encode(inputEncode)))
-	requestResult, err := certificate.super.Call(transaction)
+	transaction := cer.super.PrePareTransaction(from, CertificateContractAddr, types.ComplexString(hexutil.Encode(inputEncode)))
+	requestResult, err := cer.super.Call(transaction)
 	if err != nil {
 		return 0, err
 	}
 	//fmt.Println("result is ", requestResult.Result.(string))
 	var period uint64
-	err = certificate.abi.Methods["queryPeriod"].Outputs.Unpack(&period, common.FromHex(requestResult.Result.(string)))
+	err = cer.abi.Methods["queryPeriod"].Outputs.Unpack(&period, common.FromHex(requestResult.Result.(string)))
 	// 解码不应该出错，除非底层逻辑变更
 	if err != nil {
 		return 0, err
@@ -96,21 +96,21 @@ func (certificate *Certificate) GetPeriod(from common.Address, id string) (uint6
 }
 
 //"inputs":[{"name":"id", "type":"string"}],"outputs":[{"name":"isEnable","type":"bool"}]
-func (certificate *Certificate) GetActive(from common.Address, id string) (bool, error) {
+func (cer *Certificate) GetActive(from common.Address, id string) (bool, error) {
 	// encoding
-	inputEncode, err := certificate.abi.Pack("queryActive", id)
+	inputEncode, err := cer.abi.Pack("queryActive", id)
 	if err != nil {
 		return false, err
 	}
 
-	transaction := certificate.super.PrePareTransaction(from, CertificateContractAddr, types.ComplexString(hexutil.Encode(inputEncode)))
-	requestResult, err := certificate.super.Call(transaction)
+	transaction := cer.super.PrePareTransaction(from, CertificateContractAddr, types.ComplexString(hexutil.Encode(inputEncode)))
+	requestResult, err := cer.super.Call(transaction)
 	if err != nil {
 		return false, err
 	}
 	//fmt.Println("result is ", requestResult.Result.(string))
 	var isEnable bool
-	err = certificate.abi.Methods["queryActive"].Outputs.Unpack(&isEnable, common.FromHex(requestResult.Result.(string)))
+	err = cer.abi.Methods["queryActive"].Outputs.Unpack(&isEnable, common.FromHex(requestResult.Result.(string)))
 	// 解码不应该出错，除非底层逻辑变更
 	if err != nil {
 		return false, err
@@ -120,21 +120,21 @@ func (certificate *Certificate) GetActive(from common.Address, id string) (bool,
 }
 
 //"inputs":[{"name":"id", "type":"string"}],"outputs":[{"name":"Issuer","type":"string"}]
-func (certificate *Certificate) GetIssuer(from common.Address, id string) (string, error) {
+func (cer *Certificate) GetIssuer(from common.Address, id string) (string, error) {
 	// encoding
-	inputEncode, err := certificate.abi.Pack("queryIssuer", id)
+	inputEncode, err := cer.abi.Pack("queryIssuer", id)
 	if err != nil {
 		return "", err
 	}
 
-	transaction := certificate.super.PrePareTransaction(from, CertificateContractAddr, types.ComplexString(hexutil.Encode(inputEncode)))
-	requestResult, err := certificate.super.Call(transaction)
+	transaction := cer.super.PrePareTransaction(from, CertificateContractAddr, types.ComplexString(hexutil.Encode(inputEncode)))
+	requestResult, err := cer.super.Call(transaction)
 	if err != nil {
 		return "", err
 	}
 	//fmt.Println("result is ", requestResult.Result.(string))
 	var issuer string
-	err = certificate.abi.Methods["queryIssuer"].Outputs.Unpack(&issuer, common.FromHex(requestResult.Result.(string)))
+	err = cer.abi.Methods["queryIssuer"].Outputs.Unpack(&issuer, common.FromHex(requestResult.Result.(string)))
 	// 解码不应该出错，除非底层逻辑变更
 	if err != nil {
 		return "", err
@@ -143,21 +143,21 @@ func (certificate *Certificate) GetIssuer(from common.Address, id string) (strin
 }
 
 //"inputs":[{"name":"id", "type":"string"}],"outputs":[{"name":"Id","type":"string"},{"name":"PublicKey","type":"string"},{"name":"Algorithm","type":"string"},{"name":"Signature","type":"string"}]
-func (certificate *Certificate) GetIssuerSignature(from common.Address, id string) (*Signature, error) {
+func (cer *Certificate) GetIssuerSignature(from common.Address, id string) (*Signature, error) {
 	// encoding
-	inputEncode, err := certificate.abi.Pack("queryIssuerSignature", id)
+	inputEncode, err := cer.abi.Pack("queryIssuerSignature", id)
 	if err != nil {
 		return nil, err
 	}
 
-	transaction := certificate.super.PrePareTransaction(from, CertificateContractAddr, types.ComplexString(hexutil.Encode(inputEncode)))
-	requestResult, err := certificate.super.Call(transaction)
+	transaction := cer.super.PrePareTransaction(from, CertificateContractAddr, types.ComplexString(hexutil.Encode(inputEncode)))
+	requestResult, err := cer.super.Call(transaction)
 	if err != nil {
 		return nil, err
 	}
 	//fmt.Println("result string is ", requestResult.Result.(string))
 	var issuerSignature Signature
-	err = certificate.abi.Methods["queryIssuerSignature"].Outputs.Unpack(&issuerSignature, common.FromHex(requestResult.Result.(string)))
+	err = cer.abi.Methods["queryIssuerSignature"].Outputs.Unpack(&issuerSignature, common.FromHex(requestResult.Result.(string)))
 	// 解码不应该出错，除非底层逻辑变更
 	if err != nil{
 		return nil, err
@@ -169,22 +169,22 @@ func (certificate *Certificate) GetIssuerSignature(from common.Address, id strin
 }
 
 //"inputs":[{"name":"id", "type":"string"}],"outputs":[{"name":"Id","type":"string"},{"name":"PublicKey","type":"string"},{"name":"Algorithm","type":"string"},{"name":"Signature","type":"string"}]
-func (certificate *Certificate) GetSubjectSignature(from common.Address, id string) (*Signature, error) {
+func (cer *Certificate) GetSubjectSignature(from common.Address, id string) (*Signature, error) {
 	// encoding
-	inputEncode, err := certificate.abi.Pack("querySubjectSignature", id)
+	inputEncode, err := cer.abi.Pack("querySubjectSignature", id)
 	if err != nil {
 		return nil, err
 	}
 
-	transaction := certificate.super.PrePareTransaction(from, CertificateContractAddr, types.ComplexString(hexutil.Encode(inputEncode)))
-	requestResult, err := certificate.super.Call(transaction)
+	transaction := cer.super.PrePareTransaction(from, CertificateContractAddr, types.ComplexString(hexutil.Encode(inputEncode)))
+	requestResult, err := cer.super.Call(transaction)
 	if err != nil {
 		return nil, err
 	}
 
 	//fmt.Println("result string is ", requestResult.Result.(string))
 	var subjectSignature Signature
-	err = certificate.abi.Methods["querySubjectSignature"].Outputs.Unpack(&subjectSignature, common.FromHex(requestResult.Result.(string)))
+	err = cer.abi.Methods["querySubjectSignature"].Outputs.Unpack(&subjectSignature, common.FromHex(requestResult.Result.(string)))
 	// 解码不应该出错，除非底层逻辑变更
 	if err != nil {
 		return nil, err
@@ -196,12 +196,12 @@ func (certificate *Certificate) GetSubjectSignature(from common.Address, id stri
 }
 
 //"inputs":[{"name":"Id","type":"string"},{"name":"Context","type":"string"},{"name":"Subject","type":"string"},{"name":"Period","type":"uint64"},{"name":"IssuerAlgorithm","type":"string"},{"name":"IssuerSignature","type":"string"},{"name":"SubjectPublicKey","type":"string"},{"name":"SubjectAlgorithm","type":"string"},{"name":"SubjectSignature","type":"string"}],"outputs":[]
-func (certificate *Certificate) RegisterCertificate(from common.Address, registerCertificate *RegisterCertificate) (string, error) {
+func (cer *Certificate) RegisterCertificate(from common.Address, registerCertificate *RegisterCertificate) (string, error) {
 	// encoding
 	// registerCertificate is a struct we need to use the components.
 	var values []interface{}
-	values = certificate.super.StructToInterface(*registerCertificate,values)
-	inputEncode, err := certificate.abi.Pack("registerCertificate", values...)
+	values = cer.super.StructToInterface(*registerCertificate,values)
+	inputEncode, err := cer.abi.Pack("registerCertificate", values...)
 	if err != nil {
 		return "", err
 	}
@@ -209,13 +209,13 @@ func (certificate *Certificate) RegisterCertificate(from common.Address, registe
 	transaction.From = from.String()
 	transaction.To = CertificateContractAddr
 	transaction.Data = types.ComplexString(hexutil.Encode(inputEncode))
-	return certificate.super.SendTransaction(transaction)
+	return cer.super.SendTransaction(transaction)
 }
 
 //inputs":[{"name":"id","type":"string"}],"outputs":[]
-func (certificate *Certificate) RevokedCertificate(from common.Address, id string) (string, error) {
+func (cer *Certificate) RevokedCertificate(from common.Address, id string) (string, error) {
 	// encoding
-	inputEncode, err := certificate.abi.Pack("revokedCertificate", id)
+	inputEncode, err := cer.abi.Pack("revokedCertificate", id)
 	if err != nil {
 		return "", err
 	}
@@ -223,5 +223,5 @@ func (certificate *Certificate) RevokedCertificate(from common.Address, id strin
 	transaction.From = from.String()
 	transaction.To = CertificateContractAddr
 	transaction.Data = types.ComplexString(hexutil.Encode(inputEncode))
-	return certificate.super.SendTransaction(transaction)
+	return cer.super.SendTransaction(transaction)
 }

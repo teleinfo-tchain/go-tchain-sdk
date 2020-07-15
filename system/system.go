@@ -21,7 +21,7 @@ func NewSystem(provider providers.ProviderInterface) *System {
 	return system
 }
 
-func (system *System) PrePareTransaction(from common.Address, systemContract string, data types.ComplexString) *dto.TransactionParameters{
+func (sys *System) PrePareTransaction(from common.Address, systemContract string, data types.ComplexString) *dto.TransactionParameters{
 	transaction := new(dto.TransactionParameters)
 	transaction.From = from.String()
 	transaction.To = systemContract
@@ -29,7 +29,7 @@ func (system *System) PrePareTransaction(from common.Address, systemContract str
 	return transaction
 }
 
-func (system *System) Call(transaction *dto.TransactionParameters) (*dto.RequestResult, error) {
+func (sys *System) Call(transaction *dto.TransactionParameters) (*dto.RequestResult, error) {
 
 	params := make([]interface{}, 2)
 	params[0] = transaction.Transform()
@@ -37,7 +37,7 @@ func (system *System) Call(transaction *dto.TransactionParameters) (*dto.Request
 
 	pointer := &dto.RequestResult{}
 
-	err := system.provider.SendRequest(&pointer, "core_call", params)
+	err := sys.provider.SendRequest(&pointer, "core_call", params)
 
 	if err != nil {
 		return nil, err
@@ -48,12 +48,12 @@ func (system *System) Call(transaction *dto.TransactionParameters) (*dto.Request
 }
 
 // convert a struct to interface
-func (system *System) StructToInterface(convert interface{}, values []interface{}) []interface{}{
+func (sys *System) StructToInterface(convert interface{}, values []interface{}) []interface{}{
 	elem := reflect.ValueOf(convert)
 	for i := 0; i < elem.NumField(); i++ {
 		field := elem.Field(i)
 		if field.Kind() == reflect.Struct{
-			values = append(system.StructToInterface(field.Interface(), values))
+			values = append(sys.StructToInterface(field.Interface(), values))
 		} else {
 			values = append(values, field.Interface())
 		}
@@ -61,14 +61,14 @@ func (system *System) StructToInterface(convert interface{}, values []interface{
 	return values
 }
 
-func (system *System) SendTransaction(transaction *dto.TransactionParameters) (string, error) {
+func (sys *System) SendTransaction(transaction *dto.TransactionParameters) (string, error) {
 
 	params := make([]*dto.RequestTransactionParameters, 1)
 	params[0] = transaction.Transform()
 
 	pointer := &dto.RequestResult{}
 
-	err := system.provider.SendRequest(&pointer, "core_sendTransaction", params)
+	err := sys.provider.SendRequest(&pointer, "core_sendTransaction", params)
 
 	if err != nil {
 		return "", err
@@ -99,13 +99,13 @@ func DecodeTxHash(transactionHash string) (*LogData, error){
 	return unpacked, nil
 }
 
-func (system *System) SystemLogDecode(transactionHash string) (*LogData, error){
+func (sys *System) SystemLogDecode(transactionHash string) (*LogData, error){
 	params := make([]string, 1)
 	params[0] = transactionHash
 
 	pointer := &dto.RequestResult{}
 
-	err := system.provider.SendRequest(pointer, "core_getTransactionReceipt", params)
+	err := sys.provider.SendRequest(pointer, "core_getTransactionReceipt", params)
 
 	if err != nil {
 		return nil, err
