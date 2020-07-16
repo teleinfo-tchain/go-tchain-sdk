@@ -760,22 +760,6 @@ func (core *Core) GetStake(address string) (*dto.StakeResponse, error) {
 	return pointer.ToStakeResponse()
 }
 
-func (core *Core) QueryPeerCertificate(public string) (*dto.PeerCertificate, error) {
-
-	params := make([]string, 1)
-	params[0] = public
-
-	pointer := &dto.RequestResult{}
-
-	err := core.provider.SendRequest(pointer, "core_queryPeerCertificate", params)
-
-	if err != nil {
-		return nil, err
-	}
-
-	return pointer.ToPeerCertificateResponse()
-}
-
 func (core *Core) GetCanTrust(address, defaultBlockParameter string) (*big.Int, error) {
 
 	params := make([]string, 2)

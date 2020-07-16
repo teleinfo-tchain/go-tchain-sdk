@@ -5,6 +5,7 @@ import (
 	"github.com/bif/bif-sdk-go"
 	"github.com/bif/bif-sdk-go/common"
 	"github.com/bif/bif-sdk-go/common/hexutil"
+	"github.com/bif/bif-sdk-go/dto"
 	"github.com/bif/bif-sdk-go/providers"
 	"github.com/bif/bif-sdk-go/system"
 	"github.com/bif/bif-sdk-go/test/resources"
@@ -12,14 +13,11 @@ import (
 	"testing"
 )
 
-const publicKeyTest = "0xc70357f11062a2a41a8a0907e9724659829729615826a294bb7cd45a11c4f7ed7a1deb36b3715b60c7665f5966526029103fb048ee7e38a7dda2326a622f8eba"
+// 53位的字符
+const publicKeyTest = ""
 
 // 经过超级节点投票，已经将基础信任锚did:bid:c935bd29a90fbeea87badf3e 激活
-// 节点证书的颁布，
-// failed to parse peer ID: cid too short??????
-//failed to parse peer ID: selected encoding not supported
-//failed to parse peer ID: error while conversion: strconv.ParseInt: parsing "0000000x": invalid syntax
-// 公钥的问题
+//	MessageSha3   什么消息的sha3？？？   Signature 怎么拿到？？？  Id的53个字符，怎么生成的？？？
 func TestPeerRegisterCertificate(t *testing.T) {
 	var connection = bif.NewBif(providers.NewHTTPProvider(resources.IP+":"+resources.Port, 10, false))
 	coinBase, err := connection.Core.GetCoinbase()
@@ -27,20 +25,20 @@ func TestPeerRegisterCertificate(t *testing.T) {
 		t.Log(err)
 		t.FailNow()
 	}
-	peerCer, err := connection.System.NewPeerCertificate()
-	if err != nil {
-		t.Log(err)
-		t.FailNow()
-	}
+	peerCer := connection.System.NewPeerCertificate()
 
-	registerCertificateInfo := new(system.RegisterCertificateInfo)
+	registerCertificateInfo := new(dto.RegisterCertificateInfo)
 	registerCertificateInfo.PublicKey = publicKeyTest
-	registerCertificateInfo.Period = 2
+	registerCertificateInfo.NodeName = "testTELE"
+	registerCertificateInfo.MessageSha3 = "testTELE"
+	registerCertificateInfo.Signature = "testTELE"
+	registerCertificateInfo.NodeType = 0
+	registerCertificateInfo.Period = system.Year
 	registerCertificateInfo.IP = resources.IP
 	port, _ := strconv.ParseUint(resources.Port, 10,64)
 	registerCertificateInfo.Port = port
 	registerCertificateInfo.CompanyName = "tele info"
-	registerCertificateInfo.CompanyCode = "11250"
+	registerCertificateInfo.CompanyCode = "341004600017214"
 	fmt.Println(hexutil.Encode(common.FromHex(coinBase)))
 	//registerCertificateInfo
 	peerRegisterCertificateHash, err := peerCer.RegisterCertificate(common.StringToAddress(coinBase), registerCertificateInfo)
@@ -58,11 +56,7 @@ func TestPeerRevokedCertificate(t *testing.T) {
 		t.Log(err)
 		t.FailNow()
 	}
-	peerCer, err := connection.System.NewPeerCertificate()
-	if err != nil {
-		t.Log(err)
-		t.FailNow()
-	}
+	peerCer := connection.System.NewPeerCertificate()
 	transactionHash, err := peerCer.RevokedCertificate(common.StringToAddress(coinBase), publicKeyTest)
 	if err != nil {
 		t.Error(err)
@@ -71,49 +65,58 @@ func TestPeerRevokedCertificate(t *testing.T) {
 	t.Log(transactionHash, err)
 }
 
-// 如果是0的话，是否提示错误，默认是0
 func TestPeerGetPeriod(t *testing.T) {
 	var connection = bif.NewBif(providers.NewHTTPProvider(resources.IP+":"+resources.Port, 10, false))
-	coinBase, err := connection.Core.GetCoinbase()
+	_, err := connection.Core.GetCoinbase()
 	if err != nil {
 		t.Error(err)
 		t.FailNow()
 	}
-	peerCer, err := connection.System.NewPeerCertificate()
+
+	peerCer := connection.System.NewPeerCertificate()
+	period, err := peerCer.GetPeriod(publicKeyTest)
 	if err != nil {
 		t.Error(err)
 		t.FailNow()
 	}
-	period, err := peerCer.GetPeriod(common.StringToAddress(coinBase), publicKeyTest)
-	if err != nil && err != system.ErrCertificateNotExist {
-		t.Error(err)
-		t.FailNow()
-	}
-	if err == system.ErrCertificateNotExist {
-		t.Log(err)
-	}
+
 	t.Log(period)
 }
 
 func TestPeerGetActive(t *testing.T) {
 	var connection = bif.NewBif(providers.NewHTTPProvider(resources.IP+":"+resources.Port, 10, false))
-	coinBase, err := connection.Core.GetCoinbase()
+	_, err := connection.Core.GetCoinbase()
+
 	if err != nil {
 		t.Error(err)
 		t.FailNow()
 	}
-	peerCer, err := connection.System.NewPeerCertificate()
-	if err != nil {
+
+	peerCer := connection.System.NewPeerCertificate()
+	isEnable, err := peerCer.GetActive(publicKeyTest)
+	if err != nil{
 		t.Error(err)
 		t.FailNow()
 	}
-	isEnable, err := peerCer.GetActive(common.StringToAddress(coinBase), publicKeyTest)
-	if err != nil && err != system.ErrCertificateNotExist {
-		t.Error(err)
-		t.FailNow()
-	}
-	if err == system.ErrCertificateNotExist {
-		t.Log(err)
-	}
+
 	t.Log(isEnable)
+}
+
+func TestGetPeerCertificate(t *testing.T) {
+	var connection = bif.NewBif(providers.NewHTTPProvider(resources.IP+":"+resources.Port, 10, false))
+	_, err := connection.Core.GetCoinbase()
+
+	if err != nil {
+		t.Error(err)
+		t.FailNow()
+	}
+
+	peerCer := connection.System.NewPeerCertificate()
+	peerCertificate, err := peerCer.GetPeerCertificate(publicKeyTest)
+	if err != nil{
+		t.Error(err)
+		t.FailNow()
+	}
+
+	t.Log(peerCertificate)
 }

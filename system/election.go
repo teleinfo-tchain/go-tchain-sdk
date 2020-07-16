@@ -1,12 +1,11 @@
 package system
 
 import (
-	"errors"
-	"fmt"
 	"github.com/bif/bif-sdk-go/abi"
 	"github.com/bif/bif-sdk-go/common"
 	"github.com/bif/bif-sdk-go/common/hexutil"
 	"github.com/bif/bif-sdk-go/complex/types"
+	"github.com/bif/bif-sdk-go/dto"
 	"math/big"
 	"strings"
 )
@@ -22,14 +21,14 @@ const (
 	year    = 1559318400   // 2019-06-01 00:00:00
 )
 
-var (
-	ErrCandiNameLenInvalid    = errors.New("the length of candidate's name should between [4, 20]")
-	ErrCandiUrlLenInvalid     = errors.New("the length of candidate's website url should between [6, 60]")
-	ErrCandiNameInvalid       = errors.New("candidate's name should consist of digits and lowercase letters")
-	ErrCandiInfoDup           = errors.New("candidate's name, website url or node url is duplicated with a registered candidate")
-	ErrCandiAlreadyRegistered = errors.New("candidate is already registered")
-	ErrPeerNotTrust           = errors.New("peer is not apply trust")
-)
+//var (
+//	ErrCandiNameLenInvalid    = errors.New("the length of candidate's name should between [4, 20]")
+//	ErrCandiUrlLenInvalid     = errors.New("the length of candidate's website url should between [6, 60]")
+//	ErrCandiNameInvalid       = errors.New("candidate's name should consist of digits and lowercase letters")
+//	ErrCandiInfoDup           = errors.New("candidate's name, website url or node url is duplicated with a registered candidate")
+//	ErrCandiAlreadyRegistered = errors.New("candidate is already registered")
+//	ErrPeerNotTrust           = errors.New("peer is not apply trust")
+//)
 
 var (
 	nowTimeStamp = big.NewInt(year)
@@ -58,83 +57,12 @@ const ElectionAbiJSON = `[
 {"constant": false,"name":"extractOwnBounty","inputs":[],"outputs":[],"type":"function"},
 {"anonymous":false,"inputs":[{"indexed":false,"name":"methodName","type":"string"},{"indexed":false,"name":"status","type":"uint32"},{"indexed":false,"name":"reason","type":"string"},{"indexed":false,"name":"time","type":"uint256"}],"name":"electEvent","type":"event"},
 {"constant": false,"name":"issueAdditionalBounty","inputs":[],"outputs":[],"type":"function"},
-{"constant": true,"name":"queryCandidates","inputs":[{"name":"candidateAddress","type":"string"}],"outputs":[{"name":"owner","type":"string"},{"name":"voteCount","type":"uint64"},{"name":"active","type":"bool"},{"name":"url","type":"string"},{"name":"totalBounty","type":"uint64"},{"name":"extractedBounty","type":"uint64"},{"name":"lastExtractTime","type":"uint64"},{"name":"website","type":"string"},{"name":"name","type":"string"}],"type":"function"},
-{"constant": true,"name":"queryAllCandidates","inputs":[],"outputs":[{"name":"listNum","type":"uint64"},{"name":"candidateInfoList","type":"string"}],"type":"function"},
-{"constant": true,"name":"queryVoter","inputs":[{"name":"voterAddress","type":"string"}],"outputs":[{"name":"owner","type":"string"},{"name":"isProxy","type":"bool"},{"name":"proxyVoteCount","type":"uint64"},{"name":"proxy","type":"string"},{"name":"lastVoteCount","type":"uint64"},{"name":"timestamp","type":"uint64"},{"name":"voteCandidatesList","type":"string"}],"type":"function"},
-{"constant": true,"name":"queryStake","inputs":[{"name":"voterAddress","type":"string"}],"outputs":[{"name":"owner","type":"string"},{"name":"stakeCount","type":"uint64"},{"name":"timestamp","type":"uint64"}],"type":"function"},
-{"constant": true,"name":"queryVoterList","inputs":[{"name":"candidateAddress","type":"string"}],"outputs":[{"name":"candidateAddress","type":"string"},{"name":"voterNum","type":"uint64"},{"name":"voterList","type":"string"}],"type":"function"}
 ]`
 
 
 type Election struct {
 	super *System
 	abi   abi.ABI
-}
-
-type RegisterWitness struct {
-	NodeUrl string
-	Website string
-	Name string
-}
-
-type candidateInfo struct {
-	Owner string
-	VoteCount uint64
-	Active bool
-	Url string
-	TotalBounty uint64
-	ExtractedBounty uint64
-	LastExtractTime uint64
-	Website string
-	Name string
-}
-
-type candidatesParsing struct {
-	ListNum uint64
-	CandidateInfoList string
-}
-
-type candidates struct {
-	Num uint64
-	CandidatesList []string
-}
-
-type voterParsing struct {
-	Owner string
-	IsProxy bool
-	ProxyVoteCount uint64
-	Proxy string
-	LastVoteCount uint64
-	Timestamp uint64
-	VoteCandidatesList string
-}
-
-type voter struct {
-	Owner string
-	IsProxy bool
-	ProxyVoteCount uint64
-	Proxy string
-	LastVoteCount uint64
-	Timestamp uint64
-	VoteCandidatesList []string
-}
-
-type votersParsing struct {
-	CandidateAddress string
-	VoterNum uint64
-	VoterList string
-}
-
-type Voters struct {
-	CandidateAddress string
-	VoterNum uint64
-	VotersLi []string
-}
-
-type stake struct {
-	Owner string
-	StakeCount uint64
-	Timestamp uint64
 }
 
 func (sys *System) NewElection() *Election {
@@ -147,7 +75,7 @@ func (sys *System) NewElection() *Election {
 }
 
 //"registerWitness","inputs":[{"name":"nodeUrl","type":"string"},{"name":"website","type":"string"},{"name":"name","type":"string"}],"outputs":[]
-func(e *Election) RegisterWitness(from common.Address, witness *RegisterWitness) (string, error){
+func(e *Election) RegisterWitness(from common.Address, witness *dto.RegisterWitness) (string, error){
 	//encode
 	// witness is a struct we need to use the components.
 	var values []interface{}
@@ -170,58 +98,30 @@ func(e *Election) UnRegisterWitness(from common.Address) (string, error){
 	return e.super.SendTransaction(transaction)
 }
 
-//"queryCandidates","inputs":[{"name":"candidateAddress","type":"string"}],"outputs":[{"name":"owner","type":"string"},{"name":"voteCount","type":"uint64"},{"name":"active","type":"bool"},{"name":"url","type":"string"},{"name":"totalBounty","type":"uint64"},{"name":"extractedBounty","type":"uint64"},{"name":"lastExtractTime","type":"uint64"},{"name":"website","type":"string"},{"name":"name","type":"string"}]
-func(e *Election) GetCandidates(from common.Address, candidateAddress string)(*candidateInfo, error){
-	// encoding
-	inputEncode, err := e.abi.Pack("queryCandidates", candidateAddress)
+//查询候选人
+func(e *Election) GetCandidate(candidateAddress string)(*dto.Candidate, error){
+	params := make([]string, 1)
+	params[0] = candidateAddress
+
+	pointer := &dto.RequestResult{}
+
+	err := e.super.provider.SendRequest(pointer, "election_candidate", params)
 	if err != nil{
 		return nil, err
 	}
 
-	transaction := e.super.PrePareTransaction(from, ElectionContractAddr, types.ComplexString(hexutil.Encode(inputEncode)))
-	requestResult, err := e.super.Call(transaction)
-
-	if err != nil {
-		return nil, err
-	}
-
-	//fmt.Println("result is ", requestResult.Result.(string))
-	var candidate candidateInfo
-	err = e.abi.Methods["queryCandidates"].Outputs.Unpack(&candidate, common.FromHex(requestResult.Result.(string)))
-	// 解码不应该出错，除非底层逻辑变更
-	if err != nil {
-		return nil, err
-	}
-
-	return &candidate, err
+	return pointer.ToElectionCandidate()
 }
 
-//"queryAllCandidates","inputs":[],"outputs":[{"name":"listNum","type":"uint64"},{"name":"candidateInfoList","type":"string"}]
-func(e *Election) GetAllCandidates(from common.Address)(*candidates, error){
-	// encoding
-	inputEncode, _ := e.abi.Pack("queryAllCandidates")
+func(e *Election) GetAllCandidates()([]string, error){
+	pointer := &dto.RequestResult{}
 
-	transaction := e.super.PrePareTransaction(from, ElectionContractAddr, types.ComplexString(hexutil.Encode(inputEncode)))
-	requestResult, err := e.super.Call(transaction)
-
+	err := e.super.provider.SendRequest(pointer, "election_allCandidates", nil)
 	if err != nil {
 		return nil, err
 	}
 
-	//fmt.Println("result is ", requestResult.Result.(string))
-	var candidatesParse candidatesParsing
-	err = e.abi.Methods["queryAllCandidates"].Outputs.Unpack(&candidatesParse, common.FromHex(requestResult.Result.(string)))
-	// 解码不应该出错，除非底层逻辑变更
-	if err != nil {
-		return nil, err
-	}
-
-	var candidates candidates
-	for i := uint64(0);i<candidatesParse.ListNum;i++{
-		candidates.CandidatesList = append(candidates.CandidatesList, candidatesParse.CandidateInfoList[i*32:(i+1)*32-1])
-	}
-	candidates.Num = candidatesParse.ListNum
-	return &candidates, err
+	return pointer.ToElectionCandidates()
 }
 
 //"voteWitnesses","inputs":[{"name":"candidate","type":"string"}],"outputs":[]
@@ -310,30 +210,30 @@ func(e *Election) UnStake(from common.Address)(string, error){
 	return e.super.SendTransaction(transaction)
 }
 
-//"queryStake","inputs":[{"name":"voterAddress","type":"string"}],"outputs":[{"name":"owner","type":"string"},{"name":"stakeCount","type":"uint64"},{"name":"timestamp","type":"uint64"}]
-func(e *Election) GetStake(from common.Address, voterAddress string)(*stake, error){
-	// encoding
-	inputEncode, err := e.abi.Pack("queryStake", voterAddress)
-	if err != nil{
+func(e *Election) GetStake(voterAddress string)(*dto.Stake, error){
+	params := make([]string, 1)
+	params[0] = voterAddress
+
+	pointer := &dto.RequestResult{}
+
+	err := e.super.provider.SendRequest(pointer, "election_stake", params)
+	if err != nil {
 		return nil, err
 	}
 
-	transaction := e.super.PrePareTransaction(from, ElectionContractAddr, types.ComplexString(hexutil.Encode(inputEncode)))
-	requestResult, err := e.super.Call(transaction)
+	return pointer.ToElectionStake()
+}
+
+func (e *Election) GetRestBIFBounty()(*big.Int, error){
+	pointer := &dto.RequestResult{}
+
+	err := e.super.provider.SendRequest(pointer, "election_restBIFBounty", nil)
 
 	if err != nil {
 		return nil, err
 	}
 
-	//fmt.Println("result is ", requestResult.Result.(string))
-	var stakeInfo stake
-	err = e.abi.Methods["queryStake"].Outputs.Unpack(&stakeInfo, common.FromHex(requestResult.Result.(string)))
-	// 解码不应该出错，除非底层逻辑变更
-	if err != nil {
-		return nil, err
-	}
-
-	return &stakeInfo, err
+	return pointer.ToElectionRestBIFBounty()
 }
 
 //"extractOwnBounty","inputs":[],"outputs":[]
@@ -356,73 +256,31 @@ func(e *Election) IssueAdditionalBounty(from common.Address)(string, error){
 	return e.super.SendTransaction(transaction)
 }
 
-//queryVoter","inputs":[{"name":"voterAddress","type":"string"}],"outputs":[{"name":"owner","type":"string"},{"name":"isProxy","type":"bool"},{"name":"proxyVoteCount","type":"uint64"},{"name":"proxy","type":"string"},{"name":"lastVoteCount","type":"uint64"},{"name":"timestamp","type":"uint64"},{"name":"voteCandidatesList","type":"string"}]
-func(e *Election) GetVoter(from common.Address, voterAddress string)(*voter, error){
-	// encoding
-	inputEncode, err := e.abi.Pack("queryVoter", voterAddress)
+func(e *Election) GetVoter(voterAddress string)(*dto.Voter, error){
+	params := make([]string, 1)
+	params[0] = voterAddress
+
+	pointer := &dto.RequestResult{}
+
+	err := e.super.provider.SendRequest(pointer, "election_voter", params)
 	if err != nil{
 		return nil, err
 	}
 
-	transaction := e.super.PrePareTransaction(from, ElectionContractAddr, types.ComplexString(hexutil.Encode(inputEncode)))
-	requestResult, err := e.super.Call(transaction)
-
-	if err != nil {
-		return nil, err
-	}
-
-	//fmt.Println("result is ", requestResult.Result.(string))
-	var voterInfo voterParsing
-	fmt.Println("voter ", voterInfo)
-	err = e.abi.Methods["queryVoter"].Outputs.Unpack(&voterInfo, common.FromHex(requestResult.Result.(string)))
-	// 解码不应该出错，除非底层逻辑变更
-	if err != nil {
-		return nil, err
-	}
-
-	var voter voter
-	voter.Owner = voterInfo.Owner
-	voter.IsProxy = voterInfo.IsProxy
-	voter.ProxyVoteCount = voterInfo.ProxyVoteCount
-	voter.Proxy = voterInfo.Proxy
-	voter.LastVoteCount = voterInfo.LastVoteCount
-	voter.Timestamp = voterInfo.Timestamp
-	for i := 0;i<len(voterInfo.VoteCandidatesList);i++{
-		voter.VoteCandidatesList = append(voter.VoteCandidatesList, voterInfo.VoteCandidatesList[i*32:(i+1)*32-1])
-	}
-
-	return &voter, err
+	return pointer.ToElectionVoter()
 }
 
-//"queryVoterList","inputs":[{"name":"candidateAddress","type":"string"}],"outputs":[{"name":"candidateAddress","type":"string"},{"name":"voterNum","type":"uint64"},{"name":"voterList","type":"string"}]
-func(e *Election) GetVoterList(from common.Address, candidateAddress string)(*Voters, error){
-	// encoding
-	inputEncode, err := e.abi.Pack("queryVoterList", candidateAddress)
+//投票人列表
+func(e *Election) GetVoterList(voterAddress string)([]string, error){
+	params := make([]string, 1)
+	params[0] = voterAddress
+
+	pointer := &dto.RequestResult{}
+
+	err := e.super.provider.SendRequest(pointer, "election_voterList", params)
 	if err != nil{
 		return nil, err
 	}
 
-	transaction := e.super.PrePareTransaction(from, ElectionContractAddr, types.ComplexString(hexutil.Encode(inputEncode)))
-	requestResult, err := e.super.Call(transaction)
-
-	if err != nil {
-		return nil, err
-	}
-
-	//fmt.Println("result is ", requestResult.Result.(string))
-	var voterList votersParsing
-	err = e.abi.Methods["queryVoterList"].Outputs.Unpack(&voterList, common.FromHex(requestResult.Result.(string)))
-	// 解码不应该出错，除非底层逻辑变更
-	if err != nil {
-		return nil, err
-	}
-
-	var voters Voters
-	for i := uint64(0);i<voterList.VoterNum;i++{
-		voters.VotersLi = append(voters.VotersLi, voterList.VoterList[i*32:(i+1)*32-1])
-	}
-
-	voters.CandidateAddress = voterList.CandidateAddress
-	voters.VoterNum = voterList.VoterNum
-	return &voters, err
+	return pointer.ToElectionVoterList()
 }

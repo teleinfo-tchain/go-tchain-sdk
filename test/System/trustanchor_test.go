@@ -3,8 +3,8 @@ package System
 import (
 	"github.com/bif/bif-sdk-go"
 	"github.com/bif/bif-sdk-go/common"
+	"github.com/bif/bif-sdk-go/dto"
 	"github.com/bif/bif-sdk-go/providers"
-	"github.com/bif/bif-sdk-go/system"
 	"github.com/bif/bif-sdk-go/test/resources"
 	"testing"
 )
@@ -30,12 +30,9 @@ func TestRegisterTrustAnchor(t *testing.T) {
 		t.Error(err)
 		t.FailNow()
 	}
-	anchor, err := connection.System.NewTrustAnchor()
-	if err != nil {
-		t.Error(err)
-		t.FailNow()
-	}
-	registerBaseAnchor := new(system.RegisterAnchor)
+	anchor := connection.System.NewTrustAnchor()
+
+	registerBaseAnchor := new(dto.RegisterAnchor)
 	registerBaseAnchor.Anchor = common.StringToAddress(BaseAnchorAddr).String()
 	registerBaseAnchor.AnchorType = BaseAnchorType
 	registerBaseAnchor.AnchorName = TrustAnchorName
@@ -54,7 +51,7 @@ func TestRegisterTrustAnchor(t *testing.T) {
 	}
 	t.Log(registerBaseAnchorHash)
 
-	registerExtendAnchor := new(system.RegisterAnchor)
+	registerExtendAnchor := new(dto.RegisterAnchor)
 	registerExtendAnchor.Anchor = common.StringToAddress(ExtendAnchorAddr).String()
 	registerExtendAnchor.AnchorType = ExtendAnchorType
 	registerExtendAnchor.AnchorName = TrustAnchorName
@@ -81,11 +78,7 @@ func TestUnRegisterTrustAnchor(t *testing.T) {
 		t.Error(err)
 		t.FailNow()
 	}
-	anchor, err := connection.System.NewTrustAnchor()
-	if err != nil {
-		t.Error(err)
-		t.FailNow()
-	}
+	anchor := connection.System.NewTrustAnchor()
 
 	transactionHash, err := anchor.UnRegisterTrustAnchor(common.StringToAddress(coinBase), coinBase)
 	if err != nil {
@@ -102,66 +95,27 @@ func TestIsTrustAnchor(t *testing.T) {
 		t.Error(err)
 		t.FailNow()
 	}
-	anchor, err := connection.System.NewTrustAnchor()
-	if err != nil {
+	anchor := connection.System.NewTrustAnchor()
+
+	trustAnchor, err := anchor.IsTrustAnchor(coinBase)
+	if err != nil{
 		t.Error(err)
 		t.FailNow()
 	}
-	trustAnchor, err := anchor.IsTrustAnchor(common.StringToAddress(coinBase), coinBase)
-	if err != nil && err != system.ErrCertificateNotExist {
-		t.Error(err)
-		t.FailNow()
-	}
-	if err == system.ErrCertificateNotExist {
-		t.Log("not ", err)
-	}
+
 	t.Log(trustAnchor)
 }
 
-func TestUpdateBaseAnchorInfo(t *testing.T) {
+func TestUpdateAnchorInfo(t *testing.T) {
 	var connection = bif.NewBif(providers.NewHTTPProvider(resources.IP+":"+resources.Port, 10, false))
 	coinBase, err := connection.Core.GetCoinbase()
 	if err != nil {
 		t.Error(err)
 		t.FailNow()
 	}
-	anchor, err := connection.System.NewTrustAnchor()
-	if err != nil {
-		t.Error(err)
-		t.FailNow()
-	}
+	anchor := connection.System.NewTrustAnchor()
 
-	baseAnchorInfo := new(system.BaseAnchorInfo)
-	baseAnchorInfo.Anchor = BaseAnchorAddr
-	baseAnchorInfo.CompanyUrl = "www.teleinfoTest.cn"
-	baseAnchorInfo.Website = "www.server.teleinfoTest.cn"
-	baseAnchorInfo.DocumentUrl = "www.doc.teleinfoTest.cn"
-	baseAnchorInfo.ServerUrl = "2.2.2.2"
-	baseAnchorInfo.Email = "www.email.teleinfoTest.cn"
-	baseAnchorInfo.Desc = "info test Test"
-
-	transactionHash, err := anchor.UpdateBaseAnchorInfo(common.StringToAddress(coinBase), baseAnchorInfo)
-	if err != nil {
-		t.Error(err)
-		t.FailNow()
-	}
-	t.Log(transactionHash)
-}
-
-func TestUpdateExtendAnchorInfo(t *testing.T) {
-	var connection = bif.NewBif(providers.NewHTTPProvider(resources.IP+":"+resources.Port, 10, false))
-	coinBase, err := connection.Core.GetCoinbase()
-	if err != nil {
-		t.Error(err)
-		t.FailNow()
-	}
-	anchor, err := connection.System.NewTrustAnchor()
-	if err != nil {
-		t.Error(err)
-		t.FailNow()
-	}
-
-	extendAnchorInfo := new(system.ExtendAnchorInfo)
+	extendAnchorInfo := new(dto.UpdateAnchorInfo)
 	extendAnchorInfo.CompanyUrl = "0www.teleinfo.cn"
 	extendAnchorInfo.Website = "0www.server.teleinfo.cn"
 	extendAnchorInfo.DocumentUrl = "0www.doc.teleinfo.cn"
@@ -169,7 +123,7 @@ func TestUpdateExtendAnchorInfo(t *testing.T) {
 	extendAnchorInfo.Email = "0www.email.teleinfo.cn"
 	extendAnchorInfo.Desc = "0info test"
 
-	transactionHash, err := anchor.UpdateExtendAnchorInfo(common.StringToAddress(coinBase), extendAnchorInfo)
+	transactionHash, err := anchor.UpdateAnchorInfo(common.StringToAddress(coinBase), extendAnchorInfo)
 	if err != nil {
 		t.Error(err)
 		t.FailNow()
@@ -184,13 +138,9 @@ func TestExtractOwnBounty(t *testing.T) {
 		t.Error(err)
 		t.FailNow()
 	}
-	anchor, err := connection.System.NewTrustAnchor()
-	if err != nil {
-		t.Error(err)
-		t.FailNow()
-	}
+	anchor := connection.System.NewTrustAnchor()
 
-	transactionHash, err := anchor.ExtractOwnBounty(common.StringToAddress(coinBase), coinBase)
+	transactionHash, err := anchor.ExtractOwnBounty(common.StringToAddress(coinBase))
 	if err != nil {
 		t.Error(err)
 		t.FailNow()
@@ -205,19 +155,14 @@ func TestGetTrustAnchor(t *testing.T) {
 		t.Error(err)
 		t.FailNow()
 	}
-	anchor, err := connection.System.NewTrustAnchor()
+	anchor := connection.System.NewTrustAnchor()
+
+	trustAnchor, err := anchor.GetTrustAnchor(coinBase)
 	if err != nil {
 		t.Error(err)
 		t.FailNow()
 	}
-	trustAnchor, err := anchor.GetTrustAnchor(common.StringToAddress(coinBase), coinBase)
-	if err != nil && err != system.ErrCertificateNotExist {
-		t.Error(err)
-		t.FailNow()
-	}
-	if err == system.ErrCertificateNotExist {
-		t.Log(err)
-	}
+
 	t.Log(trustAnchor)
 }
 
@@ -228,12 +173,9 @@ func TestGetTrustAnchorStatus(t *testing.T) {
 		t.Error(err)
 		t.FailNow()
 	}
-	anchor, err := connection.System.NewTrustAnchor()
-	if err != nil {
-		t.Error(err)
-		t.FailNow()
-	}
-	trustAnchorStatus, err := anchor.GetTrustAnchorStatus(common.StringToAddress(coinBase), coinBase)
+	anchor := connection.System.NewTrustAnchor()
+
+	trustAnchorStatus, err := anchor.GetTrustAnchorStatus(coinBase)
 	if err != nil {
 		t.Error(err)
 		t.FailNow()
@@ -242,19 +184,34 @@ func TestGetTrustAnchorStatus(t *testing.T) {
 	t.Log(trustAnchorStatus)
 }
 
-func TestGetBaseTrustAnchorList(t *testing.T) {
+func TestGetCertificateList(t *testing.T) {
 	var connection = bif.NewBif(providers.NewHTTPProvider(resources.IP+":"+resources.Port, 10, false))
 	coinBase, err := connection.Core.GetCoinbase()
 	if err != nil {
 		t.Error(err)
 		t.FailNow()
 	}
-	anchor, err := connection.System.NewTrustAnchor()
+	anchor := connection.System.NewTrustAnchor()
+
+	certificateLi, err := anchor.GetCertificateList(coinBase)
 	if err != nil {
 		t.Error(err)
 		t.FailNow()
 	}
-	baseList, err := anchor.GetBaseTrustAnchorList(common.StringToAddress(coinBase))
+
+	t.Log(certificateLi)
+}
+
+func TestGetBaseList(t *testing.T) {
+	var connection = bif.NewBif(providers.NewHTTPProvider(resources.IP+":"+resources.Port, 10, false))
+	_, err := connection.Core.GetCoinbase()
+	if err != nil {
+		t.Error(err)
+		t.FailNow()
+	}
+	anchor := connection.System.NewTrustAnchor()
+
+	baseList, err := anchor.GetBaseList()
 	if err != nil {
 		t.Error(err)
 		t.FailNow()
@@ -265,17 +222,14 @@ func TestGetBaseTrustAnchorList(t *testing.T) {
 
 func TestGetBaseTrustAnchorNum(t *testing.T) {
 	var connection = bif.NewBif(providers.NewHTTPProvider(resources.IP+":"+resources.Port, 10, false))
-	coinBase, err := connection.Core.GetCoinbase()
+	_, err := connection.Core.GetCoinbase()
 	if err != nil {
 		t.Error(err)
 		t.FailNow()
 	}
-	anchor, err := connection.System.NewTrustAnchor()
-	if err != nil {
-		t.Error(err)
-		t.FailNow()
-	}
-	baseListNum, err := anchor.GetBaseTrustAnchorNum(common.StringToAddress(coinBase))
+	anchor := connection.System.NewTrustAnchor()
+
+	baseListNum, err := anchor.GetBaseNum()
 	if err != nil {
 		t.Error(err)
 		t.FailNow()
@@ -284,19 +238,16 @@ func TestGetBaseTrustAnchorNum(t *testing.T) {
 	t.Log(baseListNum)
 }
 
-func TestGetExpendTrustAnchorList(t *testing.T) {
+func TestGetExpendList(t *testing.T) {
 	var connection = bif.NewBif(providers.NewHTTPProvider(resources.IP+":"+resources.Port, 10, false))
-	coinBase, err := connection.Core.GetCoinbase()
+	_, err := connection.Core.GetCoinbase()
 	if err != nil {
 		t.Error(err)
 		t.FailNow()
 	}
-	anchor, err := connection.System.NewTrustAnchor()
-	if err != nil {
-		t.Error(err)
-		t.FailNow()
-	}
-	expendList, err := anchor.GetExpendTrustAnchorList(common.StringToAddress(coinBase))
+	anchor := connection.System.NewTrustAnchor()
+
+	expendList, err := anchor.GetExpendList()
 	if err != nil {
 		t.Error(err)
 		t.FailNow()
@@ -305,19 +256,16 @@ func TestGetExpendTrustAnchorList(t *testing.T) {
 	t.Log(expendList)
 }
 
-func TestGetExpendTrustAnchorNum(t *testing.T) {
+func TestGetExpendNum(t *testing.T) {
 	var connection = bif.NewBif(providers.NewHTTPProvider(resources.IP+":"+resources.Port, 10, false))
-	coinBase, err := connection.Core.GetCoinbase()
+	_, err := connection.Core.GetCoinbase()
 	if err != nil {
 		t.Error(err)
 		t.FailNow()
 	}
-	anchor, err := connection.System.NewTrustAnchor()
-	if err != nil {
-		t.Error(err)
-		t.FailNow()
-	}
-	expendListNum, err := anchor.GetExpendTrustAnchorNum(common.StringToAddress(coinBase))
+	anchor := connection.System.NewTrustAnchor()
+
+	expendListNum, err := anchor.GetExpendNum()
 	if err != nil {
 		t.Error(err)
 		t.FailNow()
@@ -334,11 +282,7 @@ func TestVoteElect(t *testing.T) {
 		t.Error(err)
 		t.FailNow()
 	}
-	anchor, err := connection.System.NewTrustAnchor()
-	if err != nil {
-		t.Error(err)
-		t.FailNow()
-	}
+	anchor := connection.System.NewTrustAnchor()
 
 	transactionHash, err := anchor.VoteElect(common.StringToAddress(coinBase), coinBase)
 	if err != nil {
@@ -355,12 +299,7 @@ func TestCancelVote(t *testing.T) {
 		t.Error(err)
 		t.FailNow()
 	}
-	anchor, err := connection.System.NewTrustAnchor()
-	if err != nil {
-		t.Error(err)
-		t.FailNow()
-	}
-
+	anchor := connection.System.NewTrustAnchor()
 	transactionHash, err := anchor.CancelVote(common.StringToAddress(coinBase), coinBase)
 	if err != nil {
 		t.Error(err)
@@ -376,38 +315,13 @@ func TestGetVoter(t *testing.T) {
 		t.Error(err)
 		t.FailNow()
 	}
-	anchor, err := connection.System.NewTrustAnchor()
-	if err != nil {
-		t.Error(err)
-		t.FailNow()
-	}
-	voterInfo, err := anchor.GetVoter(common.StringToAddress(coinBase), coinBase)
-	if err != nil {
-		t.Error(err)
-		t.FailNow()
-	}
-
-	t.Log(voterInfo)
-}
-
-func TestCheckSenderAddress(t *testing.T) {
-	var connection = bif.NewBif(providers.NewHTTPProvider(resources.IP+":"+resources.Port, 10, false))
-	coinBase, err := connection.Core.GetCoinbase()
-	if err != nil {
-		t.Error(err)
-		t.FailNow()
-	}
-	anchor, err := connection.System.NewTrustAnchor()
-	if err != nil {
-		t.Error(err)
-		t.FailNow()
-	}
-	superNode, err := anchor.CheckSenderAddress(common.StringToAddress(coinBase), coinBase)
+	anchor := connection.System.NewTrustAnchor()
+	trustAnchorVoter, err := anchor.GetVoter(coinBase)
 	if err != nil {
 		t.Error(err)
 		t.FailNow()
 	}
 
-	t.Log(superNode)
+	t.Log(trustAnchorVoter)
 }
 

@@ -473,32 +473,6 @@ func (pointer *RequestResult) ToStakeResponse() (*StakeResponse, error) {
 
 }
 
-func (pointer *RequestResult) ToPeerCertificateResponse() (*PeerCertificate, error) {
-
-	if err := pointer.checkResponse(); err != nil {
-		return nil, err
-	}
-
-	result := (pointer).Result.(map[string]interface{})
-
-	if len(result) == 0 {
-		return nil, customerror.EMPTYRESPONSE
-	}
-
-	data := &PeerCertificate{}
-
-	marshal, err := json.Marshal(result)
-
-	if err != nil {
-		return nil, customerror.UNPARSEABLEINTERFACE
-	}
-
-	err = json.Unmarshal([]byte(marshal), data)
-
-	return data, err
-
-}
-
 // To avoid a conversion of a nil interface
 func (pointer *RequestResult) checkResponse() error {
 

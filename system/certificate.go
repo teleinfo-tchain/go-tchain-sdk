@@ -24,11 +24,7 @@ var (
 const CertificateAbiJSON = `[
 {"constant": false,"name":"registerCertificate","inputs":[{"name":"Id","type":"string"},{"name":"Context","type":"string"},{"name":"Subject","type":"string"},{"name":"Period","type":"uint64"},{"name":"IssuerAlgorithm","type":"string"},{"name":"IssuerSignature","type":"string"},{"name":"SubjectPublicKey","type":"string"},{"name":"SubjectAlgorithm","type":"string"},{"name":"SubjectSignature","type":"string"}],"outputs":[],"type":"function"},
 {"constant": false,"name":"revokedCertificate","inputs":[{"name":"id","type":"string"}],"outputs":[],"type":"function"},
-{"constant": true,"name":"queryPeriod","inputs":[{"name":"id", "type":"string"}],"outputs":[{"name":"period","type":"uint64"}],"type":"function"},
-{"constant": true,"name":"queryActive","inputs":[{"name":"id", "type":"string"}],"outputs":[{"name":"isEnable","type":"bool"}],"type":"function"},
-{"constant": true,"name":"queryIssuer","inputs":[{"name":"id", "type":"string"}],"outputs":[{"name":"Issuer","type":"string"}],"type":"function"},
-{"constant": true,"name":"queryIssuerSignature","inputs":[{"name":"id", "type":"string"}],"outputs":[{"name":"Id","type":"string"},{"name":"PublicKey","type":"string"},{"name":"Algorithm","type":"string"},{"name":"Signature","type":"string"}],"type":"function"},
-{"constant": true,"name":"querySubjectSignature","inputs":[{"name":"id", "type":"string"}],"outputs":[{"name":"Id","type":"string"},{"name":"PublicKey","type":"string"},{"name":"Algorithm","type":"string"},{"name":"Signature","type":"string"}],"type":"function"},
+{"constant": false,"name":"revokedCertificates","inputs":[],"outputs":[],"type":"function"},
 {"anonymous":false,"inputs":[{"indexed":false,"name":"methodName","type":"string"},{"indexed":false,"name":"status","type":"uint32"},{"indexed":false,"name":"reason","type":"string"},{"indexed":false,"name":"time","type":"uint256"}],"name":"cerdEvent","type":"event"}
 ]`
 
@@ -37,166 +33,17 @@ type Certificate struct {
 	abi   abi.ABI
 }
 
-type Signature struct {
-	Id        string
-	PublicKey string
-	Algorithm string
-	Signature string
-}
-
-type RegisterCertificate struct {
-	Id string
-	Context string
-	Subject string
-	Period uint64
-	IssuerAlgorithm string
-	IssuerSignature string
-	SubjectPublicKey string
-	SubjectAlgorithm string
-	SubjectSignature string
-}
-
-func (sys *System) NewCertificate() (*Certificate, error) {
-	parsedAbi, err := abi.JSON(strings.NewReader(CertificateAbiJSON))
-	if err != nil {
-		return nil, err
-	}
+func (sys *System) NewCertificate() *Certificate {
+	parsedAbi, _ := abi.JSON(strings.NewReader(CertificateAbiJSON))
 
 	cer := new(Certificate)
 	cer.abi = parsedAbi
 	cer.super = sys
-	return cer, nil
+	return cer
 }
 
-//"inputs":[{"name":"id", "type":"string"}],"outputs":[{"name":"period","type":"uint64"}]
-func (cer *Certificate) GetPeriod(from common.Address, id string) (uint64, error) {
-	// encoding
-	inputEncode, err := cer.abi.Pack("queryPeriod", id)
-	if err != nil {
-		return 0, err
-	}
-
-	transaction := cer.super.PrePareTransaction(from, CertificateContractAddr, types.ComplexString(hexutil.Encode(inputEncode)))
-	requestResult, err := cer.super.Call(transaction)
-	if err != nil {
-		return 0, err
-	}
-	//fmt.Println("result is ", requestResult.Result.(string))
-	var period uint64
-	err = cer.abi.Methods["queryPeriod"].Outputs.Unpack(&period, common.FromHex(requestResult.Result.(string)))
-	// 解码不应该出错，除非底层逻辑变更
-	if err != nil {
-		return 0, err
-	}
-
-	if period == 0 {
-		return 0, ErrCertificateNotExist
-	}
-	return period, err
-}
-
-//"inputs":[{"name":"id", "type":"string"}],"outputs":[{"name":"isEnable","type":"bool"}]
-func (cer *Certificate) GetActive(from common.Address, id string) (bool, error) {
-	// encoding
-	inputEncode, err := cer.abi.Pack("queryActive", id)
-	if err != nil {
-		return false, err
-	}
-
-	transaction := cer.super.PrePareTransaction(from, CertificateContractAddr, types.ComplexString(hexutil.Encode(inputEncode)))
-	requestResult, err := cer.super.Call(transaction)
-	if err != nil {
-		return false, err
-	}
-	//fmt.Println("result is ", requestResult.Result.(string))
-	var isEnable bool
-	err = cer.abi.Methods["queryActive"].Outputs.Unpack(&isEnable, common.FromHex(requestResult.Result.(string)))
-	// 解码不应该出错，除非底层逻辑变更
-	if err != nil {
-		return false, err
-	}
-
-	return isEnable, err
-}
-
-//"inputs":[{"name":"id", "type":"string"}],"outputs":[{"name":"Issuer","type":"string"}]
-func (cer *Certificate) GetIssuer(from common.Address, id string) (string, error) {
-	// encoding
-	inputEncode, err := cer.abi.Pack("queryIssuer", id)
-	if err != nil {
-		return "", err
-	}
-
-	transaction := cer.super.PrePareTransaction(from, CertificateContractAddr, types.ComplexString(hexutil.Encode(inputEncode)))
-	requestResult, err := cer.super.Call(transaction)
-	if err != nil {
-		return "", err
-	}
-	//fmt.Println("result is ", requestResult.Result.(string))
-	var issuer string
-	err = cer.abi.Methods["queryIssuer"].Outputs.Unpack(&issuer, common.FromHex(requestResult.Result.(string)))
-	// 解码不应该出错，除非底层逻辑变更
-	if err != nil {
-		return "", err
-	}
-	return issuer, err
-}
-
-//"inputs":[{"name":"id", "type":"string"}],"outputs":[{"name":"Id","type":"string"},{"name":"PublicKey","type":"string"},{"name":"Algorithm","type":"string"},{"name":"Signature","type":"string"}]
-func (cer *Certificate) GetIssuerSignature(from common.Address, id string) (*Signature, error) {
-	// encoding
-	inputEncode, err := cer.abi.Pack("queryIssuerSignature", id)
-	if err != nil {
-		return nil, err
-	}
-
-	transaction := cer.super.PrePareTransaction(from, CertificateContractAddr, types.ComplexString(hexutil.Encode(inputEncode)))
-	requestResult, err := cer.super.Call(transaction)
-	if err != nil {
-		return nil, err
-	}
-	//fmt.Println("result string is ", requestResult.Result.(string))
-	var issuerSignature Signature
-	err = cer.abi.Methods["queryIssuerSignature"].Outputs.Unpack(&issuerSignature, common.FromHex(requestResult.Result.(string)))
-	// 解码不应该出错，除非底层逻辑变更
-	if err != nil{
-		return nil, err
-	}
-	if issuerSignature.Id == "0000000000000000000000000000000000000000"{
-		return nil, ErrCertificateNotExist
-	}
-	return &issuerSignature, err
-}
-
-//"inputs":[{"name":"id", "type":"string"}],"outputs":[{"name":"Id","type":"string"},{"name":"PublicKey","type":"string"},{"name":"Algorithm","type":"string"},{"name":"Signature","type":"string"}]
-func (cer *Certificate) GetSubjectSignature(from common.Address, id string) (*Signature, error) {
-	// encoding
-	inputEncode, err := cer.abi.Pack("querySubjectSignature", id)
-	if err != nil {
-		return nil, err
-	}
-
-	transaction := cer.super.PrePareTransaction(from, CertificateContractAddr, types.ComplexString(hexutil.Encode(inputEncode)))
-	requestResult, err := cer.super.Call(transaction)
-	if err != nil {
-		return nil, err
-	}
-
-	//fmt.Println("result string is ", requestResult.Result.(string))
-	var subjectSignature Signature
-	err = cer.abi.Methods["querySubjectSignature"].Outputs.Unpack(&subjectSignature, common.FromHex(requestResult.Result.(string)))
-	// 解码不应该出错，除非底层逻辑变更
-	if err != nil {
-		return nil, err
-	}
-	if subjectSignature.Id == "0000000000000000000000000000000000000000"{
-		return nil, ErrCertificateNotExist
-	}
-	return &subjectSignature, err
-}
-
-//"inputs":[{"name":"Id","type":"string"},{"name":"Context","type":"string"},{"name":"Subject","type":"string"},{"name":"Period","type":"uint64"},{"name":"IssuerAlgorithm","type":"string"},{"name":"IssuerSignature","type":"string"},{"name":"SubjectPublicKey","type":"string"},{"name":"SubjectAlgorithm","type":"string"},{"name":"SubjectSignature","type":"string"}],"outputs":[]
-func (cer *Certificate) RegisterCertificate(from common.Address, registerCertificate *RegisterCertificate) (string, error) {
+//信任锚颁发证书，如果是根信任锚颁发的证书，则证书接收者可以进行部署合约和大额转账操作
+func (cer *Certificate) RegisterCertificate(from common.Address, registerCertificate *dto.RegisterCertificate) (string, error) {
 	// encoding
 	// registerCertificate is a struct we need to use the components.
 	var values []interface{}
@@ -212,7 +59,7 @@ func (cer *Certificate) RegisterCertificate(from common.Address, registerCertifi
 	return cer.super.SendTransaction(transaction)
 }
 
-//inputs":[{"name":"id","type":"string"}],"outputs":[]
+//信任锚吊销个人证书
 func (cer *Certificate) RevokedCertificate(from common.Address, id string) (string, error) {
 	// encoding
 	inputEncode, err := cer.abi.Pack("revokedCertificate", id)
@@ -225,3 +72,91 @@ func (cer *Certificate) RevokedCertificate(from common.Address, id string) (stri
 	transaction.Data = types.ComplexString(hexutil.Encode(inputEncode))
 	return cer.super.SendTransaction(transaction)
 }
+
+//批量吊销个人证书，把自己颁发的证书全部吊销
+func (cer *Certificate) RevokedCertificates(from common.Address) (string, error) {
+	// encoding
+	inputEncode, err := cer.abi.Pack("revokedCertificates")
+	if err != nil {
+		return "", err
+	}
+	transaction := new(dto.TransactionParameters)
+	transaction.From = from.String()
+	transaction.To = CertificateContractAddr
+	transaction.Data = types.ComplexString(hexutil.Encode(inputEncode))
+	return cer.super.SendTransaction(transaction)
+}
+
+//证书有效期，如果证书被吊销，则有效期是0
+func (cer *Certificate) GetPeriod(id string) (uint64, error) {
+	params := make([]string, 1)
+	params[0] = id
+
+	pointer := &dto.RequestResult{}
+
+	err := cer.super.provider.SendRequest(pointer, "certificate_period", params)
+	if err != nil{
+		return 0, err
+	}
+
+	return pointer.ToCertificatePeriod()
+}
+
+func (cer *Certificate) GetActive(id string) (bool, error) {
+	params := make([]string, 1)
+	params[0] = id
+
+	pointer := &dto.RequestResult{}
+
+	err := cer.super.provider.SendRequest(pointer, "certificate_active", params)
+	if err != nil{
+		return false, err
+	}
+
+	return pointer.ToCertificateActive()
+}
+
+func (cer *Certificate) GetCertificate(id string) (*dto.CertificateInfo, error) {
+	params := make([]string, 1)
+	params[0] = id
+
+	pointer := &dto.RequestResult{}
+
+	err := cer.super.provider.SendRequest(pointer, "certificate_certificate", params)
+	if err != nil{
+		return nil, err
+	}
+
+	return pointer.ToCertificateInfo()
+}
+
+//信任锚信息，证书颁发者的信息
+func (cer *Certificate) GetIssuer(id string) (*dto.IssuerSignature, error) {
+	params := make([]string, 1)
+	params[0] = id
+
+	pointer := &dto.RequestResult{}
+
+	err := cer.super.provider.SendRequest(pointer, "certificate_issuer", params)
+	if err != nil{
+		return nil, err
+	}
+
+	return pointer.ToCertificateIssuerSignature()
+}
+
+
+func (cer *Certificate) GetSubject(id string) (*dto.SubjectSignature, error) {
+	params := make([]string, 1)
+	params[0] = id
+
+	pointer := &dto.RequestResult{}
+
+	err := cer.super.provider.SendRequest(pointer, "certificate_subject", params)
+	if err != nil{
+		return nil, err
+	}
+
+	return pointer.ToCertificateSubjectSignature()
+}
+

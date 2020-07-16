@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"github.com/bif/bif-sdk-go"
 	"github.com/bif/bif-sdk-go/common"
+	"github.com/bif/bif-sdk-go/dto"
 	"github.com/bif/bif-sdk-go/providers"
 	"github.com/bif/bif-sdk-go/system"
 	"github.com/bif/bif-sdk-go/test/resources"
@@ -21,7 +22,7 @@ func TestRegisterWitness(t *testing.T) {
 	}
 	elect := connection.System.NewElection()
 
-	registerWitness := new(system.RegisterWitness)
+	registerWitness := new(dto.RegisterWitness)
 	registerWitness.NodeUrl = "127.0.0.1/test"
 	registerWitness.Website = "www.tele.info.com"
 	registerWitness.Name = "BeiJing"
@@ -54,7 +55,7 @@ func TestUnRegisterWitness(t *testing.T) {
 }
 
 // 获取候选节点基本信息
-func TestGetCandidates(t *testing.T) {
+func TestGetCandidate(t *testing.T) {
 	var connection = bif.NewBif(providers.NewHTTPProvider(resources.IP52+":"+resources.Port, 10, false))
 	coinBase, err := connection.Core.GetCoinbase()
 	if err != nil {
@@ -64,21 +65,19 @@ func TestGetCandidates(t *testing.T) {
 
 	elect := connection.System.NewElection()
 
-	candidate, err := elect.GetCandidates(common.StringToAddress(coinBase), coinBase)
+	candidate, err := elect.GetCandidate(coinBase)
 
 	if err != nil{
 		t.Error(err)
 		t.FailNow()
 	}
 	t.Log(fmt.Sprintf("%#v \n", candidate))
-	fmt.Println(uint(0x1e980), uint(0xea60), uint(0x1a1))
-//	0x1e980  0xea60 0x1a1
 }
 
 //获取所有的见证候选节点
 func TestGetAllCandidates(t *testing.T) {
 	var connection = bif.NewBif(providers.NewHTTPProvider(resources.IP+":"+resources.Port, 10, false))
-	coinBase, err := connection.Core.GetCoinbase()
+	_, err := connection.Core.GetCoinbase()
 	if err != nil {
 		t.Error(err)
 		t.FailNow()
@@ -86,14 +85,14 @@ func TestGetAllCandidates(t *testing.T) {
 
 	elect := connection.System.NewElection()
 
-	allCandidates, err := elect.GetAllCandidates(common.StringToAddress(coinBase))
+	allCandidates, err := elect.GetAllCandidates()
 
 	if err != nil{
 		t.Error(err)
 		t.FailNow()
 	}
 
-	t.Log(fmt.Sprintf("%#v \n", allCandidates))
+	t.Log(allCandidates)
 	//"did:bid:6cc796b8d6e2fbebc9b3cf9",
 	//"did:bid:13803fb30b7e95d57103c2d",
 	//"did:bid:c117c1794fc7a27bd301ae5",
@@ -279,7 +278,7 @@ func TestUnStake(t *testing.T) {
 
 // 获取某个地址的权益抵押信息
 func TestGetStake(t *testing.T) {
-	var connection = bif.NewBif(providers.NewHTTPProvider(resources.IP52+":"+resources.Port, 10, false))
+	var connection = bif.NewBif(providers.NewHTTPProvider(resources.IP51+":"+resources.Port, 10, false))
 	coinBase, err := connection.Core.GetCoinbase()
 	if err != nil {
 		t.Error(err)
@@ -288,7 +287,7 @@ func TestGetStake(t *testing.T) {
 
 	elect := connection.System.NewElection()
 
-	stake, err := elect.GetStake(common.StringToAddress(coinBase), coinBase)
+	stake, err := elect.GetStake(coinBase)
 
 	if err != nil{
 		t.Error(err)
@@ -301,6 +300,26 @@ func TestGetStake(t *testing.T) {
 	//{Owner:"did:bid:6cc796b8d6e2fbebc9b3cf9e", StakeCount:0xea60, Timestamp:0x5ef5b55d}
 	//{Owner:"did:bid:13803fb30b7e95d57103c2dc", StakeCount:0xea60, Timestamp:0x5ef5b5f5}
 	//{Owner:"did:bid:c117c1794fc7a27bd301ae52", StakeCount:0xea60, Timestamp:0x5ef5b619}
+}
+
+func TestGetRestBIFBounty(t *testing.T){
+	var connection = bif.NewBif(providers.NewHTTPProvider(resources.IP52+":"+resources.Port, 10, false))
+	_, err := connection.Core.GetCoinbase()
+	if err != nil {
+		t.Error(err)
+		t.FailNow()
+	}
+
+	elect := connection.System.NewElection()
+
+	restBounty, err := elect.GetRestBIFBounty()
+
+	if err != nil{
+		t.Error(err)
+		t.FailNow()
+	}
+
+	t.Log(restBounty)
 }
 
 func TestElectionExtractOwnBounty(t *testing.T) {
@@ -355,7 +374,7 @@ func TestElectGetVoter(t *testing.T) {
 
 	elect := connection.System.NewElection()
 
-	voter, err := elect.GetVoter(common.StringToAddress(coinBase),coinBase)
+	voter, err := elect.GetVoter(coinBase)
 
 	if err != nil{
 		t.Error(err)
@@ -374,7 +393,7 @@ func TestElectGetVoter(t *testing.T) {
 // 获取指定的候选者的投票列表
 func TestGetVoterList(t *testing.T) {
 	var connection = bif.NewBif(providers.NewHTTPProvider(resources.IP+":"+resources.Port, 10, false))
-	coinBase, err := connection.Core.GetCoinbase()
+	_, err := connection.Core.GetCoinbase()
 	if err != nil {
 		t.Error(err)
 		t.FailNow()
@@ -382,7 +401,7 @@ func TestGetVoterList(t *testing.T) {
 
 	elect := connection.System.NewElection()
 
-	voterList, err := elect.GetVoterList(common.StringToAddress(coinBase), resources.Address52)
+	voterList, err := elect.GetVoterList(resources.Address52)
 
 	if err != nil{
 		t.Error(err)
@@ -390,6 +409,4 @@ func TestGetVoterList(t *testing.T) {
 	}
 
 	t.Log(fmt.Sprintf("%#v \n", voterList))
-	t.Log(voterList.VoterNum)
-
 }
