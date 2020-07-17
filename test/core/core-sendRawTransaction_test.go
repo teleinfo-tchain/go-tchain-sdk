@@ -12,7 +12,7 @@ import (
 )
 
 //test/core/core-sendRawTransaction_test.go
-func TestCoreSendRawTransaction(t *testing.T){
+func TestCoreSendRawTransaction(t *testing.T) {
 	var connection = bif.NewBif(providers.NewHTTPProvider(resources.IP+":"+resources.Port, 10, false))
 
 	nonce, err := connection.Core.GetTransactionCount(resources.CoinBase, block.LATEST)
@@ -27,16 +27,16 @@ func TestCoreSendRawTransaction(t *testing.T){
 	tx := &core.Txdata{
 		AccountNonce: nonce.Uint64(),
 		//AccountNonce: 10,
-		Price: big.NewInt(25),
-		GasLimit: 2000000,
-		Sender: &from,
+		Price:     big.NewInt(25),
+		GasLimit:  2000000,
+		Sender:    &from,
 		Recipient: &to,
-		Amount: big.NewInt(50000000000),
-		Payload: nil,
-		V: new(big.Int),
-		R: new(big.Int),
-		S: new(big.Int),
-		T: big.NewInt(0),
+		Amount:    big.NewInt(50000000000),
+		Payload:   nil,
+		V:         new(big.Int),
+		R:         new(big.Int),
+		S:         new(big.Int),
+		T:         big.NewInt(0),
 	}
 	res, _ := core.SignTransaction(tx, privKey, 666)
 

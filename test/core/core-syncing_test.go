@@ -12,20 +12,13 @@
    along with go-bif.  If not, see <http://www.gnu.org/licenses/>.
 *********************************************************************************/
 
-/**
- * @file net-syncing_test.go
- * @authors:
- *   Reginaldo Costa <regcostajr@gmail.com>
- * @date 2017
- */
-
 package test
 
 import (
 	"github.com/bif/bif-sdk-go/test/resources"
 	"testing"
 
-	bif "github.com/bif/bif-sdk-go"
+	"github.com/bif/bif-sdk-go"
 	"github.com/bif/bif-sdk-go/providers"
 )
 

@@ -12,13 +12,6 @@
    along with go-bif.  If not, see <http://www.gnu.org/licenses/>.
 *********************************************************************************/
 
-/**
- * @file core-getBlockByNumber_test.go
- * @authors:
- *   Jérôme Laurens <jeromelaurens@gmail.com>
- * @date 2017
- */
-
 package test
 
 import (
@@ -38,7 +31,7 @@ func TestCoreGetBlockByNumber(t *testing.T) {
 
 	//blockNumber, err := connection.Core.GetBlockNumber()
 	blockNumber := big.NewInt(7603)
-	transactionDetails := true
+	const transactionDetails = true
 
 	block, err := connection.Core.GetBlockByNumber(blockNumber, transactionDetails)
 

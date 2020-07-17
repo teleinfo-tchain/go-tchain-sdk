@@ -12,21 +12,13 @@
    along with go-bif.  If not, see <http://www.gnu.org/licenses/>.
 *********************************************************************************/
 
-/**
- * @file core-mining_test.go
- * @authors:
- *   Reginaldo Costa <regcostajr@gmail.com>
- * @date 2017
- */
-
 package test
 
 import (
-	"fmt"
 	"github.com/bif/bif-sdk-go/test/resources"
 	"testing"
 
-	bif "github.com/bif/bif-sdk-go"
+	"github.com/bif/bif-sdk-go"
 	"github.com/bif/bif-sdk-go/providers"
 )
 
@@ -36,7 +28,7 @@ func TestCoreGenerating(t *testing.T) {
 
 	generating, err := connection.Core.Generating()
 
-	fmt.Println(generating)
+	t.Log(generating)
 
 	if err != nil {
 		t.Error(err)

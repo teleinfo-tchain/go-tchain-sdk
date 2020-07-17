@@ -12,64 +12,28 @@
    along with go-bif.  If not, see <http://www.gnu.org/licenses/>.
 *********************************************************************************/
 
-/**
- * @file personal-gettransactionbyhash_test.go
- * @authors:
- *   Reginaldo Costa <regcostajr@gmail.com>
- * @date 2017
- */
 package test
 
 import (
 	"fmt"
-	"github.com/bif/bif-sdk-go"
-	"github.com/bif/bif-sdk-go/dto"
-	"github.com/bif/bif-sdk-go/providers"
 	"github.com/bif/bif-sdk-go/test/resources"
-	"math/big"
 	"testing"
-	"time"
+
+	"github.com/bif/bif-sdk-go"
+	"github.com/bif/bif-sdk-go/providers"
 )
 
-func TestGetTransactionByHash(t *testing.T) {
+func TestCoreGetProtocolVersion(t *testing.T) {
 
 	var connection = bif.NewBif(providers.NewHTTPProvider(resources.IP+":"+resources.Port, 10, false))
 
-	coinbase, err := connection.Core.GetCoinbase()
+	version, err := connection.Core.GetProtocolVersion()
 
 	if err != nil {
 		t.Error(err)
 		t.FailNow()
 	}
 
-	transaction := new(dto.TransactionParameters)
-	transaction.From = coinbase
-	transaction.To = coinbase
-	transaction.Value = big.NewInt(10)
-	transaction.Gas = big.NewInt(40000)
-
-	txID, err := connection.Core.SendTransaction(transaction)
-
-	fmt.Println("txID:", txID)
-	// Wait for a block
-	time.Sleep(time.Second)
-
-	if err != nil {
-		t.Errorf("Failed SendTransaction")
-		t.Error(err)
-		t.FailNow()
-	}
-
-	time.Sleep(time.Second)
-
-	tx, err := connection.Core.GetTransactionByHash(txID)
-
-	if err != nil {
-		t.Errorf("Failed GetTransactionByHash")
-		t.Error(err)
-		t.FailNow()
-	}
-
-	t.Log(tx.BlockNumber)
+	fmt.Println(version)
 
 }

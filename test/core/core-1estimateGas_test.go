@@ -12,44 +12,42 @@
    along with go-bif.  If not, see <http://www.gnu.org/licenses/>.
 *********************************************************************************/
 
-/**
- * @file personal-unlockaccount_test.go
- * @authors:
- *   Reginaldo Costa <regcostajr@gmail.com>
- * @date 2017
- */
 package test
 
 import (
-	"errors"
 	"github.com/bif/bif-sdk-go/test/resources"
 	"testing"
 
 	"github.com/bif/bif-sdk-go"
+	"github.com/bif/bif-sdk-go/dto"
 	"github.com/bif/bif-sdk-go/providers"
+	"math/big"
 )
 
-func TestPersonalUnlockAccount(t *testing.T) {
+func TestCoreEstimateGas(t *testing.T) {
 
 	var connection = bif.NewBif(providers.NewHTTPProvider(resources.IP+":"+resources.Port, 10, false))
 
-	accounts, err := connection.Personal.ListAccounts()
+	coinBase, err := connection.Core.GetCoinBase()
 
 	if err != nil {
 		t.Error(err)
 		t.FailNow()
 	}
 
-	result, err := connection.Personal.UnlockAccount(accounts[0], "123456", 100)
+	transaction := new(dto.TransactionParameters)
+	//	transaction.Data = "test"
+	transaction.From = coinBase
+	transaction.To = coinBase
+	transaction.Value = big.NewInt(10)
+	transaction.Gas = big.NewInt(40000)
+
+	gas, err := connection.Core.EstimateGas(transaction)
 
 	if err != nil {
 		t.Error(err)
 		t.FailNow()
 	}
-
-	if !result {
-		t.Error(errors.New("Can't unlock account"))
-		t.FailNow()
-	}
+	t.Log(gas)
 
 }

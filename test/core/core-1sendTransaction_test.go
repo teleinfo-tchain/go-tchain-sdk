@@ -12,12 +12,6 @@
    along with go-bif.  If not, see <http://www.gnu.org/licenses/>.
 *********************************************************************************/
 
-/**
- * @file core-sendtransaction_test.go
- * @authors:
- *   Reginaldo Costa <regcostajr@gmail.com>
- * @date 2017
- */
 package test
 
 import (
@@ -40,7 +34,7 @@ import (
 func TestCoreSendTransaction(t *testing.T) {
 
 	var connection = bif.NewBif(providers.NewHTTPProvider(resources.IP+":"+resources.Port, 10, false))
-	coinbase, err := connection.Core.GetCoinbase()
+	coinBase, err := connection.Core.GetCoinBase()
 	if err != nil {
 		t.Error(err)
 		t.FailNow()
@@ -55,11 +49,11 @@ func TestCoreSendTransaction(t *testing.T) {
 	}
 
 	transaction := new(dto.TransactionParameters)
-	transaction.From = coinbase
+	transaction.From = coinBase
 	transaction.To = toAddress
 	transaction.Value = big.NewInt(0).Mul(big.NewInt(5), big.NewInt(1e17))
 	transaction.Gas = big.NewInt(40000)
-	transaction.Data = types.ComplexString("Transfer Bifer test")
+	transaction.Data = "Transfer Bifer test"
 
 	txID, err := connection.Core.SendTransaction(transaction)
 
@@ -77,25 +71,30 @@ func TestCoreSendTransaction(t *testing.T) {
 }
 
 // test deploy contract
-func TestCoreSendTransactionDeployContract(t *testing.T){
+func TestCoreSendTransactionDeployContract(t *testing.T) {
 	content, err := ioutil.ReadFile("../resources/simple-contract.json")
 
 	type Contract struct {
 		Abi      string `json:"abi"`
-		Bytecode string `json:"bytecode"`
+		ByteCode string `json:"byteCode"`
 	}
 
 	var unmarshalResponse Contract
 
-	json.Unmarshal(content, &unmarshalResponse)
-	byteCode, err := utils.NewUtils().ByteCodeDeploy(unmarshalResponse.Abi, unmarshalResponse.Bytecode, big.NewInt(2))
-	if err != nil{
+	err = json.Unmarshal(content, &unmarshalResponse)
+	if err != nil {
+		t.Error(err)
+		t.FailNow()
+	}
+
+	byteCode, err := utils.NewUtils().ByteCodeDeploy(unmarshalResponse.Abi, unmarshalResponse.ByteCode, big.NewInt(2))
+	if err != nil {
 		t.Error(err)
 		t.FailNow()
 	}
 
 	var connection = bif.NewBif(providers.NewHTTPProvider(resources.IP+":"+resources.Port, 10, false))
-	fromAddress, err := connection.Core.GetCoinbase()
+	fromAddress, err := connection.Core.GetCoinBase()
 	if err != nil {
 		t.Error(err)
 		t.FailNow()
@@ -130,7 +129,7 @@ func TestCoreSendTransactionDeployContract(t *testing.T){
 
 	t.Log(txID)
 
-	time.Sleep(time.Second*5)
+	time.Sleep(time.Second * 5)
 
 	receipt, err := connection.Core.GetTransactionReceipt(txID)
 	if err != nil {
@@ -151,21 +150,26 @@ func TestCoreSendTransactionInteractContract(t *testing.T) {
 
 	type Contract struct {
 		Abi      string `json:"abi"`
-		Bytecode string `json:"bytecode"`
+		ByteCode string `json:"byteCode"`
 	}
 
 	var unmarshalResponse Contract
 
-	json.Unmarshal(content, &unmarshalResponse)
+	err = json.Unmarshal(content, &unmarshalResponse)
+	if err != nil {
+		t.Error(err)
+		t.FailNow()
+	}
+
 	// for more information, please check https://solidity.readthedocs.io/en/v0.6.10/abi-spec.html
 	byteCode, err := utils.NewUtils().ByteCodeInteract(unmarshalResponse.Abi, "multiply", big.NewInt(2))
-	if err != nil{
+	if err != nil {
 		t.Error(err)
 		t.FailNow()
 	}
 
 	var connection = bif.NewBif(providers.NewHTTPProvider(resources.IP+":"+resources.Port, 10, false))
-	fromAddress, err := connection.Core.GetCoinbase()
+	fromAddress, err := connection.Core.GetCoinBase()
 	if err != nil {
 		t.Error(err)
 		t.FailNow()
@@ -188,7 +192,7 @@ func TestCoreSendTransactionInteractContract(t *testing.T) {
 	t.Log("transaction hash is ", txID)
 
 	// wait too long
-	time.Sleep(time.Second*8)
+	time.Sleep(time.Second * 8)
 	receipt, err := connection.Core.GetTransactionReceipt(txID)
 	if err != nil {
 		t.Errorf("Failed GetTransactionReceipt")
@@ -199,10 +203,9 @@ func TestCoreSendTransactionInteractContract(t *testing.T) {
 	t.Log("receipt logs data is ", receipt.Logs[0].Data)
 }
 
-
 func TestCoreSendTransactionResult(t *testing.T) {
 	var connection = bif.NewBif(providers.NewHTTPProvider(resources.IP+":"+resources.Port, 10, false))
-	_, err := connection.Core.GetCoinbase()
+	_, err := connection.Core.GetCoinBase()
 	if err != nil {
 		t.Error(err)
 		t.FailNow()
@@ -216,5 +219,3 @@ func TestCoreSendTransactionResult(t *testing.T) {
 
 	t.Log(tx.BlockNumber)
 }
-
-

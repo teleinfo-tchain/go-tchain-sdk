@@ -12,33 +12,23 @@
    along with go-bif.  If not, see <http://www.gnu.org/licenses/>.
 *********************************************************************************/
 
-/**
- * @file core-getblocktransactioncountbynumber.go
- * @authors:
- *   Junjie CHen <chuckjunjchen@gmail.com>
- * @date 2018
- */
-
 package test
 
 import (
 	"github.com/bif/bif-sdk-go/test/resources"
-	"math/big"
 	"testing"
-	"time"
 
-	bif "github.com/bif/bif-sdk-go"
-	"github.com/bif/bif-sdk-go/core/block"
+	"github.com/bif/bif-sdk-go"
 	"github.com/bif/bif-sdk-go/dto"
 	"github.com/bif/bif-sdk-go/providers"
+	"math/big"
 )
 
-func TestGetBlockTransactionCountByNumber(t *testing.T) {
+func TestGetTransactionByBlockNumberAndIndex(t *testing.T) {
 
 	var connection = bif.NewBif(providers.NewHTTPProvider(resources.IP+":"+resources.Port, 10, false))
 
-	// submit a transaction, wait for the block and there should be 1 tx.
-	coinbase, err := connection.Core.GetCoinbase()
+	coinBase, err := connection.Core.GetCoinBase()
 
 	if err != nil {
 		t.Error(err)
@@ -46,50 +36,32 @@ func TestGetBlockTransactionCountByNumber(t *testing.T) {
 	}
 
 	transaction := new(dto.TransactionParameters)
-	transaction.From = coinbase
-	transaction.To = coinbase
-	transaction.Value = big.NewInt(200000)
+	transaction.From = coinBase
+	transaction.To = coinBase
+	transaction.Value = big.NewInt(0).Mul(big.NewInt(500), big.NewInt(1e18))
 	transaction.Gas = big.NewInt(40000)
+	transaction.Data = "p2p transaction"
 
-	txID, err := connection.Core.SendTransaction(transaction)
+	//txID, err := connection.Core.SendTransaction(transaction)
+
+	//t.Log(txID)
+
+	blockNumber, err := connection.Core.GetBlockNumber()
+
+	if err != nil {
+		t.Error(err)
+		t.Fail()
+	}
+
+	tx, err := connection.Core.GetTransactionByBlockNumberAndIndex(blockNumber, big.NewInt(0))
 
 	if err != nil {
 		t.Error(err)
 		t.FailNow()
 	}
 
-	time.Sleep(time.Second)
-
-	tx, err := connection.Core.GetTransactionByHash(txID)
-
-	if err != nil {
-		t.Error(err)
-		t.FailNow()
-	}
-
-	blockNumber := block.NUMBER(tx.BlockNumber)
-
-	txCount, err := connection.Core.GetBlockTransactionCountByNumber(blockNumber)
-
-	if err != nil {
-		t.Error(err)
-		t.FailNow()
-	}
-
-	if txCount.Int64() != 1 {
-		t.Error("invalid block transaction count")
-		t.FailNow()
-	}
-
-	txCount, err = connection.Core.GetBlockTransactionCountByNumber(block.LATEST)
-
-	if err != nil {
-		t.Error(err)
-		t.FailNow()
-	}
-
-	if txCount.Int64() != 1 {
-		t.Error("invalid block transaction count")
-		t.FailNow()
-	}
+	t.Log(tx.Hash)
+	t.Log(tx.BlockHash)
+	t.Log(tx.BlockNumber)
+	t.Log(tx.TransactionIndex)
 }

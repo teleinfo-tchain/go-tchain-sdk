@@ -12,13 +12,6 @@
    along with go-web3.  If not, see <http://www.gnu.org/licenses/>.
 *********************************************************************************/
 
-/**
- * @file core-gettransactionreceipt.go
- * @authors:
- *   Reginaldo Costa <regcostajr@gmail.com>
- * @date 2018
- */
-
 package test
 
 import (
@@ -38,23 +31,27 @@ func TestCoreGetTransactionReceipt(t *testing.T) {
 
 	type TruffleContract struct {
 		Abi      string `json:"abi"`
-		Bytecode string `json:"bytecode"`
+		ByteCode string `json:"byteCode"`
 	}
 
 	var unmarshalResponse TruffleContract
 
-	json.Unmarshal(content, &unmarshalResponse)
+	err = json.Unmarshal(content, &unmarshalResponse)
+	if err != nil {
+		t.Error(err)
+		t.FailNow()
+	}
 
 	var connection = web3.NewBif(providers.NewHTTPProvider(resources.IP+":"+resources.Port, 10, false))
-	bytecode := unmarshalResponse.Bytecode
+	byteCode := unmarshalResponse.ByteCode
 	contract, err := connection.Core.NewContract(unmarshalResponse.Abi)
 
 	transaction := new(dto.TransactionParameters)
-	coinbase, err := connection.Core.GetCoinbase()
-	transaction.From = coinbase
+	coinBase, err := connection.Core.GetCoinBase()
+	transaction.From = coinBase
 	transaction.Gas = big.NewInt(4000000)
 
-	hash, err := contract.Deploy(transaction, bytecode, nil)
+	hash, err := contract.Deploy(transaction, byteCode, nil)
 
 	if err != nil {
 		t.Error(err)

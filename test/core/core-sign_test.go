@@ -42,16 +42,16 @@ func TestCoreSignTransactionSm2(t *testing.T) {
 	to := common.StringToAddress(resources.AddressTwo)
 	tx := &core.Txdata{
 		AccountNonce: nonce.Uint64(),
-		Price: big.NewInt(20),
-		GasLimit: 2000000,
-		Sender: &from,
-		Recipient: &to,
-		Amount: big.NewInt(50000000000),
-		Payload: nil,
-		V: new(big.Int),
-		R: new(big.Int),
-		S: new(big.Int),
-		T: big.NewInt(0),
+		Price:        big.NewInt(20),
+		GasLimit:     2000000,
+		Sender:       &from,
+		Recipient:    &to,
+		Amount:       big.NewInt(50000000000),
+		Payload:      nil,
+		V:            new(big.Int),
+		R:            new(big.Int),
+		S:            new(big.Int),
+		T:            big.NewInt(0),
 	}
 
 	res, _ := core.SignTransaction(tx, privKey, int64(chainId))
@@ -96,16 +96,16 @@ func TestCoreSignTransactionNoSm2(t *testing.T) {
 	tx := &core.Txdata{
 		AccountNonce: nonce.Uint64(),
 		//AccountNonce: 10,
-		Price: big.NewInt(25),
-		GasLimit: 2000000,
-		Sender: &from,
+		Price:     big.NewInt(25),
+		GasLimit:  2000000,
+		Sender:    &from,
 		Recipient: &to,
-		Amount: big.NewInt(50000000000),
-		Payload: nil,
-		V: new(big.Int),
-		R: new(big.Int),
-		S: new(big.Int),
-		T: big.NewInt(0),
+		Amount:    big.NewInt(50000000000),
+		Payload:   nil,
+		V:         new(big.Int),
+		R:         new(big.Int),
+		S:         new(big.Int),
+		T:         big.NewInt(0),
 	}
 
 	res, _ := core.SignTransaction(tx, privKey, int64(chainId))

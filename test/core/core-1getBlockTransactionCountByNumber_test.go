@@ -12,53 +12,26 @@
    along with go-bif.  If not, see <http://www.gnu.org/licenses/>.
 *********************************************************************************/
 
-/**
- * @file core-getcode_test.go
- * @authors:
- *   Junjie Chen <chuckjunjchen@gmail.com>
- * @date 2018
- */
-
 package test
 
 import (
-	"encoding/json"
 	"github.com/bif/bif-sdk-go/test/resources"
-	"io/ioutil"
 	"math/big"
 	"testing"
+	"time"
 
+	"github.com/bif/bif-sdk-go"
 	"github.com/bif/bif-sdk-go/core/block"
-
-	bif "github.com/bif/bif-sdk-go"
 	"github.com/bif/bif-sdk-go/dto"
 	"github.com/bif/bif-sdk-go/providers"
 )
 
-func TestCoreGetcode(t *testing.T) {
-
-	content, err := ioutil.ReadFile("../resources/simple-token.json")
-
-	if err != nil {
-		t.Error(err)
-		t.FailNow()
-	}
-
-	type TruffleContract struct {
-		Abi              string `json:"abi"`
-		Bytecode         string `json:"bytecode"`
-		DeployedBytecode string `json:"deployedBytecode"`
-	}
-
-	var unmarshalResponse TruffleContract
-
-	json.Unmarshal(content, &unmarshalResponse)
+func TestGetBlockTransactionCountByNumber(t *testing.T) {
 
 	var connection = bif.NewBif(providers.NewHTTPProvider(resources.IP+":"+resources.Port, 10, false))
-	bytecode := unmarshalResponse.Bytecode
-	deployedBytecode := unmarshalResponse.DeployedBytecode
 
-	contract, err := connection.Core.NewContract(unmarshalResponse.Abi)
+	// submit a transaction, wait for the block and there should be 1 tx.
+	coinBase, err := connection.Core.GetCoinBase()
 
 	if err != nil {
 		t.Error(err)
@@ -66,42 +39,50 @@ func TestCoreGetcode(t *testing.T) {
 	}
 
 	transaction := new(dto.TransactionParameters)
-	coinbase, err := connection.Core.GetCoinbase()
+	transaction.From = coinBase
+	transaction.To = coinBase
+	transaction.Value = big.NewInt(200000)
+	transaction.Gas = big.NewInt(40000)
+
+	txID, err := connection.Core.SendTransaction(transaction)
 
 	if err != nil {
 		t.Error(err)
 		t.FailNow()
 	}
 
-	transaction.From = coinbase
-	transaction.Gas = big.NewInt(4000000)
-	hash, err := contract.Deploy(transaction, bytecode, nil)
+	time.Sleep(time.Second)
+
+	tx, err := connection.Core.GetTransactionByHash(txID)
 
 	if err != nil {
 		t.Error(err)
 		t.FailNow()
 	}
 
-	var receipt *dto.TransactionReceipt
+	blockNumber := block.NUMBER(tx.BlockNumber)
 
-	for receipt == nil {
-		receipt, err = connection.Core.GetTransactionReceipt(hash)
-	}
+	txCount, err := connection.Core.GetBlockTransactionCountByNumber(blockNumber)
 
 	if err != nil {
 		t.Error(err)
 		t.FailNow()
 	}
 
-	address := receipt.ContractAddress
-	code, err := connection.Core.GetCode(address, block.LATEST)
+	if txCount.Int64() != 1 {
+		t.Error("invalid block transaction count")
+		t.FailNow()
+	}
+
+	txCount, err = connection.Core.GetBlockTransactionCountByNumber(block.LATEST)
+
 	if err != nil {
 		t.Error(err)
 		t.FailNow()
 	}
 
-	if deployedBytecode != code {
-		t.Error("Contract code not expected")
+	if txCount.Int64() != 1 {
+		t.Error("invalid block transaction count")
 		t.FailNow()
 	}
 }

@@ -12,12 +12,6 @@
    along with go-bif.  If not, see <http://www.gnu.org/licenses/>.
 *********************************************************************************/
 
-/**
- * @file personal-newaccount_test.go
- * @authors:
- *   Reginaldo Costa <regcostajr@gmail.com>
- * @date 2017
- */
 package test
 
 import (
@@ -25,18 +19,23 @@ import (
 	"testing"
 
 	"github.com/bif/bif-sdk-go"
+	"github.com/bif/bif-sdk-go/core/block"
 	"github.com/bif/bif-sdk-go/providers"
 )
 
-func TestPersonalNewAccount(t *testing.T) {
+func TestCoreGetBalance(t *testing.T) {
 
 	var connection = bif.NewBif(providers.NewHTTPProvider(resources.IP+":"+resources.Port, 10, false))
-	address, err := connection.Personal.NewAccount("node")
+
+	coinBase, _ := connection.Core.GetCoinBase()
+
+	bal, err := connection.Core.GetBalance(coinBase, block.LATEST)
 
 	if err != nil {
 		t.Error(err)
-		t.Fail()
+		t.FailNow()
 	}
 
-	t.Log(address)
+	t.Log(bal)
+
 }

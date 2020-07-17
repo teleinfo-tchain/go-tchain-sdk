@@ -12,17 +12,9 @@
    along with go-bif.  If not, see <http://www.gnu.org/licenses/>.
 *********************************************************************************/
 
-/**
- * @file core-getblocktransactioncountbyhash_test.go
- * @authors:
- *   Sigma Prime <sigmaprime.io>
- * @date 2018
- */
-
 package test
 
 import (
-	"fmt"
 	"github.com/bif/bif-sdk-go"
 	"github.com/bif/bif-sdk-go/dto"
 	"github.com/bif/bif-sdk-go/providers"
@@ -32,72 +24,66 @@ import (
 	"time"
 )
 
-func TestGetBlockTransactionCountByHash(t *testing.T) {
+func TestCoreTransactionByBlockHashAndIndex(t *testing.T) {
 
 	var connection = bif.NewBif(providers.NewHTTPProvider(resources.IP+":"+resources.Port, 10, false))
 
-	blockNumber, err := connection.Core.GetBlockNumber()
+	coinBase, err := connection.Core.GetCoinBase()
 
 	if err != nil {
 		t.Error(err)
 		t.FailNow()
 	}
 
-	block, err := connection.Core.GetBlockByNumber(blockNumber, false)
-
-	if err != nil {
-		t.Error(err)
-		t.FailNow()
-	}
-	txCount, err := connection.Core.GetBlockTransactionCountByHash(block.(*dto.BlockNoDetails).Hash)
-
-	if err != nil {
-		t.Error(err)
-		t.FailNow()
-	}
-	fmt.Println("txCount:", txCount)
-
-	// submit a transaction, wait for the block and there should be 1 tx.
-	coinbase, err := connection.Core.GetCoinbase()
-
-	if err != nil {
-		t.Error(err)
-		t.FailNow()
-	}
+	txVal := big.NewInt(2000000)
 
 	transaction := new(dto.TransactionParameters)
-	transaction.From = coinbase
-	transaction.To = coinbase
-	transaction.Value = big.NewInt(200000)
+	transaction.From = coinBase
+	transaction.To = coinBase
+	//transaction.Value = big.NewInt(0).Mul(big.NewInt(500), big.NewInt(1E18))
+	transaction.Value = txVal
 	transaction.Gas = big.NewInt(40000)
 
 	txID, err := connection.Core.SendTransaction(transaction)
 
-	if err != nil {
-		t.Error(err)
-		t.FailNow()
-	}
-
-	time.Sleep(5 * time.Second)
-
-	fmt.Println("txID:", txID)
-	tx, err := connection.Core.GetTransactionByHash(txID)
+	t.Log("Tx Submitted: ", txID)
 
 	if err != nil {
 		t.Error(err)
 		t.FailNow()
 	}
 
-	txCount, err = connection.Core.GetBlockTransactionCountByHash(tx.BlockHash)
+	time.Sleep(time.Second)
+
+	txFromHash, err := connection.Core.GetTransactionByHash(txID)
 
 	if err != nil {
 		t.Error(err)
 		t.FailNow()
 	}
 
-	if txCount.Int64() != 1 {
-		t.Error("invalid block transaction count")
+	tx, err := connection.Core.GetTransactionByBlockHashAndIndex(txFromHash.BlockHash, txFromHash.TransactionIndex)
+
+	if err != nil {
+		t.Error(err)
 		t.FailNow()
 	}
-	fmt.Println("txCount:", txCount)
+
+	if tx.From != coinBase || tx.To != coinBase || tx.Value.Cmp(txVal) != 0 || tx.Hash != txID {
+		t.Errorf("Incorrect transaction from hash and index")
+		t.FailNow()
+	}
+	// test removing the 0x
+
+	tx, err = connection.Core.GetTransactionByBlockHashAndIndex(txFromHash.BlockHash[2:], txFromHash.TransactionIndex)
+
+	if err != nil {
+		t.Error(err)
+		t.FailNow()
+	}
+
+	if tx.From != coinBase || tx.To != coinBase || tx.Value.Cmp(txVal) != 0 || tx.Hash != txID {
+		t.Errorf("Incorrect transaction from hash and index")
+		t.FailNow()
+	}
 }

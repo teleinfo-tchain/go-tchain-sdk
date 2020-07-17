@@ -12,20 +12,11 @@
    along with go-bif.  If not, see <http://www.gnu.org/licenses/>.
 *********************************************************************************/
 
-/**
- * @file core-gettransactioncount_test.go
- * @authors:
- * 		Sigma Prime <sigmaprime.io>
- * @date 2017
- */
-
 package test
 
 import (
 	"fmt"
 	"github.com/bif/bif-sdk-go"
-	"github.com/bif/bif-sdk-go/complex/types"
-	"github.com/bif/bif-sdk-go/core/block"
 	"github.com/bif/bif-sdk-go/dto"
 	"github.com/bif/bif-sdk-go/providers"
 	"github.com/bif/bif-sdk-go/test/resources"
@@ -34,62 +25,45 @@ import (
 	"time"
 )
 
-func TestCoreGetTransactionCount(t *testing.T) {
+func TestGetTransactionByHash(t *testing.T) {
 
 	var connection = bif.NewBif(providers.NewHTTPProvider(resources.IP+":"+resources.Port, 10, false))
 
-	coinbase, _ := connection.Core.GetCoinbase()
-
-	count, err := connection.Core.GetTransactionCount(coinbase, block.LATEST)
+	coinBase, err := connection.Core.GetCoinBase()
 
 	if err != nil {
 		t.Error(err)
 		t.FailNow()
 	}
 
-	countTwo, err := connection.Core.GetTransactionCount(coinbase, block.LATEST)
-
-	if err != nil {
-		t.Error(err)
-		t.FailNow()
-	}
-
-	// count should not change
-	if count.Cmp(countTwo) != 0 {
-		t.Errorf("Count incorrect, changed between calls")
-		t.FailNow()
-	}
-	// send a transaction and the count should increase
-
-	t.Log("Starting Count:", count)
 	transaction := new(dto.TransactionParameters)
-	transaction.From = coinbase
-	transaction.To = coinbase
-	transaction.Value = big.NewInt(0).Mul(big.NewInt(500), big.NewInt(1e18))
+	transaction.From = coinBase
+	transaction.To = coinBase
+	transaction.Value = big.NewInt(10)
 	transaction.Gas = big.NewInt(40000)
-	transaction.Data = types.ComplexString("p2p transaction")
 
-	_, err = connection.Core.SendTransaction(transaction)
+	txID, err := connection.Core.SendTransaction(transaction)
+
+	fmt.Println("txID:", txID)
+	// Wait for a block
+	time.Sleep(time.Second)
 
 	if err != nil {
-		t.Errorf("Failed to send tx")
+		t.Errorf("Failed SendTransaction")
+		t.Error(err)
 		t.FailNow()
 	}
 
 	time.Sleep(time.Second)
 
-	newCount, err := connection.Core.GetTransactionCount(coinbase, block.LATEST)
+	tx, err := connection.Core.GetTransactionByHash(txID)
 
-	// if it fails, it may be that the time is too short and the transaction has not been executed
 	if err != nil {
+		t.Errorf("Failed GetTransactionByHash")
 		t.Error(err)
 		t.FailNow()
 	}
 
-	if newCount.Int64() != (countTwo.Int64() + 1) {
-		t.Errorf(fmt.Sprintf("Incorrect count retrieved; [Expected %d | Got %d]", countTwo.Int64()+1, newCount))
-		t.FailNow()
-	}
+	t.Log(tx.BlockNumber)
 
-	t.Log("Final Count: ", newCount)
 }

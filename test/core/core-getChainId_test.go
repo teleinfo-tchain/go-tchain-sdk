@@ -12,17 +12,9 @@
    along with go-bif.  If not, see <http://www.gnu.org/licenses/>.
 *********************************************************************************/
 
-/**
- * @file bif-GetChainId_test.go
- * @authors:
- *   Reginaldo Costa <regcostajr@gmail.com>
- * @date 2017
- */
-
 package test
 
 import (
-	"fmt"
 	"github.com/bif/bif-sdk-go/test/resources"
 	"testing"
 
@@ -36,10 +28,10 @@ func TestGetChainId(t *testing.T) {
 
 	chainId, err := connection.Core.GetChainId()
 
-	fmt.Println(chainId)
-
 	if err != nil {
 		t.Error(err)
 		t.Fail()
 	}
+
+	t.Log(chainId)
 }

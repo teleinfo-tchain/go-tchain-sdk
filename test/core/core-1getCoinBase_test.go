@@ -8,20 +8,20 @@ import (
 	"testing"
 )
 
-func TestGetCoinbase(t *testing.T) {
+func TestGetCoinBase(t *testing.T) {
 
 	var connection = bif.NewBif(providers.NewHTTPProvider(resources.IP+":"+resources.Port, 10, false))
 
-	coinbase, err := connection.Core.GetCoinbase()
+	coinBase, err := connection.Core.GetCoinBase()
 
 	if err != nil {
 		t.Error(err)
 		t.FailNow()
 	}
 
-	t.Log(coinbase)
+	t.Log(coinBase)
 
-	_, err = connection.Core.GetBalance(coinbase, block.LATEST)
+	_, err = connection.Core.GetBalance(coinBase, block.LATEST)
 
 	if err != nil {
 		t.Error(err)

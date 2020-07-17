@@ -12,19 +12,12 @@
    along with go-bif.  If not, see <http://www.gnu.org/licenses/>.
 *********************************************************************************/
 
-/**
- * @file contract.go
- * @authors:
- *   Reginaldo Costa <regcostajr@gmail.com>
- * @date 2018
- */
-
 package test
 
 import (
 	"encoding/json"
 	"fmt"
-	bif "github.com/bif/bif-sdk-go"
+	"github.com/bif/bif-sdk-go"
 	"github.com/bif/bif-sdk-go/dto"
 	"github.com/bif/bif-sdk-go/providers"
 	"github.com/bif/bif-sdk-go/test/resources"
@@ -39,23 +32,27 @@ func TestCoreContract(t *testing.T) {
 
 	type TruffleContract struct {
 		Abi      string `json:"abi"`
-		Bytecode string `json:"bytecode"`
+		ByteCode string `json:"byteCode"`
 	}
 
 	var unmarshalResponse TruffleContract
 
-	json.Unmarshal(content, &unmarshalResponse)
+	err = json.Unmarshal(content, &unmarshalResponse)
+	if err != nil {
+		t.Error(err)
+		t.FailNow()
+	}
 
 	var connection = bif.NewBif(providers.NewHTTPProvider(resources.IP+":"+resources.Port, 10, false))
-	bytecode := unmarshalResponse.Bytecode
+	byteCode := unmarshalResponse.ByteCode
 	contract, err := connection.Core.NewContract(unmarshalResponse.Abi)
 
 	transaction := new(dto.TransactionParameters)
-	coinbase, err := connection.Core.GetCoinbase()
-	transaction.From = coinbase
+	coinBase, err := connection.Core.GetCoinBase()
+	transaction.From = coinBase
 	transaction.Gas = big.NewInt(4000000)
 
-	hash, err := contract.Deploy(transaction, bytecode, nil)
+	hash, err := contract.Deploy(transaction, byteCode, nil)
 
 	if err != nil {
 		t.Error(err)
@@ -84,7 +81,7 @@ func TestCoreContract(t *testing.T) {
 		t.FailNow()
 	}
 
-	if result != nil && err == nil {
+	if result != nil {
 		name, _ := result.ToComplexString()
 		if name.ToString() != "SimpleToken" {
 			t.Errorf(fmt.Sprintf("Name not expected; [Expected %s | Got %s]", "SimpleToken", name.ToString()))
@@ -121,7 +118,7 @@ func TestCoreContract(t *testing.T) {
 		}
 	}
 
-	result, err = contract.Call(transaction, "balanceOf", coinbase)
+	result, err = contract.Call(transaction, "balanceOf", coinBase)
 	if result != nil && err == nil {
 		balance, _ := result.ToBigInt()
 		if balance.Cmp(bigInt) != 0 {
@@ -130,7 +127,7 @@ func TestCoreContract(t *testing.T) {
 		}
 	}
 
-	hash, err = contract.Send(transaction, "approve", coinbase, big.NewInt(10))
+	hash, err = contract.Send(transaction, "approve", coinBase, big.NewInt(10))
 	if err != nil {
 		t.Errorf("Can't send approve transaction")
 		t.FailNow()
@@ -139,7 +136,7 @@ func TestCoreContract(t *testing.T) {
 	t.Log(hash)
 
 	reallyBigInt, _ := big.NewInt(0).SetString("20000000000000000000000000000000000000000000000000000000000000000", 16)
-	_, err = contract.Send(transaction, "approve", coinbase, reallyBigInt)
+	_, err = contract.Send(transaction, "approve", coinBase, reallyBigInt)
 	if err == nil {
 		t.Errorf("Can't send approve transaction")
 		t.FailNow()

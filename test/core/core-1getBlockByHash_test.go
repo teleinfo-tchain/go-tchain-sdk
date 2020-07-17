@@ -12,13 +12,6 @@
    along with go-bif.  If not, see <http://www.gnu.org/licenses/>.
 *********************************************************************************/
 
-/**
- * @file core-getBlockByNumber_test.go
- * @authors:
- *    Sigma Prime <sigmaprime.io>
- * @date 2018
- */
-
 package test
 
 import (
@@ -36,7 +29,7 @@ func TestCoreGetBlockByHash(t *testing.T) {
 
 	blockNumber, err := connection.Core.GetBlockNumber()
 
-	transactionDetails := false
+	const transactionDetails = false
 	blockByNumber, err := connection.Core.GetBlockByNumber(blockNumber, transactionDetails)
 
 	if err != nil {
@@ -56,7 +49,6 @@ func TestCoreGetBlockByHash(t *testing.T) {
 		(blockByNumber.(*dto.BlockNoDetails).Miner != blockByHash.(*dto.BlockNoDetails).Miner) ||
 		(blockByNumber.(*dto.BlockNoDetails).Hash != blockByHash.(*dto.BlockNoDetails).Hash) {
 		t.Errorf("Not same block returned")
-		t.FailNow()
 		t.FailNow()
 	}
 

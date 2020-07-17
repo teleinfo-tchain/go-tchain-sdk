@@ -12,12 +12,6 @@
    along with go-bif.  If not, see <http://www.gnu.org/licenses/>.
 *********************************************************************************/
 
-/**
- * @file core-signtransaction_test.go
- * @authors:
- *   Reginaldo Costa <regcostajr@gmail.com>
- * @date 2017
- */
 package test
 
 import (
@@ -41,7 +35,7 @@ func TestCoreSignTransaction(t *testing.T) {
 	transaction.Value = big.NewInt(0).Mul(big.NewInt(5), big.NewInt(1e17))
 	transaction.Gas = big.NewInt(50000)
 	transaction.GasPrice = big.NewInt(1)
-	transaction.Data = "Sing Transfer Bifer test"
+	transaction.Data = "Sign Transfer bif test"
 
 	txID, err := connection.Core.SignTransaction(transaction)
 
@@ -51,10 +45,9 @@ func TestCoreSignTransaction(t *testing.T) {
 	}
 	fmt.Println(txID.Raw)
 
-
 	util := utils.NewUtils()
 	hexStr, _ := util.ToHex(resources.AddressTwo[:8])
-	addressTwoHex := hexStr +resources.AddressTwo[8:]
+	addressTwoHex := hexStr + resources.AddressTwo[8:]
 
 	if txID.Transaction.To != addressTwoHex {
 		t.Errorf(fmt.Sprintf("Expected %s | Got: %s", addressTwoHex, txID.Transaction.To))
