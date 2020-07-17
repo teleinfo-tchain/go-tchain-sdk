@@ -12,13 +12,6 @@
    along with go-bif.  If not, see <http://www.gnu.org/licenses/>.
 *********************************************************************************/
 
-/**
- * @file net.go
- * @authors:
- *   Reginaldo Costa <regcostajr@gmail.com>
- * @date 2017
- */
-
 package txpool
 
 import (
@@ -42,18 +35,18 @@ func (txpool *Txpool) Status() (map[string]hexutil.Uint, error) {
 	pointer := &dto.RequestResult{}
 
 	if err := txpool.provider.SendRequest(pointer, "txpool_status", nil); err != nil {
-		return nil , err
+		return nil, err
 	}
 
 	result, err := pointer.ToTxpoolStatus()
 	if err != nil {
-		return nil , err
+		return nil, err
 	}
 
 	return result, nil
 }
 
-func (txpool *Txpool) Inspect() (map[string]map[string]map[string]string ,error) {
+func (txpool *Txpool) Inspect() (map[string]map[string]map[string]string, error) {
 
 	pointer := &dto.RequestResult{}
 
@@ -63,7 +56,7 @@ func (txpool *Txpool) Inspect() (map[string]map[string]map[string]string ,error)
 
 	result, err := pointer.ToTxpoolInspect()
 	if err != nil {
-		return nil , err
+		return nil, err
 	}
 
 	return result, nil
