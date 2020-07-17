@@ -13,12 +13,12 @@ import (
 const (
 	ElectionContractAddr      = "did:bid:000000000000000000000009"
 	//VoteLimit         = 64
-	OneDay            = int64(24) * 3600
-	VoteOrProxyOneDay = OneDay
+	//OneDay            = int64(24) * 3600
+	//VoteOrProxyOneDay = OneDay
 	//VoteOrProxyOneDay = 60
 	//oneWeek = OneDay * 7
 	//OneYear = OneDay * 365 //代币增发周期 一年
-	year    = 1559318400   // 2019-06-01 00:00:00
+	//year    = 1559318400   // 2019-06-01 00:00:00
 )
 
 //var (
@@ -30,19 +30,20 @@ const (
 //	ErrPeerNotTrust           = errors.New("peer is not apply trust")
 //)
 
-var (
-	nowTimeStamp = big.NewInt(year)
+//var (
+//	nowTimeStamp = big.NewInt(year)
+//
+//	// 投票周期
+//	unStakePeriod   = big.NewInt(VoteOrProxyOneDay)
+//	baseBounty      = big.NewInt(0).Mul(big.NewInt(1e+18), big.NewInt(1000))
+//	restTotalBounty = big.NewInt(0).Mul(big.NewInt(1e18), big.NewInt(1e9))
+//
+//	//代币增量 初始发行量的5%
+//	tokenAdd = big.NewInt(0).Div(restTotalBounty, big.NewInt(20))
+//
+//)
 
-	// 投票周期
-	unStakePeriod   = big.NewInt(VoteOrProxyOneDay)
-	baseBounty      = big.NewInt(0).Mul(big.NewInt(1e+18), big.NewInt(1000))
-	restTotalBounty = big.NewInt(0).Mul(big.NewInt(1e18), big.NewInt(1e9))
-
-	//代币增量 初始发行量的5%
-	tokenAdd = big.NewInt(0).Div(restTotalBounty, big.NewInt(20))
-
-)
-
+// 见证人选举的AbiJson数据
 const ElectionAbiJSON = `[
 {"constant": false,"name":"registerWitness","inputs":[{"name":"nodeUrl","type":"string"},{"name":"website","type":"string"},{"name":"name","type":"string"}],"outputs":[],"type":"function"}, 
 {"constant": false,"name":"unregisterWitness","inputs":[],"outputs":[],"type":"function"},
@@ -59,12 +60,13 @@ const ElectionAbiJSON = `[
 {"constant": false,"name":"issueAdditionalBounty","inputs":[],"outputs":[],"type":"function"},
 ]`
 
-
+// Election - The Election Module
 type Election struct {
 	super *System
 	abi   abi.ABI
 }
 
+// NewElection - NewElection初始化
 func (sys *System) NewElection() *Election {
 	parsedAbi, _ := abi.JSON(strings.NewReader(ElectionAbiJSON))
 
@@ -74,31 +76,47 @@ func (sys *System) NewElection() *Election {
 	return election
 }
 
-//"registerWitness","inputs":[{"name":"nodeUrl","type":"string"},{"name":"website","type":"string"},{"name":"name","type":"string"}],"outputs":[]
+/*
+ RegisterWitness: 注册成为见证人
+
+ Returns： transactionHash，32 Bytes - 交易哈希，如果交易尚不可用，则为零哈希。
+
+ Call permissions: ？？？
+*/
 func(e *Election) RegisterWitness(from common.Address, witness *dto.RegisterWitness) (string, error){
 	//encode
 	// witness is a struct we need to use the components.
 	var values []interface{}
-	values = e.super.StructToInterface(*witness,values)
+	values = e.super.structToInterface(*witness,values)
 	inputEncode, err := e.abi.Pack("registerWitness", values...)
 	if err != nil {
 		return "", err
 	}
 
-	transaction := e.super.PrePareTransaction(from, ElectionContractAddr, types.ComplexString(hexutil.Encode(inputEncode)))
-	return e.super.SendTransaction(transaction)
+	transaction := e.super.prePareTransaction(from, ElectionContractAddr, types.ComplexString(hexutil.Encode(inputEncode)))
+	return e.super.sendTransaction(transaction)
 }
 
-//"unregisterWitness","inputs":[],"outputs":[]
+/*
+ UnRegisterWitness: 取消成为见证人
+
+ Returns： transactionHash，32 Bytes - 交易哈希，如果交易尚不可用，则为零哈希。
+
+ Call permissions: ？？？
+*/
 func(e *Election) UnRegisterWitness(from common.Address) (string, error){
 	// encoding
 	inputEncode, _ := e.abi.Pack("unregisterWitness")
 
-	transaction := e.super.PrePareTransaction(from, ElectionContractAddr, types.ComplexString(hexutil.Encode(inputEncode)))
-	return e.super.SendTransaction(transaction)
+	transaction := e.super.prePareTransaction(from, ElectionContractAddr, types.ComplexString(hexutil.Encode(inputEncode)))
+	return e.super.sendTransaction(transaction)
 }
 
-//查询候选人
+/*
+ GetCandidate: 查询候选人
+
+ Returns：*dto.Candidate
+*/
 func(e *Election) GetCandidate(candidateAddress string)(*dto.Candidate, error){
 	params := make([]string, 1)
 	params[0] = candidateAddress
@@ -113,7 +131,12 @@ func(e *Election) GetCandidate(candidateAddress string)(*dto.Candidate, error){
 	return pointer.ToElectionCandidate()
 }
 
-func(e *Election) GetAllCandidates()([]string, error){
+/*
+ GetAllCandidates: 查询所有候选人
+
+ Returns：[]dto.Candidate，列表内为候选人
+*/
+func(e *Election) GetAllCandidates()([]dto.Candidate, error){
 	pointer := &dto.RequestResult{}
 
 	err := e.super.provider.SendRequest(pointer, "election_allCandidates", nil)
@@ -124,57 +147,93 @@ func(e *Election) GetAllCandidates()([]string, error){
 	return pointer.ToElectionCandidates()
 }
 
-//"voteWitnesses","inputs":[{"name":"candidate","type":"string"}],"outputs":[]
+/*
+ VoteWitnesses: 给见证人投票
+
+ Returns： transactionHash，32 Bytes - 交易哈希，如果交易尚不可用，则为零哈希。
+
+ Call permissions: ？？？
+*/
 func(e *Election) VoteWitnesses(from common.Address, candidate string)(string, error){
 	// encoding
 	inputEncode, _ := e.abi.Pack("voteWitnesses", candidate)
 
-	transaction := e.super.PrePareTransaction(from, ElectionContractAddr, types.ComplexString(hexutil.Encode(inputEncode)))
+	transaction := e.super.prePareTransaction(from, ElectionContractAddr, types.ComplexString(hexutil.Encode(inputEncode)))
 
-	return e.super.SendTransaction(transaction)
+	return e.super.sendTransaction(transaction)
 }
 
-//"cancelVote","inputs":[],"outputs":[]
+/*
+ CancelVote: 撤销投票？？还是说是投反对票？？
+
+ Returns： transactionHash，32 Bytes - 交易哈希，如果交易尚不可用，则为零哈希。
+
+ Call permissions: ？？？
+*/
 func(e *Election) CancelVote(from common.Address)(string, error){
 	// encoding
 	inputEncode, _ := e.abi.Pack("cancelVote")
 
-	transaction := e.super.PrePareTransaction(from, ElectionContractAddr, types.ComplexString(hexutil.Encode(inputEncode)))
+	transaction := e.super.prePareTransaction(from, ElectionContractAddr, types.ComplexString(hexutil.Encode(inputEncode)))
 
-	return e.super.SendTransaction(transaction)
+	return e.super.sendTransaction(transaction)
 }
 
-//"startProxy","inputs":[],"outputs":[]
+/*
+ StartProxy: 开启代理
+
+ Returns： transactionHash，32 Bytes - 交易哈希，如果交易尚不可用，则为零哈希。
+
+ Call permissions: ？？？
+*/
 func(e *Election) StartProxy(from common.Address)(string, error){
 	// encoding
 	inputEncode, _ := e.abi.Pack("startProxy")
 
-	transaction := e.super.PrePareTransaction(from, ElectionContractAddr, types.ComplexString(hexutil.Encode(inputEncode)))
+	transaction := e.super.prePareTransaction(from, ElectionContractAddr, types.ComplexString(hexutil.Encode(inputEncode)))
 
-	return e.super.SendTransaction(transaction)
+	return e.super.sendTransaction(transaction)
 }
 
-//"stopProxy","inputs":[],"outputs":[]
+/*
+ StopProxy: 关闭代理
+
+ Returns： transactionHash，32 Bytes - 交易哈希，如果交易尚不可用，则为零哈希。
+
+ Call permissions: ？？？
+*/
 func(e *Election) StopProxy(from common.Address)(string, error){
 	// encoding
 	inputEncode, _ := e.abi.Pack("stopProxy")
 
-	transaction := e.super.PrePareTransaction(from, ElectionContractAddr, types.ComplexString(hexutil.Encode(inputEncode)))
+	transaction := e.super.prePareTransaction(from, ElectionContractAddr, types.ComplexString(hexutil.Encode(inputEncode)))
 
-	return e.super.SendTransaction(transaction)
+	return e.super.sendTransaction(transaction)
 }
 
-//"cancelProxy","inputs":[],"outputs":[]
+/*
+ CancelProxy: 取消代理
+
+ Returns： transactionHash，32 Bytes - 交易哈希，如果交易尚不可用，则为零哈希。
+
+ Call permissions: ？？？
+*/
 func(e *Election) CancelProxy(from common.Address)(string, error){
 	// encoding
 	inputEncode, _ := e.abi.Pack("cancelProxy")
 
-	transaction := e.super.PrePareTransaction(from, ElectionContractAddr, types.ComplexString(hexutil.Encode(inputEncode)))
+	transaction := e.super.prePareTransaction(from, ElectionContractAddr, types.ComplexString(hexutil.Encode(inputEncode)))
 
-	return e.super.SendTransaction(transaction)
+	return e.super.sendTransaction(transaction)
 }
 
-//"setProxy","inputs":[{"name":"proxy","type":"string"}],"outputs":[]
+/*
+ SetProxy: 设置代理
+
+ Returns： transactionHash，32 Bytes - 交易哈希，如果交易尚不可用，则为零哈希。
+
+ Call permissions: ？？？
+*/
 func(e *Election) SetProxy(from common.Address, proxy string)(string, error){
 	// encoding
 	inputEncode, err := e.abi.Pack("setProxy", proxy)
@@ -182,12 +241,18 @@ func(e *Election) SetProxy(from common.Address, proxy string)(string, error){
 		return "", err
 	}
 
-	transaction := e.super.PrePareTransaction(from, ElectionContractAddr, types.ComplexString(hexutil.Encode(inputEncode)))
+	transaction := e.super.prePareTransaction(from, ElectionContractAddr, types.ComplexString(hexutil.Encode(inputEncode)))
 
-	return e.super.SendTransaction(transaction)
+	return e.super.sendTransaction(transaction)
 }
 
-//"stake","inputs":[{"name":"stakeCount","type":"uint256"}],"outputs":[]
+/*
+ Stake: 权益抵押
+
+ Returns： transactionHash，32 Bytes - 交易哈希，如果交易尚不可用，则为零哈希。
+
+ Call permissions: ？？？
+*/
 func(e *Election) Stake(from common.Address, stakeCount *big.Int)(string, error){
 	// encoding
 	inputEncode, err := e.abi.Pack("stake", stakeCount)
@@ -195,21 +260,32 @@ func(e *Election) Stake(from common.Address, stakeCount *big.Int)(string, error)
 		return "", err
 	}
 
-	transaction := e.super.PrePareTransaction(from, ElectionContractAddr, types.ComplexString(hexutil.Encode(inputEncode)))
+	transaction := e.super.prePareTransaction(from, ElectionContractAddr, types.ComplexString(hexutil.Encode(inputEncode)))
 
-	return e.super.SendTransaction(transaction)
+	return e.super.sendTransaction(transaction)
 }
 
-//"unStake","inputs":[],"outputs":[]
+/*
+ UnStake: 撤销权益抵押
+
+ Returns： transactionHash，32 Bytes - 交易哈希，如果交易尚不可用，则为零哈希。
+
+ Call permissions: ？？？
+*/
 func(e *Election) UnStake(from common.Address)(string, error){
 	// encoding
 	inputEncode, _ := e.abi.Pack("unStake")
 
-	transaction := e.super.PrePareTransaction(from, ElectionContractAddr, types.ComplexString(hexutil.Encode(inputEncode)))
+	transaction := e.super.prePareTransaction(from, ElectionContractAddr, types.ComplexString(hexutil.Encode(inputEncode)))
 
-	return e.super.SendTransaction(transaction)
+	return e.super.sendTransaction(transaction)
 }
 
+/*
+ GetStake: 查询抵押权益
+
+ Returns：*dto.Stake
+*/
 func(e *Election) GetStake(voterAddress string)(*dto.Stake, error){
 	params := make([]string, 1)
 	params[0] = voterAddress
@@ -224,6 +300,11 @@ func(e *Election) GetStake(voterAddress string)(*dto.Stake, error){
 	return pointer.ToElectionStake()
 }
 
+/*
+ GetRestBIFBounty: 获取剩余的Bif总激励
+
+ Returns：*big.Int
+*/
 func (e *Election) GetRestBIFBounty()(*big.Int, error){
 	pointer := &dto.RequestResult{}
 
@@ -236,26 +317,43 @@ func (e *Election) GetRestBIFBounty()(*big.Int, error){
 	return pointer.ToElectionRestBIFBounty()
 }
 
-//"extractOwnBounty","inputs":[],"outputs":[]
+/*
+ ExtractOwnBounty: 取出自身的赏金
+
+ Returns： transactionHash，32 Bytes - 交易哈希，如果交易尚不可用，则为零哈希。
+
+ Call permissions: ？？
+*/
 func(e *Election) ExtractOwnBounty(from common.Address)(string, error){
 	// encoding
 	inputEncode, _ := e.abi.Pack("extractOwnBounty")
 
-	transaction := e.super.PrePareTransaction(from, ElectionContractAddr, types.ComplexString(hexutil.Encode(inputEncode)))
+	transaction := e.super.prePareTransaction(from, ElectionContractAddr, types.ComplexString(hexutil.Encode(inputEncode)))
 
-	return e.super.SendTransaction(transaction)
+	return e.super.sendTransaction(transaction)
 }
 
-//"issueAdditionalBounty","inputs":[],"outputs":[]
+/*
+ IssueAdditionalBounty: ？？？？？？？？
+
+ Returns： transactionHash，32 Bytes - 交易哈希，如果交易尚不可用，则为零哈希。
+
+ Call permissions: ？？
+*/
 func(e *Election) IssueAdditionalBounty(from common.Address)(string, error){
 	// encoding
 	inputEncode, _ := e.abi.Pack("issueAdditionalBounty")
 
-	transaction := e.super.PrePareTransaction(from, ElectionContractAddr, types.ComplexString(hexutil.Encode(inputEncode)))
+	transaction := e.super.prePareTransaction(from, ElectionContractAddr, types.ComplexString(hexutil.Encode(inputEncode)))
 
-	return e.super.SendTransaction(transaction)
+	return e.super.sendTransaction(transaction)
 }
 
+/*
+ GetVoter: 查询投票人信息
+
+ Returns：*dto.Voter
+*/
 func(e *Election) GetVoter(voterAddress string)(*dto.Voter, error){
 	params := make([]string, 1)
 	params[0] = voterAddress
@@ -270,8 +368,12 @@ func(e *Election) GetVoter(voterAddress string)(*dto.Voter, error){
 	return pointer.ToElectionVoter()
 }
 
-//投票人列表
-func(e *Election) GetVoterList(voterAddress string)([]string, error){
+/*
+ GetVoterList: 查询所有投票人信息
+
+ Returns：[]string
+*/
+func(e *Election) GetVoterList(voterAddress string)([]dto.Voter, error){
 	params := make([]string, 1)
 	params[0] = voterAddress
 

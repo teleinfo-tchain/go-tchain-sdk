@@ -88,6 +88,24 @@ func TestUnRegisterTrustAnchor(t *testing.T) {
 	t.Log(transactionHash)
 }
 
+func TestIsBaseTrustAnchor(t *testing.T) {
+	var connection = bif.NewBif(providers.NewHTTPProvider(resources.IP+":"+resources.Port, 10, false))
+	coinBase, err := connection.Core.GetCoinbase()
+	if err != nil {
+		t.Error(err)
+		t.FailNow()
+	}
+	anchor := connection.System.NewTrustAnchor()
+
+	baseAnchor, err := anchor.IsBaseTrustAnchor(coinBase)
+	if err != nil{
+		t.Error(err)
+		t.FailNow()
+	}
+
+	t.Log(baseAnchor)
+}
+
 func TestIsTrustAnchor(t *testing.T) {
 	var connection = bif.NewBif(providers.NewHTTPProvider(resources.IP+":"+resources.Port, 10, false))
 	coinBase, err := connection.Core.GetCoinbase()
@@ -316,12 +334,12 @@ func TestGetVoter(t *testing.T) {
 		t.FailNow()
 	}
 	anchor := connection.System.NewTrustAnchor()
-	trustAnchorVoter, err := anchor.GetVoter(coinBase)
+	trustAnchorVoterLi, err := anchor.GetVoter(coinBase)
 	if err != nil {
 		t.Error(err)
 		t.FailNow()
 	}
 
-	t.Log(trustAnchorVoter)
+	t.Log(trustAnchorVoterLi)
 }
 

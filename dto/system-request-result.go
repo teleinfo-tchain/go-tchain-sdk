@@ -70,6 +70,16 @@ func (pointer *RequestResult) ToPeerCertificate() (*PeerCertificate, error) {
 	return peerCertificate, err
 }
 
+func (pointer *RequestResult) ToIsBaseTrustAnchor() (bool, error){
+	if err := pointer.checkResponse(); err != nil {
+		return false, err
+	}
+
+	result := (pointer).Result.(interface{})
+
+	return result.(bool), nil
+}
+
 func (pointer *RequestResult) ToIsTrustAnchor() (bool, error){
 	if err := pointer.checkResponse(); err != nil {
 		return false, err
@@ -179,28 +189,28 @@ func (pointer *RequestResult) ToExpendTrustAnchorNumber() (uint64, error){
 	return result.(uint64), nil
 }
 
-func (pointer *RequestResult) ToTrustAnchorVoter() (*TrustAnchorVoter, error){
+// 解析测试注意！！！
+func (pointer *RequestResult) ToTrustAnchorVoter() ([]TrustAnchorVoter, error){
 	if err := pointer.checkResponse(); err != nil{
 		return nil, err
 	}
 
-	result := (pointer).Result.(map[string]interface{})
+	result := (pointer).Result.([]map[string]interface{})
 
-	if len(result) == 0 {
-		return nil, customerror.EMPTYRESPONSE
+	trustAnchorVoterLi :=  make([]TrustAnchorVoter, len(result))
+
+	for i, v := range result {
+		marshal,err := json.Marshal(v)
+
+		if err != nil{
+			return nil, customerror.UNPARSEABLEINTERFACE
+		}
+
+		err = json.Unmarshal(marshal, &trustAnchorVoterLi[i])
+		return nil, err
 	}
 
-	trustAnchorVoter := &TrustAnchorVoter{}
-
-	marshal,err := json.Marshal(result)
-
-	if err != nil{
-		return nil, customerror.UNPARSEABLEINTERFACE
-	}
-
-	err = json.Unmarshal(marshal, trustAnchorVoter)
-
-	return trustAnchorVoter, err
+	return trustAnchorVoterLi, nil
 }
 
 func (pointer *RequestResult) ToCertificatePeriod() (uint64, error){
@@ -359,19 +369,26 @@ func (pointer *RequestResult) ToElectionCandidate() (*Candidate, error){
 	return candidate, err
 }
 
-func (pointer *RequestResult) ToElectionCandidates() ([]string, error){
+func (pointer *RequestResult) ToElectionCandidates() ([]Candidate, error){
 	if err := pointer.checkResponse(); err != nil {
 		return nil, err
 	}
 
-	result := (pointer).Result.([]interface{})
+	result := (pointer).Result.([]map[string]interface{})
 
-	stringLi := make([]string, len(result))
+	candidateLi :=  make([]Candidate, len(result))
+
 	for i, v := range result {
-		stringLi[i] = v.(string)
-	}
+		marshal,err := json.Marshal(v)
 
-	return stringLi, nil
+		if err != nil{
+			return nil, customerror.UNPARSEABLEINTERFACE
+		}
+
+		err = json.Unmarshal(marshal, &candidateLi[i])
+		return nil, err
+	}
+	return candidateLi, nil
 }
 
 func (pointer *RequestResult) ToElectionVoter() (*Voter, error){
@@ -397,19 +414,26 @@ func (pointer *RequestResult) ToElectionVoter() (*Voter, error){
 	return voter, err
 }
 
-func (pointer *RequestResult) ToElectionVoterList() ([]string, error){
+func (pointer *RequestResult) ToElectionVoterList() ([]Voter, error){
 	if err := pointer.checkResponse(); err != nil {
 		return nil, err
 	}
 
-	result := (pointer).Result.([]interface{})
+	result := (pointer).Result.([]map[string]interface{})
 
-	voterList := make([]string, len(result))
+	voterLi :=  make([]Voter, len(result))
+
 	for i, v := range result {
-		voterList[i] = v.(string)
-	}
+		marshal,err := json.Marshal(v)
 
-	return voterList, nil
+		if err != nil{
+			return nil, customerror.UNPARSEABLEINTERFACE
+		}
+
+		err = json.Unmarshal(marshal, &voterLi[i])
+		return nil, err
+	}
+	return voterLi, nil
 }
 
 func (pointer *RequestResult) ToElectionStake() (*Stake, error){
