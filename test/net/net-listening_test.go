@@ -12,13 +12,6 @@
    along with go-bif.  If not, see <http://www.gnu.org/licenses/>.
 *********************************************************************************/
 
-/**
- * @file net-listening_test.go
- * @authors:
- *   Reginaldo Costa <regcostajr@gmail.com>
- * @date 2017
- */
-
 package test
 
 import (
@@ -26,7 +19,7 @@ import (
 	"github.com/bif/bif-sdk-go/test/resources"
 	"testing"
 
-	bif "github.com/bif/bif-sdk-go"
+	"github.com/bif/bif-sdk-go"
 	"github.com/bif/bif-sdk-go/providers"
 )
 
@@ -42,7 +35,7 @@ func TestNetListening(t *testing.T) {
 	}
 
 	if !listening {
-		t.Error(errors.New("Not listening"))
+		t.Error(errors.New("not listening"))
 		t.Fail()
 	}
 }

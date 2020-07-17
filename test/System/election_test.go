@@ -15,7 +15,7 @@ import (
 // 注册成为候选者节点
 func TestRegisterWitness(t *testing.T) {
 	var connection = bif.NewBif(providers.NewHTTPProvider(resources.IP+":"+resources.Port, 10, false))
-	coinBase, err := connection.Core.GetCoinbase()
+	coinBase, err := connection.Core.GetCoinBase()
 	if err != nil {
 		t.Log(err)
 		t.FailNow()
@@ -39,7 +39,7 @@ func TestRegisterWitness(t *testing.T) {
 // 取消成为候选者节点
 func TestUnRegisterWitness(t *testing.T) {
 	var connection = bif.NewBif(providers.NewHTTPProvider(resources.IP+":"+resources.Port, 10, false))
-	coinBase, err := connection.Core.GetCoinbase()
+	coinBase, err := connection.Core.GetCoinBase()
 	if err != nil {
 		t.Log(err)
 		t.FailNow()
@@ -57,7 +57,7 @@ func TestUnRegisterWitness(t *testing.T) {
 // 获取候选节点基本信息
 func TestGetCandidate(t *testing.T) {
 	var connection = bif.NewBif(providers.NewHTTPProvider(resources.IP52+":"+resources.Port, 10, false))
-	coinBase, err := connection.Core.GetCoinbase()
+	coinBase, err := connection.Core.GetCoinBase()
 	if err != nil {
 		t.Error(err)
 		t.FailNow()
@@ -67,7 +67,7 @@ func TestGetCandidate(t *testing.T) {
 
 	candidate, err := elect.GetCandidate(coinBase)
 
-	if err != nil{
+	if err != nil {
 		t.Error(err)
 		t.FailNow()
 	}
@@ -77,7 +77,7 @@ func TestGetCandidate(t *testing.T) {
 //获取所有的见证候选节点
 func TestGetAllCandidates(t *testing.T) {
 	var connection = bif.NewBif(providers.NewHTTPProvider(resources.IP+":"+resources.Port, 10, false))
-	_, err := connection.Core.GetCoinbase()
+	_, err := connection.Core.GetCoinBase()
 	if err != nil {
 		t.Error(err)
 		t.FailNow()
@@ -87,7 +87,7 @@ func TestGetAllCandidates(t *testing.T) {
 
 	allCandidates, err := elect.GetAllCandidates()
 
-	if err != nil{
+	if err != nil {
 		t.Error(err)
 		t.FailNow()
 	}
@@ -112,7 +112,7 @@ func TestGetAllCandidates(t *testing.T) {
 
 func TestVoteWitnesses(t *testing.T) {
 	var connection = bif.NewBif(providers.NewHTTPProvider(resources.IP52+":"+resources.Port, 10, false))
-	coinBase, err := connection.Core.GetCoinbase()
+	coinBase, err := connection.Core.GetCoinBase()
 	if err != nil {
 		t.Error(err)
 		t.FailNow()
@@ -133,7 +133,7 @@ func TestVoteWitnesses(t *testing.T) {
 
 func TestElectCancelVote(t *testing.T) {
 	var connection = bif.NewBif(providers.NewHTTPProvider(resources.IP52+":"+resources.Port, 10, false))
-	coinBase, err := connection.Core.GetCoinbase()
+	coinBase, err := connection.Core.GetCoinBase()
 	if err != nil {
 		t.Error(err)
 		t.FailNow()
@@ -143,7 +143,7 @@ func TestElectCancelVote(t *testing.T) {
 
 	cancelVoteHash, err := elect.CancelVote(common.StringToAddress(coinBase))
 
-	if err != nil{
+	if err != nil {
 		t.Error(err)
 		t.FailNow()
 	}
@@ -153,7 +153,7 @@ func TestElectCancelVote(t *testing.T) {
 
 func TestStartProxy(t *testing.T) {
 	var connection = bif.NewBif(providers.NewHTTPProvider(resources.IP+":"+resources.Port, 10, false))
-	coinBase, err := connection.Core.GetCoinbase()
+	coinBase, err := connection.Core.GetCoinBase()
 	if err != nil {
 		t.Error(err)
 		t.FailNow()
@@ -163,7 +163,7 @@ func TestStartProxy(t *testing.T) {
 
 	startProxyHash, err := elect.StartProxy(common.StringToAddress(coinBase))
 
-	if err != nil{
+	if err != nil {
 		t.Error(err)
 		t.FailNow()
 	}
@@ -173,7 +173,7 @@ func TestStartProxy(t *testing.T) {
 
 func TestStopProxy(t *testing.T) {
 	var connection = bif.NewBif(providers.NewHTTPProvider(resources.IP+":"+resources.Port, 10, false))
-	coinBase, err := connection.Core.GetCoinbase()
+	coinBase, err := connection.Core.GetCoinBase()
 	if err != nil {
 		t.Error(err)
 		t.FailNow()
@@ -183,7 +183,7 @@ func TestStopProxy(t *testing.T) {
 
 	stopProxyHash, err := elect.StopProxy(common.StringToAddress(coinBase))
 
-	if err != nil{
+	if err != nil {
 		t.Error(err)
 		t.FailNow()
 	}
@@ -194,7 +194,7 @@ func TestStopProxy(t *testing.T) {
 //not set proxy
 func TestCancelProxy(t *testing.T) {
 	var connection = bif.NewBif(providers.NewHTTPProvider(resources.IP+":"+resources.Port, 10, false))
-	coinBase, err := connection.Core.GetCoinbase()
+	coinBase, err := connection.Core.GetCoinBase()
 	if err != nil {
 		t.Error(err)
 		t.FailNow()
@@ -204,7 +204,7 @@ func TestCancelProxy(t *testing.T) {
 
 	cancelProxyHash, err := elect.CancelProxy(common.StringToAddress(coinBase))
 
-	if err != nil{
+	if err != nil {
 		t.Error(err)
 		t.FailNow()
 	}
@@ -215,7 +215,7 @@ func TestCancelProxy(t *testing.T) {
 //account registered as a proxy is not allowed to use a proxy??
 func TestSetProxy(t *testing.T) {
 	var connection = bif.NewBif(providers.NewHTTPProvider(resources.IP+":"+resources.Port, 10, false))
-	coinBase, err := connection.Core.GetCoinbase()
+	coinBase, err := connection.Core.GetCoinBase()
 	if err != nil {
 		t.Error(err)
 		t.FailNow()
@@ -226,7 +226,7 @@ func TestSetProxy(t *testing.T) {
 	proxy := resources.Address51
 	setProxyHash, err := elect.SetProxy(common.StringToAddress(coinBase), proxy)
 
-	if err != nil{
+	if err != nil {
 		t.Error(err)
 		t.FailNow()
 	}
@@ -237,7 +237,7 @@ func TestSetProxy(t *testing.T) {
 //权益抵押
 func TestStake(t *testing.T) {
 	var connection = bif.NewBif(providers.NewHTTPProvider(resources.IP+":"+resources.Port, 10, false))
-	coinBase, err := connection.Core.GetCoinbase()
+	coinBase, err := connection.Core.GetCoinBase()
 	if err != nil {
 		t.Error(err)
 		t.FailNow()
@@ -247,7 +247,7 @@ func TestStake(t *testing.T) {
 
 	stakeHash, err := elect.Stake(common.StringToAddress(coinBase), big.NewInt(20))
 
-	if err != nil{
+	if err != nil {
 		t.Error(err)
 		t.FailNow()
 	}
@@ -258,7 +258,7 @@ func TestStake(t *testing.T) {
 // 权益抵押撤销
 func TestUnStake(t *testing.T) {
 	var connection = bif.NewBif(providers.NewHTTPProvider(resources.IP+":"+resources.Port, 10, false))
-	coinBase, err := connection.Core.GetCoinbase()
+	coinBase, err := connection.Core.GetCoinBase()
 	if err != nil {
 		t.Error(err)
 		t.FailNow()
@@ -268,7 +268,7 @@ func TestUnStake(t *testing.T) {
 
 	unStakeHash, err := elect.UnStake(common.StringToAddress(coinBase))
 
-	if err != nil{
+	if err != nil {
 		t.Error(err)
 		t.FailNow()
 	}
@@ -279,7 +279,7 @@ func TestUnStake(t *testing.T) {
 // 获取某个地址的权益抵押信息
 func TestGetStake(t *testing.T) {
 	var connection = bif.NewBif(providers.NewHTTPProvider(resources.IP51+":"+resources.Port, 10, false))
-	coinBase, err := connection.Core.GetCoinbase()
+	coinBase, err := connection.Core.GetCoinBase()
 	if err != nil {
 		t.Error(err)
 		t.FailNow()
@@ -289,7 +289,7 @@ func TestGetStake(t *testing.T) {
 
 	stake, err := elect.GetStake(coinBase)
 
-	if err != nil{
+	if err != nil {
 		t.Error(err)
 		t.FailNow()
 	}
@@ -302,9 +302,9 @@ func TestGetStake(t *testing.T) {
 	//{Owner:"did:bid:c117c1794fc7a27bd301ae52", StakeCount:0xea60, Timestamp:0x5ef5b619}
 }
 
-func TestGetRestBIFBounty(t *testing.T){
+func TestGetRestBIFBounty(t *testing.T) {
 	var connection = bif.NewBif(providers.NewHTTPProvider(resources.IP52+":"+resources.Port, 10, false))
-	_, err := connection.Core.GetCoinbase()
+	_, err := connection.Core.GetCoinBase()
 	if err != nil {
 		t.Error(err)
 		t.FailNow()
@@ -314,7 +314,7 @@ func TestGetRestBIFBounty(t *testing.T){
 
 	restBounty, err := elect.GetRestBIFBounty()
 
-	if err != nil{
+	if err != nil {
 		t.Error(err)
 		t.FailNow()
 	}
@@ -324,7 +324,7 @@ func TestGetRestBIFBounty(t *testing.T){
 
 func TestElectionExtractOwnBounty(t *testing.T) {
 	var connection = bif.NewBif(providers.NewHTTPProvider(resources.IP+":"+resources.Port, 10, false))
-	coinBase, err := connection.Core.GetCoinbase()
+	coinBase, err := connection.Core.GetCoinBase()
 	if err != nil {
 		t.Error(err)
 		t.FailNow()
@@ -334,7 +334,7 @@ func TestElectionExtractOwnBounty(t *testing.T) {
 
 	extractHash, err := elect.ExtractOwnBounty(common.StringToAddress(coinBase))
 
-	if err != nil{
+	if err != nil {
 		t.Error(err)
 		t.FailNow()
 	}
@@ -345,7 +345,7 @@ func TestElectionExtractOwnBounty(t *testing.T) {
 //？？？？？？？？？？？这个没有输出日志吗？？？？？
 func TestIssueAdditionalBounty(t *testing.T) {
 	var connection = bif.NewBif(providers.NewHTTPProvider(resources.IP+":"+resources.Port, 10, false))
-	coinBase, err := connection.Core.GetCoinbase()
+	coinBase, err := connection.Core.GetCoinBase()
 	if err != nil {
 		t.Error(err)
 		t.FailNow()
@@ -355,7 +355,7 @@ func TestIssueAdditionalBounty(t *testing.T) {
 
 	issueAdditionalBountyHash, err := elect.IssueAdditionalBounty(common.StringToAddress(coinBase))
 
-	if err != nil{
+	if err != nil {
 		t.Error(err)
 		t.FailNow()
 	}
@@ -366,7 +366,7 @@ func TestIssueAdditionalBounty(t *testing.T) {
 // 获取指定候选者的基本信息
 func TestElectGetVoter(t *testing.T) {
 	var connection = bif.NewBif(providers.NewHTTPProvider(resources.IP+":"+resources.Port, 10, false))
-	coinBase, err := connection.Core.GetCoinbase()
+	coinBase, err := connection.Core.GetCoinBase()
 	if err != nil {
 		t.Error(err)
 		t.FailNow()
@@ -376,24 +376,24 @@ func TestElectGetVoter(t *testing.T) {
 
 	voter, err := elect.GetVoter(coinBase)
 
-	if err != nil{
+	if err != nil {
 		t.Error(err)
 		t.FailNow()
 	}
 
 	t.Log(fmt.Sprintf("%#v \n", voter))
-//{Owner:"did:bid:c935bd29a90fbeea87badf3e", IsProxy:true, ProxyVoteCount:0x0, Proxy:"0000000000000000000000000000000000000000", LastVoteCount:0x0, Timestamp:0x5f0d20f9, VoteCandidatesList:""}
-//{Owner:"did:bid:590ed37615bdfefa496224c7", IsProxy:false, ProxyVoteCount:0x0, Proxy:"0000000000000000000000000000000000000000", LastVoteCount:0x1e7df, Timestamp:0x5ef5b6a9, VoteCandidatesList:"did:bid:590ed37615bdfefa496224c7"}
-//{Owner:"did:bid:6cc796b8d6e2fbebc9b3cf9e", IsProxy:false, ProxyVoteCount:0x0, Proxy:"0000000000000000000000000000000000000000", LastVoteCount:0x1e7df, Timestamp:0x5ef5b735, VoteCandidatesList:"did:bid:6cc796b8d6e2fbebc9b3cf9e"}
-//{Owner:"did:bid:13803fb30b7e95d57103c2dc", IsProxy:false, ProxyVoteCount:0x0, Proxy:"0000000000000000000000000000000000000000", LastVoteCount:0x1e7df, Timestamp:0x5ef5b6f1, VoteCandidatesList:"did:bid:13803fb30b7e95d57103c2dc"}
-//{Owner:"did:bid:c117c1794fc7a27bd301ae52", IsProxy:false, ProxyVoteCount:0x0, Proxy:"0000000000000000000000000000000000000000", LastVoteCount:0x1e7df, Timestamp:0x5ef5b6d1, VoteCandidatesList:"did:bid:c117c1794fc7a27bd301ae52"}
+	//{Owner:"did:bid:c935bd29a90fbeea87badf3e", IsProxy:true, ProxyVoteCount:0x0, Proxy:"0000000000000000000000000000000000000000", LastVoteCount:0x0, Timestamp:0x5f0d20f9, VoteCandidatesList:""}
+	//{Owner:"did:bid:590ed37615bdfefa496224c7", IsProxy:false, ProxyVoteCount:0x0, Proxy:"0000000000000000000000000000000000000000", LastVoteCount:0x1e7df, Timestamp:0x5ef5b6a9, VoteCandidatesList:"did:bid:590ed37615bdfefa496224c7"}
+	//{Owner:"did:bid:6cc796b8d6e2fbebc9b3cf9e", IsProxy:false, ProxyVoteCount:0x0, Proxy:"0000000000000000000000000000000000000000", LastVoteCount:0x1e7df, Timestamp:0x5ef5b735, VoteCandidatesList:"did:bid:6cc796b8d6e2fbebc9b3cf9e"}
+	//{Owner:"did:bid:13803fb30b7e95d57103c2dc", IsProxy:false, ProxyVoteCount:0x0, Proxy:"0000000000000000000000000000000000000000", LastVoteCount:0x1e7df, Timestamp:0x5ef5b6f1, VoteCandidatesList:"did:bid:13803fb30b7e95d57103c2dc"}
+	//{Owner:"did:bid:c117c1794fc7a27bd301ae52", IsProxy:false, ProxyVoteCount:0x0, Proxy:"0000000000000000000000000000000000000000", LastVoteCount:0x1e7df, Timestamp:0x5ef5b6d1, VoteCandidatesList:"did:bid:c117c1794fc7a27bd301ae52"}
 
 }
 
 // 获取指定的候选者的投票列表
 func TestGetVoterList(t *testing.T) {
 	var connection = bif.NewBif(providers.NewHTTPProvider(resources.IP+":"+resources.Port, 10, false))
-	_, err := connection.Core.GetCoinbase()
+	_, err := connection.Core.GetCoinBase()
 	if err != nil {
 		t.Error(err)
 		t.FailNow()
@@ -403,7 +403,7 @@ func TestGetVoterList(t *testing.T) {
 
 	voterList, err := elect.GetVoterList(resources.Address52)
 
-	if err != nil{
+	if err != nil {
 		t.Error(err)
 		t.FailNow()
 	}

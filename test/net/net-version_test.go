@@ -12,13 +12,6 @@
    along with go-bif.  If not, see <http://www.gnu.org/licenses/>.
 *********************************************************************************/
 
-/**
- * @file net-version_test.go
- * @authors:
- *   Reginaldo Costa <regcostajr@gmail.com>
- * @date 2017
- */
-
 package test
 
 import (
@@ -27,7 +20,7 @@ import (
 	"sort"
 	"testing"
 
-	bif "github.com/bif/bif-sdk-go"
+	"github.com/bif/bif-sdk-go"
 	"github.com/bif/bif-sdk-go/providers"
 )
 
@@ -48,7 +41,7 @@ func TestNetVersion(t *testing.T) {
 	t.Log(version)
 
 	if found := sort.SearchStrings(po, version); found < len(po) && po[found] != version {
-		t.Error(errors.New("Invalid network"))
+		t.Error(errors.New("invalid network"))
 		t.Fail()
 	}
 

@@ -10,7 +10,7 @@ import (
 // 测试系统合约的执行结果
 func TestSystemLogDecode(t *testing.T) {
 	var connection = bif.NewBif(providers.NewHTTPProvider(resources.IP+":"+resources.Port, 10, false))
-	_, err := connection.Core.GetCoinbase()
+	_, err := connection.Core.GetCoinBase()
 	if err != nil {
 		t.Error(err)
 		t.FailNow()
@@ -27,4 +27,3 @@ func TestSystemLogDecode(t *testing.T) {
 	t.Log(log.Status)
 	t.Log(log.Result)
 }
-

@@ -9,12 +9,11 @@ import (
 	"testing"
 )
 
-
 // 经过超级节点投票，已经将基础信任锚did:bid:c935bd29a90fbeea87badf3e 激活
 // 证书的颁布，
 func TestRegisterCertificate(t *testing.T) {
 	var connection = bif.NewBif(providers.NewHTTPProvider(resources.IP+":"+resources.Port, 10, false))
-	coinBase, err := connection.Core.GetCoinbase()
+	coinBase, err := connection.Core.GetCoinBase()
 	if err != nil {
 		t.Log(err)
 		t.FailNow()
@@ -42,7 +41,7 @@ func TestRegisterCertificate(t *testing.T) {
 
 func TestRevokedCertificate(t *testing.T) {
 	var connection = bif.NewBif(providers.NewHTTPProvider(resources.IP+":"+resources.Port, 10, false))
-	coinBase, err := connection.Core.GetCoinbase()
+	coinBase, err := connection.Core.GetCoinBase()
 	if err != nil {
 		t.Log(err)
 		t.FailNow()
@@ -59,7 +58,7 @@ func TestRevokedCertificate(t *testing.T) {
 
 func TestRevokedCertificates(t *testing.T) {
 	var connection = bif.NewBif(providers.NewHTTPProvider(resources.IP+":"+resources.Port, 10, false))
-	coinBase, err := connection.Core.GetCoinbase()
+	coinBase, err := connection.Core.GetCoinBase()
 	if err != nil {
 		t.Log(err)
 		t.FailNow()
@@ -76,7 +75,7 @@ func TestRevokedCertificates(t *testing.T) {
 
 func TestGetPeriod(t *testing.T) {
 	var connection = bif.NewBif(providers.NewHTTPProvider(resources.IP+":"+resources.Port, 10, false))
-	coinBase, err := connection.Core.GetCoinbase()
+	coinBase, err := connection.Core.GetCoinBase()
 	if err != nil {
 		t.Error(err)
 		t.FailNow()
@@ -93,7 +92,7 @@ func TestGetPeriod(t *testing.T) {
 
 func TestGetActive(t *testing.T) {
 	var connection = bif.NewBif(providers.NewHTTPProvider(resources.IP+":"+resources.Port, 10, false))
-	coinBase, err := connection.Core.GetCoinbase()
+	coinBase, err := connection.Core.GetCoinBase()
 	if err != nil {
 		t.Error(err)
 		t.FailNow()
@@ -109,9 +108,9 @@ func TestGetActive(t *testing.T) {
 	t.Log(isEnable)
 }
 
-func TestGetCertificate(t *testing.T){
+func TestGetCertificate(t *testing.T) {
 	var connection = bif.NewBif(providers.NewHTTPProvider(resources.IP+":"+resources.Port, 10, false))
-	coinBase, err := connection.Core.GetCoinbase()
+	coinBase, err := connection.Core.GetCoinBase()
 	if err != nil {
 		t.Error(err)
 		t.FailNow()
@@ -119,7 +118,7 @@ func TestGetCertificate(t *testing.T){
 	cer := connection.System.NewCertificate()
 
 	certificate, err := cer.GetCertificate(coinBase)
-	if err != nil{
+	if err != nil {
 		t.Error(err)
 		t.FailNow()
 	}
@@ -129,7 +128,7 @@ func TestGetCertificate(t *testing.T){
 
 func TestGetIssuer(t *testing.T) {
 	var connection = bif.NewBif(providers.NewHTTPProvider(resources.IP+":"+resources.Port, 10, false))
-	coinBase, err := connection.Core.GetCoinbase()
+	coinBase, err := connection.Core.GetCoinBase()
 	if err != nil {
 		t.Log(err)
 		t.FailNow()
@@ -146,7 +145,7 @@ func TestGetIssuer(t *testing.T) {
 
 func TestGetSubject(t *testing.T) {
 	var connection = bif.NewBif(providers.NewHTTPProvider(resources.IP+":"+resources.Port, 10, false))
-	coinBase, err := connection.Core.GetCoinbase()
+	coinBase, err := connection.Core.GetCoinBase()
 	if err != nil {
 		t.Log(err)
 		t.FailNow()
@@ -154,19 +153,15 @@ func TestGetSubject(t *testing.T) {
 	cer := connection.System.NewCertificate()
 
 	subjectSignature, err := cer.GetSubject(coinBase)
-	if err != nil{
+	if err != nil {
 		t.Error(err)
 		t.FailNow()
 	}
 
-	if subjectSignature != nil{
+	if subjectSignature != nil {
 		t.Log(subjectSignature.Id)
 		t.Log(subjectSignature.PublicKey)
 		t.Log(subjectSignature.Algorithm)
 		t.Log(subjectSignature.Signature)
 	}
 }
-
-
-
-

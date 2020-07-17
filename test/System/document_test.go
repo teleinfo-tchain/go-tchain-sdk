@@ -10,7 +10,7 @@ import (
 
 func TestInitializationDDO(t *testing.T) {
 	var connection = bif.NewBif(providers.NewHTTPProvider(resources.IP+":"+resources.Port, 10, false))
-	coinBase, err := connection.Core.GetCoinbase()
+	coinBase, err := connection.Core.GetCoinBase()
 	if err != nil {
 		t.Error(err)
 		t.FailNow()
@@ -29,7 +29,7 @@ func TestInitializationDDO(t *testing.T) {
 
 func TestSetBidName(t *testing.T) {
 	var connection = bif.NewBif(providers.NewHTTPProvider(resources.IP+":"+resources.Port, 10, false))
-	coinBase, err := connection.Core.GetCoinbase()
+	coinBase, err := connection.Core.GetCoinBase()
 	if err != nil {
 		t.Error(err)
 		t.FailNow()
@@ -48,7 +48,7 @@ func TestSetBidName(t *testing.T) {
 
 func TestGetDocument(t *testing.T) {
 	var connection = bif.NewBif(providers.NewHTTPProvider(resources.IP+":"+resources.Port, 10, false))
-	_, err := connection.Core.GetCoinbase()
+	_, err := connection.Core.GetCoinBase()
 	if err != nil {
 		t.Error(err)
 		t.FailNow()
@@ -67,7 +67,7 @@ func TestGetDocument(t *testing.T) {
 
 func TestAddPublicKey(t *testing.T) {
 	var connection = bif.NewBif(providers.NewHTTPProvider(resources.IP+":"+resources.Port, 10, false))
-	coinBase, err := connection.Core.GetCoinbase()
+	coinBase, err := connection.Core.GetCoinBase()
 	if err != nil {
 		t.Error(err)
 		t.FailNow()
@@ -75,7 +75,7 @@ func TestAddPublicKey(t *testing.T) {
 
 	doc := connection.System.NewDoc()
 
-	AddPublicKeyHash, err := doc.AddPublicKey(common.StringToAddress(coinBase), "test", "1","123")
+	AddPublicKeyHash, err := doc.AddPublicKey(common.StringToAddress(coinBase), "test", "1", "123")
 	if err != nil {
 		t.Error(err)
 		t.FailNow()
@@ -86,7 +86,7 @@ func TestAddPublicKey(t *testing.T) {
 
 func TestDeletePublicKey(t *testing.T) {
 	var connection = bif.NewBif(providers.NewHTTPProvider(resources.IP+":"+resources.Port, 10, false))
-	coinBase, err := connection.Core.GetCoinbase()
+	coinBase, err := connection.Core.GetCoinBase()
 	if err != nil {
 		t.Error(err)
 		t.FailNow()
@@ -105,7 +105,7 @@ func TestDeletePublicKey(t *testing.T) {
 
 func TestAddProof(t *testing.T) {
 	var connection = bif.NewBif(providers.NewHTTPProvider(resources.IP+":"+resources.Port, 10, false))
-	coinBase, err := connection.Core.GetCoinbase()
+	coinBase, err := connection.Core.GetCoinBase()
 	if err != nil {
 		t.Error(err)
 		t.FailNow()
@@ -124,7 +124,7 @@ func TestAddProof(t *testing.T) {
 
 func TestDeleteProof(t *testing.T) {
 	var connection = bif.NewBif(providers.NewHTTPProvider(resources.IP+":"+resources.Port, 10, false))
-	coinBase, err := connection.Core.GetCoinbase()
+	coinBase, err := connection.Core.GetCoinBase()
 	if err != nil {
 		t.Error(err)
 		t.FailNow()
@@ -143,7 +143,7 @@ func TestDeleteProof(t *testing.T) {
 
 func TestAddAttribute(t *testing.T) {
 	var connection = bif.NewBif(providers.NewHTTPProvider(resources.IP+":"+resources.Port, 10, false))
-	coinBase, err := connection.Core.GetCoinbase()
+	coinBase, err := connection.Core.GetCoinBase()
 	if err != nil {
 		t.Error(err)
 		t.FailNow()
@@ -162,7 +162,7 @@ func TestAddAttribute(t *testing.T) {
 
 func TestDeleteAttribute(t *testing.T) {
 	var connection = bif.NewBif(providers.NewHTTPProvider(resources.IP+":"+resources.Port, 10, false))
-	coinBase, err := connection.Core.GetCoinbase()
+	coinBase, err := connection.Core.GetCoinBase()
 	if err != nil {
 		t.Error(err)
 		t.FailNow()
@@ -181,7 +181,7 @@ func TestDeleteAttribute(t *testing.T) {
 
 func TestEnable(t *testing.T) {
 	var connection = bif.NewBif(providers.NewHTTPProvider(resources.IP+":"+resources.Port, 10, false))
-	coinBase, err := connection.Core.GetCoinbase()
+	coinBase, err := connection.Core.GetCoinBase()
 	if err != nil {
 		t.Error(err)
 		t.FailNow()
@@ -200,7 +200,7 @@ func TestEnable(t *testing.T) {
 
 func TestDisable(t *testing.T) {
 	var connection = bif.NewBif(providers.NewHTTPProvider(resources.IP+":"+resources.Port, 10, false))
-	coinBase, err := connection.Core.GetCoinbase()
+	coinBase, err := connection.Core.GetCoinBase()
 	if err != nil {
 		t.Error(err)
 		t.FailNow()
@@ -219,7 +219,7 @@ func TestDisable(t *testing.T) {
 
 func TestIsEnable(t *testing.T) {
 	var connection = bif.NewBif(providers.NewHTTPProvider(resources.IP+":"+resources.Port, 10, false))
-	_, err := connection.Core.GetCoinbase()
+	_, err := connection.Core.GetCoinBase()
 	if err != nil {
 		t.Error(err)
 		t.FailNow()

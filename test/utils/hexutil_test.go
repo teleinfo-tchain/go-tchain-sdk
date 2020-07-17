@@ -7,7 +7,6 @@ import (
 	"testing"
 )
 
-
 var (
 	isHexTests = []test1{
 		// false
@@ -29,7 +28,7 @@ var (
 
 	hexToBytesTests = []test1{
 		{input: `0x000000ea`, want: []byte{0, 0, 0, 234}},
-		{input: `0x48656c6c6f2125`, want: []byte{72,101,108,108,111,33,37}},
+		{input: `0x48656c6c6f2125`, want: []byte{72, 101, 108, 108, 111, 33, 37}},
 	}
 
 	hexToUtf8Tests = []test1{
@@ -64,7 +63,7 @@ var (
 	}
 )
 
-func TestIsHex(t *testing.T){
+func TestIsHex(t *testing.T) {
 	for _, test := range isHexTests {
 		res := util.IsHex(test.input)
 		if res != test.want.(bool) {
@@ -74,7 +73,7 @@ func TestIsHex(t *testing.T){
 	}
 }
 
-func TestIsHexStrict(t *testing.T){
+func TestIsHexStrict(t *testing.T) {
 	for _, test := range isHexStrictTests {
 		res := util.IsHexStrict(test.input)
 		if res != test.want.(bool) {
@@ -84,9 +83,9 @@ func TestIsHexStrict(t *testing.T){
 	}
 }
 
-func TestHexToBytes(t *testing.T){
+func TestHexToBytes(t *testing.T) {
 	for _, test := range hexToBytesTests {
-		res, _:= util.HexToBytes(test.input)
+		res, _ := util.HexToBytes(test.input)
 		if !bytes.Equal(test.want.([]byte), res) {
 			t.Errorf("input %s: value mismatch: got %v, want %v", test.input, res, test.want)
 			continue
@@ -94,9 +93,9 @@ func TestHexToBytes(t *testing.T){
 	}
 }
 
-func TestHexToUtf8(t *testing.T){
+func TestHexToUtf8(t *testing.T) {
 	for _, test := range hexToUtf8Tests {
-		res, _:= util.HexToUtf8(test.input)
+		res, _ := util.HexToUtf8(test.input)
 		if res != test.want.(string) {
 			t.Errorf("input %s: value mismatch: got %s, want %s", test.input, res, test.want)
 			continue
@@ -104,9 +103,9 @@ func TestHexToUtf8(t *testing.T){
 	}
 }
 
-func TestHexToAscii(t *testing.T){
+func TestHexToAscii(t *testing.T) {
 	for _, test := range hexToAsciiTests {
-		res, _:= util.HexToAscii(test.input)
+		res, _ := util.HexToAscii(test.input)
 		if res != test.want.(string) {
 			t.Errorf("input %s: value mismatch: got %s, want %s", test.input, res, test.want)
 			continue
@@ -114,9 +113,9 @@ func TestHexToAscii(t *testing.T){
 	}
 }
 
-func TestHexToNumberString(t *testing.T){
+func TestHexToNumberString(t *testing.T) {
 	for _, test := range hexToNumberStringTests {
-		res, _:= util.HexToNumberString(test.input)
+		res, _ := util.HexToNumberString(test.input)
 		if res != test.want.(string) {
 			t.Errorf("input %s: value mismatch: got %s, want %s", test.input, res, test.want)
 			continue
@@ -124,9 +123,9 @@ func TestHexToNumberString(t *testing.T){
 	}
 }
 
-func TestHexToUint64Number(t *testing.T){
+func TestHexToUint64Number(t *testing.T) {
 	for _, test := range hexToUint64NumberTests {
-		res,err := util.HexToUint64Number(test.input)
+		res, err := util.HexToUint64Number(test.input)
 		if !checkError(t, test.input, err, test.wantErr) {
 			continue
 		}
@@ -137,9 +136,9 @@ func TestHexToUint64Number(t *testing.T){
 	}
 }
 
-func TestHexToBigNumber(t *testing.T){
+func TestHexToBigNumber(t *testing.T) {
 	for _, test := range hexToBigNumberTests {
-		res,err := util.HexToBigNumber(test.input)
+		res, err := util.HexToBigNumber(test.input)
 		if !checkError(t, test.input, err, test.wantErr) {
 			continue
 		}
@@ -150,7 +149,7 @@ func TestHexToBigNumber(t *testing.T){
 	}
 }
 
-func TestAsciiToHex(t *testing.T){
+func TestAsciiToHex(t *testing.T) {
 	for _, test := range asciiToHexTests {
 		res := util.AsciiToHex(test.input)
 		if res != test.want.(string) {
@@ -160,7 +159,7 @@ func TestAsciiToHex(t *testing.T){
 	}
 }
 
-func TestUtf8ToHex(t *testing.T){
+func TestUtf8ToHex(t *testing.T) {
 	for _, test := range utf8ToHexTests {
 		res := util.Utf8ToHex(test.input)
 		if res != test.want.(string) {

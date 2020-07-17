@@ -20,7 +20,7 @@ const publicKeyTest = ""
 //	MessageSha3   什么消息的sha3？？？   Signature 怎么拿到？？？  Id的53个字符，怎么生成的？？？
 func TestPeerRegisterCertificate(t *testing.T) {
 	var connection = bif.NewBif(providers.NewHTTPProvider(resources.IP+":"+resources.Port, 10, false))
-	coinBase, err := connection.Core.GetCoinbase()
+	coinBase, err := connection.Core.GetCoinBase()
 	if err != nil {
 		t.Log(err)
 		t.FailNow()
@@ -35,7 +35,7 @@ func TestPeerRegisterCertificate(t *testing.T) {
 	registerCertificateInfo.NodeType = 0
 	registerCertificateInfo.Period = system.Year
 	registerCertificateInfo.IP = resources.IP
-	port, _ := strconv.ParseUint(resources.Port, 10,64)
+	port, _ := strconv.ParseUint(resources.Port, 10, 64)
 	registerCertificateInfo.Port = port
 	registerCertificateInfo.CompanyName = "tele info"
 	registerCertificateInfo.CompanyCode = "341004600017214"
@@ -51,7 +51,7 @@ func TestPeerRegisterCertificate(t *testing.T) {
 
 func TestPeerRevokedCertificate(t *testing.T) {
 	var connection = bif.NewBif(providers.NewHTTPProvider(resources.IP+":"+resources.Port, 10, false))
-	coinBase, err := connection.Core.GetCoinbase()
+	coinBase, err := connection.Core.GetCoinBase()
 	if err != nil {
 		t.Log(err)
 		t.FailNow()
@@ -67,7 +67,7 @@ func TestPeerRevokedCertificate(t *testing.T) {
 
 func TestPeerGetPeriod(t *testing.T) {
 	var connection = bif.NewBif(providers.NewHTTPProvider(resources.IP+":"+resources.Port, 10, false))
-	_, err := connection.Core.GetCoinbase()
+	_, err := connection.Core.GetCoinBase()
 	if err != nil {
 		t.Error(err)
 		t.FailNow()
@@ -85,7 +85,7 @@ func TestPeerGetPeriod(t *testing.T) {
 
 func TestPeerGetActive(t *testing.T) {
 	var connection = bif.NewBif(providers.NewHTTPProvider(resources.IP+":"+resources.Port, 10, false))
-	_, err := connection.Core.GetCoinbase()
+	_, err := connection.Core.GetCoinBase()
 
 	if err != nil {
 		t.Error(err)
@@ -94,7 +94,7 @@ func TestPeerGetActive(t *testing.T) {
 
 	peerCer := connection.System.NewPeerCertificate()
 	isEnable, err := peerCer.GetActive(publicKeyTest)
-	if err != nil{
+	if err != nil {
 		t.Error(err)
 		t.FailNow()
 	}
@@ -104,7 +104,7 @@ func TestPeerGetActive(t *testing.T) {
 
 func TestGetPeerCertificate(t *testing.T) {
 	var connection = bif.NewBif(providers.NewHTTPProvider(resources.IP+":"+resources.Port, 10, false))
-	_, err := connection.Core.GetCoinbase()
+	_, err := connection.Core.GetCoinBase()
 
 	if err != nil {
 		t.Error(err)
@@ -113,7 +113,7 @@ func TestGetPeerCertificate(t *testing.T) {
 
 	peerCer := connection.System.NewPeerCertificate()
 	peerCertificate, err := peerCer.GetPeerCertificate(publicKeyTest)
-	if err != nil{
+	if err != nil {
 		t.Error(err)
 		t.FailNow()
 	}

@@ -8,24 +8,25 @@ import (
 	"github.com/bif/bif-sdk-go/test/resources"
 	"testing"
 )
+
 const (
-	BaseAnchorAddr = "did:bid:a3fa9bb1b84e722f30dbda8c"
-	ExtendAnchorAddr = "did:bid:c935bd29a90fbeea87badf3e"
-	BaseAnchorType = 10
-	ExtendAnchorType = 11
-	TrustAnchorName = "trustAnchor"
-	TrustAnchorCompany = "teleinfo"
-	TrustAnchorCompanyUrl = "www.teleinfo.cn"
-	TrustAnchorWebsite =  "www.server.teleinfo.cn"
+	BaseAnchorAddr         = "did:bid:a3fa9bb1b84e722f30dbda8c"
+	ExtendAnchorAddr       = "did:bid:c935bd29a90fbeea87badf3e"
+	BaseAnchorType         = 10
+	ExtendAnchorType       = 11
+	TrustAnchorName        = "trustAnchor"
+	TrustAnchorCompany     = "teleinfo"
+	TrustAnchorCompanyUrl  = "www.teleinfo.cn"
+	TrustAnchorWebsite     = "www.server.teleinfo.cn"
 	TrustAnchorDocumentUrl = "www.doc.teleinfo.cn"
-	TrustAnchorServerUrl = "1.1.1.1"
-	TrustAnchorEmail = "www.email.teleinfo.cn"
-	TrustAnchorDesc = "info test"
+	TrustAnchorServerUrl   = "1.1.1.1"
+	TrustAnchorEmail       = "www.email.teleinfo.cn"
+	TrustAnchorDesc        = "info test"
 )
 
 func TestRegisterTrustAnchor(t *testing.T) {
 	var connection = bif.NewBif(providers.NewHTTPProvider(resources.IP+":"+resources.Port, 10, false))
-	coinBase, err := connection.Core.GetCoinbase()
+	coinBase, err := connection.Core.GetCoinBase()
 	if err != nil {
 		t.Error(err)
 		t.FailNow()
@@ -73,7 +74,7 @@ func TestRegisterTrustAnchor(t *testing.T) {
 
 func TestUnRegisterTrustAnchor(t *testing.T) {
 	var connection = bif.NewBif(providers.NewHTTPProvider(resources.IP+":"+resources.Port, 10, false))
-	coinBase, err := connection.Core.GetCoinbase()
+	coinBase, err := connection.Core.GetCoinBase()
 	if err != nil {
 		t.Error(err)
 		t.FailNow()
@@ -90,7 +91,7 @@ func TestUnRegisterTrustAnchor(t *testing.T) {
 
 func TestIsBaseTrustAnchor(t *testing.T) {
 	var connection = bif.NewBif(providers.NewHTTPProvider(resources.IP+":"+resources.Port, 10, false))
-	coinBase, err := connection.Core.GetCoinbase()
+	coinBase, err := connection.Core.GetCoinBase()
 	if err != nil {
 		t.Error(err)
 		t.FailNow()
@@ -98,7 +99,7 @@ func TestIsBaseTrustAnchor(t *testing.T) {
 	anchor := connection.System.NewTrustAnchor()
 
 	baseAnchor, err := anchor.IsBaseTrustAnchor(coinBase)
-	if err != nil{
+	if err != nil {
 		t.Error(err)
 		t.FailNow()
 	}
@@ -108,7 +109,7 @@ func TestIsBaseTrustAnchor(t *testing.T) {
 
 func TestIsTrustAnchor(t *testing.T) {
 	var connection = bif.NewBif(providers.NewHTTPProvider(resources.IP+":"+resources.Port, 10, false))
-	coinBase, err := connection.Core.GetCoinbase()
+	coinBase, err := connection.Core.GetCoinBase()
 	if err != nil {
 		t.Error(err)
 		t.FailNow()
@@ -116,7 +117,7 @@ func TestIsTrustAnchor(t *testing.T) {
 	anchor := connection.System.NewTrustAnchor()
 
 	trustAnchor, err := anchor.IsTrustAnchor(coinBase)
-	if err != nil{
+	if err != nil {
 		t.Error(err)
 		t.FailNow()
 	}
@@ -126,7 +127,7 @@ func TestIsTrustAnchor(t *testing.T) {
 
 func TestUpdateAnchorInfo(t *testing.T) {
 	var connection = bif.NewBif(providers.NewHTTPProvider(resources.IP+":"+resources.Port, 10, false))
-	coinBase, err := connection.Core.GetCoinbase()
+	coinBase, err := connection.Core.GetCoinBase()
 	if err != nil {
 		t.Error(err)
 		t.FailNow()
@@ -151,7 +152,7 @@ func TestUpdateAnchorInfo(t *testing.T) {
 
 func TestExtractOwnBounty(t *testing.T) {
 	var connection = bif.NewBif(providers.NewHTTPProvider(resources.IP+":"+resources.Port, 10, false))
-	coinBase, err := connection.Core.GetCoinbase()
+	coinBase, err := connection.Core.GetCoinBase()
 	if err != nil {
 		t.Error(err)
 		t.FailNow()
@@ -168,7 +169,7 @@ func TestExtractOwnBounty(t *testing.T) {
 
 func TestGetTrustAnchor(t *testing.T) {
 	var connection = bif.NewBif(providers.NewHTTPProvider(resources.IP+":"+resources.Port, 10, false))
-	coinBase, err := connection.Core.GetCoinbase()
+	coinBase, err := connection.Core.GetCoinBase()
 	if err != nil {
 		t.Error(err)
 		t.FailNow()
@@ -186,7 +187,7 @@ func TestGetTrustAnchor(t *testing.T) {
 
 func TestGetTrustAnchorStatus(t *testing.T) {
 	var connection = bif.NewBif(providers.NewHTTPProvider(resources.IP+":"+resources.Port, 10, false))
-	coinBase, err := connection.Core.GetCoinbase()
+	coinBase, err := connection.Core.GetCoinBase()
 	if err != nil {
 		t.Error(err)
 		t.FailNow()
@@ -204,7 +205,7 @@ func TestGetTrustAnchorStatus(t *testing.T) {
 
 func TestGetCertificateList(t *testing.T) {
 	var connection = bif.NewBif(providers.NewHTTPProvider(resources.IP+":"+resources.Port, 10, false))
-	coinBase, err := connection.Core.GetCoinbase()
+	coinBase, err := connection.Core.GetCoinBase()
 	if err != nil {
 		t.Error(err)
 		t.FailNow()
@@ -222,7 +223,7 @@ func TestGetCertificateList(t *testing.T) {
 
 func TestGetBaseList(t *testing.T) {
 	var connection = bif.NewBif(providers.NewHTTPProvider(resources.IP+":"+resources.Port, 10, false))
-	_, err := connection.Core.GetCoinbase()
+	_, err := connection.Core.GetCoinBase()
 	if err != nil {
 		t.Error(err)
 		t.FailNow()
@@ -240,7 +241,7 @@ func TestGetBaseList(t *testing.T) {
 
 func TestGetBaseTrustAnchorNum(t *testing.T) {
 	var connection = bif.NewBif(providers.NewHTTPProvider(resources.IP+":"+resources.Port, 10, false))
-	_, err := connection.Core.GetCoinbase()
+	_, err := connection.Core.GetCoinBase()
 	if err != nil {
 		t.Error(err)
 		t.FailNow()
@@ -258,7 +259,7 @@ func TestGetBaseTrustAnchorNum(t *testing.T) {
 
 func TestGetExpendList(t *testing.T) {
 	var connection = bif.NewBif(providers.NewHTTPProvider(resources.IP+":"+resources.Port, 10, false))
-	_, err := connection.Core.GetCoinbase()
+	_, err := connection.Core.GetCoinBase()
 	if err != nil {
 		t.Error(err)
 		t.FailNow()
@@ -276,7 +277,7 @@ func TestGetExpendList(t *testing.T) {
 
 func TestGetExpendNum(t *testing.T) {
 	var connection = bif.NewBif(providers.NewHTTPProvider(resources.IP+":"+resources.Port, 10, false))
-	_, err := connection.Core.GetCoinbase()
+	_, err := connection.Core.GetCoinBase()
 	if err != nil {
 		t.Error(err)
 		t.FailNow()
@@ -295,7 +296,7 @@ func TestGetExpendNum(t *testing.T) {
 // 投票超过2/3才能激活信任锚(现在有5个超级节点，超过2/3就是需要有至少4个投票)
 func TestVoteElect(t *testing.T) {
 	var connection = bif.NewBif(providers.NewHTTPProvider(resources.IP+":"+resources.Port, 10, false))
-	coinBase, err := connection.Core.GetCoinbase()
+	coinBase, err := connection.Core.GetCoinBase()
 	if err != nil {
 		t.Error(err)
 		t.FailNow()
@@ -312,7 +313,7 @@ func TestVoteElect(t *testing.T) {
 
 func TestCancelVote(t *testing.T) {
 	var connection = bif.NewBif(providers.NewHTTPProvider(resources.IP+":"+resources.Port, 10, false))
-	coinBase, err := connection.Core.GetCoinbase()
+	coinBase, err := connection.Core.GetCoinBase()
 	if err != nil {
 		t.Error(err)
 		t.FailNow()
@@ -328,7 +329,7 @@ func TestCancelVote(t *testing.T) {
 
 func TestGetVoter(t *testing.T) {
 	var connection = bif.NewBif(providers.NewHTTPProvider(resources.IP+":"+resources.Port, 10, false))
-	coinBase, err := connection.Core.GetCoinbase()
+	coinBase, err := connection.Core.GetCoinBase()
 	if err != nil {
 		t.Error(err)
 		t.FailNow()
@@ -342,4 +343,3 @@ func TestGetVoter(t *testing.T) {
 
 	t.Log(trustAnchorVoterLi)
 }
-

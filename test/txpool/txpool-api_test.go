@@ -12,13 +12,6 @@
    along with go-web3.  If not, see <http://www.gnu.org/licenses/>.
 *********************************************************************************/
 
-/**
- * @file web3-clientVersion.go
- * @authors:
- *   Reginaldo Costa <regcostajr@gmail.com>
- * @date 2017
- */
-
 package test
 
 import (
@@ -34,7 +27,7 @@ func TestTxpoolStatus(t *testing.T) {
 
 	var connection = txpool.NewTxpool(providers.NewHTTPProvider(resources.IP+":"+resources.Port, 10, false))
 
-	 status, err := connection.Status()
+	status, err := connection.Status()
 	if err != nil {
 		t.Error(err)
 		t.FailNow()
@@ -44,7 +37,7 @@ func TestTxpoolStatus(t *testing.T) {
 
 }
 
-func TestTxpoolInspect(t *testing.T) {
+func TestTxPoolInspect(t *testing.T) {
 
 	var connection = txpool.NewTxpool(providers.NewHTTPProvider(resources.IP+":"+resources.Port, 10, false))
 
