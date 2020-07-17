@@ -537,7 +537,7 @@ func TestUnmarshal(t *testing.T) {
 		t.Fatal("expected 1 item, got", len(outAddr))
 	}
 
-	if outAddr[0] != (common.Address{100,105,100,58,98,105,100,58,0,0,0,0,0,0,0,0,0,0,0,1}) {
+	if outAddr[0] != (common.Address{100, 105, 100, 58, 98, 105, 100, 58, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1}) {
 		fmt.Println("outAddr ", outAddr)
 		t.Errorf("expected %x, got %x", common.Address{1}, outAddr[0])
 	}
@@ -565,7 +565,7 @@ func TestUnmarshal(t *testing.T) {
 		t.Fatal("expected 1 item, got", len(outAddrStruct.A))
 	}
 
-	if outAddrStruct.A[0] != (common.Address{100,105,100,58,98,105,100,58,0,0,0,0,0,0,0,0,0,0,0,1}) {
+	if outAddrStruct.A[0] != (common.Address{100, 105, 100, 58, 98, 105, 100, 58, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1}) {
 		t.Errorf("expected %x, got %x", common.Address{1}, outAddrStruct.A[0])
 	}
 
@@ -573,10 +573,10 @@ func TestUnmarshal(t *testing.T) {
 		t.Fatal("expected 1 item, got", len(outAddrStruct.B))
 	}
 
-	if outAddrStruct.B[0] != (common.Address{100,105,100,58,98,105,100,58,0,0,0,0,0,0,0,0,0,0,0,2}) {
+	if outAddrStruct.B[0] != (common.Address{100, 105, 100, 58, 98, 105, 100, 58, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2}) {
 		t.Errorf("expected %x, got %x", common.Address{2}, outAddrStruct.B[0])
 	}
-	if outAddrStruct.B[1] != (common.Address{100,105,100,58,98,105,100,58,0,0,0,0,0,0,0,0,0,0,0,3}) {
+	if outAddrStruct.B[1] != (common.Address{100, 105, 100, 58, 98, 105, 100, 58, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 3}) {
 		t.Errorf("expected %x, got %x", common.Address{3}, outAddrStruct.B[1])
 	}
 
