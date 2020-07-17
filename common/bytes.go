@@ -51,7 +51,7 @@ func FromHex(s string) []byte {
 
 	if has0xPrefix(s) {
 		s = s[2:]
-	} else if hasDidBidPrefix(s){
+	} else if hasDidBidPrefix(s) {
 		s = s[8:]
 		buffer.Write([]byte("did:bid:"))
 	}
@@ -64,7 +64,7 @@ func FromHex(s string) []byte {
 	return buffer.Bytes()
 }
 
-func FromHexWithoutPre(s string)[]byte {
+func FromHexWithoutPre(s string) []byte {
 	if len(s) > 1 {
 		if s[0:2] == "0x" || s[0:2] == "0X" {
 			s = s[2:]

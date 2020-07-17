@@ -70,7 +70,7 @@ func (pointer *RequestResult) ToPeerCertificate() (*PeerCertificate, error) {
 	return peerCertificate, err
 }
 
-func (pointer *RequestResult) ToIsBaseTrustAnchor() (bool, error){
+func (pointer *RequestResult) ToIsBaseTrustAnchor() (bool, error) {
 	if err := pointer.checkResponse(); err != nil {
 		return false, err
 	}
@@ -80,7 +80,7 @@ func (pointer *RequestResult) ToIsBaseTrustAnchor() (bool, error){
 	return result.(bool), nil
 }
 
-func (pointer *RequestResult) ToIsTrustAnchor() (bool, error){
+func (pointer *RequestResult) ToIsTrustAnchor() (bool, error) {
 	if err := pointer.checkResponse(); err != nil {
 		return false, err
 	}
@@ -90,8 +90,8 @@ func (pointer *RequestResult) ToIsTrustAnchor() (bool, error){
 	return result.(bool), nil
 }
 
-func (pointer *RequestResult) ToTrustAnchor() (*TrustAnchor, error){
-	if err := pointer.checkResponse(); err != nil{
+func (pointer *RequestResult) ToTrustAnchor() (*TrustAnchor, error) {
+	if err := pointer.checkResponse(); err != nil {
 		return nil, err
 	}
 
@@ -103,9 +103,9 @@ func (pointer *RequestResult) ToTrustAnchor() (*TrustAnchor, error){
 
 	trustAnchor := &TrustAnchor{}
 
-	marshal,err := json.Marshal(result)
+	marshal, err := json.Marshal(result)
 
-	if err != nil{
+	if err != nil {
 		return nil, customerror.UNPARSEABLEINTERFACE
 	}
 
@@ -114,8 +114,8 @@ func (pointer *RequestResult) ToTrustAnchor() (*TrustAnchor, error){
 	return trustAnchor, err
 }
 
-func (pointer *RequestResult) ToTrustAnchorStatus() (uint64, error){
-	if err := pointer.checkResponse();err!=nil{
+func (pointer *RequestResult) ToTrustAnchorStatus() (uint64, error) {
+	if err := pointer.checkResponse(); err != nil {
 		return 0, err
 	}
 
@@ -124,8 +124,8 @@ func (pointer *RequestResult) ToTrustAnchorStatus() (uint64, error){
 	return result.(uint64), nil
 }
 
-func (pointer *RequestResult) ToTrustAnchorCertificateList() ([]string, error){
-	if err := pointer.checkResponse(); err != nil{
+func (pointer *RequestResult) ToTrustAnchorCertificateList() ([]string, error) {
+	if err := pointer.checkResponse(); err != nil {
 		return nil, err
 	}
 
@@ -139,8 +139,8 @@ func (pointer *RequestResult) ToTrustAnchorCertificateList() ([]string, error){
 	return stringLi, nil
 }
 
-func (pointer *RequestResult) ToBaseTrustAnchor() ([]string, error){
-	if err := pointer.checkResponse(); err != nil{
+func (pointer *RequestResult) ToBaseTrustAnchor() ([]string, error) {
+	if err := pointer.checkResponse(); err != nil {
 		return nil, err
 	}
 
@@ -154,8 +154,8 @@ func (pointer *RequestResult) ToBaseTrustAnchor() ([]string, error){
 	return stringLi, nil
 }
 
-func (pointer *RequestResult) ToBaseTrustAnchorNumber() (uint64, error){
-	if err := pointer.checkResponse(); err != nil{
+func (pointer *RequestResult) ToBaseTrustAnchorNumber() (uint64, error) {
+	if err := pointer.checkResponse(); err != nil {
 		return 0, err
 	}
 
@@ -164,8 +164,8 @@ func (pointer *RequestResult) ToBaseTrustAnchorNumber() (uint64, error){
 	return result.(uint64), nil
 }
 
-func (pointer *RequestResult) ToExpendTrustAnchor() ([]string, error){
-	if err := pointer.checkResponse(); err != nil{
+func (pointer *RequestResult) ToExpendTrustAnchor() ([]string, error) {
+	if err := pointer.checkResponse(); err != nil {
 		return nil, err
 	}
 
@@ -179,8 +179,8 @@ func (pointer *RequestResult) ToExpendTrustAnchor() ([]string, error){
 	return stringLi, nil
 }
 
-func (pointer *RequestResult) ToExpendTrustAnchorNumber() (uint64, error){
-	if err := pointer.checkResponse(); err != nil{
+func (pointer *RequestResult) ToExpendTrustAnchorNumber() (uint64, error) {
+	if err := pointer.checkResponse(); err != nil {
 		return 0, err
 	}
 
@@ -190,19 +190,19 @@ func (pointer *RequestResult) ToExpendTrustAnchorNumber() (uint64, error){
 }
 
 // 解析测试注意！！！
-func (pointer *RequestResult) ToTrustAnchorVoter() ([]TrustAnchorVoter, error){
-	if err := pointer.checkResponse(); err != nil{
+func (pointer *RequestResult) ToTrustAnchorVoter() ([]TrustAnchorVoter, error) {
+	if err := pointer.checkResponse(); err != nil {
 		return nil, err
 	}
 
 	result := (pointer).Result.([]map[string]interface{})
 
-	trustAnchorVoterLi :=  make([]TrustAnchorVoter, len(result))
+	trustAnchorVoterLi := make([]TrustAnchorVoter, len(result))
 
 	for i, v := range result {
-		marshal,err := json.Marshal(v)
+		marshal, err := json.Marshal(v)
 
-		if err != nil{
+		if err != nil {
 			return nil, customerror.UNPARSEABLEINTERFACE
 		}
 
@@ -213,8 +213,8 @@ func (pointer *RequestResult) ToTrustAnchorVoter() ([]TrustAnchorVoter, error){
 	return trustAnchorVoterLi, nil
 }
 
-func (pointer *RequestResult) ToCertificatePeriod() (uint64, error){
-	if err := pointer.checkResponse(); err != nil{
+func (pointer *RequestResult) ToCertificatePeriod() (uint64, error) {
+	if err := pointer.checkResponse(); err != nil {
 		return 0, err
 	}
 
@@ -223,8 +223,8 @@ func (pointer *RequestResult) ToCertificatePeriod() (uint64, error){
 	return result.(uint64), nil
 }
 
-func (pointer *RequestResult) ToCertificateActive() (bool, error){
-	if err := pointer.checkResponse(); err != nil{
+func (pointer *RequestResult) ToCertificateActive() (bool, error) {
+	if err := pointer.checkResponse(); err != nil {
 		return false, err
 	}
 
@@ -233,8 +233,8 @@ func (pointer *RequestResult) ToCertificateActive() (bool, error){
 	return result.(bool), nil
 }
 
-func (pointer *RequestResult) ToCertificateInfo() (*CertificateInfo, error){
-	if err := pointer.checkResponse(); err != nil{
+func (pointer *RequestResult) ToCertificateInfo() (*CertificateInfo, error) {
+	if err := pointer.checkResponse(); err != nil {
 		return nil, err
 	}
 
@@ -248,7 +248,7 @@ func (pointer *RequestResult) ToCertificateInfo() (*CertificateInfo, error){
 
 	marshal, err := json.Marshal(result)
 
-	if err != nil{
+	if err != nil {
 		return nil, err
 	}
 
@@ -256,7 +256,7 @@ func (pointer *RequestResult) ToCertificateInfo() (*CertificateInfo, error){
 	return certificateInfo, err
 }
 
-func (pointer *RequestResult) ToCertificateIssuerSignature() (*IssuerSignature, error){
+func (pointer *RequestResult) ToCertificateIssuerSignature() (*IssuerSignature, error) {
 	if err := pointer.checkResponse(); err != nil {
 		return nil, err
 	}
@@ -271,7 +271,7 @@ func (pointer *RequestResult) ToCertificateIssuerSignature() (*IssuerSignature, 
 
 	marshal, err := json.Marshal(result)
 
-	if err != nil{
+	if err != nil {
 		return nil, err
 	}
 
@@ -279,7 +279,7 @@ func (pointer *RequestResult) ToCertificateIssuerSignature() (*IssuerSignature, 
 	return issuerSignature, err
 }
 
-func (pointer *RequestResult) ToCertificateSubjectSignature() (*SubjectSignature, error){
+func (pointer *RequestResult) ToCertificateSubjectSignature() (*SubjectSignature, error) {
 	if err := pointer.checkResponse(); err != nil {
 		return nil, err
 	}
@@ -294,7 +294,7 @@ func (pointer *RequestResult) ToCertificateSubjectSignature() (*SubjectSignature
 
 	marshal, err := json.Marshal(result)
 
-	if err != nil{
+	if err != nil {
 		return nil, err
 	}
 
@@ -302,7 +302,7 @@ func (pointer *RequestResult) ToCertificateSubjectSignature() (*SubjectSignature
 	return subjectSignature, err
 }
 
-func (pointer *RequestResult) ToDocument() (*Document, error){
+func (pointer *RequestResult) ToDocument() (*Document, error) {
 	if err := pointer.checkResponse(); err != nil {
 		return nil, err
 	}
@@ -317,7 +317,7 @@ func (pointer *RequestResult) ToDocument() (*Document, error){
 
 	marshal, err := json.Marshal(result)
 
-	if err != nil{
+	if err != nil {
 		return nil, err
 	}
 
@@ -325,7 +325,7 @@ func (pointer *RequestResult) ToDocument() (*Document, error){
 	return document, err
 }
 
-func (pointer *RequestResult) ToDocIsEnable() (bool, error){
+func (pointer *RequestResult) ToDocIsEnable() (bool, error) {
 	if err := pointer.checkResponse(); err != nil {
 		return false, err
 	}
@@ -335,7 +335,7 @@ func (pointer *RequestResult) ToDocIsEnable() (bool, error){
 	return result.(bool), nil
 }
 
-func (pointer *RequestResult) ToElectionRestBIFBounty() (*big.Int, error){
+func (pointer *RequestResult) ToElectionRestBIFBounty() (*big.Int, error) {
 	if err := pointer.checkResponse(); err != nil {
 		return nil, err
 	}
@@ -345,7 +345,7 @@ func (pointer *RequestResult) ToElectionRestBIFBounty() (*big.Int, error){
 	return result.(*big.Int), nil
 }
 
-func (pointer *RequestResult) ToElectionCandidate() (*Candidate, error){
+func (pointer *RequestResult) ToElectionCandidate() (*Candidate, error) {
 	if err := pointer.checkResponse(); err != nil {
 		return nil, err
 	}
@@ -369,19 +369,19 @@ func (pointer *RequestResult) ToElectionCandidate() (*Candidate, error){
 	return candidate, err
 }
 
-func (pointer *RequestResult) ToElectionCandidates() ([]Candidate, error){
+func (pointer *RequestResult) ToElectionCandidates() ([]Candidate, error) {
 	if err := pointer.checkResponse(); err != nil {
 		return nil, err
 	}
 
 	result := (pointer).Result.([]map[string]interface{})
 
-	candidateLi :=  make([]Candidate, len(result))
+	candidateLi := make([]Candidate, len(result))
 
 	for i, v := range result {
-		marshal,err := json.Marshal(v)
+		marshal, err := json.Marshal(v)
 
-		if err != nil{
+		if err != nil {
 			return nil, customerror.UNPARSEABLEINTERFACE
 		}
 
@@ -391,7 +391,7 @@ func (pointer *RequestResult) ToElectionCandidates() ([]Candidate, error){
 	return candidateLi, nil
 }
 
-func (pointer *RequestResult) ToElectionVoter() (*Voter, error){
+func (pointer *RequestResult) ToElectionVoter() (*Voter, error) {
 	if err := pointer.checkResponse(); err != nil {
 		return nil, err
 	}
@@ -414,19 +414,19 @@ func (pointer *RequestResult) ToElectionVoter() (*Voter, error){
 	return voter, err
 }
 
-func (pointer *RequestResult) ToElectionVoterList() ([]Voter, error){
+func (pointer *RequestResult) ToElectionVoterList() ([]Voter, error) {
 	if err := pointer.checkResponse(); err != nil {
 		return nil, err
 	}
 
 	result := (pointer).Result.([]map[string]interface{})
 
-	voterLi :=  make([]Voter, len(result))
+	voterLi := make([]Voter, len(result))
 
 	for i, v := range result {
-		marshal,err := json.Marshal(v)
+		marshal, err := json.Marshal(v)
 
-		if err != nil{
+		if err != nil {
 			return nil, customerror.UNPARSEABLEINTERFACE
 		}
 
@@ -436,7 +436,7 @@ func (pointer *RequestResult) ToElectionVoterList() ([]Voter, error){
 	return voterLi, nil
 }
 
-func (pointer *RequestResult) ToElectionStake() (*Stake, error){
+func (pointer *RequestResult) ToElectionStake() (*Stake, error) {
 	if err := pointer.checkResponse(); err != nil {
 		return nil, err
 	}

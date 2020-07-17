@@ -20,11 +20,11 @@ import "math/big"
 
 // Common big integers often used
 var (
-	Big1   = big.NewInt(1)
-	Big2   = big.NewInt(2)
-	Big3   = big.NewInt(3)
+	Big1 = big.NewInt(1)
+	Big2 = big.NewInt(2)
+	Big3 = big.NewInt(3)
 	// add for dpos start
-	Big4   = big.NewInt(4)
+	Big4 = big.NewInt(4)
 	// add for dpos end
 	Big0   = big.NewInt(0)
 	Big32  = big.NewInt(32)

@@ -12,13 +12,6 @@
    along with go-web3.  If not, see <http://www.gnu.org/licenses/>.
 *********************************************************************************/
 
-/**
- * @file core.go
- * @authors:
- *   Reginaldo Costa <regcostajr@gmail.com>
- * @date 2017
- */
-
 package core
 
 import (
@@ -97,7 +90,7 @@ func (core *Core) IsSyncing() (*dto.SyncingResponse, error) {
 //    - none
 // Returns:
 // 	  - DATA, 20 bytes - the current coinbase address.
-func (core *Core) GetCoinbase() (string, error) {
+func (core *Core) GetCoinBase() (string, error) {
 
 	pointer := &dto.RequestResult{}
 
@@ -786,7 +779,7 @@ func (core *Core) GetChainId() (uint64, error) {
 
 	err := core.provider.SendRequest(pointer, "core_chainId", nil)
 
-	if err != nil{
+	if err != nil {
 		return 0, err
 	}
 

@@ -12,13 +12,6 @@
    along with go-bif.  If not, see <http://www.gnu.org/licenses/>.
 *********************************************************************************/
 
-/**
- * @file block.go
- * @authors:
- *   Jérôme Laurens <jeromelaurens@gmail.com>
- * @date 2017
- */
-
 package dto
 
 import (

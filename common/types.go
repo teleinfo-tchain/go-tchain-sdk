@@ -45,7 +45,6 @@ var (
 	addressT = reflect.TypeOf(Address{})
 )
 
-
 // Hash represents the 32 byte Keccak256 hash of arbitrary data.
 type Hash [HashLength]byte
 
@@ -67,7 +66,7 @@ func BigToHash(b *big.Int) Hash { return BytesToHash(b.Bytes()) }
 // If b is larger than len(h), b will be cropped from the left.
 func HexToHash(s string) Hash { return BytesToHash(FromHex(s)) }
 
-func HexToHashWithOutPre(s string) Hash {return BytesToHash(FromHexWithoutPre(s))}
+func HexToHashWithOutPre(s string) Hash { return BytesToHash(FromHexWithoutPre(s)) }
 
 // Bytes gets the byte representation of the underlying hash.
 func (h Hash) Bytes() []byte { return h[:] }
@@ -199,11 +198,10 @@ func BytesToAddressWithoutPre(b []byte) Address {
 	return a
 }
 
-
 func StringToAddressWithoutPre(s string) Address { return BytesToAddressWithoutPre([]byte(s)) }
 
 func StringToAddress(s string) Address {
-	addr :=FromHex(s)
+	addr := FromHex(s)
 	return BytesToAddress(addr)
 } // dep: Istanbul
 
@@ -289,6 +287,7 @@ func (a *Address) SetBytesWithoutPre(b []byte) {
 	}
 	copy(a[AddressLength-len(b):], b)
 }
+
 // SetBytes sets the address to the value of b.
 // If b is larger than len(a) it will panic.
 func (a *Address) SetBytes(b []byte) {

@@ -12,22 +12,15 @@
    along with go-bif.  If not, see <http://www.gnu.org/licenses/>.
 *********************************************************************************/
 
-/**
- * @file error-constants.go
- * @authors:
- *   Reginaldo Costa <regcostajr@gmail.com>
- * @date 2017
- */
-
 package customerror
 
 import "errors"
 
 var (
 	// EMPTYRESPONSE - Server response is empty
-	EMPTYRESPONSE = errors.New("Empty response")
+	EMPTYRESPONSE = errors.New("empty response")
 	// UNPARSEABLEINTERFACE - the conversion failed
-	UNPARSEABLEINTERFACE = errors.New("Unparseable Interface")
+	UNPARSEABLEINTERFACE = errors.New("unParsable Interface")
 	// WEBSOCKETNOTDENIFIED - Websocket connection dont exist
-	WEBSOCKETNOTDENIFIED = errors.New("Websocket connection dont exist")
+	WEBSOCKETNOTDENIFIED = errors.New("websocket connection dont exist")
 )

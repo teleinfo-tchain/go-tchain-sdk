@@ -33,7 +33,7 @@ type Txdata struct {
 
 type SignTransactionResult struct {
 	Raw hexutil.Bytes `json:"raw"`
-	Tx  *Txdata  `json:"tx"`
+	Tx  *Txdata       `json:"tx"`
 }
 
 func rlpHash(x interface{}) (h common.Hash) {
@@ -61,6 +61,7 @@ func (bfs BIFSigner) Hash(tx *Txdata) common.Hash {
 		bfs.chainId, uint(0), uint(0),
 	})
 }
+
 // SignatureValues returns signature values. This signature
 // needs to be in the [R || S || V] format where V is 0 or 1.
 func (bfs BIFSigner) SignatureValue(tx *Txdata, sig []byte) (r, s, v *big.Int, err error) {
@@ -124,20 +125,20 @@ func SignTx(tx *Txdata, s BIFSigner, prv *ecdsa.PrivateKey) (*Txdata, error) {
 	return tx.WithSignature(s, sig)
 }
 
-func (tx *Txdata) PreCheck() (bool, error){
-	if tx.Sender == nil{
+func (tx *Txdata) PreCheck() (bool, error) {
+	if tx.Sender == nil {
 		return false, fmt.Errorf("sender not specified")
 	}
 	// 判断地址格式的有效性
-	if !(bytes.HasPrefix(tx.Sender.Bytes(), []byte("did:bid:"))){
+	if !(bytes.HasPrefix(tx.Sender.Bytes(), []byte("did:bid:"))) {
 		return false, fmt.Errorf("not invalid sender address")
 	}
 
-	if tx.Price == nil{
+	if tx.Price == nil {
 		return false, fmt.Errorf("gasPrice not specified")
 	}
 
-	if tx.GasLimit == 0{
+	if tx.GasLimit == 0 {
 		return false, fmt.Errorf("gasLimit not specified")
 	}
 
@@ -146,8 +147,8 @@ func (tx *Txdata) PreCheck() (bool, error){
 
 func SignTransaction(transaction *Txdata, privKey string, chainId int64) (*SignTransactionResult, error) {
 	// 1 check input
-	ret, err:= transaction.PreCheck()
-	if !ret{
+	ret, err := transaction.PreCheck()
+	if !ret {
 		return nil, err
 	}
 
@@ -160,8 +161,8 @@ func SignTransaction(transaction *Txdata, privKey string, chainId int64) (*SignT
 		cryptoType = crypto.SECP256K1
 	}
 
-	privateKey,err := crypto.HexToECDSA(privKey, cryptoType)
-	if err != nil{
+	privateKey, err := crypto.HexToECDSA(privKey, cryptoType)
+	if err != nil {
 		return nil, err
 	}
 

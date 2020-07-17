@@ -134,7 +134,6 @@ var (
 		{input: `0xbbb`, want: uint64(0xbbb)},
 		{input: `0xffffffffffffffff`, want: uint64(0xffffffffffffffff)},
 	}
-
 )
 
 func TestEncode(t *testing.T) {
@@ -202,6 +201,3 @@ func TestDecodeUint64(t *testing.T) {
 		}
 	}
 }
-
-
-

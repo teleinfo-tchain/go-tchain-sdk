@@ -12,13 +12,6 @@
    along with go-bif.  If not, see <http://www.gnu.org/licenses/>.
 *********************************************************************************/
 
-/**
- * @file request-result.go
- * @authors:
- *   Reginaldo Costa <regcostajr@gmail.com>
- * @date 2017
- */
-
 package dto
 
 import (
@@ -488,7 +481,6 @@ func (pointer *RequestResult) checkResponse() error {
 
 }
 
-
 func (pointer *RequestResult) ToValidators() ([]string, error) {
 	if err := pointer.checkResponse(); err != nil {
 		return nil, err
@@ -508,7 +500,7 @@ func (pointer *RequestResult) ToValidators() ([]string, error) {
 	return validators, nil
 }
 
-func (pointer *RequestResult) ToValidatorsAtHash()([]string, error){
+func (pointer *RequestResult) ToValidatorsAtHash() ([]string, error) {
 	if err := pointer.checkResponse(); err != nil {
 		return nil, err
 	}
@@ -527,7 +519,7 @@ func (pointer *RequestResult) ToValidatorsAtHash()([]string, error){
 	return validators, nil
 }
 
-func(pointer *RequestResult) ToRoundStateInfo() (*RoundStateInfo, error){
+func (pointer *RequestResult) ToRoundStateInfo() (*RoundStateInfo, error) {
 	if err := pointer.checkResponse(); err != nil {
 		return nil, err
 	}
@@ -547,8 +539,7 @@ func(pointer *RequestResult) ToRoundStateInfo() (*RoundStateInfo, error){
 	return roundStateInfo, err
 }
 
-
-func(pointer *RequestResult) ToRoundChangeSetInfo() (*RoundChangeSetInfo, error){
+func (pointer *RequestResult) ToRoundChangeSetInfo() (*RoundChangeSetInfo, error) {
 	if err := pointer.checkResponse(); err != nil {
 		return nil, err
 	}
@@ -568,8 +559,7 @@ func(pointer *RequestResult) ToRoundChangeSetInfo() (*RoundChangeSetInfo, error)
 	return roundChangeSetInfo, err
 }
 
-
-func(pointer *RequestResult) ToBacklogs() (map[string][]*Message, error){
+func (pointer *RequestResult) ToBacklogs() (map[string][]*Message, error) {
 	if err := pointer.checkResponse(); err != nil {
 		return nil, err
 	}
@@ -593,7 +583,7 @@ func(pointer *RequestResult) ToBacklogs() (map[string][]*Message, error){
 	return backlogs, err
 }
 
-func(pointer *RequestResult) ToChainID() (uint64, error){
+func (pointer *RequestResult) ToChainID() (uint64, error) {
 	if err := pointer.checkResponse(); err != nil {
 		return 0, err
 	}

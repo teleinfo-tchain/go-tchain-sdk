@@ -238,4 +238,3 @@ func mapError(err error) error {
 	}
 	return err
 }
-

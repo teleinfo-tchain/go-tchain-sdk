@@ -11,7 +11,7 @@ import (
 )
 
 const (
-	ElectionContractAddr      = "did:bid:000000000000000000000009"
+	ElectionContractAddr = "did:bid:000000000000000000000009"
 	//VoteLimit         = 64
 	//OneDay            = int64(24) * 3600
 	//VoteOrProxyOneDay = OneDay
@@ -83,11 +83,11 @@ func (sys *System) NewElection() *Election {
 
  Call permissions: ？？？
 */
-func(e *Election) RegisterWitness(from common.Address, witness *dto.RegisterWitness) (string, error){
+func (e *Election) RegisterWitness(from common.Address, witness *dto.RegisterWitness) (string, error) {
 	//encode
 	// witness is a struct we need to use the components.
 	var values []interface{}
-	values = e.super.structToInterface(*witness,values)
+	values = e.super.structToInterface(*witness, values)
 	inputEncode, err := e.abi.Pack("registerWitness", values...)
 	if err != nil {
 		return "", err
@@ -104,7 +104,7 @@ func(e *Election) RegisterWitness(from common.Address, witness *dto.RegisterWitn
 
  Call permissions: ？？？
 */
-func(e *Election) UnRegisterWitness(from common.Address) (string, error){
+func (e *Election) UnRegisterWitness(from common.Address) (string, error) {
 	// encoding
 	inputEncode, _ := e.abi.Pack("unregisterWitness")
 
@@ -117,14 +117,14 @@ func(e *Election) UnRegisterWitness(from common.Address) (string, error){
 
  Returns：*dto.Candidate
 */
-func(e *Election) GetCandidate(candidateAddress string)(*dto.Candidate, error){
+func (e *Election) GetCandidate(candidateAddress string) (*dto.Candidate, error) {
 	params := make([]string, 1)
 	params[0] = candidateAddress
 
 	pointer := &dto.RequestResult{}
 
 	err := e.super.provider.SendRequest(pointer, "election_candidate", params)
-	if err != nil{
+	if err != nil {
 		return nil, err
 	}
 
@@ -136,7 +136,7 @@ func(e *Election) GetCandidate(candidateAddress string)(*dto.Candidate, error){
 
  Returns：[]dto.Candidate，列表内为候选人
 */
-func(e *Election) GetAllCandidates()([]dto.Candidate, error){
+func (e *Election) GetAllCandidates() ([]dto.Candidate, error) {
 	pointer := &dto.RequestResult{}
 
 	err := e.super.provider.SendRequest(pointer, "election_allCandidates", nil)
@@ -154,7 +154,7 @@ func(e *Election) GetAllCandidates()([]dto.Candidate, error){
 
  Call permissions: ？？？
 */
-func(e *Election) VoteWitnesses(from common.Address, candidate string)(string, error){
+func (e *Election) VoteWitnesses(from common.Address, candidate string) (string, error) {
 	// encoding
 	inputEncode, _ := e.abi.Pack("voteWitnesses", candidate)
 
@@ -170,7 +170,7 @@ func(e *Election) VoteWitnesses(from common.Address, candidate string)(string, e
 
  Call permissions: ？？？
 */
-func(e *Election) CancelVote(from common.Address)(string, error){
+func (e *Election) CancelVote(from common.Address) (string, error) {
 	// encoding
 	inputEncode, _ := e.abi.Pack("cancelVote")
 
@@ -186,7 +186,7 @@ func(e *Election) CancelVote(from common.Address)(string, error){
 
  Call permissions: ？？？
 */
-func(e *Election) StartProxy(from common.Address)(string, error){
+func (e *Election) StartProxy(from common.Address) (string, error) {
 	// encoding
 	inputEncode, _ := e.abi.Pack("startProxy")
 
@@ -202,7 +202,7 @@ func(e *Election) StartProxy(from common.Address)(string, error){
 
  Call permissions: ？？？
 */
-func(e *Election) StopProxy(from common.Address)(string, error){
+func (e *Election) StopProxy(from common.Address) (string, error) {
 	// encoding
 	inputEncode, _ := e.abi.Pack("stopProxy")
 
@@ -218,7 +218,7 @@ func(e *Election) StopProxy(from common.Address)(string, error){
 
  Call permissions: ？？？
 */
-func(e *Election) CancelProxy(from common.Address)(string, error){
+func (e *Election) CancelProxy(from common.Address) (string, error) {
 	// encoding
 	inputEncode, _ := e.abi.Pack("cancelProxy")
 
@@ -234,10 +234,10 @@ func(e *Election) CancelProxy(from common.Address)(string, error){
 
  Call permissions: ？？？
 */
-func(e *Election) SetProxy(from common.Address, proxy string)(string, error){
+func (e *Election) SetProxy(from common.Address, proxy string) (string, error) {
 	// encoding
 	inputEncode, err := e.abi.Pack("setProxy", proxy)
-	if err!= nil{
+	if err != nil {
 		return "", err
 	}
 
@@ -253,10 +253,10 @@ func(e *Election) SetProxy(from common.Address, proxy string)(string, error){
 
  Call permissions: ？？？
 */
-func(e *Election) Stake(from common.Address, stakeCount *big.Int)(string, error){
+func (e *Election) Stake(from common.Address, stakeCount *big.Int) (string, error) {
 	// encoding
 	inputEncode, err := e.abi.Pack("stake", stakeCount)
-	if err!= nil{
+	if err != nil {
 		return "", err
 	}
 
@@ -272,7 +272,7 @@ func(e *Election) Stake(from common.Address, stakeCount *big.Int)(string, error)
 
  Call permissions: ？？？
 */
-func(e *Election) UnStake(from common.Address)(string, error){
+func (e *Election) UnStake(from common.Address) (string, error) {
 	// encoding
 	inputEncode, _ := e.abi.Pack("unStake")
 
@@ -286,7 +286,7 @@ func(e *Election) UnStake(from common.Address)(string, error){
 
  Returns：*dto.Stake
 */
-func(e *Election) GetStake(voterAddress string)(*dto.Stake, error){
+func (e *Election) GetStake(voterAddress string) (*dto.Stake, error) {
 	params := make([]string, 1)
 	params[0] = voterAddress
 
@@ -305,7 +305,7 @@ func(e *Election) GetStake(voterAddress string)(*dto.Stake, error){
 
  Returns：*big.Int
 */
-func (e *Election) GetRestBIFBounty()(*big.Int, error){
+func (e *Election) GetRestBIFBounty() (*big.Int, error) {
 	pointer := &dto.RequestResult{}
 
 	err := e.super.provider.SendRequest(pointer, "election_restBIFBounty", nil)
@@ -324,7 +324,7 @@ func (e *Election) GetRestBIFBounty()(*big.Int, error){
 
  Call permissions: ？？
 */
-func(e *Election) ExtractOwnBounty(from common.Address)(string, error){
+func (e *Election) ExtractOwnBounty(from common.Address) (string, error) {
 	// encoding
 	inputEncode, _ := e.abi.Pack("extractOwnBounty")
 
@@ -340,7 +340,7 @@ func(e *Election) ExtractOwnBounty(from common.Address)(string, error){
 
  Call permissions: ？？
 */
-func(e *Election) IssueAdditionalBounty(from common.Address)(string, error){
+func (e *Election) IssueAdditionalBounty(from common.Address) (string, error) {
 	// encoding
 	inputEncode, _ := e.abi.Pack("issueAdditionalBounty")
 
@@ -354,14 +354,14 @@ func(e *Election) IssueAdditionalBounty(from common.Address)(string, error){
 
  Returns：*dto.Voter
 */
-func(e *Election) GetVoter(voterAddress string)(*dto.Voter, error){
+func (e *Election) GetVoter(voterAddress string) (*dto.Voter, error) {
 	params := make([]string, 1)
 	params[0] = voterAddress
 
 	pointer := &dto.RequestResult{}
 
 	err := e.super.provider.SendRequest(pointer, "election_voter", params)
-	if err != nil{
+	if err != nil {
 		return nil, err
 	}
 
@@ -373,14 +373,14 @@ func(e *Election) GetVoter(voterAddress string)(*dto.Voter, error){
 
  Returns：[]string
 */
-func(e *Election) GetVoterList(voterAddress string)([]dto.Voter, error){
+func (e *Election) GetVoterList(voterAddress string) ([]dto.Voter, error) {
 	params := make([]string, 1)
 	params[0] = voterAddress
 
 	pointer := &dto.RequestResult{}
 
 	err := e.super.provider.SendRequest(pointer, "election_voterList", params)
-	if err != nil{
+	if err != nil {
 		return nil, err
 	}
 

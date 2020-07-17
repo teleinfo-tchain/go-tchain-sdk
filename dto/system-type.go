@@ -50,15 +50,15 @@ type RoundChangeSetInfo struct {
 */
 
 type RegisterCertificateInfo struct {
-	Id string   //节点证书的bid,，必须和public_key相同
-	PublicKey string  //53个字符的公钥
-	NodeName string //节点名称，不含敏感词的字符串
+	Id          string //节点证书的bid,，必须和public_key相同
+	PublicKey   string //53个字符的公钥
+	NodeName    string //节点名称，不含敏感词的字符串
 	MessageSha3 string //消息sha3后的16进制字符串
-	Signature string //对上一个字段消息的签名，16进制字符串
-	NodeType uint64 //节点类型，0企业，1个人
-	Period uint64 //证书有效期，以年为单位的整型
-	IP string // ip
-	Port uint64 // port
+	Signature   string //对上一个字段消息的签名，16进制字符串
+	NodeType    uint64 //节点类型，0企业，1个人
+	Period      uint64 //证书有效期，以年为单位的整型
+	IP          string // ip
+	Port        uint64 // port
 	CompanyName string //公司名（如果是个人，则是个人姓名）
 	CompanyCode string //公司代码
 }
@@ -82,25 +82,25 @@ type PeerCertificate struct {
 */
 
 type RegisterAnchor struct {
-	Anchor string  // 信任锚bid
-	AnchorType uint64 // 信任锚的类型，10为根信任锚，11为扩展信任锚
-	AnchorName string // 信任锚名称，不含敏感词的字符串
-	Company string  // 公司名
-	CompanyUrl string // 公司网址
-	Website string // 信任锚网址
+	Anchor      string // 信任锚bid
+	AnchorType  uint64 // 信任锚的类型，10为根信任锚，11为扩展信任锚
+	AnchorName  string // 信任锚名称，不含敏感词的字符串
+	Company     string // 公司名
+	CompanyUrl  string // 公司网址
+	Website     string // 信任锚网址
 	DocumentUrl string // 信任锚接口字段文档
-	ServerUrl string // 服务链接
-	Email string // 邮箱地址 email没有做格式校验，在sdk中做？？
-	Desc string // 描述
+	ServerUrl   string // 服务链接
+	Email       string // 邮箱地址 email没有做格式校验，在sdk中做？？
+	Desc        string // 描述
 }
 
 type UpdateAnchorInfo struct {
-	CompanyUrl string
-	Website string
+	CompanyUrl  string
+	Website     string
 	DocumentUrl string
-	ServerUrl string
-	Email string
-	Desc string
+	ServerUrl   string
+	Email       string
+	Desc        string
 }
 
 type TrustAnchor struct {
@@ -132,15 +132,15 @@ type TrustAnchorVoter struct {
 }
 
 type RegisterCertificate struct {
-	Id string //个人可信证书bid
-	Context string //证书上下文环境，随便一个字符串，不验证
-	Subject string  //证书接收者的bid，证书是颁给谁的
-	Period uint64  //证书有效期，以年为单位的整型
-	IssuerAlgorithm string // 颁发者签名算法，字符串
-	IssuerSignature string  //颁发者签名值，16进制字符串
-	SubjectPublicKey string  // 接收者公钥，16进制字符串
-	SubjectAlgorithm string  //接收者签名算法，字符串
-	SubjectSignature string  //接收者签名值，16进制字符串
+	Id               string //个人可信证书bid
+	Context          string //证书上下文环境，随便一个字符串，不验证
+	Subject          string //证书接收者的bid，证书是颁给谁的
+	Period           uint64 //证书有效期，以年为单位的整型
+	IssuerAlgorithm  string // 颁发者签名算法，字符串
+	IssuerSignature  string //颁发者签名值，16进制字符串
+	SubjectPublicKey string // 接收者公钥，16进制字符串
+	SubjectAlgorithm string //接收者签名算法，字符串
+	SubjectSignature string //接收者签名值，16进制字符串
 }
 
 type CertificateInfo struct {
@@ -213,7 +213,7 @@ type Document struct {
 type RegisterWitness struct {
 	NodeUrl string
 	Website string
-	Name string
+	Name    string
 }
 
 type Candidate struct {

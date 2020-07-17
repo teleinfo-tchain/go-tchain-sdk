@@ -183,6 +183,7 @@ func S256(x *big.Int) *big.Int {
 	}
 	return new(big.Int).Sub(x, tt256)
 }
+
 // ReadBits encodes the absolute value of bigint as big-endian bytes. Callers must ensure
 // that buf has enough space. If buf is too short the result will be incomplete.
 func ReadBits(bigint *big.Int, buf []byte) {
@@ -195,7 +196,6 @@ func ReadBits(bigint *big.Int, buf []byte) {
 		}
 	}
 }
-
 
 // Exp implements exponentiation by squaring.
 // Exp returns a newly-allocated big integer and does not change

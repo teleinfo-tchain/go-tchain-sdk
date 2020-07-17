@@ -2,7 +2,7 @@ package common
 
 import "reflect"
 
-func Insert(slice interface{}, pos int, value interface{}) interface{}  {
+func Insert(slice interface{}, pos int, value interface{}) interface{} {
 	v := reflect.ValueOf(slice)
 	insert := reflect.ValueOf(value)
 	if insert.Len() == 0 {
