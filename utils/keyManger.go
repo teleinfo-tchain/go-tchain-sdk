@@ -12,12 +12,12 @@ import (
 	"io/ioutil"
 )
 
-func preCheck(keydir string, password string, UseLightweightKDF bool) (bool, int, int){
-	if keydir == ""{
+func preCheck(keydir string, password string, UseLightweightKDF bool) (bool, int, int) {
+	if keydir == "" {
 		fmt.Println("empty keydir, please check")
 		return false, -1, -1
 	}
-	if password == ""{
+	if password == "" {
 		fmt.Println("empty password, please check")
 		return false, -1, -1
 	}
@@ -32,10 +32,10 @@ func preCheck(keydir string, password string, UseLightweightKDF bool) (bool, int
 }
 
 //1. 私钥文件生成
-func GenerateKeyStore(keydir string, cryType uint, password string, UseLightweightKDF bool) (string, error){
+func GenerateKeyStore(keydir string, cryType uint, password string, UseLightweightKDF bool) (string, error) {
 
 	check, scryptN, scryptP := preCheck(keydir, password, UseLightweightKDF)
-	if !check{
+	if !check {
 		return "", errors.New("preCheck err")
 	}
 	var cryptoType crypto.CryptoType
@@ -76,45 +76,47 @@ func GetPrivateKeyFromFile(addrParse string, privateKeyFile, password string) (s
 	}
 	privKey := hex.EncodeToString(key.PrivateKey.D.Bytes())
 	addrRes := crypto.PubkeyToAddress(key.PrivateKey.PublicKey)
-	if addrParse != common.ByteAddressToString(addrRes.Bytes()){
+	if addrParse != common.ByteAddressToString(addrRes.Bytes()) {
 		fmt.Println("addrParse Not Match keyStoreFile")
 		return "", "", errors.New("addrParse Not Match keyStoreFile")
 	}
 	return privKey, addrRes.String(), nil
 }
+
 //3. 私钥转文件
-func PrivateKeyToKeyStoreFile(keydir string, addrParse string, privKey string, password string)(string, error){
+func PrivateKeyToKeyStoreFile(keydir string, addrParse string, privKey string, password string) (string, error) {
 	addr := common.StringToAddress(addrParse)
 	var cryptoType crypto.CryptoType
 	if bytes.HasPrefix(addr.Bytes(), []byte("did:bid:")) && addr[8] == 115 {
 		cryptoType = crypto.SM2
-	}else{
+	} else {
 		cryptoType = crypto.SECP256K1
 	}
-	privateKey,err := crypto.HexToECDSA(privKey, cryptoType)
-	if err != nil{
+	privateKey, err := crypto.HexToECDSA(privKey, cryptoType)
+	if err != nil {
 		return "", err
 	}
 	addrRes := crypto.PubkeyToAddress(privateKey.PublicKey)
-	if addrParse != common.ByteAddressToString(addrRes.Bytes()){
+	if addrParse != common.ByteAddressToString(addrRes.Bytes()) {
 		fmt.Println("addrParse Not Match privKey")
 		return "", errors.New("addrParse Not Match privKey")
 	}
 
 	check, scryptN, scryptP := preCheck(keydir, password, false)
-	if !check{
+	if !check {
 		return "", errors.New("preCheck err")
 	}
 	key := keystore.NewKeyStore(keydir, scryptN, scryptP)
 	account, err := key.ImportECDSA(privateKey, password)
-	if err != nil{
+	if err != nil {
 		return "", err
 	}
 	fmt.Printf("Address: {%s%x}\n", account.Address[:8], account.Address[8:])
 	return account.Address.Hex(), nil
 }
+
 //4.根据私钥获取地址
-func GetAddressFromPrivate(privKey string, cryType uint)(string, error){
+func GetAddressFromPrivate(privKey string, cryType uint) (string, error) {
 	var cryptoType crypto.CryptoType
 	switch cryType {
 	case 0:
@@ -124,8 +126,8 @@ func GetAddressFromPrivate(privKey string, cryType uint)(string, error){
 	default:
 		cryptoType = crypto.SM2
 	}
-	privateKey,err := crypto.HexToECDSA(privKey, cryptoType)
-	if err != nil{
+	privateKey, err := crypto.HexToECDSA(privKey, cryptoType)
+	if err != nil {
 		return "", err
 	}
 	//转换成地址

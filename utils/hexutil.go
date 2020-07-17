@@ -34,38 +34,36 @@ func (util *Utils) RandomHex(size int) string {
 	for i := 0; i < size*2; i++ {
 		result = append(result, bytes[r.Intn(len(bytes))])
 	}
-	return "0x"+string(result)
+	return "0x" + string(result)
 }
 
-
 // convert hex string to byte
-func (util *Utils) HexToBytes(input string) ([]byte, error){
+func (util *Utils) HexToBytes(input string) ([]byte, error) {
 	return hexutil.Decode(input)
 }
 
 // convert hex string to utf8 string
-func (util *Utils) HexToUtf8(input string) (string, error){
+func (util *Utils) HexToUtf8(input string) (string, error) {
 	res, err := hexutil.Decode(input)
-	if err != nil{
+	if err != nil {
 		return "", err
-	}else {
+	} else {
 		return string(res), nil
 	}
 }
 
 // convert hex string to ascii string
-func (util *Utils) HexToAscii(input string) (string, error){
+func (util *Utils) HexToAscii(input string) (string, error) {
 	res, err := hexutil.Decode(input)
-	if err != nil{
+	if err != nil {
 		return "", err
-	}else {
+	} else {
 		return string(res), nil
 	}
 }
 
-
 // convert hex string to number string
-func (util *Utils) HexToNumberString(input string) (string, error){
+func (util *Utils) HexToNumberString(input string) (string, error) {
 	if len(input) == 0 {
 		return "", hexutil.ErrEmptyString
 	}
@@ -83,21 +81,21 @@ func (util *Utils) HexToNumberString(input string) (string, error){
 
 // 将HexToNumber 变成两个， HexToUint64Number， HexToBigNumber
 // convert hex string to uint64
-func (util *Utils) HexToUint64Number(input string) (uint64, error){
+func (util *Utils) HexToUint64Number(input string) (uint64, error) {
 	return hexutil.DecodeUint64(input)
 }
 
 // convert hex string to big.Int
-func (util *Utils) HexToBigNumber(input string) (*big.Int, error){
+func (util *Utils) HexToBigNumber(input string) (*big.Int, error) {
 	return hexutil.DecodeBig(input)
 }
 
 //convert ascii string to hex string
-func (util *Utils) AsciiToHex(input string) string{
-	return "0x"+hex.EncodeToString([]byte(input))
+func (util *Utils) AsciiToHex(input string) string {
+	return "0x" + hex.EncodeToString([]byte(input))
 }
 
 //convert utf8 string to hex string
-func (util *Utils) Utf8ToHex(input string) string{
-	return "0x"+hex.EncodeToString([]byte(input))
+func (util *Utils) Utf8ToHex(input string) string {
+	return "0x" + hex.EncodeToString([]byte(input))
 }

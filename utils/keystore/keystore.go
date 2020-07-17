@@ -36,7 +36,7 @@ const KeyStoreScheme = "keystore"
 
 // KeyStore manages a key storage directory on disk.
 type KeyStore struct {
-	storage  keyStore                     // Storage backend, might be cleartext or encrypted
+	storage keyStore // Storage backend, might be cleartext or encrypted
 }
 
 // zeroKey zeroes a private key in memory.
