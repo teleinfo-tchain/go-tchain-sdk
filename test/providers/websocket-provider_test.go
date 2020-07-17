@@ -12,12 +12,6 @@
    along with go-bif.  If not, see <http://www.gnu.org/licenses/>.
 *********************************************************************************/
 
-/**
- * @file websocket-provider_test.go
- * @authors:
- *   Reginaldo Costa <regcostajr@gmail.com>
- * @date 2018
- */
 package test
 
 import (
@@ -33,15 +27,18 @@ func Test_WebSocketProvider(t *testing.T) {
 
 	for index := 0; index < 100; index++ {
 
-		var _, error = ethClient.ClientVersion()
+		var _, err = ethClient.ClientVersion()
 
-		if error != nil {
-			t.Error(error)
+		if err != nil {
+			t.Error(err)
 			t.Fail()
 		}
 
 	}
 
-	ethClient.Provider.Close()
-
+	err := ethClient.Provider.Close()
+	if err != nil {
+		t.Error(err)
+		t.Fail()
+	}
 }
