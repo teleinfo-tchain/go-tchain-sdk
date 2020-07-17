@@ -31,17 +31,17 @@ type Txdata struct {
 	Hash *common.Hash `json:"hash" rlp:"-"`
 }
 
-func (tx *Txdata) PreCheck() bool{
-	if tx.Sender == nil{
+func (tx *Txdata) PreCheck() bool {
+	if tx.Sender == nil {
 		return false
 	}
-	if tx.Recipient == nil{
+	if tx.Recipient == nil {
 		return false
 	}
-	if tx.Price == nil{
+	if tx.Price == nil {
 		return false
 	}
-	if tx.GasLimit == 0{
+	if tx.GasLimit == 0 {
 		return false
 	}
 	return true
@@ -138,10 +138,10 @@ func signTx(tx *Txdata, s BIFSigner, prv *ecdsa.PrivateKey) (*Txdata, error) {
 }
 
 //使用自定义的密钥对交易进行签名
-func SignTransactionWithKey(transaction *Txdata, privKey string, cryType uint, chainId int64)(string, error){
+func SignTransactionWithKey(transaction *Txdata, privKey string, cryType uint, chainId int64) (string, error) {
 	//1. 检查交易数据
 	ret := transaction.PreCheck()
-	if !ret{
+	if !ret {
 		return "", errors.New("parameters error")
 	}
 	//2. 转换私钥
@@ -154,8 +154,8 @@ func SignTransactionWithKey(transaction *Txdata, privKey string, cryType uint, c
 	default:
 		cryptoType = crypto.SM2
 	}
-	privateKey,err := crypto.HexToECDSA(privKey, cryptoType)
-	if err != nil{
+	privateKey, err := crypto.HexToECDSA(privKey, cryptoType)
+	if err != nil {
 		return "", err
 	}
 	//3. 新建Signer
@@ -166,11 +166,11 @@ func SignTransactionWithKey(transaction *Txdata, privKey string, cryType uint, c
 	}
 
 	tx, err := signTx(transaction, *signer, privateKey)
-	if err != nil{
+	if err != nil {
 		return "", err
 	}
 	signTx, err := rlp.EncodeToBytes(tx)
-	if err != nil{
+	if err != nil {
 		return "", err
 	}
 	return common.ToHex(signTx), nil
