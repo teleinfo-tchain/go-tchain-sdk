@@ -3,6 +3,7 @@ package dto
 import (
 	"encoding/json"
 	"github.com/bif/bif-sdk-go/common"
+	"github.com/bif/bif-sdk-go/common/hexutil"
 	customerror "github.com/bif/bif-sdk-go/constants"
 	"math/big"
 )
@@ -31,7 +32,7 @@ func (pointer *RequestResult) ToPeerPeriod() (uint64, error) {
 
 	result := (pointer).Result.(interface{})
 
-	return result.(uint64), nil
+	return uint64(result.(hexutil.Uint64)), nil
 }
 
 func (pointer *RequestResult) ToPeerActive() (bool, error) {
@@ -121,7 +122,7 @@ func (pointer *RequestResult) ToTrustAnchorStatus() (uint64, error) {
 
 	result := (pointer).Result.(interface{})
 
-	return result.(uint64), nil
+	return uint64(result.(hexutil.Uint64)), nil
 }
 
 func (pointer *RequestResult) ToTrustAnchorCertificateList() ([]string, error) {
@@ -161,7 +162,7 @@ func (pointer *RequestResult) ToBaseTrustAnchorNumber() (uint64, error) {
 
 	result := (pointer).Result.(interface{})
 
-	return result.(uint64), nil
+	return uint64(result.(hexutil.Uint64)), nil
 }
 
 func (pointer *RequestResult) ToExpendTrustAnchor() ([]string, error) {
@@ -186,7 +187,7 @@ func (pointer *RequestResult) ToExpendTrustAnchorNumber() (uint64, error) {
 
 	result := (pointer).Result.(interface{})
 
-	return result.(uint64), nil
+	return uint64(result.(hexutil.Uint64)), nil
 }
 
 // 解析测试注意！！！
@@ -220,7 +221,7 @@ func (pointer *RequestResult) ToCertificatePeriod() (uint64, error) {
 
 	result := (pointer).Result.(interface{})
 
-	return result.(uint64), nil
+	return uint64(result.(hexutil.Uint64)), nil
 }
 
 func (pointer *RequestResult) ToCertificateActive() (bool, error) {
