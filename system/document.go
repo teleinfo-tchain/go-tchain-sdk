@@ -99,10 +99,9 @@ func (doc *Doc) SetBidName(from common.Address, bidName string) (string, error) 
 
  Returns： *dto.Document
 */
-func (doc *Doc) GetDocument(key uint64, value string) (*dto.Document, error) {
-	params := make([]interface{}, 2)
-	params[0] = key
-	params[1] = value
+func (doc *Doc) GetDocument(id string) (*dto.Document, error) {
+	params := make([]interface{}, 1)
+	params[0] = id
 
 	pointer := &dto.RequestResult{}
 
@@ -252,10 +251,9 @@ func (doc *Doc) Disable(from common.Address) (string, error) {
 
  Returns： bool, true可用，false不可用
 */
-func (doc *Doc) IsEnable(key uint64, value string) (bool, error) {
-	params := make([]interface{}, 2)
-	params[0] = key
-	params[1] = value
+func (doc *Doc) IsEnable(id string) (bool, error) {
+	params := make([]interface{}, 1)
+	params[0] = id
 
 	pointer := &dto.RequestResult{}
 
