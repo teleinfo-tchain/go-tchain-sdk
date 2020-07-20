@@ -66,6 +66,7 @@ type RegisterCertificateInfo struct {
 type PeerCertificate struct {
 	Id          string   `json:"id"`          //唯一索引
 	Issuer      string   `json:"issuer"`      //颁发者地址
+	Apply       string   `json:"apply"`       //申请人bid
 	PublicKey   string   `json:"publicKey"`   //节点公钥
 	NodeName    string   `json:"nodeName"`    //节点名称
 	Signature   string   `json:"signature"`   //节点签名内容
