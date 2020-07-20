@@ -56,7 +56,7 @@ func TestGetDocument(t *testing.T) {
 
 	doc := connection.System.NewDoc()
 
-	document, err := doc.GetDocument(0, "testTele")
+	document, err := doc.GetDocument("1")
 	if err != nil {
 		t.Error(err)
 		t.FailNow()
@@ -227,7 +227,7 @@ func TestIsEnable(t *testing.T) {
 
 	doc := connection.System.NewDoc()
 
-	isEnable, err := doc.IsEnable(1, "test")
+	isEnable, err := doc.IsEnable("1")
 	if err != nil {
 		t.Error(err)
 		t.FailNow()

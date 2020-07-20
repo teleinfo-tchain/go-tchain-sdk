@@ -221,7 +221,7 @@ func BenchmarkGenSharedKeyP256(b *testing.B) {
 
 // Benchmark the generation of S256 shared keys.
 func BenchmarkGenSharedKeyS256(b *testing.B) {
-	prv, err := GenerateKey(rand.Reader, crypto.S256(), nil)
+	prv, err := GenerateKey(rand.Reader, crypto.S256(crypto.SECP256K1), nil)
 	if err != nil {
 		fmt.Println(err.Error())
 		b.FailNow()
@@ -472,7 +472,7 @@ func TestSharedKeyStatic(t *testing.T) {
 }
 
 func hexKey(prv string) *PrivateKey {
-	key, err := crypto.HexToECDSA(prv)
+	key, err := crypto.HexToECDSA(prv, crypto.SECP256K1)
 	if err != nil {
 		panic(err)
 	}
