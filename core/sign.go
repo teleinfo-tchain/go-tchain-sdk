@@ -145,6 +145,18 @@ func (tx *Txdata) PreCheck() (bool, error) {
 	return true, nil
 }
 
+/*
+SignTransaction: 使用地址私钥给指定的交易签名，返回签名结果
+
+Params:
+	- transaction: *Txdata 指定的交易信息
+	- privKey: string, 私钥（transaction中的from地址对应的私钥）
+	- chainId: int64, 链的ChainId
+
+Returns:
+	- *SignTransactionResult
+	- error
+*/
 func SignTransaction(transaction *Txdata, privKey string, chainId int64) (*SignTransactionResult, error) {
 	// 1 check input
 	ret, err := transaction.PreCheck()

@@ -51,7 +51,7 @@ func Keccak256HashSm2(data ...[]byte) (h common.Hash) {
 func toECDSASm2(d []byte, strict bool) (*ecdsa.PrivateKey, error) {
 	privateKey, err := sm2.GenerateKeyBySeed(d, true)
 	if err != nil {
-		//fmt.Printf("国密版公私钥创建错误，请重新创建，错误：%s", err)
+		//fmt.Printf("国密版公私钥创建错误，请重新创建，错误: %s", err)
 		return nil, err
 	}
 	return &ecdsa.PrivateKey{
@@ -88,7 +88,7 @@ func FromECDSAPubSm2(pub *ecdsa.PublicKey) []byte {
 func GenerateKeySm2() (*ecdsa.PrivateKey, error) {
 	privateKey, err := sm2.GenerateKey()
 	if err != nil {
-		//fmt.Printf("国密版公私钥创建错误，请重新创建，错误：%s", err)
+		//fmt.Printf("国密版公私钥创建错误，请重新创建，错误: %s", err)
 		return nil, err
 	}
 	return &ecdsa.PrivateKey{

@@ -60,7 +60,7 @@ func GenerateKeyStore(keydir string, cryType uint, password string, UseLightweig
 func GetPrivateKeyFromFile(addrParse string, privateKeyFile, password string) (string, string, error) {
 	keyjson, err := ioutil.ReadFile(privateKeyFile)
 	if err != nil {
-		fmt.Println("read keyjson file failed：", err)
+		fmt.Println("read keyjson file failed: ", err)
 		return "", "", err
 	}
 	var key *keystore.Key

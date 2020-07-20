@@ -58,7 +58,7 @@ func (sys *System) structToInterface(convert interface{}, values []interface{}) 
 /*
 	sendTransaction - 如果数据字段包含代码，则创建新的消息调用交易或合约创建。
 
-	return：
+	return:
 		transactionHash，32 Bytes - 交易哈希，如果交易尚不可用，则为零哈希。
 		(将交易哈希出传入GetTransactionReceipt可获取交易信息。)
 */

@@ -61,13 +61,17 @@ func (sys *System) NewDoc() *Doc {
 }
 
 /*
- InitializationDDO: did文档初始化
+InitializationDDO: did文档初始化
 
- Params：bidType类型，包括0：普通用户,1:智能合约以及设备，2：企业或者组织，BID类型一经设置，永不能变
+Params:
+	- from: [20]byte，交易发送方地址
+	- bidType: uint64，0: 普通用户,1:智能合约以及设备，2: 企业或者组织，BID类型一经设置，永不能变
 
- Returns： transactionHash，32 Bytes - 交易哈希，如果交易尚不可用，则为零哈希。
+Returns:
+	- string, 交易哈希(transactionHash)，如果交易尚不可用，则为零哈希。
+	- error
 
- Call permissions: ？？
+Call permissions: ？？
 */
 func (doc *Doc) InitializationDDO(from common.Address, bidType uint64) (string, error) {
 	// encoding
@@ -79,11 +83,17 @@ func (doc *Doc) InitializationDDO(from common.Address, bidType uint64) (string, 
 }
 
 /*
- SetBidName: 设置bid标识符昵称(bidName)
+SetBidName: 设置bid标识符昵称(bidName)
 
- Returns： transactionHash，32 Bytes - 交易哈希，如果交易尚不可用，则为零哈希。
+Params:
+	- from: [20]byte，交易发送方地址
+	- bidName: string
 
- Call permissions: ？？
+Returns:
+	- string, 交易哈希(transactionHash)，如果交易尚不可用，则为零哈希。
+	- error
+
+Call permissions: ？？
 */
 func (doc *Doc) SetBidName(from common.Address, bidName string) (string, error) {
 	//encoding
@@ -95,9 +105,26 @@ func (doc *Doc) SetBidName(from common.Address, bidName string) (string, error) 
 }
 
 /*
- GetDocument: 查询did文档内容
+GetDocument: 查询文档的信息
 
- Returns： *dto.Document
+Params:
+	- id: string，文档的bid或文档设置的名字
+
+Returns:
+	- *dto.Document
+		Id              common.Address `json:"id"`              //bid
+		Contexts        []byte         `json:"context"`
+		Name            []byte         `json:"name"`            //bid标识符昵称
+		Type            []byte         `json:"type"`            //bid的类型，包括0: 普通用户,1:智能合约以及设备，2: 企业或者组织，BID类型一经设置，永不能变
+		PublicKeys      []byte         `json:"publicKeys"`      //用户用于身份认证的公钥信息
+		Authentications []byte         `json:"authentications"` //用户身份认证列表信息
+		Attributes      []byte         `json:"attributes"`      //用户填写的个人信息值
+		IsEnable        []byte         `json:"is_enable"`       //该BID是否启用
+		CreateTime      time.Time      `json:"createTime"`
+		UpdateTime      time.Time      `json:"updateTime"`
+	- error
+
+Call permissions: Anyone
 */
 func (doc *Doc) GetDocument(id string) (*dto.Document, error) {
 	params := make([]interface{}, 1)
@@ -116,12 +143,15 @@ func (doc *Doc) GetDocument(id string) (*dto.Document, error) {
 /*
 AddPublicKey: 增加用户did身份认证
 
-	Params：
-	- addType： bid的类型，包括0：普通用户,1:智能合约以及设备，2：企业或者组织？？？ 和初始化的是否类似？能否变更
-	- authority：？？
-	- publicKey：
+Params:
+	- from: [20]byte，交易发送方地址
+	- addType: string,bid的类型，包括0: 普通用户,1:智能合约以及设备，2: 企业或者组织？？？ 和初始化的是否类似？能否变更
+	- authority: string,？？
+	- publicKey: string,
 
-Returns： transactionHash，32 Bytes - 交易哈希，如果交易尚不可用，则为零哈希。
+Returns:
+	- string, transactionHash，32 Bytes，交易哈希，如果交易尚不可用，则为零哈希
+	- error
 
 Call permissions: ？？
 */
@@ -135,11 +165,17 @@ func (doc *Doc) AddPublicKey(from common.Address, addType string, authority stri
 }
 
 /*
- DeletePublicKey: 删除用户did身份认证
+DeletePublicKey: 删除用户did身份认证
 
- Returns： transactionHash，32 Bytes - 交易哈希，如果交易尚不可用，则为零哈希。
+Params:
+	- from: [20]byte，交易发送方地址
+	- publicKey: string, ??
 
- Call permissions: ？？
+Returns:
+	- string, transactionHash，32 Bytes，交易哈希，如果交易尚不可用，则为零哈希
+	- error
+
+Call permissions: ？？
 */
 func (doc *Doc) DeletePublicKey(from common.Address, publicKey string) (string, error) {
 	//encoding
@@ -151,11 +187,18 @@ func (doc *Doc) DeletePublicKey(from common.Address, publicKey string) (string, 
 }
 
 /*
- AddProof: 增加证明
+AddProof: 增加证明
 
- Returns： transactionHash，32 Bytes - 交易哈希，如果交易尚不可用，则为零哈希。
+Params:
+	- from: [20]byte，交易发送方地址
+	- issuer: string, ??
+	- proofID: string, ??
 
- Call permissions: ？？
+Returns:
+	- string, transactionHash，32 Bytes，交易哈希，如果交易尚不可用，则为零哈希
+	- error
+
+Call permissions: ？？
 */
 func (doc *Doc) AddProof(from common.Address, issuer string, proofID string) (string, error) {
 	//encoding
@@ -167,11 +210,17 @@ func (doc *Doc) AddProof(from common.Address, issuer string, proofID string) (st
 }
 
 /*
- DeleteProof: 删除证明
+DeleteProof: 删除证明
 
- Returns： transactionHash，32 Bytes - 交易哈希，如果交易尚不可用，则为零哈希。
+Params:
+	- from: [20]byte，交易发送方地址
+	- proofID: string, ??
 
- Call permissions: ？？
+Returns:
+	- string, transactionHash，32 Bytes，交易哈希，如果交易尚不可用，则为零哈希
+	- error
+
+Call permissions: ？？
 */
 func (doc *Doc) DeleteProof(from common.Address, proofID string) (string, error) {
 	//encoding
@@ -183,15 +232,22 @@ func (doc *Doc) DeleteProof(from common.Address, proofID string) (string, error)
 }
 
 /*
- AddAttribute: 添加用户的基本信息
+AddAttribute: 添加用户的基本信息
 
- Returns： transactionHash，32 Bytes - 交易哈希，如果交易尚不可用，则为零哈希。
+Params:
+	- from: [20]byte，交易发送方地址
+	- attrType: string, ??
+	- value: string, ??
 
- Call permissions: ？？
+Returns:
+	- string, transactionHash，32 Bytes，交易哈希，如果交易尚不可用，则为零哈希
+	- error
+
+Call permissions: ？？
 */
-func (doc *Doc) AddAttribute(from common.Address, AttrType string, value string) (string, error) {
+func (doc *Doc) AddAttribute(from common.Address, attrType string, value string) (string, error) {
 	//encoding
-	inputEncode, _ := doc.abi.Pack("AddAttr", AttrType, value)
+	inputEncode, _ := doc.abi.Pack("AddAttr", attrType, value)
 
 	transaction := doc.super.prePareTransaction(from, DocContractAddr, types.ComplexString(hexutil.Encode(inputEncode)))
 
@@ -199,11 +255,18 @@ func (doc *Doc) AddAttribute(from common.Address, AttrType string, value string)
 }
 
 /*
- DeleteAttribute: 删除用户的基本信息
+DeleteAttribute: 删除用户的基本信息
 
- Returns： transactionHash，32 Bytes - 交易哈希，如果交易尚不可用，则为零哈希。
+Params:
+	- from: [20]byte，交易发送方地址
+	- addType: string, ??
+	- value: string, ??
 
- Call permissions: ？？
+Returns:
+	- string, transactionHash，32 Bytes，交易哈希，如果交易尚不可用，则为零哈希
+	- error
+
+Call permissions: ？？
 */
 func (doc *Doc) DeleteAttribute(from common.Address, addType string, value string) (string, error) {
 	//encoding
@@ -215,11 +278,16 @@ func (doc *Doc) DeleteAttribute(from common.Address, addType string, value strin
 }
 
 /*
- Enable: 使用户的Did身份可用
+Enable: 使用户的Did身份可用
 
- Returns： transactionHash，32 Bytes - 交易哈希，如果交易尚不可用，则为零哈希。
+Params:
+	- from: [20]byte，交易发送方地址
 
- Call permissions: ？？
+Returns:
+	- string, transactionHash，32 Bytes，交易哈希，如果交易尚不可用，则为零哈希
+	- error
+
+Call permissions: ？？
 */
 func (doc *Doc) Enable(from common.Address) (string, error) {
 	//encoding
@@ -231,11 +299,16 @@ func (doc *Doc) Enable(from common.Address) (string, error) {
 }
 
 /*
- Disable: 使用户的Did身份不可用
+Disable: 使用户的Did身份不可用
 
- Returns： transactionHash，32 Bytes - 交易哈希，如果交易尚不可用，则为零哈希。
+Params:
+	- from: [20]byte，交易发送方地址
 
- Call permissions: ？？
+Returns:
+	- string, transactionHash，32 Bytes，交易哈希，如果交易尚不可用，则为零哈希
+	- error
+
+Call permissions: ？？
 */
 func (doc *Doc) Disable(from common.Address) (string, error) {
 	//encoding
@@ -247,9 +320,16 @@ func (doc *Doc) Disable(from common.Address) (string, error) {
 }
 
 /*
- IsEnable: 查询did文档是否可用
+IsEnable: 查询文档是否可用
 
- Returns： bool, true可用，false不可用
+Params:
+	- id: string，文档的bid或文档设置的名字
+
+Returns:
+	- bool, true可用，false不可用
+	- error
+
+Call permissions: Anyone
 */
 func (doc *Doc) IsEnable(id string) (bool, error) {
 	params := make([]interface{}, 1)

@@ -81,7 +81,7 @@ func TestUnRegisterTrustAnchor(t *testing.T) {
 	}
 	anchor := connection.System.NewTrustAnchor()
 
-	transactionHash, err := anchor.UnRegisterTrustAnchor(common.StringToAddress(coinBase), coinBase)
+	transactionHash, err := anchor.UnRegisterTrustAnchor(common.StringToAddress(coinBase))
 	if err != nil {
 		t.Error(err)
 		t.FailNow()

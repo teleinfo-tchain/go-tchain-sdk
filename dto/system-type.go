@@ -197,7 +197,7 @@ type Document struct {
 	Id              common.Address `json:"id"` //bid
 	Contexts        []byte         `json:"context"`
 	Name            []byte         `json:"name"`            //bid标识符昵称
-	Type            []byte         `json:"type"`            // bid的类型，包括0：普通用户,1:智能合约以及设备，2：企业或者组织，BID类型一经设置，永不能变
+	Type            []byte         `json:"type"`            // bid的类型，包括0: 普通用户,1:智能合约以及设备，2: 企业或者组织，BID类型一经设置，永不能变
 	PublicKeys      []byte         `json:"publicKeys"`      //用户用于身份认证的公钥信息
 	Authentications []byte         `json:"authentications"` //用户身份认证列表信息
 	Attributes      []byte         `json:"attributes"`      //用户填写的个人信息值

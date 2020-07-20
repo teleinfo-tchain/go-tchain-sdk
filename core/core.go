@@ -417,20 +417,23 @@ func (core *Core) GetTransactionByBlockNumberAndIndex(blockIndex *big.Int, index
 
 }
 
-// SendTransaction - Creates new message call transaction or a contract creation, if the data field contains code.
-// Reference: https://github.com/ethereum/wiki/wiki/JSON-RPC#core_sendtransaction
-// Parameters:
-//    1. Object - The transaction object
-//    - from: 		DATA, 20 Bytes - The address the transaction is send from.
-//    - to: 		DATA, 20 Bytes - (optional when creating new contract) The address the transaction is directed to.
-//    - gas: 		QUANTITY - (optional, default: 90000) Integer of the gas provided for the transaction execution. It will return unused gas.
-//    - gasPrice: 	QUANTITY - (optional, default: To-Be-Determined) Integer of the gasPrice used for each paid gas
-//    - value: 		QUANTITY - (optional) Integer of the value send with this transaction
-//    - data: 		DATA - The compiled code of a contract OR the hash of the invoked method signature and encoded parameters. For details see Ethereum Contract ABI (https://github.com/ethereum/wiki/wiki/Ethereum-Contract-ABI)
-//    - nonce: 		QUANTITY - (optional) Integer of a nonce. This allows to overwrite your own pending transactions that use the same nonce.
-// Returns:
-//	  - DATA, 32 Bytes - the transaction hash, or the zero hash if the transaction is not yet available.
-// Use core_getTransactionReceipt to get the contract address, after the transaction was mined, when you created a contract.
+/*
+SendTransaction: 发送交易
+
+Params:
+	- transaction: 要发送的交易对象(*dto.TransactionParameters)
+		from: string，20 Bytes - 指定的发送者的地址。
+		to: string，20 Bytes - （可选）交易消息的目标地址，如果是合约创建，则不填.
+		gas: *big.Int - （可选）默认是自动，交易可使用的gas，未使用的gas会退回。
+		gasPrice: *big.Int - （可选）默认是自动确定，交易的gas价格，默认是网络gas价格的平均值 。
+		data: string - （可选）或者包含相关数据的字节字符串，如果是合约创建，则是初始化要用到的代码。
+		value: *big.Int - （可选）交易携带的货币量，以bifer为单位。如果合约创建交易，则为初始的基金
+		nonce: *big.Int - （可选）整数，使用此值，可以允许你覆盖你自己的相同nonce的，正在pending中的交易
+
+Returns:
+	- string, transactionHash，32 Bytes，交易哈希，如果交易尚不可用，则为零哈希
+	- error
+*/
 func (core *Core) SendTransaction(transaction *dto.TransactionParameters) (string, error) {
 
 	params := make([]*dto.RequestTransactionParameters, 1)
@@ -448,7 +451,16 @@ func (core *Core) SendTransaction(transaction *dto.TransactionParameters) (strin
 
 }
 
-// encodedTx, The signed transaction data
+/*
+SendRawTransaction: 发送已签名的交易
+
+Params:
+	- encodedTx: strng, 已签名的交易数据
+
+Returns:
+	- string, transactionHash，32 Bytes，交易哈希，如果交易尚不可用，则为零哈希
+	- error
+*/
 func (core *Core) SendRawTransaction(encodedTx string) (string, error) {
 
 	params := make([]string, 1)

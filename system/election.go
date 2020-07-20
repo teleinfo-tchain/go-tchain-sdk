@@ -77,11 +77,20 @@ func (sys *System) NewElection() *Election {
 }
 
 /*
- RegisterWitness: 注册成为见证人
+RegisterWitness: 注册成为见证人
 
- Returns： transactionHash，32 Bytes - 交易哈希，如果交易尚不可用，则为零哈希。
+Params:
+	- from: [20]byte，交易发送方地址
+	- witness: *dto.RegisterWitness，注册的见证人信息
+		NodeUrl string
+		Website string
+		Name    string
 
- Call permissions: ？？？
+Returns:
+	- string, 交易哈希(transactionHash)，如果交易尚不可用，则为零哈希。
+	- error
+
+Call permissions: ？？？
 */
 func (e *Election) RegisterWitness(from common.Address, witness *dto.RegisterWitness) (string, error) {
 	//encode
@@ -98,11 +107,16 @@ func (e *Election) RegisterWitness(from common.Address, witness *dto.RegisterWit
 }
 
 /*
- UnRegisterWitness: 取消成为见证人
+UnRegisterWitness: 取消成为见证人
 
- Returns： transactionHash，32 Bytes - 交易哈希，如果交易尚不可用，则为零哈希。
+Params:
+	- from: [20]byte，交易发送方地址
 
- Call permissions: ？？？
+Returns:
+	- string, 交易哈希(transactionHash)，如果交易尚不可用，则为零哈希。
+	- error
+
+Call permissions: 只能自己取消自己
 */
 func (e *Election) UnRegisterWitness(from common.Address) (string, error) {
 	// encoding
@@ -113,9 +127,25 @@ func (e *Election) UnRegisterWitness(from common.Address) (string, error) {
 }
 
 /*
- GetCandidate: 查询候选人
+GetCandidate: 查询候选人
 
- Returns：*dto.Candidate
+Params:
+	- candidateAddress: string，候选人的地址
+
+Returns:
+	- *dto.Candidate
+		Owner           string       `json:"owner"`           // 候选人地址
+		Name            string       `json:"name"`            // 候选人名称
+		Active          bool         `json:"active"`          // 当前是否是候选人
+		Url             string       `json:"url"`             // 节点的URL
+		VoteCount       *hexutil.Big `json:"voteCount"`       // 收到的票数
+		TotalBounty     *hexutil.Big `json:"totalBounty"`     // 总奖励金额
+		ExtractedBounty *hexutil.Big `json:"extractedBounty"` // 已提取奖励金额
+		LastExtractTime *hexutil.Big `json:"lastExtractTime"` // 上次提权时间
+		Website         string       `json:"website"`         // 见证人网站
+	- error
+
+Call permissions: Anyone
 */
 func (e *Election) GetCandidate(candidateAddress string) (*dto.Candidate, error) {
 	params := make([]string, 1)
@@ -132,9 +162,16 @@ func (e *Election) GetCandidate(candidateAddress string) (*dto.Candidate, error)
 }
 
 /*
- GetAllCandidates: 查询所有候选人
+GetAllCandidates: 查询所有候选人
 
- Returns：[]dto.Candidate，列表内为候选人
+Params:
+	- None
+
+Returns:
+	- []dto.Candidate，列表内为候选人信息，参考GetCandidate的候选人信息
+	- error
+
+Call permissions: Anyone
 */
 func (e *Election) GetAllCandidates() ([]dto.Candidate, error) {
 	pointer := &dto.RequestResult{}
@@ -148,11 +185,17 @@ func (e *Election) GetAllCandidates() ([]dto.Candidate, error) {
 }
 
 /*
- VoteWitnesses: 给见证人投票
+VoteWitnesses: 给见证人投票
 
- Returns： transactionHash，32 Bytes - 交易哈希，如果交易尚不可用，则为零哈希。
+Params:
+	- from: [20]byte，交易发送方地址
+	- candidate: string，候选人的地址
 
- Call permissions: ？？？
+Returns:
+	- string, 交易哈希(transactionHash)，如果交易尚不可用，则为零哈希。
+	- error
+
+Call permissions: ？？？
 */
 func (e *Election) VoteWitnesses(from common.Address, candidate string) (string, error) {
 	// encoding
@@ -164,11 +207,16 @@ func (e *Election) VoteWitnesses(from common.Address, candidate string) (string,
 }
 
 /*
- CancelVote: 撤销投票？？还是说是投反对票？？
+CancelVote: 撤销投票？？还是说是投反对票？？
 
- Returns： transactionHash，32 Bytes - 交易哈希，如果交易尚不可用，则为零哈希。
+Params:
+	- from: [20]byte，交易发送方地址
 
- Call permissions: ？？？
+Returns:
+	- string, 交易哈希(transactionHash)，如果交易尚不可用，则为零哈希。
+	- error
+
+Call permissions: ？？？
 */
 func (e *Election) CancelVote(from common.Address) (string, error) {
 	// encoding
@@ -180,11 +228,16 @@ func (e *Election) CancelVote(from common.Address) (string, error) {
 }
 
 /*
- StartProxy: 开启代理
+StartProxy: 开启代理
 
- Returns： transactionHash，32 Bytes - 交易哈希，如果交易尚不可用，则为零哈希。
+Params:
+	- from: [20]byte，交易发送方地址
 
- Call permissions: ？？？
+Returns:
+	- string, 交易哈希(transactionHash)，如果交易尚不可用，则为零哈希。
+	- error
+
+Call permissions: ？？？
 */
 func (e *Election) StartProxy(from common.Address) (string, error) {
 	// encoding
@@ -196,11 +249,16 @@ func (e *Election) StartProxy(from common.Address) (string, error) {
 }
 
 /*
- StopProxy: 关闭代理
+StopProxy: 关闭代理
 
- Returns： transactionHash，32 Bytes - 交易哈希，如果交易尚不可用，则为零哈希。
+Params:
+	- from: [20]byte，交易发送方地址
 
- Call permissions: ？？？
+Returns:
+	- string, 交易哈希(transactionHash)，如果交易尚不可用，则为零哈希。
+	- error
+
+Call permissions: ？？？
 */
 func (e *Election) StopProxy(from common.Address) (string, error) {
 	// encoding
@@ -212,11 +270,16 @@ func (e *Election) StopProxy(from common.Address) (string, error) {
 }
 
 /*
- CancelProxy: 取消代理
+CancelProxy: 取消代理
 
- Returns： transactionHash，32 Bytes - 交易哈希，如果交易尚不可用，则为零哈希。
+Params:
+	- from: [20]byte，交易发送方地址
 
- Call permissions: ？？？
+Returns:
+	- string, 交易哈希(transactionHash)，如果交易尚不可用，则为零哈希。
+	- error
+
+Call permissions: ？？？
 */
 func (e *Election) CancelProxy(from common.Address) (string, error) {
 	// encoding
@@ -228,11 +291,17 @@ func (e *Election) CancelProxy(from common.Address) (string, error) {
 }
 
 /*
- SetProxy: 设置代理
+SetProxy: 设置代理
 
- Returns： transactionHash，32 Bytes - 交易哈希，如果交易尚不可用，则为零哈希。
+Params:
+	- from: [20]byte，交易发送方地址
+	- proxy: string，???
 
- Call permissions: ？？？
+Returns:
+	- string, 交易哈希(transactionHash)，如果交易尚不可用，则为零哈希。
+	- error
+
+Call permissions: ？？？
 */
 func (e *Election) SetProxy(from common.Address, proxy string) (string, error) {
 	// encoding
@@ -247,11 +316,17 @@ func (e *Election) SetProxy(from common.Address, proxy string) (string, error) {
 }
 
 /*
- Stake: 权益抵押
+Stake: 权益抵押
 
- Returns： transactionHash，32 Bytes - 交易哈希，如果交易尚不可用，则为零哈希。
+Params:
+	- from: [20]byte，交易发送方地址
+	- stakeCount: *big.Int，抵押的权益数量
 
- Call permissions: ？？？
+Returns:
+	- string, 交易哈希(transactionHash)，如果交易尚不可用，则为零哈希。
+	- error
+
+Call permissions: ？？？
 */
 func (e *Election) Stake(from common.Address, stakeCount *big.Int) (string, error) {
 	// encoding
@@ -266,11 +341,16 @@ func (e *Election) Stake(from common.Address, stakeCount *big.Int) (string, erro
 }
 
 /*
- UnStake: 撤销权益抵押
+UnStake: 撤销权益抵押
 
- Returns： transactionHash，32 Bytes - 交易哈希，如果交易尚不可用，则为零哈希。
+Params:
+	- from: [20]byte，交易发送方地址
 
- Call permissions: ？？？
+Returns:
+	- string, 交易哈希(transactionHash)，如果交易尚不可用，则为零哈希。
+	- error
+
+Call permissions: ？？？
 */
 func (e *Election) UnStake(from common.Address) (string, error) {
 	// encoding
@@ -282,9 +362,19 @@ func (e *Election) UnStake(from common.Address) (string, error) {
 }
 
 /*
- GetStake: 查询抵押权益
+GetStake: 查询抵押权益
 
- Returns：*dto.Stake
+Params:
+	- voterAddress: string，投票者的地址
+
+Returns:
+	- *dto.Stake
+		Owner              common.Address `json:"owner"`              // 抵押代币的所有人
+		StakeCount         *big.Int       `json:"stakeCount"`         // 抵押的代币数量
+		LastStakeTimeStamp *big.Int       `json:"lastStakeTimeStamp"` // 上次抵押时间戳
+	- error
+
+Call permissions: Anyone
 */
 func (e *Election) GetStake(voterAddress string) (*dto.Stake, error) {
 	params := make([]string, 1)
@@ -301,9 +391,16 @@ func (e *Election) GetStake(voterAddress string) (*dto.Stake, error) {
 }
 
 /*
- GetRestBIFBounty: 获取剩余的Bif总激励
+GetRestBIFBounty: 查询剩余的Bif总激励
 
- Returns：*big.Int
+Params:
+	- None
+
+Returns:
+	- *big.Int
+	- error
+
+Call permissions: Anyone
 */
 func (e *Election) GetRestBIFBounty() (*big.Int, error) {
 	pointer := &dto.RequestResult{}
@@ -318,11 +415,16 @@ func (e *Election) GetRestBIFBounty() (*big.Int, error) {
 }
 
 /*
- ExtractOwnBounty: 取出自身的赏金
+ExtractOwnBounty: 取出自身的赏金
 
- Returns： transactionHash，32 Bytes - 交易哈希，如果交易尚不可用，则为零哈希。
+Params:
+	- from: [20]byte，交易发送方地址
 
- Call permissions: ？？
+Returns:
+	- string, 交易哈希(transactionHash)，如果交易尚不可用，则为零哈希。
+	- error
+
+Call permissions: ？？
 */
 func (e *Election) ExtractOwnBounty(from common.Address) (string, error) {
 	// encoding
@@ -334,11 +436,16 @@ func (e *Election) ExtractOwnBounty(from common.Address) (string, error) {
 }
 
 /*
- IssueAdditionalBounty: ？？？？？？？？
+IssueAdditionalBounty: ？？？？？？？？
 
- Returns： transactionHash，32 Bytes - 交易哈希，如果交易尚不可用，则为零哈希。
+Params:
+	- from: [20]byte，交易发送方地址
 
- Call permissions: ？？
+Returns:
+	- string, 交易哈希(transactionHash)，如果交易尚不可用，则为零哈希。
+	- error
+
+Call permissions: ？？
 */
 func (e *Election) IssueAdditionalBounty(from common.Address) (string, error) {
 	// encoding
@@ -350,9 +457,23 @@ func (e *Election) IssueAdditionalBounty(from common.Address) (string, error) {
 }
 
 /*
- GetVoter: 查询投票人信息
+GetVoter: 查询投票人信息
 
- Returns：*dto.Voter
+Params:
+	- voterAddress: string，投票者的地址
+
+Returns:
+	- *dto.Voter
+		Owner             common.Address   `json:"owner"`             // 投票人的地址
+		IsProxy           bool             `json:"isProxy"`           // 是否是代理人
+		ProxyVoteCount    *big.Int         `json:"proxyVoteCount"`    // 收到的代理的票数
+		Proxy             common.Address   `json:"proxy"`             // 该节点设置的代理人
+		LastVoteCount     *big.Int         `json:"lastVoteCount"`     // 上次投的票数
+		LastVoteTimeStamp *big.Int         `json:"lastVoteTimeStamp"` // 上次投票时间戳
+		VoteCandidates    []common.Address `json:"voteCandidates"`    // 投了哪些人
+	- error
+
+Call permissions: Anyone
 */
 func (e *Election) GetVoter(voterAddress string) (*dto.Voter, error) {
 	params := make([]string, 1)
@@ -369,9 +490,16 @@ func (e *Election) GetVoter(voterAddress string) (*dto.Voter, error) {
 }
 
 /*
- GetVoterList: 查询所有投票人信息
+GetVoterList: 查询所有投票人信息
 
- Returns：[]string
+Params:
+	- voterAddress: string，投票者的地址
+
+Returns:
+	- []dto.Voter，投票人的详细信息，参考GetVoter
+	- error
+
+Call permissions: Anyone
 */
 func (e *Election) GetVoterList(voterAddress string) ([]dto.Voter, error) {
 	params := make([]string, 1)

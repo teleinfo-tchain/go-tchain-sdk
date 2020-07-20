@@ -44,7 +44,7 @@ const (
 // 信任锚的AbiJson数据
 const TrustAnchorAbiJSON = `[
 {"constant": false,"name":"registerTrustAnchor","inputs":[{"name":"anchor","type":"string"},{"name":"anchorType","type":"uint64"},{"name":"anchorName","type":"string"},{"name":"company","type":"string"},{"name":"companyUrl","type":"string"},{"name":"website","type":"string"},{"name":"documentUrl","type":"string"},{"name":"serverUrl","type":"string"},{"name":"email","type":"string"},{"name":"desc","type":"string"}],"outputs":[],"type":"function"},
-{"constant": false,"name":"unRegisterTrustAnchor","inputs":[{"name":"anchor","type":"string"}],"outputs":[],"type":"function"},
+{"constant": false,"name":"unRegisterTrustAnchor","inputs":[],"outputs":[],"type":"function"},
 {"constant": false,"name":"updateAnchorInfo","inputs":[{"name":"companyUrl","type":"string"},{"name":"website","type":"string"},{"name":"documentUrl","type":"string"},{"name":"serverUrl","type":"string"},{"name":"email","type":"string"},{"name":"desc","type":"string"}],"outputs":[],"type":"function"},
 {"constant": false,"name":"extractOwnBounty","inputs":[],"outputs":[],"type":"function"},
 {"anonymous":false,"inputs":[{"indexed":false,"name":"methodName","type":"string"},{"indexed":false,"name":"status","type":"uint32"},{"indexed":false,"name":"reason","type":"string"},{"indexed":false,"name":"time","type":"uint256"}],"name":"trustAnchorEvent","type":"event"},
@@ -69,11 +69,27 @@ func (sys *System) NewTrustAnchor() *Anchor {
 }
 
 /*
- RegisterTrustAnchor: 注册信任锚，刚刚注册的信任锚都是扩展信任锚，但是如果10类型的信任锚，经过超级节点投票，大于2/3的超级节点同意，可以变成根信任锚。根信任锚需要抵押1000积分，扩展信任锚需要抵押100积分。
+RegisterTrustAnchor: 注册信任锚，刚刚注册的信任锚都是扩展信任锚，但是如果10类型的信任锚，经过超级节点投票，大于2/3的超级节点同意，可以变成根信任锚。根信任锚需要抵押1000积分，扩展信任锚需要抵押100积分。
 
- Returns： transactionHash，32 Bytes - 交易哈希，如果交易尚不可用，则为零哈希。
+Params:
+	- from: [20]byte，交易发送方地址
+	- registerAnchor: *dto.RegisterAnchor，包含注册信任锚的信息
+		Anchor      string // 信任锚bid
+		AnchorType  uint64 // 信任锚的类型，10为根信任锚，11为扩展信任锚
+		AnchorName  string // 信任锚名称，不含敏感词的字符串
+		Company     string // 公司名
+		CompanyUrl  string // 公司网址
+		Website     string // 信任锚网址
+		DocumentUrl string // 信任锚接口字段文档
+		ServerUrl   string // 服务链接
+		Email       string // 邮箱地址 email没有做格式校验，在sdk中做？？
+		Desc        string // 描述
 
- Call permissions: 如果是注册根信任锚，必须是超级节点才可以注册
+Returns:
+	- string, 交易哈希(transactionHash)，如果交易尚不可用，则为零哈希。
+	- error
+
+Call permissions: 如果是注册根信任锚，必须是超级节点才可以注册
 */
 func (anc *Anchor) RegisterTrustAnchor(from common.Address, registerAnchor *dto.RegisterAnchor) (string, error) {
 	// encoding
@@ -91,15 +107,20 @@ func (anc *Anchor) RegisterTrustAnchor(from common.Address, registerAnchor *dto.
 }
 
 /*
- UnRegisterTrustAnchor: 注销自己的信任锚，自动退回抵押。但是，需要手动批量吊销自己颁发的证书，如果存在未吊销的证书，则抵押不退回。
+UnRegisterTrustAnchor: 注销自己的信任锚，自动退回抵押。但是，需要手动批量吊销自己颁发的证书，如果存在未吊销的证书，则抵押不退回。
 
- Returns： transactionHash，32 Bytes - 交易哈希，如果交易尚不可用，则为零哈希。
+Params:
+	- from: [20]byte，交易发送方地址
 
- Call permissions: 只能注销自己的信任锚
+Returns:
+	- string, 交易哈希(transactionHash)，如果交易尚不可用，则为零哈希。
+	- error
+
+Call permissions: 只能注销自己的信任锚
 */
-func (anc *Anchor) UnRegisterTrustAnchor(from common.Address, anchor string) (string, error) {
+func (anc *Anchor) UnRegisterTrustAnchor(from common.Address) (string, error) {
 	// encoding
-	inputEncode, err := anc.abi.Pack("unRegisterTrustAnchor", anchor)
+	inputEncode, err := anc.abi.Pack("unRegisterTrustAnchor")
 	if err != nil {
 		return "", err
 	}
@@ -110,13 +131,20 @@ func (anc *Anchor) UnRegisterTrustAnchor(from common.Address, anchor string) (st
 }
 
 /*
- IsBaseTrustAnchor: 查询bid地址是否为根信任锚
+IsBaseTrustAnchor: 查询bid地址是否为根信任锚
 
- Returns： bool，true为是根信任锚，false为不是根信任锚
+Params:
+	- anchor: string，信任锚bid
+
+Returns:
+	 - bool，true为是根信任锚，false为不是根信任锚
+	- error
+
+Call permissions: Anyone
 */
-func (anc *Anchor) IsBaseTrustAnchor(address string) (bool, error) {
+func (anc *Anchor) IsBaseTrustAnchor(anchor string) (bool, error) {
 	params := make([]string, 1)
-	params[0] = address
+	params[0] = anchor
 
 	pointer := &dto.RequestResult{}
 
@@ -129,13 +157,20 @@ func (anc *Anchor) IsBaseTrustAnchor(address string) (bool, error) {
 }
 
 /*
- IsTrustAnchor: 查询bid地址是否为信任锚
+IsTrustAnchor: 查询bid地址是否为信任锚
 
- Returns：  bool，true为是信任锚，false为不是信任锚
+Params:
+	- anchor: string，信任锚bid
+
+Returns:
+	- bool，true为是信任锚，false为不是信任锚
+	- error
+
+Call permissions: Anyone
 */
-func (anc *Anchor) IsTrustAnchor(address string) (bool, error) {
+func (anc *Anchor) IsTrustAnchor(anchor string) (bool, error) {
 	params := make([]string, 1)
-	params[0] = address
+	params[0] = anchor
 
 	pointer := &dto.RequestResult{}
 
@@ -148,11 +183,17 @@ func (anc *Anchor) IsTrustAnchor(address string) (bool, error) {
 }
 
 /*
- UpdateAnchorInfo: 更新信任锚数据
+UpdateAnchorInfo: 更新信任锚数据
 
- Returns： transactionHash，32 Bytes - 交易哈希，如果交易尚不可用，则为零哈希。
+Params:
+	- from: [20]byte，交易发送方地址
+	- extendAnchorInfo: *dto.UpdateAnchorInfo，更新的信任锚数据信息
 
- Call permissions: 只能修改自己的
+Returns:
+	- string, 交易哈希(transactionHash)，如果交易尚不可用，则为零哈希。。
+	- error
+
+Call permissions: 只能修改自己的
 */
 func (anc *Anchor) UpdateAnchorInfo(from common.Address, extendAnchorInfo *dto.UpdateAnchorInfo) (string, error) {
 	// encoding
@@ -170,11 +211,16 @@ func (anc *Anchor) UpdateAnchorInfo(from common.Address, extendAnchorInfo *dto.U
 }
 
 /*
- ExtractOwnBounty: 提取信任锚激励，只有超过100积分，且24小时内只能提取一次
+ExtractOwnBounty: 提取信任锚激励，只有超过100积分，且24小时内只能提取一次
 
- Returns： transactionHash，32 Bytes - 交易哈希，如果交易尚不可用，则为零哈希。
+Params:
+	- from: [20]byte，交易发送方地址
 
- Call permissions: 只能提取自己的
+Returns:
+	- string, 交易哈希(transactionHash)，如果交易尚不可用，则为零哈希。
+	- error
+
+Call permissions: 只能提取自己的
 */
 func (anc *Anchor) ExtractOwnBounty(from common.Address) (string, error) {
 	// encoding
@@ -189,9 +235,35 @@ func (anc *Anchor) ExtractOwnBounty(from common.Address) (string, error) {
 }
 
 /*
- GetTrustAnchor: 查询信任锚信息
+GetTrustAnchor: 查询信任锚信息
 
- Returns： *dto.TrustAnchor
+Params:
+	- anchor: string，信任锚bid
+
+Returns:
+	- *dto.TrustAnchor
+		Id               string   `json:"id"              gencodec:"required"`   //信任锚BID地址
+		Name             string   `json:"name"            gencodec:"required"`   //信任锚名称
+		Company          string   `json:"company"         gencodec:"required"`   //信任锚所属公司
+		CompanyUrl       string   `json:"company_url"     gencodec:"required"`   //公司网址
+		Website          string   `json:"website"         gencodec:"required"`   //信任锚网址
+		ServerUrl        string   `json:"server_url"      gencodec:"required"`   //服务链接
+		DocumentUrl      string   `json:"document_url"    gencodec:"required"`   //信任锚接口字段文档
+		Email            string   `json:"email"           gencodec:"required"`   //信任锚客服邮箱
+		Desc             string   `json:"desc" gencodec:"required"`              //描述
+		TrustAnchorType  uint64   `json:"type"            gencodec:"required"`   //信任锚类型
+		Status           uint64   `json:"status"          gencodec:"required"`   //服务状态
+		Active           bool     `json:"active"          gencodec:"required"`   //是否是根信任锚
+		TotalBounty      *big.Int `json:"totalBounty"     gencodec:"required"`   //总激励
+		ExtractedBounty  *big.Int `json:"extractedBounty" gencodec:"required"`   //已提取激励
+		LastExtractTime  *big.Int `json:"lastExtractTime" gencodec:"required"`   //上次提取时间
+		VoteCount        *big.Int `json:"vote_count" gencodec:"required"`        //得票数
+		Stake            *big.Int `json:"stake" gencodec:"required"`             //抵押
+		CreateDate       *big.Int `json:"create_date" gencodec:"required"`       //创建时间
+		CertificateCount *big.Int `json:"certificate_count" gencodec:"required"` //证书总数
+	- error
+
+Call permissions: Anyone
 */
 func (anc *Anchor) GetTrustAnchor(anchor string) (*dto.TrustAnchor, error) {
 	params := make([]string, 1)
@@ -208,9 +280,16 @@ func (anc *Anchor) GetTrustAnchor(anchor string) (*dto.TrustAnchor, error) {
 }
 
 /*
- GetTrustAnchorStatus: 查询信任锚状态
+GetTrustAnchorStatus: 查询信任锚状态
 
- Returns： uint64，0未知，1可用，2错误，3删除
+Params:
+	- anchor: string，信任锚bid
+
+Returns:
+	- uint64，0未知，1可用，2错误，3删除
+	- error
+
+Call permissions: Anyone
 */
 func (anc *Anchor) GetTrustAnchorStatus(anchor string) (uint64, error) {
 	params := make([]string, 1)
@@ -228,9 +307,16 @@ func (anc *Anchor) GetTrustAnchorStatus(anchor string) (uint64, error) {
 }
 
 /*
- GetCertificateList: 查询信任锚颁发的证书列表
+GetCertificateList: 查询信任锚颁发的证书列表
 
- Returns： []string， 证书列表
+Params:
+	- anchor: string，信任锚bid
+
+Returns:
+	 - []string， 证书列表
+	- error
+
+Call permissions: Anyone
 */
 func (anc *Anchor) GetCertificateList(anchor string) ([]string, error) {
 	params := make([]string, 1)
@@ -248,9 +334,16 @@ func (anc *Anchor) GetCertificateList(anchor string) ([]string, error) {
 }
 
 /*
- GetBaseList: 查询根信任锚列表
+GetBaseList: 查询根信任锚列表
 
- Returns： []string，根信任锚列表
+Params:
+	- None
+
+Returns:
+	- []string，根信任锚列表
+	- error
+
+Call permissions: Anyone
 */
 func (anc *Anchor) GetBaseList() ([]string, error) {
 	pointer := &dto.RequestResult{}
@@ -265,9 +358,16 @@ func (anc *Anchor) GetBaseList() ([]string, error) {
 }
 
 /*
- GetBaseNum: 查询根信任锚个数
+GetBaseNum: 查询根信任锚个数
 
- Returns： uint64， 根信任锚个数
+Params:
+	- None
+
+Returns:
+	 - uint64， 根信任锚个数
+	- error
+
+Call permissions: Anyone
 */
 func (anc *Anchor) GetBaseNum() (uint64, error) {
 	pointer := &dto.RequestResult{}
@@ -282,9 +382,16 @@ func (anc *Anchor) GetBaseNum() (uint64, error) {
 }
 
 /*
- GetExpendList: 查询扩展信任锚列表
+GetExpendList: 查询扩展信任锚列表
 
- Returns： []string， 扩展信任锚列表
+Params:
+	- None
+
+Returns:
+	 - []string， 扩展信任锚列表
+	- error
+
+Call permissions: Anyone
 */
 func (anc *Anchor) GetExpendList() ([]string, error) {
 	pointer := &dto.RequestResult{}
@@ -299,9 +406,16 @@ func (anc *Anchor) GetExpendList() ([]string, error) {
 }
 
 /*
- GetExpendList: 查询扩展信任锚个数
+GetExpendNum: 查询扩展信任锚个数
 
- Returns： uint64， 扩展信任锚个数
+Params:
+	- None
+
+Returns:
+	 - uint64， 扩展信任锚个数
+	- error
+
+Call permissions: Anyone
 */
 func (anc *Anchor) GetExpendNum() (uint64, error) {
 	pointer := &dto.RequestResult{}
@@ -316,11 +430,17 @@ func (anc *Anchor) GetExpendNum() (uint64, error) {
 }
 
 /*
- VoteElect: 向信任锚投支持票
+VoteElect: 向信任锚投支持票
 
- Returns： transactionHash，32 Bytes - 交易哈希，如果交易尚不可用，则为零哈希。
+Params:
+	- from: [20]byte，交易发送方地址
+	- candidate: string，信任锚地址
 
- Call permissions: 只有超级节点才可投票
+Returns:
+	- string, 交易哈希(transactionHash)，如果交易尚不可用，则为零哈希。
+	- error
+
+Call permissions: 只有超级节点才可投票
 */
 func (anc *Anchor) VoteElect(from common.Address, candidate string) (string, error) {
 	// encoding
@@ -335,11 +455,17 @@ func (anc *Anchor) VoteElect(from common.Address, candidate string) (string, err
 }
 
 /*
- CancelVote: 向信任锚投反对票
+CancelVote: 向信任锚投反对票
 
- Returns： transactionHash，32 Bytes - 交易哈希，如果交易尚不可用，则为零哈希。
+Params:
+	- from: [20]byte，交易发送方地址
+	- candidate: string，信任锚地址
 
- Call permissions: 只有超级节点才可投票
+Returns:
+	- string, 交易哈希(transactionHash)，如果交易尚不可用，则为零哈希。
+	- error
+
+Call permissions: 只有超级节点才可投票
 */
 func (anc *Anchor) CancelVote(from common.Address, candidate string) (string, error) {
 	// encoding
@@ -354,9 +480,16 @@ func (anc *Anchor) CancelVote(from common.Address, candidate string) (string, er
 }
 
 /*
- GetVoter: 查询投票人信息
+GetVoter: 查询投票人信息
 
- Returns： []dto.TrustAnchorVoter， 投票人信息
+Params:
+	- voterAddress: 投票人地址（也就是超级节点地址，因为只有超级节点才可以投票）
+
+Returns:
+	 - []dto.TrustAnchorVoter， 投票人信息
+	- error
+
+Call permissions: Anyone
 */
 func (anc *Anchor) GetVoter(voterAddress string) ([]dto.TrustAnchorVoter, error) {
 	params := make([]string, 1)

@@ -46,13 +46,28 @@ func (sys *System) NewCertificate() *Certificate {
 }
 
 /*
- RegisterCertificate: 信任锚颁发证书，如果是根信任锚颁发的证书，则证书接收者可以进行部署合约和大额转账操作
+RegisterCertificate: 信任锚颁发证书，如果是根信任锚颁发的证书，则证书接收者可以进行部署合约和大额转账操作
 
- Returns： transactionHash，32 Bytes - 交易哈希，如果交易尚不可用，则为零哈希。
+Params:
+	- from: [20]byte，交易发送方地址
+	- registerCertificate:  The registerCertificate object(*dto.RegisterCertificate)
+		Id               string //个人可信证书bid
+		Context          string //证书上下文环境，随便一个字符串，不验证
+		Subject          string //证书接收者的bid，证书是颁给谁的
+		Period           uint64 //证书有效期，以年为单位的整型
+		IssuerAlgorithm  string // 颁发者签名算法，字符串
+		IssuerSignature  string //颁发者签名值，16进制字符串
+		SubjectPublicKey string // 接收者公钥，16进制字符串
+		SubjectAlgorithm string //接收者签名算法，字符串
+		SubjectSignature string //接收者签名值，16进制字符串
 
- Call permissions: 只有信任锚可以调用
+Returns:
+	- string, 交易哈希(transactionHash)，如果交易尚不可用，则为零哈希。
+	- error
 
- BUG(rpc):颁发证书时的Period是否必须以年为单位？？
+Call permissions: 只有信任锚地址可以调用
+
+BUG(rpc):颁发证书时的Period是否必须以年为单位？？
 */
 func (cer *Certificate) RegisterCertificate(from common.Address, registerCertificate *dto.RegisterCertificate) (string, error) {
 	// encoding
@@ -71,11 +86,17 @@ func (cer *Certificate) RegisterCertificate(from common.Address, registerCertifi
 }
 
 /*
- RevokedCertificate: 信任锚吊销个人证书
+RevokedCertificate: 信任锚吊销个人证书
 
- Returns： transactionHash，32 Bytes - 交易哈希，如果交易尚不可用，则为零哈希。
+Params:
+	- from: [20]byte，交易发送方地址
+	- id:  string，个人可信证书bid
 
- Call permissions: 只有证书颁发者可以调用
+Returns:
+	- string, 交易哈希(transactionHash)，如果交易尚不可用，则为零哈希。
+	- error
+
+Call permissions: 只有证书颁发者可以调用
 */
 func (cer *Certificate) RevokedCertificate(from common.Address, id string) (string, error) {
 	// encoding
@@ -91,11 +112,16 @@ func (cer *Certificate) RevokedCertificate(from common.Address, id string) (stri
 }
 
 /*
- RevokedCertificates: 信任锚批量吊销个人证书，把自己颁发的证书全部吊销
+RevokedCertificates: 信任锚批量吊销个人证书，把自己颁发的证书全部吊销
 
- Returns： transactionHash，32 Bytes - 交易哈希，如果交易尚不可用，则为零哈希。
+Params:
+	- from: [20]byte，交易发送方地址
 
- Call permissions: 只有证书颁发者可以调用
+Returns:
+	- string, 交易哈希(transactionHash)，如果交易尚不可用，则为零哈希。
+	- error
+
+Call permissions: 只有证书颁发者可以调用
 */
 func (cer *Certificate) RevokedCertificates(from common.Address) (string, error) {
 	// encoding
@@ -111,9 +137,16 @@ func (cer *Certificate) RevokedCertificates(from common.Address) (string, error)
 }
 
 /*
- GetPeriod: 查询个人证书的有效期
+GetPeriod: 查询个人证书的有效期
 
- Returns：uint64，证书有效期，如果证书被吊销，则有效期是0
+Params:
+	- id: string,个人可信证书bid
+
+Returns:
+	- uint64，证书有效期，如果证书被吊销，则有效期是0
+	- error
+
+Call permissions: Anyone
 */
 func (cer *Certificate) GetPeriod(id string) (uint64, error) {
 	params := make([]string, 1)
@@ -130,9 +163,16 @@ func (cer *Certificate) GetPeriod(id string) (uint64, error) {
 }
 
 /*
- GetActive: 查询证书是否可用,如果证书过期，则不可用；如果信任锚注销，则不可用
+GetActive: 查询证书是否可用,如果证书过期，则不可用；如果信任锚注销，则不可用
 
- Returns：bool，true可用，false不可用
+Params:
+	- id: string,个人可信证书bid
+
+Returns:
+	- bool，true可用，false不可用
+	- error
+
+Call permissions: Anyone
 */
 func (cer *Certificate) GetActive(id string) (bool, error) {
 	params := make([]string, 1)
@@ -149,9 +189,24 @@ func (cer *Certificate) GetActive(id string) (bool, error) {
 }
 
 /*
- GetCertificate: 查询证书的信息，period和active没有进行逻辑判断
+GetCertificate: 查询证书的信息，period和active没有进行逻辑判断
 
- Returns：*dto.CertificateInfo
+Params:
+	- id: string,个人可信证书bid
+
+Returns:
+	- *dto.CertificateInfo
+		Id             string   //凭证的hash
+		Context        string   //证书所属上下文环境
+		Issuer         string   //信任锚的bid
+		Subject        string   //证书拥有者地址
+		IssuedTime     *big.Int //颁发时间
+		Period         uint64   //有效期
+		IsEnable       bool     //true 凭证有效，false 凭证已撤销
+		RevocationTime *big.Int //吊销时间
+	- error
+
+Call permissions: Anyone
 */
 func (cer *Certificate) GetCertificate(id string) (*dto.CertificateInfo, error) {
 	params := make([]string, 1)
@@ -168,9 +223,20 @@ func (cer *Certificate) GetCertificate(id string) (*dto.CertificateInfo, error) 
 }
 
 /*
- GetIssuer: 查询信任锚信息，证书颁发者的信息
+GetIssuer: 查询信任锚信息，证书颁发者的信息
 
- Returns：*dto.IssuerSignature
+Params:
+	- id: string,个人可信证书bid
+
+Returns:
+	- *dto.IssuerSignature
+		Id        string //凭证ID
+		PublicKey string // 签名公钥
+		Algorithm string //签名算法
+		Signature string //签名内容
+	- error
+
+Call permissions: Anyone
 */
 func (cer *Certificate) GetIssuer(id string) (*dto.IssuerSignature, error) {
 	params := make([]string, 1)
@@ -187,9 +253,20 @@ func (cer *Certificate) GetIssuer(id string) (*dto.IssuerSignature, error) {
 }
 
 /*
- GetSubject: 查询个人(证书注册的接收者)信息，证书接收者的信息
+GetSubject: 查询个人(证书注册的接收者)信息，证书接收者的信息
 
- Returns：*dto.SubjectSignature
+Params:
+	- id: string,个人可信证书bid
+
+Returns:
+	- *dto.SubjectSignature
+		Id        string //凭证ID
+		PublicKey string // 签名公钥
+		Algorithm string //签名算法
+		Signature string //签名内容
+	- error
+
+Call permissions: Anyone
 */
 func (cer *Certificate) GetSubject(id string) (*dto.SubjectSignature, error) {
 	params := make([]string, 1)
