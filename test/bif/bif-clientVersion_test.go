@@ -12,16 +12,10 @@
    along with go-web3.  If not, see <http://www.gnu.org/licenses/>.
 *********************************************************************************/
 
-/**
- * @file web3-clientVersion.go
- * @authors:
- *   Reginaldo Costa <regcostajr@gmail.com>
- * @date 2017
- */
-
 package test
 
 import (
+	"github.com/bif/bif-sdk-go/test/resources"
 	"testing"
 
 	b "github.com/bif/bif-sdk-go"
@@ -30,7 +24,7 @@ import (
 
 func TestBifClientVersion(t *testing.T) {
 
-	var connection = b.NewBif(providers.NewHTTPProvider("192.168.104.35:33333", 10, false))
+	var connection = b.NewBif(providers.NewHTTPProvider(resources.IP+":"+resources.Port, 10, false))
 
 	client, err := connection.ClientVersion()
 

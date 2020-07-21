@@ -12,16 +12,11 @@
    along with go-bif.  If not, see <http://www.gnu.org/licenses/>.
 *********************************************************************************/
 
-/**
- * @file personal-unlockaccount_test.go
- * @authors:
- *   Reginaldo Costa <regcostajr@gmail.com>
- * @date 2017
- */
 package test
 
 import (
 	"errors"
+	"github.com/bif/bif-sdk-go/test/resources"
 	"testing"
 
 	"github.com/bif/bif-sdk-go"
@@ -30,7 +25,7 @@ import (
 
 func TestPersonalUnlockAccount(t *testing.T) {
 
-	var connection = bif.NewBif(providers.NewHTTPProvider("192.168.104.35:33333", 10, false))
+	var connection = bif.NewBif(providers.NewHTTPProvider(resources.IP+":"+resources.Port, 10, false))
 
 	accounts, err := connection.Personal.ListAccounts()
 
@@ -39,7 +34,7 @@ func TestPersonalUnlockAccount(t *testing.T) {
 		t.FailNow()
 	}
 
-	result, err := connection.Personal.UnlockAccount(accounts[0], "", 100)
+	result, err := connection.Personal.UnlockAccount(accounts[0], "123456", 100)
 
 	if err != nil {
 		t.Error(err)
@@ -47,7 +42,7 @@ func TestPersonalUnlockAccount(t *testing.T) {
 	}
 
 	if !result {
-		t.Error(errors.New("Can't unlock account"))
+		t.Error(errors.New("can't unlock account"))
 		t.FailNow()
 	}
 

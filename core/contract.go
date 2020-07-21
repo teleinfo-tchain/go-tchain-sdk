@@ -12,13 +12,6 @@
    along with go-bif.  If not, see <http://www.gnu.org/licenses/>.
 *********************************************************************************/
 
-/**
- * @file contract.go
- * @authors:
- *   Reginaldo Costa <regcostajr@gmail.com>
- * @date 2018
- */
-
 package core
 
 import (
@@ -91,8 +84,7 @@ func (contract *Contract) prepareTransaction(transaction *dto.TransactionParamet
 	}
 
 	fullFunction := fmt.Sprintf("%s(%s)", functionName, strings.Join(function, ","))
-	utils := utils.NewUtils(contract.super.provider)
-	sha3Function, err := utils.Sha3(types.ComplexString(fullFunction))
+	sha3Function, err := utils.NewUtils().Sha3(fullFunction)
 
 	if err != nil {
 		return nil, err

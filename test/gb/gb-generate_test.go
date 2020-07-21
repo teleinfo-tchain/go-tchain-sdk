@@ -12,16 +12,10 @@
    along with go-web3.  If not, see <http://www.gnu.org/licenses/>.
 *********************************************************************************/
 
-/**
- * @file web3-clientVersion.go
- * @authors:
- *   Reginaldo Costa <regcostajr@gmail.com>
- * @date 2017
- */
-
 package test
 
 import (
+	"github.com/bif/bif-sdk-go/test/resources"
 	"testing"
 
 	"github.com/bif/bif-sdk-go/gb"
@@ -30,7 +24,7 @@ import (
 
 func TestGbStart(t *testing.T) {
 
-	var connection = gb.NewGB(providers.NewHTTPProvider("192.168.104.35:33333", 10, false))
+	var connection = gb.NewGB(providers.NewHTTPProvider(resources.IP+":"+resources.Port, 10, false))
 
 	err := connection.Start()
 
@@ -42,7 +36,7 @@ func TestGbStart(t *testing.T) {
 
 func TestGbStop(t *testing.T) {
 
-	var connection = gb.NewGB(providers.NewHTTPProvider("192.168.104.35:33333", 10, false))
+	var connection = gb.NewGB(providers.NewHTTPProvider(resources.IP+":"+resources.Port, 10, false))
 
 	err := connection.Stop()
 

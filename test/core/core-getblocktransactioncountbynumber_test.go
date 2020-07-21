@@ -12,21 +12,15 @@
    along with go-bif.  If not, see <http://www.gnu.org/licenses/>.
 *********************************************************************************/
 
-/**
- * @file core-getblocktransactioncountbynumber.go
- * @authors:
- *   Junjie CHen <chuckjunjchen@gmail.com>
- * @date 2018
- */
-
 package test
 
 import (
+	"github.com/bif/bif-sdk-go/test/resources"
 	"math/big"
 	"testing"
 	"time"
 
-	bif "github.com/bif/bif-sdk-go"
+	"github.com/bif/bif-sdk-go"
 	"github.com/bif/bif-sdk-go/core/block"
 	"github.com/bif/bif-sdk-go/dto"
 	"github.com/bif/bif-sdk-go/providers"
@@ -34,10 +28,10 @@ import (
 
 func TestGetBlockTransactionCountByNumber(t *testing.T) {
 
-	var connection = bif.NewBif(providers.NewHTTPProvider("192.168.104.35:33333", 10, false))
+	var connection = bif.NewBif(providers.NewHTTPProvider(resources.IP+":"+resources.Port, 10, false))
 
 	// submit a transaction, wait for the block and there should be 1 tx.
-	coinbase, err := connection.Core.GetCoinbase()
+	coinBase, err := connection.Core.GetCoinBase()
 
 	if err != nil {
 		t.Error(err)
@@ -45,8 +39,8 @@ func TestGetBlockTransactionCountByNumber(t *testing.T) {
 	}
 
 	transaction := new(dto.TransactionParameters)
-	transaction.From = coinbase
-	transaction.To = coinbase
+	transaction.From = coinBase
+	transaction.To = coinBase
 	transaction.Value = big.NewInt(200000)
 	transaction.Gas = big.NewInt(40000)
 

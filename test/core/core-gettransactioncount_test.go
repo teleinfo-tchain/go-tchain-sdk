@@ -12,22 +12,15 @@
    along with go-bif.  If not, see <http://www.gnu.org/licenses/>.
 *********************************************************************************/
 
-/**
- * @file core-gettransactioncount_test.go
- * @authors:
- * 		Sigma Prime <sigmaprime.io>
- * @date 2017
- */
-
 package test
 
 import (
 	"fmt"
 	"github.com/bif/bif-sdk-go"
-	"github.com/bif/bif-sdk-go/complex/types"
 	"github.com/bif/bif-sdk-go/core/block"
 	"github.com/bif/bif-sdk-go/dto"
 	"github.com/bif/bif-sdk-go/providers"
+	"github.com/bif/bif-sdk-go/test/resources"
 	"math/big"
 	"testing"
 	"time"
@@ -35,18 +28,18 @@ import (
 
 func TestCoreGetTransactionCount(t *testing.T) {
 
-	var connection = bif.NewBif(providers.NewHTTPProvider("192.168.104.35:33333", 10, false))
+	var connection = bif.NewBif(providers.NewHTTPProvider(resources.IP+":"+resources.Port, 10, false))
 
-	coinbase, _ := connection.Core.GetCoinbase()
+	coinBase, _ := connection.Core.GetCoinBase()
 
-	count, err := connection.Core.GetTransactionCount(coinbase, block.LATEST)
+	count, err := connection.Core.GetTransactionCount(coinBase, block.LATEST)
 
 	if err != nil {
 		t.Error(err)
 		t.FailNow()
 	}
 
-	countTwo, err := connection.Core.GetTransactionCount(coinbase, block.LATEST)
+	countTwo, err := connection.Core.GetTransactionCount(coinBase, block.LATEST)
 
 	if err != nil {
 		t.Error(err)
@@ -62,11 +55,11 @@ func TestCoreGetTransactionCount(t *testing.T) {
 
 	t.Log("Starting Count:", count)
 	transaction := new(dto.TransactionParameters)
-	transaction.From = coinbase
-	transaction.To = coinbase
+	transaction.From = coinBase
+	transaction.To = coinBase
 	transaction.Value = big.NewInt(0).Mul(big.NewInt(500), big.NewInt(1e18))
 	transaction.Gas = big.NewInt(40000)
-	transaction.Data = types.ComplexString("p2p transaction")
+	transaction.Data = "p2p transaction"
 
 	_, err = connection.Core.SendTransaction(transaction)
 
@@ -77,8 +70,9 @@ func TestCoreGetTransactionCount(t *testing.T) {
 
 	time.Sleep(time.Second)
 
-	newCount, err := connection.Core.GetTransactionCount(coinbase, block.LATEST)
+	newCount, err := connection.Core.GetTransactionCount(coinBase, block.LATEST)
 
+	// if it fails, it may be that the time is too short and the transaction has not been executed
 	if err != nil {
 		t.Error(err)
 		t.FailNow()

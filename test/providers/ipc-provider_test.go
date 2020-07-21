@@ -12,18 +12,12 @@
    along with go-bif.  If not, see <http://www.gnu.org/licenses/>.
 *********************************************************************************/
 
-/**
- * @file ipc-provider_test.go
- * @authors:
- *   Reginaldo Costa <regcostajr@gmail.com>
- * @date 2017
- */
 package test
 
 import (
 	"testing"
 
-	bif "github.com/bif/bif-sdk-go"
+	"github.com/bif/bif-sdk-go"
 	"github.com/bif/bif-sdk-go/providers"
 )
 
@@ -31,10 +25,10 @@ func Test_IPCProvider(t *testing.T) {
 
 	var ethClient = bif.NewBif(providers.NewIPCProvider("/tmp/geth.ipc"))
 
-	var _, error = ethClient.ClientVersion()
+	var _, err = ethClient.ClientVersion()
 
-	if error != nil {
-		t.Error(error)
+	if err != nil {
+		t.Error(err)
 		t.Fail()
 	}
 

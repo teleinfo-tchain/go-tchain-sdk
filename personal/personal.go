@@ -12,13 +12,6 @@
    along with go-web3.  If not, see <http://www.gnu.org/licenses/>.
 *********************************************************************************/
 
-/**
- * @file personal.go
- * @authors:
- *   Reginaldo Costa <regcostajr@gmail.com>
- * @date 2017
- */
-
 package personal
 
 import (
@@ -65,18 +58,10 @@ func (personal *Personal) ListAccounts() ([]string, error) {
 //    - String - Password for the new account.
 // Returns:
 //	  - Address - 20 Bytes - The identifier of the new account.
-func (personal *Personal) NewAccount(password string, cryptoTypeNum uint64) (string, error) {
-	params := make([]interface{}, 2)
-	params[0] = password
+func (personal *Personal) NewAccount(password string) (string, error) {
 
-	switch cryptoTypeNum {
-	case 0:
-		params[1] = 0
-	case 1:
-		params[1] = 1
-	default:
-		params[1] = 0
-	}
+	params := make([]string, 1)
+	params[0] = password
 
 	pointer := &dto.RequestResult{}
 

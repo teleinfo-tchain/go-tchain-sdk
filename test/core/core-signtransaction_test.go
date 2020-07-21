@@ -12,44 +12,30 @@
    along with go-bif.  If not, see <http://www.gnu.org/licenses/>.
 *********************************************************************************/
 
-/**
- * @file core-signtransaction_test.go
- * @authors:
- *   Reginaldo Costa <regcostajr@gmail.com>
- * @date 2017
- */
 package test
 
 import (
-	"testing"
-
 	"fmt"
 	"github.com/bif/bif-sdk-go"
-	"github.com/bif/bif-sdk-go/complex/types"
 	"github.com/bif/bif-sdk-go/dto"
 	"github.com/bif/bif-sdk-go/providers"
+	"github.com/bif/bif-sdk-go/test/resources"
+	"github.com/bif/bif-sdk-go/utils"
 	"math/big"
+	"testing"
 )
 
 func TestCoreSignTransaction(t *testing.T) {
-
-	var connection = bif.NewBif(providers.NewHTTPProvider("192.168.104.35:33333", 10, false))
-
-	coinbase, err := connection.Core.GetCoinbase()
-
-	if err != nil {
-		t.Error(err)
-		t.FailNow()
-	}
+	var connection = bif.NewBif(providers.NewHTTPProvider(resources.IP+":"+resources.Port, 10, false))
 
 	transaction := new(dto.TransactionParameters)
-	transaction.Nonce = big.NewInt(5)
-	transaction.From = coinbase
-	transaction.To = coinbase
-	transaction.Value = big.NewInt(0).Mul(big.NewInt(500), big.NewInt(1e18))
-	transaction.Gas = big.NewInt(40000)
-	transaction.GasPrice = big.NewInt(1e9)
-	transaction.Data = types.ComplexString("p2p transaction")
+	transaction.Nonce = big.NewInt(2)
+	transaction.From = resources.CoinBase
+	transaction.To = resources.AddressTwo
+	transaction.Value = big.NewInt(0).Mul(big.NewInt(5), big.NewInt(1e17))
+	transaction.Gas = big.NewInt(50000)
+	transaction.GasPrice = big.NewInt(1)
+	transaction.Data = "Sign Transfer bif test"
 
 	txID, err := connection.Core.SignTransaction(transaction)
 
@@ -57,14 +43,14 @@ func TestCoreSignTransaction(t *testing.T) {
 		t.Error(err)
 		t.FailNow()
 	}
+	fmt.Println(txID.Raw)
 
-	if txID.Transaction.Nonce.Cmp(transaction.Nonce) != 0 {
-		t.Errorf(fmt.Sprintf("Expected %d | Got: %d", 5, txID.Transaction.Nonce.Uint64()))
-		t.FailNow()
-	}
+	util := utils.NewUtils()
+	hexStr, _ := util.ToHex(resources.AddressTwo[:8])
+	addressTwoHex := hexStr + resources.AddressTwo[8:]
 
-	if txID.Transaction.To != coinbase {
-		t.Errorf(fmt.Sprintf("Expected %s | Got: %s", coinbase, txID.Transaction.To))
+	if txID.Transaction.To != addressTwoHex {
+		t.Errorf(fmt.Sprintf("Expected %s | Got: %s", addressTwoHex, txID.Transaction.To))
 		t.FailNow()
 	}
 

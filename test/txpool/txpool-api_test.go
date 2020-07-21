@@ -12,16 +12,11 @@
    along with go-web3.  If not, see <http://www.gnu.org/licenses/>.
 *********************************************************************************/
 
-/**
- * @file web3-clientVersion.go
- * @authors:
- *   Reginaldo Costa <regcostajr@gmail.com>
- * @date 2017
- */
-
 package test
 
 import (
+	"fmt"
+	"github.com/bif/bif-sdk-go/test/resources"
 	"github.com/bif/bif-sdk-go/txpool"
 	"testing"
 
@@ -30,25 +25,26 @@ import (
 
 func TestTxpoolStatus(t *testing.T) {
 
-	var connection = txpool.NewTxpool(providers.NewHTTPProvider("192.168.150.41:44002", 10, false))
+	var connection = txpool.NewTxpool(providers.NewHTTPProvider(resources.IP+":"+resources.Port, 10, false))
 
-	 _, err := connection.Status()
-
+	status, err := connection.Status()
 	if err != nil {
 		t.Error(err)
 		t.FailNow()
 	}
+	fmt.Printf("pending is %d\n", status["pending"])
+	fmt.Printf("queued is %d\n", status["queued"])
 
 }
 
-func TestTxpoolInspect(t *testing.T) {
+func TestTxPoolInspect(t *testing.T) {
 
-	var connection = txpool.NewTxpool(providers.NewHTTPProvider("192.168.150.41:44002", 10, false))
+	var connection = txpool.NewTxpool(providers.NewHTTPProvider(resources.IP+":"+resources.Port, 10, false))
 
-	_, err := connection.Inspect()
-
+	inspect, err := connection.Inspect()
 	if err != nil {
 		t.Error(err)
 		t.FailNow()
 	}
+	fmt.Println(inspect)
 }

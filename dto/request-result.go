@@ -12,19 +12,12 @@
    along with go-bif.  If not, see <http://www.gnu.org/licenses/>.
 *********************************************************************************/
 
-/**
- * @file request-result.go
- * @authors:
- *   Reginaldo Costa <regcostajr@gmail.com>
- * @date 2017
- */
-
 package dto
 
 import (
 	"errors"
-	"github.com/bif/go-bif/common/hexutil"
-	"github.com/bif/go-bif/p2p"
+	"github.com/bif/bif-sdk-go/common"
+	"github.com/bif/bif-sdk-go/common/hexutil"
 	"strconv"
 	"strings"
 
@@ -50,17 +43,17 @@ type Error struct {
 	Data    interface{} `json:"data"`
 }
 
-func (pointer *RequestResult) ToPeerInfo() ([]*p2p.PeerInfo, error) {
+func (pointer *RequestResult) ToPeerInfo() ([]*common.PeerInfo, error) {
 
 	if err := pointer.checkResponse(); err != nil {
 		return nil, err
 	}
 
-	result_list := (pointer).Result.([]interface{})
+	resultLi := (pointer).Result.([]interface{})
 
-	new := make([]*p2p.PeerInfo, len(result_list))
+	peerInfoLi := make([]*common.PeerInfo, len(resultLi))
 
-	for i, v := range result_list {
+	for i, v := range resultLi {
 
 		result := v.(map[string]interface{})
 
@@ -68,7 +61,7 @@ func (pointer *RequestResult) ToPeerInfo() ([]*p2p.PeerInfo, error) {
 			return nil, customerror.EMPTYRESPONSE
 		}
 
-		info := &p2p.PeerInfo{}
+		info := &common.PeerInfo{}
 
 		marshal, err := json.Marshal(result)
 
@@ -78,11 +71,11 @@ func (pointer *RequestResult) ToPeerInfo() ([]*p2p.PeerInfo, error) {
 
 		err = json.Unmarshal([]byte(marshal), info)
 
-		new[i] = info
+		peerInfoLi[i] = info
 
 	}
 
-	return new, nil
+	return peerInfoLi, nil
 
 }
 
@@ -94,12 +87,12 @@ func (pointer *RequestResult) ToStringArray() ([]string, error) {
 
 	result := (pointer).Result.([]interface{})
 
-	new := make([]string, len(result))
+	stringArray := make([]string, len(result))
 	for i, v := range result {
-		new[i] = v.(string)
+		stringArray[i] = v.(string)
 	}
 
-	return new, nil
+	return stringArray, nil
 
 }
 
@@ -127,7 +120,7 @@ func (pointer *RequestResult) ToString() (string, error) {
 
 }
 
-func (pointer *RequestResult) ToInt() (int64, error) {
+func (pointer *RequestResult) ToInt64() (int64, error) {
 
 	if err := pointer.checkResponse(); err != nil {
 		return 0, err
@@ -135,9 +128,25 @@ func (pointer *RequestResult) ToInt() (int64, error) {
 
 	result := (pointer).Result.(interface{})
 
-	hex := result.(string)
+	hex := result.(string)[2:]
 
 	numericResult, err := strconv.ParseInt(hex, 16, 64)
+
+	return numericResult, err
+
+}
+
+func (pointer *RequestResult) ToUint64() (uint64, error) {
+
+	if err := pointer.checkResponse(); err != nil {
+		return 0, err
+	}
+
+	result := (pointer).Result.(interface{})
+
+	hex := result.(string)[2:]
+
+	numericResult, err := strconv.ParseUint(hex, 16, 64)
 
 	return numericResult, err
 
@@ -171,7 +180,7 @@ func (pointer *RequestResult) ToComplexIntResponse() (types.ComplexIntResponse, 
 	var hex string
 
 	switch v := result.(type) {
-	//Testrpc returns a float64
+	// Testrpc returns a float64
 	case float64:
 		hex = strconv.FormatFloat(v, 'E', 16, 64)
 		break
@@ -321,7 +330,7 @@ func (pointer *RequestResult) ToTxpoolStatus() (map[string]hexutil.Uint, error) 
 	return status, err
 }
 
-func (pointer *RequestResult) ToBlock() (*Block, error) {
+func (pointer *RequestResult) ToBlock(transactionDetails bool) (interface{}, error) {
 
 	if err := pointer.checkResponse(); err != nil {
 		return nil, err
@@ -333,16 +342,20 @@ func (pointer *RequestResult) ToBlock() (*Block, error) {
 		return nil, customerror.EMPTYRESPONSE
 	}
 
-	block := &Block{}
-
 	marshal, err := json.Marshal(result)
 
 	if err != nil {
 		return nil, customerror.UNPARSEABLEINTERFACE
 	}
 
-	err = json.Unmarshal([]byte(marshal), block)
-
+	var block interface{}
+	if transactionDetails {
+		block = &BlockDetails{}
+		err = json.Unmarshal([]byte(marshal), block)
+	} else {
+		block = &BlockNoDetails{}
+		err = json.Unmarshal([]byte(marshal), block)
+	}
 	return block, err
 
 }
@@ -376,9 +389,9 @@ func (pointer *RequestResult) ToSyncingResponse() (*SyncingResponse, error) {
 		return nil, customerror.UNPARSEABLEINTERFACE
 	}
 
-	json.Unmarshal([]byte(marshal), syncingResponse)
+	err = json.Unmarshal([]byte(marshal), syncingResponse)
 
-	return syncingResponse, nil
+	return syncingResponse, err
 
 }
 
@@ -390,7 +403,7 @@ func (pointer *RequestResult) ToCandidatesResponse() ([]*CandidateResponse, erro
 
 	resultList := (pointer).Result.([]interface{})
 
-	new := make([]*CandidateResponse, len(resultList))
+	candidateResponseLi := make([]*CandidateResponse, len(resultList))
 
 	for i, v := range resultList {
 
@@ -410,10 +423,10 @@ func (pointer *RequestResult) ToCandidatesResponse() ([]*CandidateResponse, erro
 
 		err = json.Unmarshal([]byte(marshal), &candidate)
 
-		new[i] = &candidate
+		candidateResponseLi[i] = &candidate
 	}
 
-	return new, nil
+	return candidateResponseLi, nil
 
 }
 
@@ -482,4 +495,115 @@ func (pointer *RequestResult) checkResponse() error {
 
 	return nil
 
+}
+
+func (pointer *RequestResult) ToValidators() ([]string, error) {
+	if err := pointer.checkResponse(); err != nil {
+		return nil, err
+	}
+
+	result := (pointer).Result.([]interface{})
+
+	if len(result) == 0 {
+		return nil, customerror.EMPTYRESPONSE
+	}
+
+	validators := make([]string, len(result))
+	for i, v := range result {
+		validators[i] = v.(string)
+	}
+
+	return validators, nil
+}
+
+func (pointer *RequestResult) ToValidatorsAtHash() ([]string, error) {
+	if err := pointer.checkResponse(); err != nil {
+		return nil, err
+	}
+
+	result := (pointer).Result.([]interface{})
+
+	if len(result) == 0 {
+		return nil, customerror.EMPTYRESPONSE
+	}
+
+	validators := make([]string, len(result))
+	for i, v := range result {
+		validators[i] = v.(string)
+	}
+
+	return validators, nil
+}
+
+func (pointer *RequestResult) ToRoundStateInfo() (*RoundStateInfo, error) {
+	if err := pointer.checkResponse(); err != nil {
+		return nil, err
+	}
+
+	result := (pointer).Result.(map[string]interface{})
+
+	if len(result) == 0 {
+		return nil, customerror.EMPTYRESPONSE
+	}
+
+	roundStateInfo := &RoundStateInfo{}
+
+	marshal, err := json.Marshal(result)
+
+	err = json.Unmarshal([]byte(marshal), roundStateInfo)
+
+	return roundStateInfo, err
+}
+
+func (pointer *RequestResult) ToRoundChangeSetInfo() (*RoundChangeSetInfo, error) {
+	if err := pointer.checkResponse(); err != nil {
+		return nil, err
+	}
+
+	result := (pointer).Result.(map[string]interface{})
+
+	if len(result) == 0 {
+		return nil, customerror.EMPTYRESPONSE
+	}
+
+	roundChangeSetInfo := &RoundChangeSetInfo{}
+
+	marshal, err := json.Marshal(result)
+
+	err = json.Unmarshal([]byte(marshal), roundChangeSetInfo)
+
+	return roundChangeSetInfo, err
+}
+
+func (pointer *RequestResult) ToBacklogs() (map[string][]*Message, error) {
+	if err := pointer.checkResponse(); err != nil {
+		return nil, err
+	}
+
+	result := (pointer).Result.(map[string]interface{})
+
+	if len(result) == 0 {
+		return nil, customerror.EMPTYRESPONSE
+	}
+
+	backlogs := make(map[string][]*Message, len(result))
+
+	marshal, err := json.Marshal(result)
+
+	if err != nil {
+		return nil, customerror.UNPARSEABLEINTERFACE
+	}
+
+	err = json.Unmarshal([]byte(marshal), &backlogs)
+
+	return backlogs, err
+}
+
+func (pointer *RequestResult) ToChainID() (uint64, error) {
+	if err := pointer.checkResponse(); err != nil {
+		return 0, err
+	}
+
+	result := (pointer).Result.(interface{})
+	return strconv.ParseUint(result.(string)[2:], 16, 64)
 }

@@ -12,27 +12,21 @@
    along with go-bif.  If not, see <http://www.gnu.org/licenses/>.
 *********************************************************************************/
 
-/**
- * @file net-version_test.go
- * @authors:
- *   Reginaldo Costa <regcostajr@gmail.com>
- * @date 2017
- */
-
 package test
 
 import (
 	"errors"
+	"github.com/bif/bif-sdk-go/test/resources"
 	"sort"
 	"testing"
 
-	bif "github.com/bif/bif-sdk-go"
+	"github.com/bif/bif-sdk-go"
 	"github.com/bif/bif-sdk-go/providers"
 )
 
 func TestNetVersion(t *testing.T) {
 
-	var connection = bif.NewBif(providers.NewHTTPProvider("192.168.104.35:33333", 10, false))
+	var connection = bif.NewBif(providers.NewHTTPProvider(resources.IP+":"+resources.Port, 10, false))
 
 	//Possible options
 	po := []string{"1", "2", "3", "4", "42"}
@@ -47,7 +41,7 @@ func TestNetVersion(t *testing.T) {
 	t.Log(version)
 
 	if found := sort.SearchStrings(po, version); found < len(po) && po[found] != version {
-		t.Error(errors.New("Invalid network"))
+		t.Error(errors.New("invalid network"))
 		t.Fail()
 	}
 

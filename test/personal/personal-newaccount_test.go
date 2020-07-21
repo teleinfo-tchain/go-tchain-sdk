@@ -12,15 +12,10 @@
    along with go-bif.  If not, see <http://www.gnu.org/licenses/>.
 *********************************************************************************/
 
-/**
- * @file personal-newaccount_test.go
- * @authors:
- *   Reginaldo Costa <regcostajr@gmail.com>
- * @date 2017
- */
 package test
 
 import (
+	"github.com/bif/bif-sdk-go/test/resources"
 	"testing"
 
 	"github.com/bif/bif-sdk-go"
@@ -29,8 +24,8 @@ import (
 
 func TestPersonalNewAccount(t *testing.T) {
 
-	var connection = bif.NewBif(providers.NewHTTPProvider("192.168.150.41:44002", 10, false))
-	address, err := connection.Personal.NewAccount("node", 0)
+	var connection = bif.NewBif(providers.NewHTTPProvider(resources.IP+":"+resources.Port, 10, false))
+	address, err := connection.Personal.NewAccount("node")
 
 	if err != nil {
 		t.Error(err)

@@ -12,18 +12,13 @@
    along with go-bif.  If not, see <http://www.gnu.org/licenses/>.
 *********************************************************************************/
 
-/**
- * @file core-gettransactionbyblockhashandindex_test.go
- * @authors:
- *      Sigma Prime <sigmaprime.io>
- * @date 2018
- */
 package test
 
 import (
 	"github.com/bif/bif-sdk-go"
 	"github.com/bif/bif-sdk-go/dto"
 	"github.com/bif/bif-sdk-go/providers"
+	"github.com/bif/bif-sdk-go/test/resources"
 	"math/big"
 	"testing"
 	"time"
@@ -31,9 +26,9 @@ import (
 
 func TestCoreTransactionByBlockHashAndIndex(t *testing.T) {
 
-	var connection = bif.NewBif(providers.NewHTTPProvider("192.168.104.35:33333", 10, false))
+	var connection = bif.NewBif(providers.NewHTTPProvider(resources.IP+":"+resources.Port, 10, false))
 
-	coinbase, err := connection.Core.GetCoinbase()
+	coinBase, err := connection.Core.GetCoinBase()
 
 	if err != nil {
 		t.Error(err)
@@ -43,8 +38,8 @@ func TestCoreTransactionByBlockHashAndIndex(t *testing.T) {
 	txVal := big.NewInt(2000000)
 
 	transaction := new(dto.TransactionParameters)
-	transaction.From = coinbase
-	transaction.To = coinbase
+	transaction.From = coinBase
+	transaction.To = coinBase
 	//transaction.Value = big.NewInt(0).Mul(big.NewInt(500), big.NewInt(1E18))
 	transaction.Value = txVal
 	transaction.Gas = big.NewInt(40000)
@@ -74,7 +69,7 @@ func TestCoreTransactionByBlockHashAndIndex(t *testing.T) {
 		t.FailNow()
 	}
 
-	if tx.From != coinbase || tx.To != coinbase || tx.Value.Cmp(txVal) != 0 || tx.Hash != txID {
+	if tx.From != coinBase || tx.To != coinBase || tx.Value.Cmp(txVal) != 0 || tx.Hash != txID {
 		t.Errorf("Incorrect transaction from hash and index")
 		t.FailNow()
 	}
@@ -87,7 +82,7 @@ func TestCoreTransactionByBlockHashAndIndex(t *testing.T) {
 		t.FailNow()
 	}
 
-	if tx.From != coinbase || tx.To != coinbase || tx.Value.Cmp(txVal) != 0 || tx.Hash != txID {
+	if tx.From != coinBase || tx.To != coinBase || tx.Value.Cmp(txVal) != 0 || tx.Hash != txID {
 		t.Errorf("Incorrect transaction from hash and index")
 		t.FailNow()
 	}

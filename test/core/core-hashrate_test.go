@@ -12,25 +12,19 @@
    along with go-web3.  If not, see <http://www.gnu.org/licenses/>.
 *********************************************************************************/
 
-/**
- * @file core-hashrate_test.go
- * @authors:
- *   Reginaldo Costa <regcostajr@gmail.com>
- * @date 2017
- */
-
 package test
 
 import (
+	"github.com/bif/bif-sdk-go/test/resources"
 	"testing"
 
 	web3 "github.com/bif/bif-sdk-go"
 	"github.com/bif/bif-sdk-go/providers"
 )
 
-func TestCoreHashrate(t *testing.T) {
+func TestCoreHashRate(t *testing.T) {
 
-	var connection = web3.NewBif(providers.NewHTTPProvider("192.168.104.35:33333", 10, false))
+	var connection = web3.NewBif(providers.NewHTTPProvider(resources.IP+":"+resources.Port, 10, false))
 
 	rate, err := connection.Core.GetHashRate()
 

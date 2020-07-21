@@ -12,16 +12,13 @@
    along with go-bif.  If not, see <http://www.gnu.org/licenses/>.
 *********************************************************************************/
 
-/**
- * @file core-getBlockByNumber_test.go
- * @authors:
- *   Jérôme Laurens <jeromelaurens@gmail.com>
- * @date 2017
- */
-
 package test
 
 import (
+	"fmt"
+	"github.com/bif/bif-sdk-go/dto"
+	"github.com/bif/bif-sdk-go/test/resources"
+	"math/big"
 	"testing"
 
 	"github.com/bif/bif-sdk-go"
@@ -30,11 +27,13 @@ import (
 
 func TestCoreGetBlockByNumber(t *testing.T) {
 
-	var connection = bif.NewBif(providers.NewHTTPProvider("192.168.104.35:33333", 10, false))
+	var connection = bif.NewBif(providers.NewHTTPProvider(resources.IP+":"+resources.Port, 10, false))
 
-	blockNumber, err := connection.Core.GetBlockNumber()
+	//blockNumber, err := connection.Core.GetBlockNumber()
+	blockNumber := big.NewInt(7603)
+	const transactionDetails = true
 
-	block, err := connection.Core.GetBlockByNumber(blockNumber, false)
+	block, err := connection.Core.GetBlockByNumber(blockNumber, transactionDetails)
 
 	if err != nil {
 		t.Error(err)
@@ -45,9 +44,29 @@ func TestCoreGetBlockByNumber(t *testing.T) {
 		t.FailNow()
 	}
 
-	if block.Number.Int64() == 0 {
-		t.Error("Block not found")
-		t.FailNow()
+	if transactionDetails {
+		fmt.Println("gasLimit:", block.(*dto.BlockDetails).GasLimit)
+		fmt.Println("extraData:", block.(*dto.BlockDetails).ExtraData)
+		fmt.Println("LogsBloom:", block.(*dto.BlockDetails).LogsBloom)
+		fmt.Println("MixHash:", block.(*dto.BlockDetails).MixHash)
+		fmt.Println("ReceiptsRoot:", block.(*dto.BlockDetails).ReceiptsRoot)
+		fmt.Println("StateRoot:", block.(*dto.BlockDetails).StateRoot)
+		for _, val := range block.(*dto.BlockDetails).Transactions {
+			fmt.Println("transactions:", val.Hash)
+		}
+		fmt.Println("transactionLen:", len(block.(*dto.BlockDetails).Transactions))
+		fmt.Println("TransactionsRoot:", block.(*dto.BlockDetails).TransactionsRoot)
+	} else {
+		fmt.Println("gasLimit:", block.(*dto.BlockNoDetails).GasLimit)
+		fmt.Println("extraData:", block.(*dto.BlockNoDetails).ExtraData)
+		fmt.Println("LogsBloom:", block.(*dto.BlockNoDetails).LogsBloom)
+		fmt.Println("MixHash:", block.(*dto.BlockNoDetails).MixHash)
+		fmt.Println("ReceiptsRoot:", block.(*dto.BlockNoDetails).ReceiptsRoot)
+		fmt.Println("StateRoot:", block.(*dto.BlockNoDetails).StateRoot)
+		for idx, val := range block.(*dto.BlockNoDetails).Transactions {
+			fmt.Println("transactions:[0]", val[idx])
+		}
+		fmt.Println("transactionLen:", len(block.(*dto.BlockNoDetails).Transactions))
+		fmt.Println("TransactionsRoot:", block.(*dto.BlockNoDetails).TransactionsRoot)
 	}
-
 }

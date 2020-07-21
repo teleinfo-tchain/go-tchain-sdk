@@ -12,19 +12,13 @@
    along with go-bif.  If not, see <http://www.gnu.org/licenses/>.
 *********************************************************************************/
 
-/**
- * @file core-estimategas_test.go
- * @authors:
- *   Reginaldo Costa <regcostajr@gmail.com>
- * @date 2017
- */
-
 package test
 
 import (
+	"github.com/bif/bif-sdk-go/test/resources"
 	"testing"
 
-	bif "github.com/bif/bif-sdk-go"
+	"github.com/bif/bif-sdk-go"
 	"github.com/bif/bif-sdk-go/dto"
 	"github.com/bif/bif-sdk-go/providers"
 	"math/big"
@@ -32,10 +26,9 @@ import (
 
 func TestCoreEstimateGas(t *testing.T) {
 
-	//var connection = bif.NewBif(providers.NewHTTPProvider("localhost:55555", 10, false))
-	var connection = bif.NewBif(providers.NewHTTPProvider("192.168.150.41:44002", 10, false))
+	var connection = bif.NewBif(providers.NewHTTPProvider(resources.IP+":"+resources.Port, 10, false))
 
-	coinbase, err := connection.Core.GetCoinbase()
+	coinBase, err := connection.Core.GetCoinBase()
 
 	if err != nil {
 		t.Error(err)
@@ -44,8 +37,8 @@ func TestCoreEstimateGas(t *testing.T) {
 
 	transaction := new(dto.TransactionParameters)
 	//	transaction.Data = "test"
-	transaction.From = coinbase
-	transaction.To = coinbase
+	transaction.From = coinBase
+	transaction.To = coinBase
 	transaction.Value = big.NewInt(10)
 	transaction.Gas = big.NewInt(40000)
 

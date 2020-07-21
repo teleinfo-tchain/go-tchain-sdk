@@ -12,13 +12,6 @@
    along with go-bif.  If not, see <http://www.gnu.org/licenses/>.
 *********************************************************************************/
 
-/**
- * @file transaction.go
- * @authors:
- *   Reginaldo Costa <regcostajr@gmail.com>
- * @date 2017
- */
-
 package dto
 
 import (
@@ -197,7 +190,7 @@ func (t *TransactionResponse) UnmarshalJSON(data []byte) error {
 	}
 
 	if len(temp.BlockNumber) == 0 {
-		temp.BlockNumber = "0x"
+		temp.BlockNumber = "0x0"
 	}
 
 	blockNum, success := big.NewInt(0).SetString(temp.BlockNumber[2:], 16)
@@ -207,7 +200,7 @@ func (t *TransactionResponse) UnmarshalJSON(data []byte) error {
 	}
 
 	if len(temp.TransactionIndex) == 0 {
-		temp.TransactionIndex = "0x"
+		temp.TransactionIndex = "0x0"
 	}
 
 	txIndex, success := big.NewInt(0).SetString(temp.TransactionIndex[2:], 16)

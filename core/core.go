@@ -12,18 +12,11 @@
    along with go-web3.  If not, see <http://www.gnu.org/licenses/>.
 *********************************************************************************/
 
-/**
- * @file core.go
- * @authors:
- *   Reginaldo Costa <regcostajr@gmail.com>
- * @date 2017
- */
-
 package core
 
 import (
 	"errors"
-	"github.com/bif/bif-sdk-go/complex/types"
+	"github.com/bif/bif-sdk-go/common"
 	"github.com/bif/bif-sdk-go/core/block"
 	"github.com/bif/bif-sdk-go/dto"
 	"github.com/bif/bif-sdk-go/providers"
@@ -97,7 +90,7 @@ func (core *Core) IsSyncing() (*dto.SyncingResponse, error) {
 //    - none
 // Returns:
 // 	  - DATA, 20 bytes - the current coinbase address.
-func (core *Core) GetCoinbase() (string, error) {
+func (core *Core) GetCoinBase() (string, error) {
 
 	pointer := &dto.RequestResult{}
 
@@ -169,13 +162,13 @@ func (core *Core) GetGasPrice() (*big.Int, error) {
 	return pointer.ToBigInt()
 }
 
-// ListAccounts - Returns a list of addresses owned by client.
+// GetAccounts - Returns a list of addresses owned by client.
 // Reference: https://github.com/ethereum/wiki/wiki/JSON-RPC#core_accounts
 // Parameters:
 //    - none
 // Returns:
 //    - Array of DATA, 20 Bytes - addresses owned by the client.
-func (core *Core) ListAccounts() ([]string, error) {
+func (core *Core) GetAccounts() ([]string, error) {
 
 	pointer := &dto.RequestResult{}
 
@@ -424,20 +417,23 @@ func (core *Core) GetTransactionByBlockNumberAndIndex(blockIndex *big.Int, index
 
 }
 
-// SendTransaction - Creates new message call transaction or a contract creation, if the data field contains code.
-// Reference: https://github.com/ethereum/wiki/wiki/JSON-RPC#core_sendtransaction
-// Parameters:
-//    1. Object - The transaction object
-//    - from: 		DATA, 20 Bytes - The address the transaction is send from.
-//    - to: 		DATA, 20 Bytes - (optional when creating new contract) The address the transaction is directed to.
-//    - gas: 		QUANTITY - (optional, default: 90000) Integer of the gas provided for the transaction execution. It will return unused gas.
-//    - gasPrice: 	QUANTITY - (optional, default: To-Be-Determined) Integer of the gasPrice used for each paid gas
-//    - value: 		QUANTITY - (optional) Integer of the value send with this transaction
-//    - data: 		DATA - The compiled code of a contract OR the hash of the invoked method signature and encoded parameters. For details see Ethereum Contract ABI (https://github.com/ethereum/wiki/wiki/Ethereum-Contract-ABI)
-//    - nonce: 		QUANTITY - (optional) Integer of a nonce. This allows to overwrite your own pending transactions that use the same nonce.
-// Returns:
-//	  - DATA, 32 Bytes - the transaction hash, or the zero hash if the transaction is not yet available.
-// Use core_getTransactionReceipt to get the contract address, after the transaction was mined, when you created a contract.
+/*
+SendTransaction: 发送交易
+
+Params:
+	- transaction: 要发送的交易对象(*dto.TransactionParameters)
+		from: string，20 Bytes - 指定的发送者的地址。
+		to: string，20 Bytes - （可选）交易消息的目标地址，如果是合约创建，则不填.
+		gas: *big.Int - （可选）默认是自动，交易可使用的gas，未使用的gas会退回。
+		gasPrice: *big.Int - （可选）默认是自动确定，交易的gas价格，默认是网络gas价格的平均值 。
+		data: string - （可选）或者包含相关数据的字节字符串，如果是合约创建，则是初始化要用到的代码。
+		value: *big.Int - （可选）交易携带的货币量，以bifer为单位。如果合约创建交易，则为初始的基金
+		nonce: *big.Int - （可选）整数，使用此值，可以允许你覆盖你自己的相同nonce的，正在pending中的交易
+
+Returns:
+	- string, transactionHash，32 Bytes，交易哈希，如果交易尚不可用，则为零哈希
+	- error
+*/
 func (core *Core) SendTransaction(transaction *dto.TransactionParameters) (string, error) {
 
 	params := make([]*dto.RequestTransactionParameters, 1)
@@ -455,6 +451,16 @@ func (core *Core) SendTransaction(transaction *dto.TransactionParameters) (strin
 
 }
 
+/*
+SendRawTransaction: 发送已签名的交易
+
+Params:
+	- encodedTx: strng, 已签名的交易数据
+
+Returns:
+	- string, transactionHash，32 Bytes，交易哈希，如果交易尚不可用，则为零哈希
+	- error
+*/
 func (core *Core) SendRawTransaction(encodedTx string) (string, error) {
 
 	params := make([]string, 1)
@@ -545,29 +551,6 @@ func (core *Core) Call(transaction *dto.TransactionParameters) (*dto.RequestResu
 
 }
 
-// CompileSolidity - Returns compiled solidity code.
-// Reference: https://github.com/ethereum/wiki/wiki/JSON-RPC#core_compilesolidity
-// Parameters:
-//    1. String - The source code.
-// Returns:
-//	  - DATA - The compiled source code.
-func (core *Core) CompileSolidity(sourceCode string) (types.ComplexString, error) {
-
-	params := make([]string, 1)
-	params[0] = sourceCode
-
-	pointer := &dto.RequestResult{}
-
-	err := core.provider.SendRequest(pointer, "core_compileSolidity", params)
-
-	if err != nil {
-		return "", err
-	}
-
-	return pointer.ToComplexString()
-
-}
-
 // GetTransactionReceipt - Returns compiled solidity code.
 // Reference: https://github.com/ethereum/wiki/wiki/JSON-RPC#core_gettransactionreceipt
 // Parameters:
@@ -607,7 +590,7 @@ func (core *Core) GetTransactionReceipt(hash string) (*dto.TransactionReceipt, e
 // Returns:
 //    1. Object - A block object, or null when no transaction was found
 //    2. error
-func (core *Core) GetBlockByNumber(number *big.Int, transactionDetails bool) (*dto.Block, error) {
+func (core *Core) GetBlockByNumber(number *big.Int, transactionDetails bool) (interface{}, error) {
 
 	params := make([]interface{}, 2)
 	params[0] = utils.IntToHex(number)
@@ -621,7 +604,7 @@ func (core *Core) GetBlockByNumber(number *big.Int, transactionDetails bool) (*d
 		return nil, err
 	}
 
-	return pointer.ToBlock()
+	return pointer.ToBlock(transactionDetails)
 }
 
 // GetBlockTransactionCountByHash
@@ -685,7 +668,7 @@ func (core *Core) GetBlockTransactionCountByNumber(defaultBlockParameter string)
 // Returns:
 //    1. Object - A block object, or null when no transaction was found
 //    2. error
-func (core *Core) GetBlockByHash(hash string, transactionDetails bool) (*dto.Block, error) {
+func (core *Core) GetBlockByHash(hash string, transactionDetails bool) (interface{}, error) {
 	// ensure that the hash is correctlyformatted
 	if strings.HasPrefix(hash, "0x") {
 		if len(hash) != 66 {
@@ -710,65 +693,7 @@ func (core *Core) GetBlockByHash(hash string, transactionDetails bool) (*dto.Blo
 		return nil, err
 	}
 
-	return pointer.ToBlock()
-}
-
-// GetUncleCountByBlockHash - Returns the number of uncles in a block from a block matching the given block hash.
-// Reference: https://github.com/ethereum/wiki/wiki/JSON-RPC#core_getunclecountbyblockhash
-// Parameters:
-//    - DATA, 32 bytes - Hash of a block
-// Returns:
-//    - QUANTITY, number - integer of the number of uncles in this block
-//    - error
-func (core *Core) GetUncleCountByBlockHash(hash string) (*big.Int, error) {
-	// ensure that the hash has been correctly formatted
-	if strings.HasPrefix(hash, "0x") {
-		if len(hash) != 66 {
-			return nil, errors.New("malformed block hash")
-		}
-	} else {
-		if len(hash) != 64 {
-			return nil, errors.New("malformed block hash")
-		}
-		hash = "0x" + hash
-	}
-
-	params := make([]string, 1)
-	params[0] = hash
-
-	pointer := &dto.RequestResult{}
-
-	err := core.provider.SendRequest(pointer, "core_getUncleCountByBlockHash", params)
-
-	if err != nil {
-		return nil, err
-	}
-
-	return pointer.ToBigInt()
-}
-
-// GetUncleCountByBlockNumber - Returns the number of uncles in a block from a block matching the given block number.
-// Reference: https://github.com/ethereum/wiki/wiki/JSON-RPC#core_getunclecountbyblocknumber
-// Parameters:
-//    - QUANTITY, number - integer of a block number
-// Returns:
-//    - QUANTITY, number - integer of the number of uncles in this block
-//    - error
-func (core *Core) GetUncleCountByBlockNumber(quantity *big.Int) (*big.Int, error) {
-	// ensure that the hash has been correctly formatted
-
-	params := make([]string, 1)
-	params[0] = utils.IntToHex(quantity)
-
-	pointer := &dto.RequestResult{}
-
-	err := core.provider.SendRequest(pointer, "core_getUncleCountByBlockNumber", params)
-
-	if err != nil {
-		return nil, err
-	}
-
-	return pointer.ToBigInt()
+	return pointer.ToBlock(transactionDetails)
 }
 
 // GetCode - Returns code at a given address
@@ -838,4 +763,37 @@ func (core *Core) GetStake(address string) (*dto.StakeResponse, error) {
 	}
 
 	return pointer.ToStakeResponse()
+}
+
+func (core *Core) GetCanTrust(address, defaultBlockParameter string) (*big.Int, error) {
+
+	params := make([]string, 2)
+	params[0] = address
+	params[1] = defaultBlockParameter
+
+	pointer := &dto.RequestResult{}
+
+	err := core.provider.SendRequest(pointer, "core_getCanTrust", params)
+
+	if err != nil {
+		return nil, err
+	}
+
+	if strings.EqualFold(pointer.Data, "") {
+		return common.Big0, nil
+	}
+
+	return pointer.ToBigInt()
+}
+
+func (core *Core) GetChainId() (uint64, error) {
+	pointer := &dto.RequestResult{}
+
+	err := core.provider.SendRequest(pointer, "core_chainId", nil)
+
+	if err != nil {
+		return 0, err
+	}
+
+	return pointer.ToChainID()
 }

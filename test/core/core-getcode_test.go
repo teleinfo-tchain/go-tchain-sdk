@@ -12,29 +12,23 @@
    along with go-bif.  If not, see <http://www.gnu.org/licenses/>.
 *********************************************************************************/
 
-/**
- * @file core-getcode_test.go
- * @authors:
- *   Junjie Chen <chuckjunjchen@gmail.com>
- * @date 2018
- */
-
 package test
 
 import (
 	"encoding/json"
+	"github.com/bif/bif-sdk-go/test/resources"
 	"io/ioutil"
 	"math/big"
 	"testing"
 
 	"github.com/bif/bif-sdk-go/core/block"
 
-	bif "github.com/bif/bif-sdk-go"
+	"github.com/bif/bif-sdk-go"
 	"github.com/bif/bif-sdk-go/dto"
 	"github.com/bif/bif-sdk-go/providers"
 )
 
-func TestCoreGetcode(t *testing.T) {
+func TestCoreGetCode(t *testing.T) {
 
 	content, err := ioutil.ReadFile("../resources/simple-token.json")
 
@@ -45,17 +39,21 @@ func TestCoreGetcode(t *testing.T) {
 
 	type TruffleContract struct {
 		Abi              string `json:"abi"`
-		Bytecode         string `json:"bytecode"`
-		DeployedBytecode string `json:"deployedBytecode"`
+		ByteCode         string `json:"byteCode"`
+		DeployedByteCode string `json:"deployedByteCode"`
 	}
 
 	var unmarshalResponse TruffleContract
 
-	json.Unmarshal(content, &unmarshalResponse)
+	err = json.Unmarshal(content, &unmarshalResponse)
+	if err != nil{
+		t.Error(err)
+		t.FailNow()
+	}
 
-	var connection = bif.NewBif(providers.NewHTTPProvider("192.168.104.35:33333", 10, false))
-	bytecode := unmarshalResponse.Bytecode
-	deployedBytecode := unmarshalResponse.DeployedBytecode
+	var connection = bif.NewBif(providers.NewHTTPProvider(resources.IP+":"+resources.Port, 10, false))
+	byteCode := unmarshalResponse.ByteCode
+	deployedByteCode := unmarshalResponse.DeployedByteCode
 
 	contract, err := connection.Core.NewContract(unmarshalResponse.Abi)
 
@@ -65,16 +63,16 @@ func TestCoreGetcode(t *testing.T) {
 	}
 
 	transaction := new(dto.TransactionParameters)
-	coinbase, err := connection.Core.GetCoinbase()
+	coinBase, err := connection.Core.GetCoinBase()
 
 	if err != nil {
 		t.Error(err)
 		t.FailNow()
 	}
 
-	transaction.From = coinbase
+	transaction.From = coinBase
 	transaction.Gas = big.NewInt(4000000)
-	hash, err := contract.Deploy(transaction, bytecode, nil)
+	hash, err := contract.Deploy(transaction, byteCode, nil)
 
 	if err != nil {
 		t.Error(err)
@@ -99,7 +97,7 @@ func TestCoreGetcode(t *testing.T) {
 		t.FailNow()
 	}
 
-	if deployedBytecode != code {
+	if deployedByteCode != code {
 		t.Error("Contract code not expected")
 		t.FailNow()
 	}

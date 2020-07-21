@@ -12,16 +12,11 @@
    along with go-bif.  If not, see <http://www.gnu.org/licenses/>.
 *********************************************************************************/
 
-/**
- * @file core-getBlockByNumber_test.go
- * @authors:
- *    Sigma Prime <sigmaprime.io>
- * @date 2018
- */
-
 package test
 
 import (
+	"github.com/bif/bif-sdk-go/dto"
+	"github.com/bif/bif-sdk-go/test/resources"
 	"testing"
 
 	"github.com/bif/bif-sdk-go"
@@ -30,18 +25,19 @@ import (
 
 func TestCoreGetBlockByHash(t *testing.T) {
 
-	var connection = bif.NewBif(providers.NewHTTPProvider("192.168.104.35:33333", 10, false))
+	var connection = bif.NewBif(providers.NewHTTPProvider(resources.IP+":"+resources.Port, 10, false))
 
 	blockNumber, err := connection.Core.GetBlockNumber()
 
-	blockByNumber, err := connection.Core.GetBlockByNumber(blockNumber, false)
+	const transactionDetails = false
+	blockByNumber, err := connection.Core.GetBlockByNumber(blockNumber, transactionDetails)
 
 	if err != nil {
 		t.Error(err)
 		t.FailNow()
 	}
 
-	blockByHash, err := connection.Core.GetBlockByHash(blockByNumber.Hash, false)
+	blockByHash, err := connection.Core.GetBlockByHash(blockByNumber.(*dto.BlockNoDetails).Hash, transactionDetails)
 
 	if err != nil {
 		t.Error(err)
@@ -49,17 +45,16 @@ func TestCoreGetBlockByHash(t *testing.T) {
 	}
 
 	// Ensure it's the same block
-	if (blockByNumber.Number.Cmp(blockByHash.Number)) != 0 ||
-		(blockByNumber.Miner != blockByHash.Miner) ||
-		(blockByNumber.Hash != blockByHash.Hash) {
+	if (blockByNumber.(*dto.BlockNoDetails).Number.Cmp(blockByHash.(*dto.BlockNoDetails).Number)) != 0 ||
+		(blockByNumber.(*dto.BlockNoDetails).Miner != blockByHash.(*dto.BlockNoDetails).Miner) ||
+		(blockByNumber.(*dto.BlockNoDetails).Hash != blockByHash.(*dto.BlockNoDetails).Hash) {
 		t.Errorf("Not same block returned")
-		t.FailNow()
 		t.FailNow()
 	}
 
-	t.Log(blockByHash.Hash, blockByNumber.Hash)
+	t.Log(blockByHash.(*dto.BlockNoDetails).Hash, blockByNumber.(*dto.BlockNoDetails).Hash)
 
-	_, err = connection.Core.GetBlockByHash("0x1234", false)
+	_, err = connection.Core.GetBlockByHash("0x1234", transactionDetails)
 
 	if err == nil {
 		t.Errorf("Invalid hash not rejected")

@@ -12,15 +12,10 @@
    along with go-bif.  If not, see <http://www.gnu.org/licenses/>.
 *********************************************************************************/
 
-/**
- * @file personal-sendtransaction_test.go
- * @authors:
- *   Reginaldo Costa <regcostajr@gmail.com>
- * @date 2017
- */
 package test
 
 import (
+	"github.com/bif/bif-sdk-go/test/resources"
 	"testing"
 
 	"github.com/bif/bif-sdk-go"
@@ -31,9 +26,9 @@ import (
 
 func TestPersonalSendTransaction(t *testing.T) {
 
-	var connection = bif.NewBif(providers.NewHTTPProvider("192.168.104.35:33333", 10, false))
+	var connection = bif.NewBif(providers.NewHTTPProvider(resources.IP+":"+resources.Port, 10, false))
 
-	coinbase, err := connection.Core.GetCoinbase()
+	coinBase, err := connection.Core.GetCoinBase()
 
 	if err != nil {
 		t.Error(err)
@@ -41,12 +36,12 @@ func TestPersonalSendTransaction(t *testing.T) {
 	}
 
 	transaction := new(dto.TransactionParameters)
-	transaction.From = coinbase
-	transaction.To = coinbase
+	transaction.From = coinBase
+	transaction.To = coinBase
 	transaction.Value = big.NewInt(10)
 	transaction.Gas = big.NewInt(40000)
 
-	txID, err := connection.Personal.SendTransaction(transaction, "")
+	txID, err := connection.Personal.SendTransaction(transaction, "123456")
 
 	if err != nil {
 		t.Error(err)

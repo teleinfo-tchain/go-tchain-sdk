@@ -12,19 +12,13 @@
    along with go-bif.  If not, see <http://www.gnu.org/licenses/>.
 *********************************************************************************/
 
-/**
- * @file core-sendtransaction_test.go
- * @authors:
- *   Reginaldo Costa <regcostajr@gmail.com>
- * @date 2017
- */
 package test
 
 import (
+	"github.com/bif/bif-sdk-go/test/resources"
 	"testing"
 
 	"github.com/bif/bif-sdk-go"
-	"github.com/bif/bif-sdk-go/complex/types"
 	"github.com/bif/bif-sdk-go/dto"
 	"github.com/bif/bif-sdk-go/providers"
 	"math/big"
@@ -32,9 +26,9 @@ import (
 
 func TestGetTransactionByBlockNumberAndIndex(t *testing.T) {
 
-	var connection = bif.NewBif(providers.NewHTTPProvider("192.168.104.35:33333", 10, false))
+	var connection = bif.NewBif(providers.NewHTTPProvider(resources.IP+":"+resources.Port, 10, false))
 
-	coinbase, err := connection.Core.GetCoinbase()
+	coinBase, err := connection.Core.GetCoinBase()
 
 	if err != nil {
 		t.Error(err)
@@ -42,11 +36,11 @@ func TestGetTransactionByBlockNumberAndIndex(t *testing.T) {
 	}
 
 	transaction := new(dto.TransactionParameters)
-	transaction.From = coinbase
-	transaction.To = coinbase
+	transaction.From = coinBase
+	transaction.To = coinBase
 	transaction.Value = big.NewInt(0).Mul(big.NewInt(500), big.NewInt(1e18))
 	transaction.Gas = big.NewInt(40000)
-	transaction.Data = types.ComplexString("p2p transaction")
+	transaction.Data = "p2p transaction"
 
 	//txID, err := connection.Core.SendTransaction(transaction)
 
