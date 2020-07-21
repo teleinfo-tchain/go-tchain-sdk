@@ -152,7 +152,7 @@ func (cer *Certificate) GetPeriod(id string) (uint64, error) {
 	params := make([]string, 1)
 	params[0] = id
 
-	pointer := &dto.RequestResult{}
+	pointer := &dto.SystemRequestResult{}
 
 	err := cer.super.provider.SendRequest(pointer, "certificate_period", params)
 	if err != nil {
@@ -178,7 +178,7 @@ func (cer *Certificate) GetActive(id string) (bool, error) {
 	params := make([]string, 1)
 	params[0] = id
 
-	pointer := &dto.RequestResult{}
+	pointer := &dto.SystemRequestResult{}
 
 	err := cer.super.provider.SendRequest(pointer, "certificate_active", params)
 	if err != nil {
@@ -212,7 +212,7 @@ func (cer *Certificate) GetCertificate(id string) (*dto.CertificateInfo, error) 
 	params := make([]string, 1)
 	params[0] = id
 
-	pointer := &dto.RequestResult{}
+	pointer := &dto.SystemRequestResult{}
 
 	err := cer.super.provider.SendRequest(pointer, "certificate_certificate", params)
 	if err != nil {
@@ -242,7 +242,7 @@ func (cer *Certificate) GetIssuer(id string) (*dto.IssuerSignature, error) {
 	params := make([]string, 1)
 	params[0] = id
 
-	pointer := &dto.RequestResult{}
+	pointer := &dto.SystemRequestResult{}
 
 	err := cer.super.provider.SendRequest(pointer, "certificate_issuer", params)
 	if err != nil {
@@ -272,7 +272,7 @@ func (cer *Certificate) GetSubject(id string) (*dto.SubjectSignature, error) {
 	params := make([]string, 1)
 	params[0] = id
 
-	pointer := &dto.RequestResult{}
+	pointer := &dto.SystemRequestResult{}
 
 	err := cer.super.provider.SendRequest(pointer, "certificate_subject", params)
 	if err != nil {

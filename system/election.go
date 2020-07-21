@@ -151,7 +151,7 @@ func (e *Election) GetCandidate(candidateAddress string) (*dto.Candidate, error)
 	params := make([]string, 1)
 	params[0] = candidateAddress
 
-	pointer := &dto.RequestResult{}
+	pointer := &dto.SystemRequestResult{}
 
 	err := e.super.provider.SendRequest(pointer, "election_candidate", params)
 	if err != nil {
@@ -174,7 +174,7 @@ Returns:
 Call permissions: Anyone
 */
 func (e *Election) GetAllCandidates() ([]*dto.Candidate, error) {
-	pointer := &dto.RequestResult{}
+	pointer := &dto.SystemRequestResult{}
 
 	err := e.super.provider.SendRequest(pointer, "election_allCandidates", nil)
 	if err != nil {
@@ -380,7 +380,7 @@ func (e *Election) GetStake(voterAddress string) (*dto.Stake, error) {
 	params := make([]string, 1)
 	params[0] = voterAddress
 
-	pointer := &dto.RequestResult{}
+	pointer := &dto.SystemRequestResult{}
 
 	err := e.super.provider.SendRequest(pointer, "election_stake", params)
 	if err != nil {
@@ -403,7 +403,7 @@ Returns:
 Call permissions: Anyone
 */
 func (e *Election) GetRestBIFBounty() (*big.Int, error) {
-	pointer := &dto.RequestResult{}
+	pointer := &dto.SystemRequestResult{}
 
 	err := e.super.provider.SendRequest(pointer, "election_restBIFBounty", nil)
 
@@ -479,7 +479,7 @@ func (e *Election) GetVoter(voterAddress string) (*dto.Voter, error) {
 	params := make([]string, 1)
 	params[0] = voterAddress
 
-	pointer := &dto.RequestResult{}
+	pointer := &dto.SystemRequestResult{}
 
 	err := e.super.provider.SendRequest(pointer, "election_voter", params)
 	if err != nil {
@@ -505,7 +505,7 @@ func (e *Election) GetVoterList(voterAddress string) ([]*dto.Voter, error) {
 	params := make([]string, 1)
 	params[0] = voterAddress
 
-	pointer := &dto.RequestResult{}
+	pointer := &dto.SystemRequestResult{}
 
 	err := e.super.provider.SendRequest(pointer, "election_voterList", params)
 	if err != nil {

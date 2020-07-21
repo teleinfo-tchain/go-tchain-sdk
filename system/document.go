@@ -130,7 +130,7 @@ func (doc *Doc) GetDocument(id string) (*dto.Document, error) {
 	params := make([]interface{}, 1)
 	params[0] = id
 
-	pointer := &dto.RequestResult{}
+	pointer := &dto.SystemRequestResult{}
 
 	err := doc.super.provider.SendRequest(pointer, "document_document", params)
 	if err != nil {
@@ -335,7 +335,7 @@ func (doc *Doc) IsEnable(id string) (bool, error) {
 	params := make([]interface{}, 1)
 	params[0] = id
 
-	pointer := &dto.RequestResult{}
+	pointer := &dto.SystemRequestResult{}
 
 	err := doc.super.provider.SendRequest(pointer, "", params)
 	if err != nil {

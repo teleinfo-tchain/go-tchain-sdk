@@ -146,7 +146,7 @@ func (anc *Anchor) IsBaseTrustAnchor(anchor string) (bool, error) {
 	params := make([]string, 1)
 	params[0] = anchor
 
-	pointer := &dto.RequestResult{}
+	pointer := &dto.SystemRequestResult{}
 
 	err := anc.super.provider.SendRequest(pointer, "trustanchor_isBaseTrustAnchor", params)
 	if err != nil {
@@ -172,7 +172,7 @@ func (anc *Anchor) IsTrustAnchor(anchor string) (bool, error) {
 	params := make([]string, 1)
 	params[0] = anchor
 
-	pointer := &dto.RequestResult{}
+	pointer := &dto.SystemRequestResult{}
 
 	err := anc.super.provider.SendRequest(pointer, "trustanchor_isTrustAnchor", params)
 	if err != nil {
@@ -269,7 +269,7 @@ func (anc *Anchor) GetTrustAnchor(anchor string) (*dto.TrustAnchor, error) {
 	params := make([]string, 1)
 	params[0] = anchor
 
-	pointer := &dto.RequestResult{}
+	pointer := &dto.SystemRequestResult{}
 
 	err := anc.super.provider.SendRequest(pointer, "trustanchor_trustAnchor", params)
 	if err != nil {
@@ -295,7 +295,7 @@ func (anc *Anchor) GetTrustAnchorStatus(anchor string) (uint64, error) {
 	params := make([]string, 1)
 	params[0] = anchor
 
-	pointer := &dto.RequestResult{}
+	pointer := &dto.SystemRequestResult{}
 
 	err := anc.super.provider.SendRequest(pointer, "trustanchor_trustAnchorStatus", params)
 	if err != nil {
@@ -322,7 +322,7 @@ func (anc *Anchor) GetCertificateList(anchor string) ([]string, error) {
 	params := make([]string, 1)
 	params[0] = anchor
 
-	pointer := &dto.RequestResult{}
+	pointer := &dto.SystemRequestResult{}
 
 	err := anc.super.provider.SendRequest(pointer, "trustanchor_certificateList", params)
 	if err != nil {
@@ -346,7 +346,7 @@ Returns:
 Call permissions: Anyone
 */
 func (anc *Anchor) GetBaseList() ([]string, error) {
-	pointer := &dto.RequestResult{}
+	pointer := &dto.SystemRequestResult{}
 
 	err := anc.super.provider.SendRequest(pointer, "trustanchor_baseList", nil)
 
@@ -370,7 +370,7 @@ Returns:
 Call permissions: Anyone
 */
 func (anc *Anchor) GetBaseNum() (uint64, error) {
-	pointer := &dto.RequestResult{}
+	pointer := &dto.SystemRequestResult{}
 
 	err := anc.super.provider.SendRequest(pointer, "trustanchor_baseNumber", nil)
 
@@ -394,7 +394,7 @@ Returns:
 Call permissions: Anyone
 */
 func (anc *Anchor) GetExpendList() ([]string, error) {
-	pointer := &dto.RequestResult{}
+	pointer := &dto.SystemRequestResult{}
 
 	err := anc.super.provider.SendRequest(pointer, "trustanchor_expendList", nil)
 
@@ -418,7 +418,7 @@ Returns:
 Call permissions: Anyone
 */
 func (anc *Anchor) GetExpendNum() (uint64, error) {
-	pointer := &dto.RequestResult{}
+	pointer := &dto.SystemRequestResult{}
 
 	err := anc.super.provider.SendRequest(pointer, "trustanchor_enpendNumber", nil)
 
@@ -495,7 +495,7 @@ func (anc *Anchor) GetVoter(voterAddress string) ([]*dto.TrustAnchorVoter, error
 	params := make([]string, 1)
 	params[0] = voterAddress
 
-	pointer := &dto.RequestResult{}
+	pointer := &dto.SystemRequestResult{}
 
 	err := anc.super.provider.SendRequest(pointer, "trustanchor_voter", params)
 	if err != nil {

@@ -119,7 +119,7 @@ func (peerCer *PeerCertificate) GetPeriod(id string) (uint64, error) {
 	params := make([]string, 1)
 	params[0] = id
 
-	pointer := &dto.RequestResult{}
+	pointer := &dto.SystemRequestResult{}
 
 	err := peerCer.super.provider.SendRequest(pointer, "peercertificate_period", params)
 	if err != nil {
@@ -145,7 +145,7 @@ func (peerCer *PeerCertificate) GetActive(id string) (bool, error) {
 	params := make([]string, 1)
 	params[0] = id
 
-	pointer := &dto.RequestResult{}
+	pointer := &dto.SystemRequestResult{}
 
 	err := peerCer.super.provider.SendRequest(pointer, "peercertificate_active", params)
 	if err != nil {
@@ -182,7 +182,7 @@ func (peerCer *PeerCertificate) GetPeerCertificate(id string) (*dto.PeerCertific
 	params := make([]string, 1)
 	params[0] = id
 
-	pointer := &dto.RequestResult{}
+	pointer := &dto.SystemRequestResult{}
 
 	err := peerCer.super.provider.SendRequest(pointer, "peercertificate_peerCertificate", params)
 	if err != nil {
