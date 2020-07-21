@@ -216,6 +216,9 @@ func (pointer *RequestResult) ToTrustAnchorVoter() ([]*TrustAnchorVoter, error) 
 		}
 
 		err = json.Unmarshal([]byte(marshal), info)
+		if err != nil {
+			return nil, customerror.UNPARSEABLEINTERFACE
+		}
 
 		trustAnchorVoterLi[i] = info
 	}
@@ -406,6 +409,9 @@ func (pointer *RequestResult) ToElectionCandidates() ([]*Candidate, error) {
 		}
 
 		err = json.Unmarshal([]byte(marshal), info)
+		if err != nil {
+			return nil, customerror.UNPARSEABLEINTERFACE
+		}
 
 		candidates[i] = info
 
@@ -464,6 +470,9 @@ func (pointer *RequestResult) ToElectionVoterList() ([]*Voter, error) {
 		}
 
 		err = json.Unmarshal([]byte(marshal), info)
+		if err != nil {
+			return nil, customerror.UNPARSEABLEINTERFACE
+		}
 
 		voters[i] = info
 
