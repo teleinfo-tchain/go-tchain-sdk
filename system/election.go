@@ -173,7 +173,7 @@ Returns:
 
 Call permissions: Anyone
 */
-func (e *Election) GetAllCandidates() ([]dto.Candidate, error) {
+func (e *Election) GetAllCandidates() ([]*dto.Candidate, error) {
 	pointer := &dto.RequestResult{}
 
 	err := e.super.provider.SendRequest(pointer, "election_allCandidates", nil)
@@ -501,7 +501,7 @@ Returns:
 
 Call permissions: Anyone
 */
-func (e *Election) GetVoterList(voterAddress string) ([]dto.Voter, error) {
+func (e *Election) GetVoterList(voterAddress string) ([]*dto.Voter, error) {
 	params := make([]string, 1)
 	params[0] = voterAddress
 

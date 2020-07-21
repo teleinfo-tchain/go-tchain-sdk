@@ -491,7 +491,7 @@ Returns:
 
 Call permissions: Anyone
 */
-func (anc *Anchor) GetVoter(voterAddress string) ([]dto.TrustAnchorVoter, error) {
+func (anc *Anchor) GetVoter(voterAddress string) ([]*dto.TrustAnchorVoter, error) {
 	params := make([]string, 1)
 	params[0] = voterAddress
 
