@@ -2,7 +2,6 @@ package dto
 
 import (
 	"encoding/json"
-	"fmt"
 	customerror "github.com/bif/bif-sdk-go/constants"
 )
 
@@ -11,7 +10,17 @@ type DebugRequestResult struct {
 }
 
 type Dump struct {
+	Root     string                 `json:"root"`
+	Accounts map[string]DumpAccount `json:"accounts"`
+}
 
+type DumpAccount struct {
+	Balance  string            `json:"balance"`
+	Nonce    uint64            `json:"nonce"`
+	Root     string            `json:"root"`
+	CodeHash string            `json:"code_hash"`
+	Code     string            `json:"code"`
+	Storage  map[string]string `json:"storage"`
 }
 
 func (pointer *DebugRequestResult) ToDumpBlock() (*Dump, error) {
@@ -23,7 +32,7 @@ func (pointer *DebugRequestResult) ToDumpBlock() (*Dump, error) {
 	if len(result) == 0 {
 		return nil, customerror.EMPTYRESPONSE
 	}
-	fmt.Printf("dump is %#v \n", result)
+
 	dump := &Dump{}
 
 	marshal, err := json.Marshal(result)

@@ -24,6 +24,7 @@ func TestDumpBlock(t *testing.T) {
 	}
 
 	t.Log(dumpBlock)
+	// fmt.Printf("%#v \n", dumpBlock)
 }
 
 func TestGetBlockRlp(t *testing.T) {

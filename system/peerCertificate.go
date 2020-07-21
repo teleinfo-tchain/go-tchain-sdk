@@ -165,6 +165,7 @@ Returns:
 	- *dto.PeerCertificate
 		Id          string   `json:"id"`          //唯一索引
 		Issuer      string   `json:"issuer"`      //颁发者地址
+		Apply       string   `json:"apply"`       // 申请人bid
 		PublicKey   string   `json:"publicKey"`   //节点公钥
 		NodeName    string   `json:"nodeName"`    //节点名称
 		Signature   string   `json:"signature"`   //节点签名内容
@@ -190,4 +191,31 @@ func (peerCer *PeerCertificate) GetPeerCertificate(id string) (*dto.PeerCertific
 	}
 
 	return pointer.ToPeerCertificate()
+}
+
+ /*
+  GetPeerCertificateIdList:
+   	EN - Get applied certificates by bid
+ 	CN - 根据节点可信证书申请人的bid获取申请的证书列表
+  Params:
+  	- id: string，节点证书的bid
+
+  Returns:
+  	- []string, 申请人申请的证书列表
+ 	- error
+
+  Call permissions: Anyone
+  */
+func (peerCer *PeerCertificate) GetPeerCertificateIdList(id string) ([]string, error) {
+	params := make([]string, 1)
+	params[0] = id
+
+	pointer := &dto.SystemRequestResult{}
+
+	err := peerCer.super.provider.SendRequest(pointer, "peercertificate_peerCertificateIdList", params)
+	if err != nil {
+		return nil, err
+	}
+
+	return pointer.ToStringArray()
 }

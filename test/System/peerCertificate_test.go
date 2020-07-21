@@ -120,3 +120,22 @@ func TestGetPeerCertificate(t *testing.T) {
 
 	t.Log(peerCertificate)
 }
+
+func TestGetPeerCertificateIdList(t *testing.T) {
+	var connection = bif.NewBif(providers.NewHTTPProvider(resources.IP+":"+resources.Port, 10, false))
+	_, err := connection.Core.GetCoinBase()
+
+	if err != nil {
+		t.Error(err)
+		t.FailNow()
+	}
+
+	peerCer := connection.System.NewPeerCertificate()
+	peerCertificateIdList, err := peerCer.GetPeerCertificateIdList(publicKeyTest)
+	if err != nil {
+		t.Error(err)
+		t.FailNow()
+	}
+
+	t.Log(peerCertificateIdList)
+}
