@@ -17,11 +17,13 @@ package bif
 
 import (
 	"github.com/bif/bif-sdk-go/core"
+	"github.com/bif/bif-sdk-go/debug"
 	"github.com/bif/bif-sdk-go/dto"
 	"github.com/bif/bif-sdk-go/net"
 	"github.com/bif/bif-sdk-go/personal"
 	"github.com/bif/bif-sdk-go/providers"
 	"github.com/bif/bif-sdk-go/system"
+	"github.com/bif/bif-sdk-go/txpool"
 	"github.com/bif/bif-sdk-go/utils"
 )
 
@@ -34,6 +36,8 @@ type Bif struct {
 	Personal *personal.Personal
 	Utils    *utils.Utils
 	System   *system.System
+	Debug    *debug.Debug
+	TxPool   *txpool.TxPool
 }
 
 /*
@@ -49,6 +53,8 @@ func NewBif(provider providers.ProviderInterface) *Bif {
 	bif.Personal = personal.NewPersonal(provider)
 	bif.Utils = utils.NewUtils()
 	bif.System = system.NewSystem(provider)
+	bif.TxPool = txpool.NewTxPool(provider)
+	bif.Debug = debug.NewDebug(provider)
 	return bif
 }
 

@@ -28,7 +28,7 @@ func TestNetVersion(t *testing.T) {
 
 	var connection = bif.NewBif(providers.NewHTTPProvider(resources.IP+":"+resources.Port, 10, false))
 
-	//Possible options
+	// Possible options
 	po := []string{"1", "2", "3", "4", "42"}
 
 	version, err := connection.Net.GetVersion()

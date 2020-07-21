@@ -16,8 +16,6 @@ package dto
 
 import (
 	"errors"
-	"github.com/bif/bif-sdk-go/common"
-	"github.com/bif/bif-sdk-go/common/hexutil"
 	"strconv"
 	"strings"
 
@@ -41,42 +39,6 @@ type Error struct {
 	Code    int         `json:"code"`
 	Message string      `json:"message"`
 	Data    interface{} `json:"data"`
-}
-
-func (pointer *RequestResult) ToPeerInfo() ([]*common.PeerInfo, error) {
-
-	if err := pointer.checkResponse(); err != nil {
-		return nil, err
-	}
-
-	resultLi := (pointer).Result.([]interface{})
-
-	peerInfoLi := make([]*common.PeerInfo, len(resultLi))
-
-	for i, v := range resultLi {
-
-		result := v.(map[string]interface{})
-
-		if len(result) == 0 {
-			return nil, customerror.EMPTYRESPONSE
-		}
-
-		info := &common.PeerInfo{}
-
-		marshal, err := json.Marshal(result)
-
-		if err != nil {
-			return nil, customerror.UNPARSEABLEINTERFACE
-		}
-
-		err = json.Unmarshal([]byte(marshal), info)
-
-		peerInfoLi[i] = info
-
-	}
-
-	return peerInfoLi, nil
-
 }
 
 func (pointer *RequestResult) ToStringArray() ([]string, error) {
@@ -282,53 +244,6 @@ func (pointer *RequestResult) ToTransactionReceipt() (*TransactionReceipt, error
 
 }
 
-func (pointer *RequestResult) ToTxpoolInspect() (map[string]map[string]map[string]string, error) {
-	if err := pointer.checkResponse(); err != nil {
-		return nil, err
-	}
-
-	result := (pointer).Result.(map[string]interface{})
-
-	if len(result) == 0 {
-		return nil, customerror.EMPTYRESPONSE
-	}
-
-	inspect := make(map[string]map[string]map[string]string, len(result))
-
-	marshal, err := json.Marshal(result)
-
-	if err != nil {
-		return nil, customerror.UNPARSEABLEINTERFACE
-	}
-
-	err = json.Unmarshal([]byte(marshal), &inspect)
-
-	return inspect, err
-}
-
-func (pointer *RequestResult) ToTxpoolStatus() (map[string]hexutil.Uint, error) {
-	if err := pointer.checkResponse(); err != nil {
-		return nil, err
-	}
-
-	result := (pointer).Result.(map[string]interface{})
-
-	if len(result) == 0 {
-		return nil, customerror.EMPTYRESPONSE
-	}
-
-	status := make(map[string]hexutil.Uint, len(result))
-
-	marshal, err := json.Marshal(result)
-
-	if err != nil {
-		return nil, customerror.UNPARSEABLEINTERFACE
-	}
-
-	err = json.Unmarshal([]byte(marshal), &status)
-
-	return status, err
-}
 
 func (pointer *RequestResult) ToBlock(transactionDetails bool) (interface{}, error) {
 
@@ -533,70 +448,6 @@ func (pointer *RequestResult) ToValidatorsAtHash() ([]string, error) {
 	}
 
 	return validators, nil
-}
-
-func (pointer *RequestResult) ToRoundStateInfo() (*RoundStateInfo, error) {
-	if err := pointer.checkResponse(); err != nil {
-		return nil, err
-	}
-
-	result := (pointer).Result.(map[string]interface{})
-
-	if len(result) == 0 {
-		return nil, customerror.EMPTYRESPONSE
-	}
-
-	roundStateInfo := &RoundStateInfo{}
-
-	marshal, err := json.Marshal(result)
-
-	err = json.Unmarshal([]byte(marshal), roundStateInfo)
-
-	return roundStateInfo, err
-}
-
-func (pointer *RequestResult) ToRoundChangeSetInfo() (*RoundChangeSetInfo, error) {
-	if err := pointer.checkResponse(); err != nil {
-		return nil, err
-	}
-
-	result := (pointer).Result.(map[string]interface{})
-
-	if len(result) == 0 {
-		return nil, customerror.EMPTYRESPONSE
-	}
-
-	roundChangeSetInfo := &RoundChangeSetInfo{}
-
-	marshal, err := json.Marshal(result)
-
-	err = json.Unmarshal([]byte(marshal), roundChangeSetInfo)
-
-	return roundChangeSetInfo, err
-}
-
-func (pointer *RequestResult) ToBacklogs() (map[string][]*Message, error) {
-	if err := pointer.checkResponse(); err != nil {
-		return nil, err
-	}
-
-	result := (pointer).Result.(map[string]interface{})
-
-	if len(result) == 0 {
-		return nil, customerror.EMPTYRESPONSE
-	}
-
-	backlogs := make(map[string][]*Message, len(result))
-
-	marshal, err := json.Marshal(result)
-
-	if err != nil {
-		return nil, customerror.UNPARSEABLEINTERFACE
-	}
-
-	err = json.Unmarshal([]byte(marshal), &backlogs)
-
-	return backlogs, err
 }
 
 func (pointer *RequestResult) ToChainID() (uint64, error) {

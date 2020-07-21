@@ -15,7 +15,6 @@
 package test
 
 import (
-	"fmt"
 	"github.com/bif/bif-sdk-go/test/resources"
 	"github.com/bif/bif-sdk-go/txpool"
 	"testing"
@@ -23,28 +22,41 @@ import (
 	"github.com/bif/bif-sdk-go/providers"
 )
 
-func TestTxpoolStatus(t *testing.T) {
+func TestGetStatus(t *testing.T) {
 
-	var connection = txpool.NewTxpool(providers.NewHTTPProvider(resources.IP+":"+resources.Port, 10, false))
+	var connection = txpool.NewTxPool(providers.NewHTTPProvider(resources.IP+":"+resources.Port, 10, false))
 
-	status, err := connection.Status()
+	status, err := connection.GetStatus()
 	if err != nil {
 		t.Error(err)
 		t.FailNow()
 	}
-	fmt.Printf("pending is %d\n", status["pending"])
-	fmt.Printf("queued is %d\n", status["queued"])
+
+	t.Log(status)
 
 }
 
 func TestTxPoolInspect(t *testing.T) {
 
-	var connection = txpool.NewTxpool(providers.NewHTTPProvider(resources.IP+":"+resources.Port, 10, false))
+	var connection = txpool.NewTxPool(providers.NewHTTPProvider(resources.IP+":"+resources.Port, 10, false))
 
 	inspect, err := connection.Inspect()
 	if err != nil {
 		t.Error(err)
 		t.FailNow()
 	}
-	fmt.Println(inspect)
+	t.Log(inspect)
+}
+
+func TestTxPoolContent(t *testing.T) {
+
+	var connection = txpool.NewTxPool(providers.NewHTTPProvider(resources.IP55+":"+resources.Port, 10, false))
+
+	transactions, err := connection.Content()
+	if err != nil {
+		t.Error(err)
+		t.FailNow()
+	}
+	t.Log(transactions)
+	// fmt.Printf("%#v \n", transactions)
 }

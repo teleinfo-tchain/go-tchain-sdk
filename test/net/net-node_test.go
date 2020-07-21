@@ -38,7 +38,7 @@ func TestNodePeers(t *testing.T) {
 		fmt.Printf("%+v\n", peers[i])
 	}
 
-	fmt.Println(len(peers))
+	t.Log(len(peers))
 }
 
 func TestAddPeer(t *testing.T) {
@@ -54,7 +54,7 @@ func TestAddPeer(t *testing.T) {
 		t.FailNow()
 	}
 
-	fmt.Println(r)
+	t.Log(r)
 }
 
 func TestRemovePeer(t *testing.T) {
@@ -70,5 +70,5 @@ func TestRemovePeer(t *testing.T) {
 		t.FailNow()
 	}
 
-	fmt.Println(r)
+	t.Log(r)
 }

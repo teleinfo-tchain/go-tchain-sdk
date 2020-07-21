@@ -7,6 +7,10 @@ import (
 	"math/big"
 )
 
+type SystemRequestResult struct {
+	RequestResult
+}
+
 type Voter struct {
 	Owner             common.Address   `json:"owner"`             // 投票人的地址
 	IsProxy           bool             `json:"isProxy"`           // 是否是代理人
@@ -23,7 +27,7 @@ type Stake struct {
 	LastStakeTimeStamp *big.Int       `json:"lastStakeTimeStamp"` // 上次抵押时间戳
 }
 
-func (pointer *RequestResult) ToPeerCertificate() (*PeerCertificate, error) {
+func (pointer *SystemRequestResult) ToPeerCertificate() (*PeerCertificate, error) {
 
 	if err := pointer.checkResponse(); err != nil {
 		return nil, err
@@ -48,7 +52,7 @@ func (pointer *RequestResult) ToPeerCertificate() (*PeerCertificate, error) {
 	return peerCertificate, err
 }
 
-func (pointer *RequestResult) ToTrustAnchor() (*TrustAnchor, error) {
+func (pointer *SystemRequestResult) ToTrustAnchor() (*TrustAnchor, error) {
 	if err := pointer.checkResponse(); err != nil {
 		return nil, err
 	}
@@ -73,7 +77,7 @@ func (pointer *RequestResult) ToTrustAnchor() (*TrustAnchor, error) {
 }
 
 // 解析测试注意！！！
-func (pointer *RequestResult) ToTrustAnchorVoter() ([]*TrustAnchorVoter, error) {
+func (pointer *SystemRequestResult) ToTrustAnchorVoter() ([]*TrustAnchorVoter, error) {
 	if err := pointer.checkResponse(); err != nil {
 		return nil, err
 	}
@@ -108,7 +112,7 @@ func (pointer *RequestResult) ToTrustAnchorVoter() ([]*TrustAnchorVoter, error) 
 	return trustAnchorVoterLi, nil
 }
 
-func (pointer *RequestResult) ToCertificateInfo() (*CertificateInfo, error) {
+func (pointer *SystemRequestResult) ToCertificateInfo() (*CertificateInfo, error) {
 	if err := pointer.checkResponse(); err != nil {
 		return nil, err
 	}
@@ -131,7 +135,7 @@ func (pointer *RequestResult) ToCertificateInfo() (*CertificateInfo, error) {
 	return certificateInfo, err
 }
 
-func (pointer *RequestResult) ToCertificateIssuerSignature() (*IssuerSignature, error) {
+func (pointer *SystemRequestResult) ToCertificateIssuerSignature() (*IssuerSignature, error) {
 	if err := pointer.checkResponse(); err != nil {
 		return nil, err
 	}
@@ -154,7 +158,7 @@ func (pointer *RequestResult) ToCertificateIssuerSignature() (*IssuerSignature, 
 	return issuerSignature, err
 }
 
-func (pointer *RequestResult) ToCertificateSubjectSignature() (*SubjectSignature, error) {
+func (pointer *SystemRequestResult) ToCertificateSubjectSignature() (*SubjectSignature, error) {
 	if err := pointer.checkResponse(); err != nil {
 		return nil, err
 	}
@@ -177,7 +181,7 @@ func (pointer *RequestResult) ToCertificateSubjectSignature() (*SubjectSignature
 	return subjectSignature, err
 }
 
-func (pointer *RequestResult) ToDocument() (*Document, error) {
+func (pointer *SystemRequestResult) ToDocument() (*Document, error) {
 	if err := pointer.checkResponse(); err != nil {
 		return nil, err
 	}
@@ -200,7 +204,7 @@ func (pointer *RequestResult) ToDocument() (*Document, error) {
 	return document, err
 }
 
-func (pointer *RequestResult) ToElectionCandidate() (*Candidate, error) {
+func (pointer *SystemRequestResult) ToElectionCandidate() (*Candidate, error) {
 	if err := pointer.checkResponse(); err != nil {
 		return nil, err
 	}
@@ -224,7 +228,7 @@ func (pointer *RequestResult) ToElectionCandidate() (*Candidate, error) {
 	return candidate, err
 }
 
-func (pointer *RequestResult) ToElectionCandidates() ([]*Candidate, error) {
+func (pointer *SystemRequestResult) ToElectionCandidates() ([]*Candidate, error) {
 
 	if err := pointer.checkResponse(); err != nil {
 		return nil, err
@@ -262,7 +266,7 @@ func (pointer *RequestResult) ToElectionCandidates() ([]*Candidate, error) {
 	return candidates, nil
 }
 
-func (pointer *RequestResult) ToElectionVoter() (*Voter, error) {
+func (pointer *SystemRequestResult) ToElectionVoter() (*Voter, error) {
 	if err := pointer.checkResponse(); err != nil {
 		return nil, err
 	}
@@ -285,7 +289,7 @@ func (pointer *RequestResult) ToElectionVoter() (*Voter, error) {
 	return voter, err
 }
 
-func (pointer *RequestResult) ToElectionVoterList() ([]*Voter, error) {
+func (pointer *SystemRequestResult) ToElectionVoterList() ([]*Voter, error) {
 
 	if err := pointer.checkResponse(); err != nil {
 		return nil, err
@@ -323,7 +327,7 @@ func (pointer *RequestResult) ToElectionVoterList() ([]*Voter, error) {
 	return voters, nil
 }
 
-func (pointer *RequestResult) ToElectionStake() (*Stake, error) {
+func (pointer *SystemRequestResult) ToElectionStake() (*Stake, error) {
 	if err := pointer.checkResponse(); err != nil {
 		return nil, err
 	}
@@ -343,4 +347,68 @@ func (pointer *RequestResult) ToElectionStake() (*Stake, error) {
 	err = json.Unmarshal(marshal, stake)
 
 	return stake, err
+}
+
+func (pointer *RequestResult) ToRoundStateInfo() (*RoundStateInfo, error) {
+	if err := pointer.checkResponse(); err != nil {
+		return nil, err
+	}
+
+	result := (pointer).Result.(map[string]interface{})
+
+	if len(result) == 0 {
+		return nil, customerror.EMPTYRESPONSE
+	}
+
+	roundStateInfo := &RoundStateInfo{}
+
+	marshal, err := json.Marshal(result)
+
+	err = json.Unmarshal([]byte(marshal), roundStateInfo)
+
+	return roundStateInfo, err
+}
+
+func (pointer *RequestResult) ToRoundChangeSetInfo() (*RoundChangeSetInfo, error) {
+	if err := pointer.checkResponse(); err != nil {
+		return nil, err
+	}
+
+	result := (pointer).Result.(map[string]interface{})
+
+	if len(result) == 0 {
+		return nil, customerror.EMPTYRESPONSE
+	}
+
+	roundChangeSetInfo := &RoundChangeSetInfo{}
+
+	marshal, err := json.Marshal(result)
+
+	err = json.Unmarshal([]byte(marshal), roundChangeSetInfo)
+
+	return roundChangeSetInfo, err
+}
+
+func (pointer *RequestResult) ToBacklogs() (map[string][]*Message, error) {
+	if err := pointer.checkResponse(); err != nil {
+		return nil, err
+	}
+
+	result := (pointer).Result.(map[string]interface{})
+
+	if len(result) == 0 {
+		return nil, customerror.EMPTYRESPONSE
+	}
+
+	backlogs := make(map[string][]*Message, len(result))
+
+	marshal, err := json.Marshal(result)
+
+	if err != nil {
+		return nil, customerror.UNPARSEABLEINTERFACE
+	}
+
+	err = json.Unmarshal([]byte(marshal), &backlogs)
+
+	return backlogs, err
 }
