@@ -11,25 +11,25 @@ import (
 
 const (
 	TrustAnchorContractAddr = "did:bid:00000000000000000000000c"
-	//AnchorStatusUnknow      = 0
-	//AnchorStatusOK          = 1
-	//AnchorStatusErr         = 2
-	//AnchorStatusDelete      = 3
+	// AnchorStatusUnknow      = 0
+	// AnchorStatusOK          = 1
+	// AnchorStatusErr         = 2
+	// AnchorStatusDelete      = 3
 	//
-	//BaseAnchor                 = 10
-	//ExtendAnchor               = 11
-	//UnknowAnchorType           = 2
-	//Day                        = 86400        //24*60*60秒，每次提取积分的最小时间间隔
-	//Bifer                      = 100000000    //10^9
-	//MiniExtractAmount          = 100 * Bifer  //每次提取积分的最小额度是100
-	//BaseTrustAnchorPledge      = 1000 * Bifer //注册根信任锚抵押的积分
-	//ExtendTrustAnchorPledge    = 100 * Bifer  //注册扩展信任锚抵押的积分
-	//IncentivesToExtendIssueCer = 1 * Bifer    //颁发一个证书获得的奖励
-	//IncentivesToBaseIssueCer   = 2 * Bifer    //颁发一个证书获得的奖励
-	//EmptyUrl                   = ""
+	// BaseAnchor                 = 10
+	// ExtendAnchor               = 11
+	// UnknowAnchorType           = 2
+	// Day                        = 86400        //24*60*60秒，每次提取积分的最小时间间隔
+	// Bifer                      = 100000000    //10^9
+	// MiniExtractAmount          = 100 * Bifer  //每次提取积分的最小额度是100
+	// BaseTrustAnchorPledge      = 1000 * Bifer //注册根信任锚抵押的积分
+	// ExtendTrustAnchorPledge    = 100 * Bifer  //注册扩展信任锚抵押的积分
+	// IncentivesToExtendIssueCer = 1 * Bifer    //颁发一个证书获得的奖励
+	// IncentivesToBaseIssueCer   = 2 * Bifer    //颁发一个证书获得的奖励
+	// EmptyUrl                   = ""
 )
 
-//var (
+// var (
 //	ErrIllExtracAmout    = errors.New("积分总额不足100，无法提取")
 //	ErrIllExtracTime     = errors.New("距离上次提取不足24小时，无法提取")
 //	ErrIllAnchorType     = errors.New("未知的信任锚类型，10 代表根信任锚，11代表扩展信任锚")
@@ -39,7 +39,7 @@ const (
 //	ErrIllegalBalance    = errors.New("账户内积分不足，注册根信任锚需要抵押1000积分，注册扩展信任锚需要抵押100积分")
 //	ErrIllegalVote       = errors.New("信任锚不存在或不是基础信任锚")
 //	ErrIllegalRepeatVote = errors.New("同一个基础信任锚能且仅能投一票")
-//)
+// )
 
 // 信任锚的AbiJson数据
 const TrustAnchorAbiJSON = `[
@@ -153,7 +153,7 @@ func (anc *Anchor) IsBaseTrustAnchor(anchor string) (bool, error) {
 		return false, err
 	}
 
-	return pointer.ToIsBaseTrustAnchor()
+	return pointer.ToBoolean()
 }
 
 /*
@@ -179,7 +179,7 @@ func (anc *Anchor) IsTrustAnchor(anchor string) (bool, error) {
 		return false, err
 	}
 
-	return pointer.ToIsTrustAnchor()
+	return pointer.ToBoolean()
 }
 
 /*
@@ -302,7 +302,7 @@ func (anc *Anchor) GetTrustAnchorStatus(anchor string) (uint64, error) {
 		return 0, err
 	}
 
-	return pointer.ToTrustAnchorStatus()
+	return pointer.ToUint64()
 
 }
 
@@ -329,7 +329,7 @@ func (anc *Anchor) GetCertificateList(anchor string) ([]string, error) {
 		return nil, err
 	}
 
-	return pointer.ToTrustAnchorCertificateList()
+	return pointer.ToStringArray()
 
 }
 
@@ -354,7 +354,7 @@ func (anc *Anchor) GetBaseList() ([]string, error) {
 		return nil, err
 	}
 
-	return pointer.ToBaseTrustAnchor()
+	return pointer.ToStringArray()
 }
 
 /*
@@ -378,7 +378,7 @@ func (anc *Anchor) GetBaseNum() (uint64, error) {
 		return 0, err
 	}
 
-	return pointer.ToBaseTrustAnchorNumber()
+	return pointer.ToUint64()
 }
 
 /*
@@ -402,7 +402,7 @@ func (anc *Anchor) GetExpendList() ([]string, error) {
 		return nil, err
 	}
 
-	return pointer.ToExpendTrustAnchor()
+	return pointer.ToStringArray()
 }
 
 /*
@@ -426,7 +426,7 @@ func (anc *Anchor) GetExpendNum() (uint64, error) {
 		return 0, err
 	}
 
-	return pointer.ToExpendTrustAnchorNumber()
+	return pointer.ToUint64()
 }
 
 /*

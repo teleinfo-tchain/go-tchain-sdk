@@ -44,7 +44,7 @@ func (dp *DPoS) GetValidators(blockNumber *big.Int) ([]string, error) {
 		return nil, err
 	}
 
-	return pointer.ToValidators()
+	return pointer.ToStringArray()
 }
 
 /*
@@ -71,7 +71,7 @@ func (dp *DPoS) GetValidatorsAtHash(hash string) ([]string, error) {
 		return nil, err
 	}
 
-	return pointer.ToValidatorsAtHash()
+	return pointer.ToStringArray()
 }
 
 /*

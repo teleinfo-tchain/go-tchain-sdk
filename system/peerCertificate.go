@@ -12,7 +12,7 @@ import (
 const (
 	PeerCertificateContractAddr = "did:bid:00000000000000000000000d"
 	Year                        = uint64(24) * 3600 * 365
-	regulatoryAddressLength     = 12 // 地址，除去did:bid:还有12字节
+	// regulatoryAddressLength     = 12 // 地址，除去did:bid:还有12字节
 )
 
 // 节点可信的AbiJson数据
@@ -126,7 +126,7 @@ func (peerCer *PeerCertificate) GetPeriod(id string) (uint64, error) {
 		return 0, err
 	}
 
-	return pointer.ToPeerPeriod()
+	return pointer.ToUint64()
 }
 
 /*
@@ -152,7 +152,7 @@ func (peerCer *PeerCertificate) GetActive(id string) (bool, error) {
 		return false, err
 	}
 
-	return pointer.ToPeerActive()
+	return pointer.ToBoolean()
 }
 
 /*

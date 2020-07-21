@@ -13,21 +13,21 @@ const (
 	DocContractAddr = "did:bid:00000000000000000000000a"
 )
 
-//const (
-//	bid = iota
-//	publicKeyPem
-//	publicKeyJwk
-//	publicKeyHex
-//	publicKeyBase64
-//	publicKeyBase58
-//	publicKeyMultibase
-//	ethereumAddress
-//)
-
-//var (
-//	ErrBidDDOExistsInvalid = errors.New("the DDO document for this bid has been initialized")
-//	ErrNotHaveAuthority    = errors.New("对不起，您没有权限做该操作")
-//)
+// const (
+// 	bid = iota
+// 	publicKeyPem
+// 	publicKeyJwk
+// 	publicKeyHex
+// 	publicKeyBase64
+// 	publicKeyBase58
+// 	publicKeyMultibase
+// 	ethereumAddress
+// )
+//
+// var (
+// 	ErrBidDDOExistsInvalid = errors.New("the DDO document for this bid has been initialized")
+// 	ErrNotHaveAuthority    = errors.New("对不起，您没有权限做该操作")
+// )
 
 // did文档的AbiJson数据
 const DocAbiJSON = `[
@@ -96,7 +96,7 @@ Returns:
 Call permissions: ？？
 */
 func (doc *Doc) SetBidName(from common.Address, bidName string) (string, error) {
-	//encoding
+	// encoding
 	inputEncode, _ := doc.abi.Pack("SetBidName", bidName)
 
 	transaction := doc.super.prePareTransaction(from, DocContractAddr, types.ComplexString(hexutil.Encode(inputEncode)))
@@ -156,7 +156,7 @@ Returns:
 Call permissions: ？？
 */
 func (doc *Doc) AddPublicKey(from common.Address, addType string, authority string, publicKey string) (string, error) {
-	//encoding
+	// encoding
 	inputEncode, _ := doc.abi.Pack("AddPublicKey", addType, authority, publicKey)
 
 	transaction := doc.super.prePareTransaction(from, DocContractAddr, types.ComplexString(hexutil.Encode(inputEncode)))
@@ -178,7 +178,7 @@ Returns:
 Call permissions: ？？
 */
 func (doc *Doc) DeletePublicKey(from common.Address, publicKey string) (string, error) {
-	//encoding
+	// encoding
 	inputEncode, _ := doc.abi.Pack("DeletePublicKey", publicKey)
 
 	transaction := doc.super.prePareTransaction(from, DocContractAddr, types.ComplexString(hexutil.Encode(inputEncode)))
@@ -201,7 +201,7 @@ Returns:
 Call permissions: ？？
 */
 func (doc *Doc) AddProof(from common.Address, issuer string, proofID string) (string, error) {
-	//encoding
+	// encoding
 	inputEncode, _ := doc.abi.Pack("AddProof", issuer, proofID)
 
 	transaction := doc.super.prePareTransaction(from, DocContractAddr, types.ComplexString(hexutil.Encode(inputEncode)))
@@ -223,7 +223,7 @@ Returns:
 Call permissions: ？？
 */
 func (doc *Doc) DeleteProof(from common.Address, proofID string) (string, error) {
-	//encoding
+	// encoding
 	inputEncode, _ := doc.abi.Pack("DeleteProof", proofID)
 
 	transaction := doc.super.prePareTransaction(from, DocContractAddr, types.ComplexString(hexutil.Encode(inputEncode)))
@@ -246,7 +246,7 @@ Returns:
 Call permissions: ？？
 */
 func (doc *Doc) AddAttribute(from common.Address, attrType string, value string) (string, error) {
-	//encoding
+	// encoding
 	inputEncode, _ := doc.abi.Pack("AddAttr", attrType, value)
 
 	transaction := doc.super.prePareTransaction(from, DocContractAddr, types.ComplexString(hexutil.Encode(inputEncode)))
@@ -269,7 +269,7 @@ Returns:
 Call permissions: ？？
 */
 func (doc *Doc) DeleteAttribute(from common.Address, addType string, value string) (string, error) {
-	//encoding
+	// encoding
 	inputEncode, _ := doc.abi.Pack("DeleteAttr", addType, value)
 
 	transaction := doc.super.prePareTransaction(from, DocContractAddr, types.ComplexString(hexutil.Encode(inputEncode)))
@@ -290,7 +290,7 @@ Returns:
 Call permissions: ？？
 */
 func (doc *Doc) Enable(from common.Address) (string, error) {
-	//encoding
+	// encoding
 	inputEncode, _ := doc.abi.Pack("Enable")
 
 	transaction := doc.super.prePareTransaction(from, DocContractAddr, types.ComplexString(hexutil.Encode(inputEncode)))
@@ -311,7 +311,7 @@ Returns:
 Call permissions: ？？
 */
 func (doc *Doc) Disable(from common.Address) (string, error) {
-	//encoding
+	// encoding
 	inputEncode, _ := doc.abi.Pack("Disable")
 
 	transaction := doc.super.prePareTransaction(from, DocContractAddr, types.ComplexString(hexutil.Encode(inputEncode)))
@@ -342,5 +342,5 @@ func (doc *Doc) IsEnable(id string) (bool, error) {
 		return false, err
 	}
 
-	return pointer.ToDocIsEnable()
+	return pointer.ToBoolean()
 }

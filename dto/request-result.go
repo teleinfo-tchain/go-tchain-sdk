@@ -87,12 +87,12 @@ func (pointer *RequestResult) ToStringArray() ([]string, error) {
 
 	result := (pointer).Result.([]interface{})
 
-	new := make([]string, len(result))
+	stringArray := make([]string, len(result))
 	for i, v := range result {
-		new[i] = v.(string)
+		stringArray[i] = v.(string)
 	}
 
-	return new, nil
+	return stringArray, nil
 
 }
 
@@ -120,7 +120,7 @@ func (pointer *RequestResult) ToString() (string, error) {
 
 }
 
-func (pointer *RequestResult) ToInt() (int64, error) {
+func (pointer *RequestResult) ToInt64() (int64, error) {
 
 	if err := pointer.checkResponse(); err != nil {
 		return 0, err
@@ -128,9 +128,25 @@ func (pointer *RequestResult) ToInt() (int64, error) {
 
 	result := (pointer).Result.(interface{})
 
-	hex := result.(string)
+	hex := result.(string)[2:]
 
 	numericResult, err := strconv.ParseInt(hex, 16, 64)
+
+	return numericResult, err
+
+}
+
+func (pointer *RequestResult) ToUint64() (uint64, error) {
+
+	if err := pointer.checkResponse(); err != nil {
+		return 0, err
+	}
+
+	result := (pointer).Result.(interface{})
+
+	hex := result.(string)[2:]
+
+	numericResult, err := strconv.ParseUint(hex, 16, 64)
 
 	return numericResult, err
 

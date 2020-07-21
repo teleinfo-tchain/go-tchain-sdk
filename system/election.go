@@ -12,36 +12,36 @@ import (
 
 const (
 	ElectionContractAddr = "did:bid:000000000000000000000009"
-	//VoteLimit         = 64
-	//OneDay            = int64(24) * 3600
-	//VoteOrProxyOneDay = OneDay
-	//VoteOrProxyOneDay = 60
-	//oneWeek = OneDay * 7
-	//OneYear = OneDay * 365 //代币增发周期 一年
-	//year    = 1559318400   // 2019-06-01 00:00:00
+	// VoteLimit         = 64
+	// OneDay            = int64(24) * 3600
+	// VoteOrProxyOneDay = OneDay
+	// VoteOrProxyOneDay = 60
+	// oneWeek = OneDay * 7
+	// OneYear = OneDay * 365 //代币增发周期 一年
+	// year    = 1559318400   // 2019-06-01 00:00:00
 )
 
-//var (
-//	ErrCandiNameLenInvalid    = errors.New("the length of candidate's name should between [4, 20]")
-//	ErrCandiUrlLenInvalid     = errors.New("the length of candidate's website url should between [6, 60]")
-//	ErrCandiNameInvalid       = errors.New("candidate's name should consist of digits and lowercase letters")
-//	ErrCandiInfoDup           = errors.New("candidate's name, website url or node url is duplicated with a registered candidate")
-//	ErrCandiAlreadyRegistered = errors.New("candidate is already registered")
-//	ErrPeerNotTrust           = errors.New("peer is not apply trust")
-//)
+// var (
+// 	ErrCandiNameLenInvalid    = errors.New("the length of candidate's name should between [4, 20]")
+// 	ErrCandiUrlLenInvalid     = errors.New("the length of candidate's website url should between [6, 60]")
+// 	ErrCandiNameInvalid       = errors.New("candidate's name should consist of digits and lowercase letters")
+// 	ErrCandiInfoDup           = errors.New("candidate's name, website url or node url is duplicated with a registered candidate")
+// 	ErrCandiAlreadyRegistered = errors.New("candidate is already registered")
+// 	ErrPeerNotTrust           = errors.New("peer is not apply trust")
+// )
 
-//var (
-//	nowTimeStamp = big.NewInt(year)
+// var (
+// 	nowTimeStamp = big.NewInt(year)
 //
-//	// 投票周期
-//	unStakePeriod   = big.NewInt(VoteOrProxyOneDay)
-//	baseBounty      = big.NewInt(0).Mul(big.NewInt(1e+18), big.NewInt(1000))
-//	restTotalBounty = big.NewInt(0).Mul(big.NewInt(1e18), big.NewInt(1e9))
+// 	// 投票周期
+// 	unStakePeriod   = big.NewInt(VoteOrProxyOneDay)
+// 	baseBounty      = big.NewInt(0).Mul(big.NewInt(1e+18), big.NewInt(1000))
+// 	restTotalBounty = big.NewInt(0).Mul(big.NewInt(1e18), big.NewInt(1e9))
 //
-//	//代币增量 初始发行量的5%
-//	tokenAdd = big.NewInt(0).Div(restTotalBounty, big.NewInt(20))
+// 	//代币增量 初始发行量的5%
+// 	tokenAdd = big.NewInt(0).Div(restTotalBounty, big.NewInt(20))
 //
-//)
+// )
 
 // 见证人选举的AbiJson数据
 const ElectionAbiJSON = `[
@@ -93,7 +93,7 @@ Returns:
 Call permissions: ？？？
 */
 func (e *Election) RegisterWitness(from common.Address, witness *dto.RegisterWitness) (string, error) {
-	//encode
+	// encode
 	// witness is a struct we need to use the components.
 	var values []interface{}
 	values = e.super.structToInterface(*witness, values)
@@ -411,7 +411,7 @@ func (e *Election) GetRestBIFBounty() (*big.Int, error) {
 		return nil, err
 	}
 
-	return pointer.ToElectionRestBIFBounty()
+	return pointer.ToBigInt()
 }
 
 /*

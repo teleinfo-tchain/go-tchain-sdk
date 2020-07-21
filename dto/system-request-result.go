@@ -3,7 +3,6 @@ package dto
 import (
 	"encoding/json"
 	"github.com/bif/bif-sdk-go/common"
-	"github.com/bif/bif-sdk-go/common/hexutil"
 	customerror "github.com/bif/bif-sdk-go/constants"
 	"math/big"
 )
@@ -22,28 +21,6 @@ type Stake struct {
 	Owner              common.Address `json:"owner"`              // 抵押代币的所有人
 	StakeCount         *big.Int       `json:"stakeCount"`         // 抵押的代币数量
 	LastStakeTimeStamp *big.Int       `json:"lastStakeTimeStamp"` // 上次抵押时间戳
-}
-
-func (pointer *RequestResult) ToPeerPeriod() (uint64, error) {
-
-	if err := pointer.checkResponse(); err != nil {
-		return 0, err
-	}
-
-	result := (pointer).Result.(interface{})
-
-	return uint64(result.(hexutil.Uint64)), nil
-}
-
-func (pointer *RequestResult) ToPeerActive() (bool, error) {
-
-	if err := pointer.checkResponse(); err != nil {
-		return false, err
-	}
-
-	result := (pointer).Result.(interface{})
-
-	return result.(bool), nil
 }
 
 func (pointer *RequestResult) ToPeerCertificate() (*PeerCertificate, error) {
@@ -71,26 +48,6 @@ func (pointer *RequestResult) ToPeerCertificate() (*PeerCertificate, error) {
 	return peerCertificate, err
 }
 
-func (pointer *RequestResult) ToIsBaseTrustAnchor() (bool, error) {
-	if err := pointer.checkResponse(); err != nil {
-		return false, err
-	}
-
-	result := (pointer).Result.(interface{})
-
-	return result.(bool), nil
-}
-
-func (pointer *RequestResult) ToIsTrustAnchor() (bool, error) {
-	if err := pointer.checkResponse(); err != nil {
-		return false, err
-	}
-
-	result := (pointer).Result.(interface{})
-
-	return result.(bool), nil
-}
-
 func (pointer *RequestResult) ToTrustAnchor() (*TrustAnchor, error) {
 	if err := pointer.checkResponse(); err != nil {
 		return nil, err
@@ -113,81 +70,6 @@ func (pointer *RequestResult) ToTrustAnchor() (*TrustAnchor, error) {
 	err = json.Unmarshal(marshal, trustAnchor)
 
 	return trustAnchor, err
-}
-
-func (pointer *RequestResult) ToTrustAnchorStatus() (uint64, error) {
-	if err := pointer.checkResponse(); err != nil {
-		return 0, err
-	}
-
-	result := (pointer).Result.(interface{})
-
-	return uint64(result.(hexutil.Uint64)), nil
-}
-
-func (pointer *RequestResult) ToTrustAnchorCertificateList() ([]string, error) {
-	if err := pointer.checkResponse(); err != nil {
-		return nil, err
-	}
-
-	result := (pointer).Result.([]interface{})
-
-	stringLi := make([]string, len(result))
-	for i, v := range result {
-		stringLi[i] = v.(string)
-	}
-
-	return stringLi, nil
-}
-
-func (pointer *RequestResult) ToBaseTrustAnchor() ([]string, error) {
-	if err := pointer.checkResponse(); err != nil {
-		return nil, err
-	}
-
-	result := (pointer).Result.([]interface{})
-
-	stringLi := make([]string, len(result))
-	for i, v := range result {
-		stringLi[i] = v.(string)
-	}
-
-	return stringLi, nil
-}
-
-func (pointer *RequestResult) ToBaseTrustAnchorNumber() (uint64, error) {
-	if err := pointer.checkResponse(); err != nil {
-		return 0, err
-	}
-
-	result := (pointer).Result.(interface{})
-
-	return uint64(result.(hexutil.Uint64)), nil
-}
-
-func (pointer *RequestResult) ToExpendTrustAnchor() ([]string, error) {
-	if err := pointer.checkResponse(); err != nil {
-		return nil, err
-	}
-
-	result := (pointer).Result.([]interface{})
-
-	stringLi := make([]string, len(result))
-	for i, v := range result {
-		stringLi[i] = v.(string)
-	}
-
-	return stringLi, nil
-}
-
-func (pointer *RequestResult) ToExpendTrustAnchorNumber() (uint64, error) {
-	if err := pointer.checkResponse(); err != nil {
-		return 0, err
-	}
-
-	result := (pointer).Result.(interface{})
-
-	return uint64(result.(hexutil.Uint64)), nil
 }
 
 // 解析测试注意！！！
@@ -224,26 +106,6 @@ func (pointer *RequestResult) ToTrustAnchorVoter() ([]*TrustAnchorVoter, error) 
 	}
 
 	return trustAnchorVoterLi, nil
-}
-
-func (pointer *RequestResult) ToCertificatePeriod() (uint64, error) {
-	if err := pointer.checkResponse(); err != nil {
-		return 0, err
-	}
-
-	result := (pointer).Result.(interface{})
-
-	return uint64(result.(hexutil.Uint64)), nil
-}
-
-func (pointer *RequestResult) ToCertificateActive() (bool, error) {
-	if err := pointer.checkResponse(); err != nil {
-		return false, err
-	}
-
-	result := (pointer).Result.(interface{})
-
-	return result.(bool), nil
 }
 
 func (pointer *RequestResult) ToCertificateInfo() (*CertificateInfo, error) {
@@ -336,26 +198,6 @@ func (pointer *RequestResult) ToDocument() (*Document, error) {
 
 	err = json.Unmarshal(marshal, document)
 	return document, err
-}
-
-func (pointer *RequestResult) ToDocIsEnable() (bool, error) {
-	if err := pointer.checkResponse(); err != nil {
-		return false, err
-	}
-
-	result := (pointer).Result.(interface{})
-
-	return result.(bool), nil
-}
-
-func (pointer *RequestResult) ToElectionRestBIFBounty() (*big.Int, error) {
-	if err := pointer.checkResponse(); err != nil {
-		return nil, err
-	}
-
-	result := (pointer).Result.(interface{})
-
-	return result.(*big.Int), nil
 }
 
 func (pointer *RequestResult) ToElectionCandidate() (*Candidate, error) {

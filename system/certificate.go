@@ -15,10 +15,10 @@ const (
 )
 
 var (
-	//ErrCertificateRegistered  = errors.New("certificate is already registered")
+	// ErrCertificateRegistered  = errors.New("certificate is already registered")
 	ErrCertificateNotExist = errors.New("certificate doesn't exist")
-	//ErrIllegalSender          = errors.New("illegal sender")
-	//ErrIllSenderOrCerNotExist = errors.New("illegal sender Or certificate doesn't exist")
+	// ErrIllegalSender          = errors.New("illegal sender")
+	// ErrIllSenderOrCerNotExist = errors.New("illegal sender Or certificate doesn't exist")
 )
 
 // 个人可信的AbiJson数据
@@ -159,7 +159,7 @@ func (cer *Certificate) GetPeriod(id string) (uint64, error) {
 		return 0, err
 	}
 
-	return pointer.ToCertificatePeriod()
+	return pointer.ToUint64()
 }
 
 /*
@@ -185,7 +185,7 @@ func (cer *Certificate) GetActive(id string) (bool, error) {
 		return false, err
 	}
 
-	return pointer.ToCertificateActive()
+	return pointer.ToBoolean()
 }
 
 /*
