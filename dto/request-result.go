@@ -49,11 +49,11 @@ func (pointer *RequestResult) ToPeerInfo() ([]*common.PeerInfo, error) {
 		return nil, err
 	}
 
-	result_list := (pointer).Result.([]interface{})
+	resultLi := (pointer).Result.([]interface{})
 
-	new := make([]*common.PeerInfo, len(result_list))
+	peerInfoLi := make([]*common.PeerInfo, len(resultLi))
 
-	for i, v := range result_list {
+	for i, v := range resultLi {
 
 		result := v.(map[string]interface{})
 
@@ -71,11 +71,11 @@ func (pointer *RequestResult) ToPeerInfo() ([]*common.PeerInfo, error) {
 
 		err = json.Unmarshal([]byte(marshal), info)
 
-		new[i] = info
+		peerInfoLi[i] = info
 
 	}
 
-	return new, nil
+	return peerInfoLi, nil
 
 }
 
@@ -180,7 +180,7 @@ func (pointer *RequestResult) ToComplexIntResponse() (types.ComplexIntResponse, 
 	var hex string
 
 	switch v := result.(type) {
-	//Testrpc returns a float64
+	// Testrpc returns a float64
 	case float64:
 		hex = strconv.FormatFloat(v, 'E', 16, 64)
 		break
@@ -389,9 +389,9 @@ func (pointer *RequestResult) ToSyncingResponse() (*SyncingResponse, error) {
 		return nil, customerror.UNPARSEABLEINTERFACE
 	}
 
-	json.Unmarshal([]byte(marshal), syncingResponse)
+	err = json.Unmarshal([]byte(marshal), syncingResponse)
 
-	return syncingResponse, nil
+	return syncingResponse, err
 
 }
 
@@ -403,7 +403,7 @@ func (pointer *RequestResult) ToCandidatesResponse() ([]*CandidateResponse, erro
 
 	resultList := (pointer).Result.([]interface{})
 
-	new := make([]*CandidateResponse, len(resultList))
+	candidateResponseLi := make([]*CandidateResponse, len(resultList))
 
 	for i, v := range resultList {
 
@@ -423,10 +423,10 @@ func (pointer *RequestResult) ToCandidatesResponse() ([]*CandidateResponse, erro
 
 		err = json.Unmarshal([]byte(marshal), &candidate)
 
-		new[i] = &candidate
+		candidateResponseLi[i] = &candidate
 	}
 
-	return new, nil
+	return candidateResponseLi, nil
 
 }
 
