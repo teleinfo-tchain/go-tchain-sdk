@@ -1,4 +1,4 @@
-package core
+package utils
 
 import (
 	"bytes"
@@ -65,9 +65,9 @@ func (bfs BIFSigner) Hash(tx *Txdata) common.Hash {
 // SignatureValues returns signature values. This signature
 // needs to be in the [R || S || V] format where V is 0 or 1.
 func (bfs BIFSigner) SignatureValue(tx *Txdata, sig []byte) (r, s, v *big.Int, err error) {
-	//if len(sig) != SignatureLength {
+	// if len(sig) != SignatureLength {
 	//	panic(fmt.Sprintf("wrong size for signature: got %d, want %d", len(sig), SignatureLength))
-	//}
+	// }
 	if len(sig) < 65 {
 		fmt.Println("len sig is ", len(sig))
 		return nil, nil, nil, fmt.Errorf("wrong size for signature: got %d, want %d ", len(sig), 65)
@@ -146,21 +146,23 @@ func (tx *Txdata) PreCheck() (bool, error) {
 }
 
 /*
-SignTransaction: 使用地址私钥给指定的交易签名，返回签名结果
+  SignTransaction:
+   	EN -
+ 	CN - 使用地址私钥给指定的交易签名，返回签名结果
+  Params:
+  	- transaction: *Txdata 指定的交易信息
+ 	- privKey: string, 私钥（transaction中的from地址对应的私钥）
+ 	- chainId: int64, 链的ChainId
 
-Params:
-	- transaction: *Txdata 指定的交易信息
-	- privKey: string, 私钥（transaction中的from地址对应的私钥）
-	- chainId: int64, 链的ChainId
+  Returns:
+  	- *SignTransactionResult
+ 	- error
 
-Returns:
-	- *SignTransactionResult
-	- error
+  Call permissions: Anyone
 */
 func SignTransaction(transaction *Txdata, privKey string, chainId int64) (*SignTransactionResult, error) {
 	// 1 check input
 	ret, err := transaction.PreCheck()
-	fmt.Println("t is ", transaction.T)
 	if !ret {
 		return nil, err
 	}

@@ -3,7 +3,7 @@ package test
 import (
 	"github.com/bif/bif-sdk-go"
 	"github.com/bif/bif-sdk-go/common"
-	"github.com/bif/bif-sdk-go/core"
+	"github.com/bif/bif-sdk-go/common/hexutil"
 	"github.com/bif/bif-sdk-go/core/block"
 	"github.com/bif/bif-sdk-go/providers"
 	"github.com/bif/bif-sdk-go/test/resources"
@@ -18,31 +18,34 @@ func TestCoreSignTransactionSm2(t *testing.T) {
 	nonce, err := connection.Core.GetTransactionCount(resources.AddressSM2, block.LATEST)
 	if err != nil {
 		t.Errorf("Failed connection")
-		t.Error(err)
 		t.FailNow()
 	}
 
 	chainId, err := connection.Core.GetChainId()
 	if err != nil {
 		t.Errorf("Failed getChainId")
-		t.Error(err)
 		t.FailNow()
 	}
 
 	// fmt.Println("nonce is ",nonce.Uint64())
-	privKey := resources.AddressPriKey
+	privateKey := resources.AddressPriKey
 	var cryType uint = 0
-	sender, err := utils.GetAddressFromPrivate(privKey, cryType)
+	sender, err := utils.GetAddressFromPrivate(privateKey, cryType)
 	if err != nil {
 		t.Error(err)
 		t.FailNow()
 	}
 
 	from := common.StringToAddress(sender)
+	if from != common.StringToAddress(resources.AddressSM2){
+		t.Errorf("Address and private key do not match")
+		t.FailNow()
+	}
+
 	to := common.StringToAddress(resources.AddressTwo)
-	tx := &core.Txdata{
+	tx := &utils.Txdata{
 		AccountNonce: nonce.Uint64(),
-		Price:        big.NewInt(20),
+		Price:        big.NewInt(30),
 		GasLimit:     2000000,
 		Sender:       &from,
 		Recipient:    &to,
@@ -54,15 +57,15 @@ func TestCoreSignTransactionSm2(t *testing.T) {
 		T:            big.NewInt(0),
 	}
 
-	res, _ := core.SignTransaction(tx, privKey, int64(chainId))
-	// fmt.Printf("%#v \n", res.Tx)
+	res, _ := utils.SignTransaction(tx, privateKey, int64(chainId))
 
-	txIDRaw, err := connection.Core.SendRawTransaction(common.ToHex(res.Raw))
+	txIDRaw, err := connection.Core.SendRawTransaction(hexutil.Encode(res.Raw))
 
 	if err != nil {
 		t.Error(err)
 		t.FailNow()
 	}
+
 	t.Log(txIDRaw)
 }
 
@@ -78,24 +81,27 @@ func TestCoreSignTransactionNoSm2(t *testing.T) {
 	chainId, err := connection.Core.GetChainId()
 	if err != nil {
 		t.Errorf("Failed getChainId")
-		t.Error(err)
 		t.FailNow()
 	}
 
-	privKey := resources.CoinBasePriKey
+	privateKey := resources.CoinBasePriKey
 	var cryType uint = 1
-	sender, err := utils.GetAddressFromPrivate(privKey, cryType)
+	sender, err := utils.GetAddressFromPrivate(privateKey, cryType)
 	if err != nil {
 		t.Error(err)
 		t.FailNow()
 	}
 
 	from := common.StringToAddress(sender)
-	to := common.StringToAddress(resources.AddressTwo)
-	tx := &core.Txdata{
+	if from != common.StringToAddress(resources.CoinBase){
+		t.Errorf("Address and private key do not match")
+		t.FailNow()
+	}
+
+	to := common.StringToAddress(resources.AddressSM2)
+	tx := &utils.Txdata{
 		AccountNonce: nonce.Uint64(),
-		// AccountNonce: 10,
-		Price:     big.NewInt(25),
+		Price:     big.NewInt(35),
 		GasLimit:  2000000,
 		Sender:    &from,
 		Recipient: &to,
@@ -107,10 +113,9 @@ func TestCoreSignTransactionNoSm2(t *testing.T) {
 		T:         big.NewInt(0),
 	}
 
-	res, _ := core.SignTransaction(tx, privKey, int64(chainId))
-	// fmt.Printf("%#v \n", res.Tx)
+	res, _ := utils.SignTransaction(tx, privateKey, int64(chainId))
 
-	txIDRaw, err := connection.Core.SendRawTransaction(common.ToHex(res.Raw))
+	txIDRaw, err := connection.Core.SendRawTransaction(hexutil.Encode(res.Raw))
 
 	if err != nil {
 		t.Error(err)
@@ -118,4 +123,3 @@ func TestCoreSignTransactionNoSm2(t *testing.T) {
 	}
 	t.Log(txIDRaw)
 }
-

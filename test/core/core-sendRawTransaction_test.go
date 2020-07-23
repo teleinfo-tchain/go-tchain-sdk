@@ -4,10 +4,10 @@ import (
 	"github.com/bif/bif-sdk-go"
 	"github.com/bif/bif-sdk-go/common"
 	"github.com/bif/bif-sdk-go/common/hexutil"
-	"github.com/bif/bif-sdk-go/core"
 	"github.com/bif/bif-sdk-go/core/block"
 	"github.com/bif/bif-sdk-go/providers"
 	"github.com/bif/bif-sdk-go/test/resources"
+	"github.com/bif/bif-sdk-go/utils"
 	"math/big"
 	"testing"
 )
@@ -25,7 +25,7 @@ func TestCoreSendRawTransaction(t *testing.T) {
 	privKey := resources.CoinBasePriKey
 	from := common.StringToAddress(resources.CoinBase)
 	to := common.StringToAddress(resources.AddressTwo)
-	tx := &core.Txdata{
+	tx := &utils.Txdata{
 		AccountNonce: nonce.Uint64(),
 		Price:     big.NewInt(25),
 		GasLimit:  2000000,
@@ -45,7 +45,7 @@ func TestCoreSendRawTransaction(t *testing.T) {
 		t.FailNow()
 	}
 
-	res, _ := core.SignTransaction(tx, privKey, int64(chainId))
+	res, _ := utils.SignTransaction(tx, privKey, int64(chainId))
 	txIDRaw, err := connection.Core.SendRawTransaction(hexutil.Encode(res.Raw))
 
 	if err != nil {
