@@ -48,7 +48,7 @@ type Bif struct {
 func NewBif(provider providers.ProviderInterface) *Bif {
 	bif := new(Bif)
 	bif.Provider = provider
-	bif.Core = core.NewEth(provider)
+	bif.Core = core.NewCore(provider)
 	bif.Net = net.NewNet(provider)
 	bif.Personal = personal.NewPersonal(provider)
 	bif.Utils = utils.NewUtils()

@@ -3,6 +3,7 @@ package System
 import (
 	"fmt"
 	"github.com/bif/bif-sdk-go"
+	"github.com/bif/bif-sdk-go/common/hexutil"
 	"github.com/bif/bif-sdk-go/dto"
 	"github.com/bif/bif-sdk-go/providers"
 	"github.com/bif/bif-sdk-go/test/resources"
@@ -13,9 +14,9 @@ func TestGetValidators(t *testing.T) {
 	var connection = bif.NewBif(providers.NewHTTPProvider(resources.IP+":"+resources.Port, 10, false))
 	// 距离最新区块间隔数超过126会报错，因此测试最新区块
 	blockNumber, err := connection.Core.GetBlockNumber()
-	//fmt.Println("blockNumber is ", blockNumber)
-	//blockNumberOld := new(big.Int)
-	//fmt.Println("blockNumberOld is ", blockNumberOld.Sub(blockNumber, big.NewInt(127)))
+	// fmt.Println("blockNumber is ", blockNumber)
+	// blockNumberOld := new(big.Int)
+	// fmt.Println("blockNumberOld is ", blockNumberOld.Sub(blockNumber, big.NewInt(127)))
 	if err != nil {
 		t.Error(err)
 		t.FailNow()
@@ -41,14 +42,14 @@ func TestGetValidatorsAtHash(t *testing.T) {
 		t.FailNow()
 	}
 
-	block, err := connection.Core.GetBlockByNumber(blockNumber, false)
+	block, err := connection.Core.GetBlockByNumber(hexutil.EncodeBig(blockNumber), false)
 	if err != nil {
 		t.Error(err)
 		t.FailNow()
 	}
 
 	DPoS := connection.System.NewDPoS()
-	//input block hash
+	// input block hash
 	validators, err := DPoS.GetValidatorsAtHash(block.(*dto.BlockNoDetails).Hash)
 
 	if err != nil {

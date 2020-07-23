@@ -15,6 +15,7 @@
 package test
 
 import (
+	"github.com/bif/bif-sdk-go/core/block"
 	"github.com/bif/bif-sdk-go/dto"
 	"github.com/bif/bif-sdk-go/test/resources"
 	"testing"
@@ -27,10 +28,8 @@ func TestCoreGetBlockByHash(t *testing.T) {
 
 	var connection = bif.NewBif(providers.NewHTTPProvider(resources.IP+":"+resources.Port, 10, false))
 
-	blockNumber, err := connection.Core.GetBlockNumber()
-
 	const transactionDetails = false
-	blockByNumber, err := connection.Core.GetBlockByNumber(blockNumber, transactionDetails)
+	blockByNumber, err := connection.Core.GetBlockByNumber(block.LATEST, transactionDetails)
 
 	if err != nil {
 		t.Error(err)

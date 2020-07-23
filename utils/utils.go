@@ -174,7 +174,7 @@ func (util *Utils) Sha3(str string) (string, error) {
 	}
 }
 
-//calculate the sha3 of the input(if input is invalid, it will return Sha3Null)
+// calculate the sha3 of the input(if input is invalid, it will return Sha3Null)
 func (util *Utils) Sha3Raw(str string) string {
 	var hexBytes []byte
 	if util.IsHexStrict(str) {
@@ -205,7 +205,7 @@ func (util *Utils) CheckBidChecksum(bid string) bool {
 	return true
 }
 
-//Checks if a given string is a valid Bif bid. It will also check the checksum, if the bid has upper and lowercase letters.
+// Checks if a given string is a valid Bif bid. It will also check the checksum, if the bid has upper and lowercase letters.
 func (util *Utils) IsBid(bid string) bool {
 	res1, _ := regexp.Compile("^(0[x,X])?[A-F, a-f0-9]{40}$")
 	res2, _ := regexp.Compile("^(0[x,X])?[a-f, 0-9]{40}$")
@@ -476,11 +476,11 @@ func (util *Utils) ByteCodeDeploy(abi string, byteCode string, args ...interface
 		if err != nil {
 			return "", err
 		}
-		//fmt.Println("tmpBytes ", tmpBytes)
+		// fmt.Println("tmpBytes ", tmpBytes)
 		byteCode += tmpBytes
 	}
 
-	//fmt.Println("byteCode is ", byteCode)
+	// fmt.Println("byteCode is ", byteCode)
 	return byteCode, nil
 
 }

@@ -41,7 +41,7 @@ func TestPersonalSendTransaction(t *testing.T) {
 	transaction.Value = big.NewInt(10)
 	transaction.Gas = big.NewInt(40000)
 
-	txID, err := connection.Personal.SendTransaction(transaction, "123456")
+	txID, err := connection.Personal.SendTransaction(transaction, "teleinfo")
 
 	if err != nil {
 		t.Error(err)

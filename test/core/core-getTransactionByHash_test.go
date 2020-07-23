@@ -15,7 +15,6 @@
 package test
 
 import (
-	"fmt"
 	"github.com/bif/bif-sdk-go"
 	"github.com/bif/bif-sdk-go/dto"
 	"github.com/bif/bif-sdk-go/providers"
@@ -44,9 +43,7 @@ func TestGetTransactionByHash(t *testing.T) {
 
 	txID, err := connection.Core.SendTransaction(transaction)
 
-	fmt.Println("txID:", txID)
-	// Wait for a block
-	time.Sleep(time.Second)
+	t.Log("txID:", txID)
 
 	if err != nil {
 		t.Errorf("Failed SendTransaction")
@@ -54,16 +51,15 @@ func TestGetTransactionByHash(t *testing.T) {
 		t.FailNow()
 	}
 
+	// Wait for a block
 	time.Sleep(time.Second)
 
 	tx, err := connection.Core.GetTransactionByHash(txID)
 
 	if err != nil {
-		t.Errorf("Failed GetTransactionByHash")
 		t.Error(err)
 		t.FailNow()
 	}
 
-	t.Log(tx.BlockNumber)
-
+	t.Log(tx)
 }

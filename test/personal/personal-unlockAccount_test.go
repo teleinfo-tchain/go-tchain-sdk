@@ -34,7 +34,7 @@ func TestPersonalUnlockAccount(t *testing.T) {
 		t.FailNow()
 	}
 
-	result, err := connection.Personal.UnlockAccount(accounts[0], "123456", 100)
+	result, err := connection.Personal.UnlockAccount(accounts[0], "teleinfo", 5)
 
 	if err != nil {
 		t.Error(err)

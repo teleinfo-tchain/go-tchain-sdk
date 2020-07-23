@@ -28,10 +28,11 @@ func TestCoreGenerating(t *testing.T) {
 
 	generating, err := connection.Core.Generating()
 
-	t.Log(generating)
-
 	if err != nil {
 		t.Error(err)
 		t.FailNow()
 	}
+
+	t.Log(generating)
+
 }

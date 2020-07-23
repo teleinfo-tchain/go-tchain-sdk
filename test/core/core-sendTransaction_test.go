@@ -16,7 +16,6 @@ package test
 
 import (
 	"encoding/json"
-	"fmt"
 	"github.com/bif/bif-sdk-go"
 	"github.com/bif/bif-sdk-go/complex/types"
 	"github.com/bif/bif-sdk-go/core/block"
@@ -30,7 +29,7 @@ import (
 	"time"
 )
 
-// test transfer bifer
+// 测试转账
 func TestCoreSendTransaction(t *testing.T) {
 
 	var connection = bif.NewBif(providers.NewHTTPProvider(resources.IP+":"+resources.Port, 10, false))
@@ -45,15 +44,15 @@ func TestCoreSendTransaction(t *testing.T) {
 	if err == nil {
 		util := utils.NewUtils()
 		balBif, _ := util.FromWei(balance.String())
-		fmt.Printf("toAddress bal is %s \n", balBif)
+		t.Log("toAddress balance is ", balBif)
 	}
 
 	transaction := new(dto.TransactionParameters)
 	transaction.From = coinBase
 	transaction.To = toAddress
-	transaction.Value = big.NewInt(0).Mul(big.NewInt(5), big.NewInt(1e17))
+	transaction.Value = big.NewInt(0).Mul(big.NewInt(1), big.NewInt(1e17))
 	transaction.Gas = big.NewInt(40000)
-	transaction.Data = "Transfer Bifer test"
+	transaction.Data = "Transfer test"
 
 	txID, err := connection.Core.SendTransaction(transaction)
 
@@ -70,7 +69,7 @@ func TestCoreSendTransaction(t *testing.T) {
 	t.Log(txID)
 }
 
-// test deploy contract
+// 测试部署合约
 func TestCoreSendTransactionDeployContract(t *testing.T) {
 	content, err := ioutil.ReadFile("../resources/simple-contract.json")
 
@@ -112,13 +111,14 @@ func TestCoreSendTransactionDeployContract(t *testing.T) {
 		t.Error(err)
 		t.FailNow()
 	}
-	t.Log(gas)
+	t.Log("Estimate gas is ", gas)
 
-	//transaction.Gas = big.NewInt(1000000)
+	// transaction.Gas = big.NewInt(1000000)
 	transaction.Gas = gas
 	txID, err := connection.Core.SendTransaction(transaction)
 
 	// Wait for a block
+	// 等待时间较短，交易可能还未执行，导致测试失败
 	time.Sleep(time.Second)
 
 	if err != nil {
@@ -127,10 +127,11 @@ func TestCoreSendTransactionDeployContract(t *testing.T) {
 		t.FailNow()
 	}
 
-	t.Log(txID)
+	t.Log("transaction hash is ", txID)
 
 	time.Sleep(time.Second * 5)
 
+	// txID := "0xa7be6f1c34f2fa4e6d36f33be9e8f461763f81a7bbd8eb502e9e4507c3704197"
 	receipt, err := connection.Core.GetTransactionReceipt(txID)
 	if err != nil {
 		t.Errorf("Failed GetTransactionReceipt")
@@ -138,15 +139,15 @@ func TestCoreSendTransactionDeployContract(t *testing.T) {
 		t.FailNow()
 	}
 
-	//did:bid:29e92743850b4c7473f2aafa
+	// did:bid:6f7a7de13fb193f10a76255e
 	t.Log("contract Address is ", receipt.ContractAddress)
 
 }
 
-// test interaction with contract
-// its content is decided by specific contract
+// 测试合约的交互
 func TestCoreSendTransactionInteractContract(t *testing.T) {
 	content, err := ioutil.ReadFile("../resources/simple-contract.json")
+	const contractAddress = "did:bid:6f7a7de13fb193f10a76255e"
 
 	type Contract struct {
 		Abi      string `json:"abi"`
@@ -178,7 +179,7 @@ func TestCoreSendTransactionInteractContract(t *testing.T) {
 	transaction := new(dto.TransactionParameters)
 	transaction.From = fromAddress
 	// To is contract address
-	transaction.To = "did:bid:23bfc0ad7cfa209523193dfd"
+	transaction.To = contractAddress
 	transaction.Data = types.ComplexString(byteCode)
 
 	txID, err := connection.Core.SendTransaction(transaction)
@@ -191,8 +192,10 @@ func TestCoreSendTransactionInteractContract(t *testing.T) {
 
 	t.Log("transaction hash is ", txID)
 
-	// wait too long
+	// wait a block
+	// 可能等待时间不足，导致交易执行失败
 	time.Sleep(time.Second * 8)
+	// txID := "0x93e2b5eba500c7c6bd43b8c6f09eb86f1e872ddcadd874255b622e304811ca61"
 	receipt, err := connection.Core.GetTransactionReceipt(txID)
 	if err != nil {
 		t.Errorf("Failed GetTransactionReceipt")
@@ -203,19 +206,3 @@ func TestCoreSendTransactionInteractContract(t *testing.T) {
 	t.Log("receipt logs data is ", receipt.Logs[0].Data)
 }
 
-func TestCoreSendTransactionResult(t *testing.T) {
-	var connection = bif.NewBif(providers.NewHTTPProvider(resources.IP+":"+resources.Port, 10, false))
-	_, err := connection.Core.GetCoinBase()
-	if err != nil {
-		t.Error(err)
-		t.FailNow()
-	}
-	tx, err := connection.Core.GetTransactionByHash("0x6c04bc524b5376d5b6d6ef580ae1bb9573bf3e316806cfca72e6fc71566705c7")
-
-	if err != nil {
-		t.Error(err)
-		t.FailNow()
-	}
-
-	t.Log(tx.BlockNumber)
-}

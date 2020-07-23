@@ -20,6 +20,7 @@ import (
 	"io/ioutil"
 	"math/big"
 	"testing"
+	"time"
 
 	"github.com/bif/bif-sdk-go/core/block"
 
@@ -82,6 +83,7 @@ func TestCoreGetCode(t *testing.T) {
 	var receipt *dto.TransactionReceipt
 
 	for receipt == nil {
+		time.Sleep(time.Second)
 		receipt, err = connection.Core.GetTransactionReceipt(hash)
 	}
 
@@ -101,4 +103,6 @@ func TestCoreGetCode(t *testing.T) {
 		t.Error("Contract code not expected")
 		t.FailNow()
 	}
+
+	t.Log("code is ", code)
 }

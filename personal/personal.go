@@ -12,6 +12,7 @@
    along with go-web3.  If not, see <http://www.gnu.org/licenses/>.
 *********************************************************************************/
 
+// 可让您与bif节点的帐户进行交互。
 package personal
 
 import (
@@ -20,23 +21,33 @@ import (
 )
 
 // Personal - The Personal Module
+// Personal - Personal 模块
 type Personal struct {
 	provider providers.ProviderInterface
 }
 
 // NewPersonal - Personal Module constructor to set the default provider
+// NewPersonal - 初始化Personal
 func NewPersonal(provider providers.ProviderInterface) *Personal {
 	personal := new(Personal)
 	personal.provider = provider
 	return personal
 }
 
-// ListAccounts - Lists all stored accounts.
-// Reference: https://github.com/paritytech/parity/wiki/JSONRPC-personal-module#personal_listaccounts
-// Parameters:
-//    - none
-// Returns:
-//    - Array - A list of 20 byte account identifiers.
+ /*
+  ListAccounts:
+   	EN - Return a list of addresses for accounts this node manages
+ 	CN -  返回此节点管理的帐户的地址列表
+
+   Params:
+  	- None
+
+  Returns:
+  	- []string, Array,A list of 20 byte account identifiers.
+ 	- error
+ 
+  Call permissions: Anyone
+  */
 func (personal *Personal) ListAccounts() ([]string, error) {
 
 	pointer := &dto.RequestResult{}
@@ -51,17 +62,28 @@ func (personal *Personal) ListAccounts() ([]string, error) {
 
 }
 
-// NewAccount - Creates new account.
-// Note: it becomes the new current unlocked account. There can only be one unlocked account at a time.
-// Reference: https://github.com/paritytech/parity/wiki/JSONRPC-personal-module#personal_newaccount
-// Parameters:
-//    - String - Password for the new account.
-// Returns:
-//	  - Address - 20 Bytes - The identifier of the new account.
-func (personal *Personal) NewAccount(password string) (string, error) {
+ /*
+  NewAccount:
+   	EN - Creates new account and returns the address for the new account
+ 	CN - 创建一个新账户,并返回新账户地址
+  Params:
+  	- password， string, 新账户的密码
+ 	- isSm2, true 使用国密的加密方式生成账户；false使用非国密的方式生成账户
 
-	params := make([]string, 1)
+  Returns:
+  	- string, address , 20 Bytes, 新账户
+ 	- error
+
+  Call permissions: Anyone， 切勿通过不安全的Websocket或HTTP提供程序调用此函数，因为您的密码将以纯文本形式发送
+  */
+func (personal *Personal) NewAccount(password string, isSm2 bool) (string, error) {
+	params := make([]interface{}, 2)
 	params[0] = password
+	if isSm2{
+		params[1] = uint64(0)
+	}else {
+		params[1] = uint64(1)
+	}
 
 	pointer := &dto.RequestResult{}
 
@@ -77,21 +99,27 @@ func (personal *Personal) NewAccount(password string) (string, error) {
 
 }
 
-// SendTransaction - Sends transaction and signs it in a single call. The account does not need to be unlocked to make this call, and will not be left unlocked after.
-// Reference: https://github.com/paritytech/parity/wiki/JSONRPC-personal-module#personal_sendtransaction
-// Parameters:
-//    1. Object - The transaction object
-//        - from: Address - 20 Bytes - The address the transaction is send from.
-//        - to: Address - (optional) 20 Bytes - The address the transaction is directed to.
-//        - gas: Quantity - (optional) Integer of the gas provided for the transaction execution. core_call consumes zero gas, but this parameter may be needed by some executions.
-//        - gasPrice: Quantity - (optional) Integer of the gas price used for each paid gas.
-//        - value: Quantity - (optional) Integer of the value sent with this transaction.
-//        - data: Data - (optional) 4 byte hash of the method signature followed by encoded parameters. For details see Ethereum Contract ABI.
-//        - nonce: Quantity - (optional) Integer of a nonce. This allows to overwrite your own pending transactions that use the same nonce.
-//        - condition: Object - (optional) Conditional submission of the transaction. Can be either an integer block number { block: 1 } or UTC timestamp (in seconds) { time: 1491290692 } or null.
-//    2. String - Passphrase to unlock the from account.
-// Returns:
-//    - Data - 32 Bytes - the transaction hash, or the zero hash if the transaction is not yet available
+ /*
+   SendTransaction:
+	EN - Create a transaction from the given arguments and tries to sign it with the key associated with args.From
+  	CN - 对给定参数创建交易，并使用与交易发起方（From）的相关密钥进行签名
+   Params:
+   	- transaction: 要发送的交易对象(*dto.TransactionParameters)
+ 		from: string，20 Bytes - 指定的发送者的地址。
+ 		to: string，20 Bytes - （可选）交易消息的目标地址，如果是合约创建，则不填.
+ 		gas: *big.Int - （可选）默认是自动，交易可使用的gas，未使用的gas会退回。
+ 		gasPrice: *big.Int - （可选）默认是自动确定，交易的gas价格，默认是网络gas价格的平均值 。
+ 		data: string - （可选）或者包含相关数据的字节字符串，如果是合约创建，则是初始化要用到的代码。
+ 		value: *big.Int - （可选）交易携带的货币量，以bifer为单位。如果合约创建交易，则为初始的基金
+ 		nonce: *big.Int - （可选）整数，使用此值，可以允许你覆盖你自己的相同nonce的，待pending中的交易
+ 	- password, string, 当前帐户的密码来解锁账户
+
+   Returns:
+   	- string, transactionHash，32 Bytes，交易哈希，如果交易尚不可用，则为零哈希
+  	- error
+
+   Call permissions: Anyone， 注意，通过不安全的HTTP RPC连接发送帐户密码非常不安全。
+  */
 func (personal *Personal) SendTransaction(transaction *dto.TransactionParameters, password string) (string, error) {
 
 	params := make([]interface{}, 2)
@@ -113,19 +141,21 @@ func (personal *Personal) SendTransaction(transaction *dto.TransactionParameters
 
 }
 
-// UnlockAccount - Unlocks specified account for use.
-// Reference: https://github.com/paritytech/parity/wiki/JSONRPC-personal-module#personal_unlockaccount
-// If permanent unlocking is disabled (the default) then the duration argument will be ignored,
-// and the account will be unlocked for a single signing. With permanent locking enabled, the
-// duration sets the number of seconds to hold the account open for. It will default to 300 seconds.
-// Passing 0 unlocks the account indefinitely.
-// There can only be one unlocked account at a time.
-// Parameters:
-//    - Address - 20 Bytes - The address of the account to unlock.
-//    - String - Passphrase to unlock the account.
-//    - Quantity - (default: 300) Integer or null - Duration in seconds how long the account should remain unlocked for.
-// Returns:
-// 	   - Boolean - whether the call was successful
+/*
+  UnlockAccount:
+   	EN - Unlock the account associated with the given address and the given password
+ 	CN - 解锁与给定地址和给定密码关联的帐户
+  Params:
+  	- address,string 20 Bytes. 要解锁的账户地址
+   	- password,string ,解锁该账户的密码
+   	- duration,uint64 ,帐户保持解锁状态的持续时间（？？？？如果是0，就是永久解锁？？）
+
+  Returns:
+  	- bool, true是解锁成功， false解锁失败
+ 	- error
+
+  Call permissions: Anyone
+*/
 func (personal *Personal) UnlockAccount(address string, password string, duration uint64) (bool, error) {
 
 	params := make([]interface{}, 3)

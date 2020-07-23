@@ -29,7 +29,7 @@ func TestCoreSignTransactionSm2(t *testing.T) {
 		t.FailNow()
 	}
 
-	//fmt.Println("nonce is ",nonce.Uint64())
+	// fmt.Println("nonce is ",nonce.Uint64())
 	privKey := resources.AddressPriKey
 	var cryType uint = 0
 	sender, err := utils.GetAddressFromPrivate(privKey, cryType)
@@ -55,7 +55,7 @@ func TestCoreSignTransactionSm2(t *testing.T) {
 	}
 
 	res, _ := core.SignTransaction(tx, privKey, int64(chainId))
-	//fmt.Printf("%#v \n", res.Tx)
+	// fmt.Printf("%#v \n", res.Tx)
 
 	txIDRaw, err := connection.Core.SendRawTransaction(common.ToHex(res.Raw))
 
@@ -82,7 +82,6 @@ func TestCoreSignTransactionNoSm2(t *testing.T) {
 		t.FailNow()
 	}
 
-	//fmt.Println("nonce is ",nonce.Uint64())
 	privKey := resources.CoinBasePriKey
 	var cryType uint = 1
 	sender, err := utils.GetAddressFromPrivate(privKey, cryType)
@@ -95,7 +94,7 @@ func TestCoreSignTransactionNoSm2(t *testing.T) {
 	to := common.StringToAddress(resources.AddressTwo)
 	tx := &core.Txdata{
 		AccountNonce: nonce.Uint64(),
-		//AccountNonce: 10,
+		// AccountNonce: 10,
 		Price:     big.NewInt(25),
 		GasLimit:  2000000,
 		Sender:    &from,
@@ -109,7 +108,7 @@ func TestCoreSignTransactionNoSm2(t *testing.T) {
 	}
 
 	res, _ := core.SignTransaction(tx, privKey, int64(chainId))
-	//fmt.Printf("%#v \n", res.Tx)
+	// fmt.Printf("%#v \n", res.Tx)
 
 	txIDRaw, err := connection.Core.SendRawTransaction(common.ToHex(res.Raw))
 
@@ -119,3 +118,4 @@ func TestCoreSignTransactionNoSm2(t *testing.T) {
 	}
 	t.Log(txIDRaw)
 }
+

@@ -40,7 +40,7 @@ func TestCoreTransactionByBlockHashAndIndex(t *testing.T) {
 	transaction := new(dto.TransactionParameters)
 	transaction.From = coinBase
 	transaction.To = coinBase
-	//transaction.Value = big.NewInt(0).Mul(big.NewInt(500), big.NewInt(1E18))
+	transaction.Value = big.NewInt(0).Mul(big.NewInt(500), big.NewInt(1E18))
 	transaction.Value = txVal
 	transaction.Gas = big.NewInt(40000)
 
@@ -53,6 +53,8 @@ func TestCoreTransactionByBlockHashAndIndex(t *testing.T) {
 		t.FailNow()
 	}
 
+	//  wait for a block
+	// time.Sleep(time.Second*10)
 	time.Sleep(time.Second)
 
 	txFromHash, err := connection.Core.GetTransactionByHash(txID)
@@ -62,6 +64,7 @@ func TestCoreTransactionByBlockHashAndIndex(t *testing.T) {
 		t.FailNow()
 	}
 
+	// // if it fails, it may be that the time is too short and the transaction has not been executed
 	tx, err := connection.Core.GetTransactionByBlockHashAndIndex(txFromHash.BlockHash, txFromHash.TransactionIndex)
 
 	if err != nil {

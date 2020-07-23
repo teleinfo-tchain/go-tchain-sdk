@@ -51,8 +51,8 @@ func TestCoreGetTransactionCount(t *testing.T) {
 		t.Errorf("Count incorrect, changed between calls")
 		t.FailNow()
 	}
-	// send a transaction and the count should increase
 
+	// send a transaction and the count should increase
 	t.Log("Starting Count:", count)
 	transaction := new(dto.TransactionParameters)
 	transaction.From = coinBase
@@ -68,7 +68,7 @@ func TestCoreGetTransactionCount(t *testing.T) {
 		t.FailNow()
 	}
 
-	time.Sleep(time.Second)
+	time.Sleep(time.Second*3)
 
 	newCount, err := connection.Core.GetTransactionCount(coinBase, block.LATEST)
 

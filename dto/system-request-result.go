@@ -101,7 +101,7 @@ func (pointer *SystemRequestResult) ToTrustAnchorVoter() ([]*TrustAnchorVoter, e
 			return nil, customerror.UNPARSEABLEINTERFACE
 		}
 
-		err = json.Unmarshal([]byte(marshal), info)
+		err = json.Unmarshal(marshal, info)
 		if err != nil {
 			return nil, customerror.UNPARSEABLEINTERFACE
 		}
@@ -254,7 +254,7 @@ func (pointer *SystemRequestResult) ToElectionCandidates() ([]*Candidate, error)
 			return nil, customerror.UNPARSEABLEINTERFACE
 		}
 
-		err = json.Unmarshal([]byte(marshal), info)
+		err = json.Unmarshal(marshal, info)
 		if err != nil {
 			return nil, customerror.UNPARSEABLEINTERFACE
 		}
@@ -315,7 +315,7 @@ func (pointer *SystemRequestResult) ToElectionVoterList() ([]*Voter, error) {
 			return nil, customerror.UNPARSEABLEINTERFACE
 		}
 
-		err = json.Unmarshal([]byte(marshal), info)
+		err = json.Unmarshal(marshal, info)
 		if err != nil {
 			return nil, customerror.UNPARSEABLEINTERFACE
 		}
@@ -349,7 +349,7 @@ func (pointer *SystemRequestResult) ToElectionStake() (*Stake, error) {
 	return stake, err
 }
 
-func (pointer *RequestResult) ToRoundStateInfo() (*RoundStateInfo, error) {
+func (pointer *SystemRequestResult) ToRoundStateInfo() (*RoundStateInfo, error) {
 	if err := pointer.checkResponse(); err != nil {
 		return nil, err
 	}
@@ -364,12 +364,12 @@ func (pointer *RequestResult) ToRoundStateInfo() (*RoundStateInfo, error) {
 
 	marshal, err := json.Marshal(result)
 
-	err = json.Unmarshal([]byte(marshal), roundStateInfo)
+	err = json.Unmarshal(marshal, roundStateInfo)
 
 	return roundStateInfo, err
 }
 
-func (pointer *RequestResult) ToRoundChangeSetInfo() (*RoundChangeSetInfo, error) {
+func (pointer *SystemRequestResult) ToRoundChangeSetInfo() (*RoundChangeSetInfo, error) {
 	if err := pointer.checkResponse(); err != nil {
 		return nil, err
 	}
@@ -384,12 +384,12 @@ func (pointer *RequestResult) ToRoundChangeSetInfo() (*RoundChangeSetInfo, error
 
 	marshal, err := json.Marshal(result)
 
-	err = json.Unmarshal([]byte(marshal), roundChangeSetInfo)
+	err = json.Unmarshal(marshal, roundChangeSetInfo)
 
 	return roundChangeSetInfo, err
 }
 
-func (pointer *RequestResult) ToBacklogs() (map[string][]*Message, error) {
+func (pointer *SystemRequestResult) ToBacklogs() (map[string][]*Message, error) {
 	if err := pointer.checkResponse(); err != nil {
 		return nil, err
 	}
@@ -408,7 +408,7 @@ func (pointer *RequestResult) ToBacklogs() (map[string][]*Message, error) {
 		return nil, customerror.UNPARSEABLEINTERFACE
 	}
 
-	err = json.Unmarshal([]byte(marshal), &backlogs)
+	err = json.Unmarshal(marshal, &backlogs)
 
 	return backlogs, err
 }

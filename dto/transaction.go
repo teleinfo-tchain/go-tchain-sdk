@@ -33,6 +33,15 @@ type TransactionParameters struct {
 	Data     types.ComplexString
 }
 
+type TransactionCallParameters struct {
+	From     string
+	To       string
+	Gas      *big.Int
+	GasPrice *big.Int
+	Value    *big.Int
+	Data     types.ComplexString
+}
+
 // RequestTransactionParameters JSON
 type RequestTransactionParameters struct {
 	From     string `json:"from"`
@@ -119,7 +128,6 @@ type TransactionReceipt struct {
 	ContractAddress   string            `json:"contractAddress"`
 	Logs              []TransactionLogs `json:"logs"`
 	LogsBloom         string            `json:"logsBloom"`
-	Root              string            `json:"string"`
 	Status            bool              `json:"status"`
 }
 

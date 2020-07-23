@@ -160,6 +160,7 @@ Returns:
 func SignTransaction(transaction *Txdata, privKey string, chainId int64) (*SignTransactionResult, error) {
 	// 1 check input
 	ret, err := transaction.PreCheck()
+	fmt.Println("t is ", transaction.T)
 	if !ret {
 		return nil, err
 	}

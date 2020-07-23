@@ -15,21 +15,22 @@
 package test
 
 import (
-	"github.com/bif/bif-sdk-go/test/resources"
-	"testing"
-
 	"github.com/bif/bif-sdk-go"
 	"github.com/bif/bif-sdk-go/providers"
+	"github.com/bif/bif-sdk-go/test/resources"
+	"testing"
 )
 
 func TestCoreSyncing(t *testing.T) {
 
 	var connection = bif.NewBif(providers.NewHTTPProvider(resources.IP+":"+resources.Port, 10, false))
 
-	_, err := connection.Core.IsSyncing()
+	syncing, err := connection.Core.IsSyncing()
 
 	if err != nil {
 		t.Error(err)
 		t.FailNow()
 	}
+	t.Log(syncing)
+
 }

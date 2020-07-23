@@ -3,6 +3,7 @@ package test
 import (
 	"github.com/bif/bif-sdk-go"
 	"github.com/bif/bif-sdk-go/common"
+	"github.com/bif/bif-sdk-go/common/hexutil"
 	"github.com/bif/bif-sdk-go/core"
 	"github.com/bif/bif-sdk-go/core/block"
 	"github.com/bif/bif-sdk-go/providers"
@@ -11,7 +12,7 @@ import (
 	"testing"
 )
 
-//test/core/core-sendRawTransaction_test.go
+// 测试发送RawTransaction
 func TestCoreSendRawTransaction(t *testing.T) {
 	var connection = bif.NewBif(providers.NewHTTPProvider(resources.IP+":"+resources.Port, 10, false))
 
@@ -26,7 +27,6 @@ func TestCoreSendRawTransaction(t *testing.T) {
 	to := common.StringToAddress(resources.AddressTwo)
 	tx := &core.Txdata{
 		AccountNonce: nonce.Uint64(),
-		//AccountNonce: 10,
 		Price:     big.NewInt(25),
 		GasLimit:  2000000,
 		Sender:    &from,
@@ -36,11 +36,17 @@ func TestCoreSendRawTransaction(t *testing.T) {
 		V:         new(big.Int),
 		R:         new(big.Int),
 		S:         new(big.Int),
-		T:         big.NewInt(0),
+		T:         new(big.Int),
 	}
-	res, _ := core.SignTransaction(tx, privKey, 666)
 
-	txIDRaw, err := connection.Core.SendRawTransaction(common.ToHex(res.Raw))
+	chainId, err := connection.Core.GetChainId()
+	if err != nil {
+		t.Error(err)
+		t.FailNow()
+	}
+
+	res, _ := core.SignTransaction(tx, privKey, int64(chainId))
+	txIDRaw, err := connection.Core.SendRawTransaction(hexutil.Encode(res.Raw))
 
 	if err != nil {
 		t.Error(err)

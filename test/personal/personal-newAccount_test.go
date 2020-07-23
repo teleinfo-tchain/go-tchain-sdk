@@ -15,22 +15,37 @@
 package test
 
 import (
-	"github.com/bif/bif-sdk-go/test/resources"
-	"testing"
-
 	"github.com/bif/bif-sdk-go"
 	"github.com/bif/bif-sdk-go/providers"
+	"github.com/bif/bif-sdk-go/test/resources"
+	"testing"
 )
 
 func TestPersonalNewAccount(t *testing.T) {
 
 	var connection = bif.NewBif(providers.NewHTTPProvider(resources.IP+":"+resources.Port, 10, false))
-	address, err := connection.Personal.NewAccount("node")
+	address, err := connection.Personal.NewAccount("testSm2", true)
 
 	if err != nil {
 		t.Error(err)
 		t.Fail()
 	}
 
+	if address[8:10] != "73"{
+		t.Error("generate account error")
+		t.FailNow()
+	}
+	t.Log(address)
+
+	address, err= connection.Personal.NewAccount("notSm2", false)
+	if err != nil {
+		t.Error(err)
+		t.Fail()
+	}
+
+	if address[8:10] == "73"{
+		t.Error("generate account error")
+		t.FailNow()
+	}
 	t.Log(address)
 }

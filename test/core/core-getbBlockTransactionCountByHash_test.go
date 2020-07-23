@@ -15,8 +15,8 @@
 package test
 
 import (
-	"fmt"
 	"github.com/bif/bif-sdk-go"
+	block2 "github.com/bif/bif-sdk-go/core/block"
 	"github.com/bif/bif-sdk-go/dto"
 	"github.com/bif/bif-sdk-go/providers"
 	"github.com/bif/bif-sdk-go/test/resources"
@@ -29,14 +29,7 @@ func TestGetBlockTransactionCountByHash(t *testing.T) {
 
 	var connection = bif.NewBif(providers.NewHTTPProvider(resources.IP+":"+resources.Port, 10, false))
 
-	blockNumber, err := connection.Core.GetBlockNumber()
-
-	if err != nil {
-		t.Error(err)
-		t.FailNow()
-	}
-
-	block, err := connection.Core.GetBlockByNumber(blockNumber, false)
+	block, err := connection.Core.GetBlockByNumber(block2.LATEST, false)
 
 	if err != nil {
 		t.Error(err)
@@ -48,7 +41,7 @@ func TestGetBlockTransactionCountByHash(t *testing.T) {
 		t.Error(err)
 		t.FailNow()
 	}
-	fmt.Println("txCount:", txCount)
+	t.Log("txCount:", txCount)
 
 	// submit a transaction, wait for the block and there should be 1 tx.
 	coinBase, err := connection.Core.GetCoinBase()
@@ -71,14 +64,17 @@ func TestGetBlockTransactionCountByHash(t *testing.T) {
 		t.FailNow()
 	}
 
-	time.Sleep(5 * time.Second)
+	t.Log("txID:", txID)
 
-	fmt.Println("txID:", txID)
 	tx, err := connection.Core.GetTransactionByHash(txID)
-
 	if err != nil {
 		t.Error(err)
 		t.FailNow()
+	}
+
+	for tx.BlockNumber.Uint64() == 0 {
+		time.Sleep(time.Second*2)
+		tx, _ = connection.Core.GetTransactionByHash(txID)
 	}
 
 	txCount, err = connection.Core.GetBlockTransactionCountByHash(tx.BlockHash)
@@ -88,9 +84,10 @@ func TestGetBlockTransactionCountByHash(t *testing.T) {
 		t.FailNow()
 	}
 
-	if txCount.Int64() != 1 {
+	//  注意如果有其他用户发送交易，可能会大于1，该测试可能会失败
+	if txCount != 1 {
 		t.Error("invalid block transaction count")
 		t.FailNow()
 	}
-	fmt.Println("txCount:", txCount)
+	t.Log("txCount:", txCount)
 }

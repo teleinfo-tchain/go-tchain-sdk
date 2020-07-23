@@ -43,7 +43,8 @@ func TestCoreSignTransaction(t *testing.T) {
 		t.Error(err)
 		t.FailNow()
 	}
-	fmt.Println(txID.Raw)
+
+	t.Log(txID.Raw)
 
 	util := utils.NewUtils()
 	hexStr, _ := util.ToHex(resources.AddressTwo[:8])
