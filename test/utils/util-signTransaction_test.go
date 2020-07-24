@@ -43,7 +43,7 @@ func TestCoreSignTransactionSm2(t *testing.T) {
 	}
 
 	to := common.StringToAddress(resources.AddressTwo)
-	tx := &utils.Txdata{
+	tx := &utils.TxData{
 		AccountNonce: nonce.Uint64(),
 		Price:        big.NewInt(30),
 		GasLimit:     2000000,
@@ -57,7 +57,7 @@ func TestCoreSignTransactionSm2(t *testing.T) {
 		T:            big.NewInt(0),
 	}
 
-	res, _ := utils.SignTransaction(tx, privateKey, int64(chainId))
+	res, _ := utils.SignTransaction(tx, privateKey, big.NewInt(0).SetUint64(chainId))
 
 	txIDRaw, err := connection.Core.SendRawTransaction(hexutil.Encode(res.Raw))
 
@@ -99,7 +99,7 @@ func TestCoreSignTransactionNoSm2(t *testing.T) {
 	}
 
 	to := common.StringToAddress(resources.AddressSM2)
-	tx := &utils.Txdata{
+	tx := &utils.TxData{
 		AccountNonce: nonce.Uint64(),
 		Price:     big.NewInt(35),
 		GasLimit:  2000000,
@@ -113,8 +113,7 @@ func TestCoreSignTransactionNoSm2(t *testing.T) {
 		T:         big.NewInt(0),
 	}
 
-	res, _ := utils.SignTransaction(tx, privateKey, int64(chainId))
-
+	res, _ := utils.SignTransaction(tx, privateKey, big.NewInt(0).SetUint64(chainId))
 	txIDRaw, err := connection.Core.SendRawTransaction(hexutil.Encode(res.Raw))
 
 	if err != nil {

@@ -3,6 +3,7 @@ package utils
 import (
 	"bytes"
 	"crypto/ecdsa"
+	"errors"
 	"fmt"
 	"github.com/bif/bif-sdk-go/common"
 	"github.com/bif/bif-sdk-go/common/hexutil"
@@ -12,7 +13,7 @@ import (
 	"math/big"
 )
 
-type Txdata struct {
+type TxData struct {
 	AccountNonce uint64          `json:"nonce"    gencodec:"required"`
 	Price        *big.Int        `json:"gasPrice" gencodec:"required"`
 	GasLimit     uint64          `json:"gas"      gencodec:"required"`
@@ -33,7 +34,7 @@ type Txdata struct {
 
 type SignTransactionResult struct {
 	Raw hexutil.Bytes `json:"raw"`
-	Tx  *Txdata       `json:"tx"`
+	Tx  *TxData       `json:"tx"`
 }
 
 func rlpHash(x interface{}) (h common.Hash) {
@@ -49,7 +50,7 @@ type BIFSigner struct {
 
 // Hash returns the hash to be signed by the sender.
 // It does not uniquely identify the transaction.
-func (bfs BIFSigner) Hash(tx *Txdata) common.Hash {
+func (bfs BIFSigner) Hash(tx *TxData) common.Hash {
 	return rlpHash([]interface{}{
 		tx.AccountNonce,
 		tx.Price,
@@ -64,12 +65,8 @@ func (bfs BIFSigner) Hash(tx *Txdata) common.Hash {
 
 // SignatureValues returns signature values. This signature
 // needs to be in the [R || S || V] format where V is 0 or 1.
-func (bfs BIFSigner) SignatureValue(tx *Txdata, sig []byte) (r, s, v *big.Int, err error) {
-	// if len(sig) != SignatureLength {
-	//	panic(fmt.Sprintf("wrong size for signature: got %d, want %d", len(sig), SignatureLength))
-	// }
+func (bfs BIFSigner) SignatureValue(tx *TxData, sig []byte) (r, s, v *big.Int, err error) {
 	if len(sig) < 65 {
-		fmt.Println("len sig is ", len(sig))
 		return nil, nil, nil, fmt.Errorf("wrong size for signature: got %d, want %d ", len(sig), 65)
 	}
 	r = new(big.Int).SetBytes(sig[:32])
@@ -80,7 +77,7 @@ func (bfs BIFSigner) SignatureValue(tx *Txdata, sig []byte) (r, s, v *big.Int, e
 
 // SignatureValues returns signature values. This signature
 // needs to be in the [R || S || V] format where V is 0 or 1.
-func (bfs BIFSigner) SignatureValues(tx *Txdata, sig []byte) (R, S, V *big.Int, err error) {
+func (bfs BIFSigner) SignatureValues(tx *TxData, sig []byte) (R, S, V *big.Int, err error) {
 	R, S, V, err = bfs.SignatureValue(tx, sig)
 	if err != nil {
 		return nil, nil, nil, err
@@ -94,7 +91,7 @@ func (bfs BIFSigner) SignatureValues(tx *Txdata, sig []byte) (R, S, V *big.Int, 
 
 // WithSignature returns a new transaction with the given signature.
 // This signature needs to be in the [R || S || V] format where V is 0 or 1.
-func (tx *Txdata) WithSignature(signer BIFSigner, sig []byte) (*Txdata, error) {
+func (tx *TxData) WithSignature(signer BIFSigner, sig []byte) (*TxData, error) {
 	r, s, v, err := signer.SignatureValues(tx, sig)
 	if err != nil {
 		return nil, err
@@ -105,7 +102,7 @@ func (tx *Txdata) WithSignature(signer BIFSigner, sig []byte) (*Txdata, error) {
 }
 
 // SignTx signs the transaction using the given signer and private key
-func SignTx(tx *Txdata, s BIFSigner, prv *ecdsa.PrivateKey) (*Txdata, error) {
+func SignTx(tx *TxData, s BIFSigner, prv *ecdsa.PrivateKey) (*TxData, error) {
 	h := s.Hash(tx)
 
 	var sig []byte
@@ -125,21 +122,38 @@ func SignTx(tx *Txdata, s BIFSigner, prv *ecdsa.PrivateKey) (*Txdata, error) {
 	return tx.WithSignature(s, sig)
 }
 
-func (tx *Txdata) PreCheck() (bool, error) {
+func (tx *TxData) PreCheck(privateKey string) (bool, error) {
 	if tx.Sender == nil {
-		return false, fmt.Errorf("sender not specified")
+		return false, errors.New("sender not specified")
 	}
 	// 判断地址格式的有效性
 	if !(bytes.HasPrefix(tx.Sender.Bytes(), []byte("did:bid:"))) {
-		return false, fmt.Errorf("not invalid sender address")
+		return false, errors.New("not invalid sender address")
+	}
+
+	var cryptoType uint
+	// 判断私钥地址与公钥是否对应
+	if tx.Sender[8] == 115 {
+		cryptoType = 0
+	} else {
+		cryptoType = 1
+	}
+
+	publicAddr, err := GetAddressFromPrivate(privateKey, cryptoType)
+	if err != nil {
+		return false, errors.New("not invalid privateKey")
+	}
+
+	if *tx.Sender != common.StringToAddress(publicAddr) {
+		return false, errors.New("the sender does not match privateKey")
 	}
 
 	if tx.Price == nil {
-		return false, fmt.Errorf("gasPrice not specified")
+		return false, errors.New("gasPrice not specified")
 	}
 
 	if tx.GasLimit == 0 {
-		return false, fmt.Errorf("gasLimit not specified")
+		return false, errors.New("gasLimit not specified")
 	}
 
 	return true, nil
@@ -150,8 +164,8 @@ func (tx *Txdata) PreCheck() (bool, error) {
    	EN -
  	CN - 使用地址私钥给指定的交易签名，返回签名结果
   Params:
-  	- transaction: *Txdata 指定的交易信息
- 	- privKey: string, 私钥（transaction中的from地址对应的私钥）
+  	- transaction: *TxData 指定的交易信息
+ 	- privateKey: string, 私钥（transaction中的from地址对应的私钥）
  	- chainId: int64, 链的ChainId
 
   Returns:
@@ -160,9 +174,9 @@ func (tx *Txdata) PreCheck() (bool, error) {
 
   Call permissions: Anyone
 */
-func SignTransaction(transaction *Txdata, privKey string, chainId int64) (*SignTransactionResult, error) {
+func SignTransaction(transaction *TxData, privateKey string, chainId *big.Int) (*SignTransactionResult, error) {
 	// 1 check input
-	ret, err := transaction.PreCheck()
+	ret, err := transaction.PreCheck(privateKey)
 	if !ret {
 		return nil, err
 	}
@@ -176,19 +190,18 @@ func SignTransaction(transaction *Txdata, privKey string, chainId int64) (*SignT
 		cryptoType = crypto.SECP256K1
 	}
 
-	privateKey, err := crypto.HexToECDSA(privKey, cryptoType)
+	privateKeyN, err := crypto.HexToECDSA(privateKey, cryptoType)
 	if err != nil {
 		return nil, err
 	}
 
 	// 3 New Signer
-	id := big.NewInt(chainId)
 	signer := &BIFSigner{
-		chainId:    id,
-		chainIdMul: new(big.Int).Mul(id, big.NewInt(2)),
+		chainId:    chainId,
+		chainIdMul: new(big.Int).Mul(chainId, big.NewInt(2)),
 	}
 
-	signed, err := SignTx(transaction, *signer, privateKey)
+	signed, err := SignTx(transaction, *signer, privateKeyN)
 
 	if err != nil {
 		return nil, err
