@@ -3,8 +3,6 @@ package system
 import (
 	"github.com/bif/bif-sdk-go/abi"
 	"github.com/bif/bif-sdk-go/common"
-	"github.com/bif/bif-sdk-go/common/hexutil"
-	"github.com/bif/bif-sdk-go/complex/types"
 	"github.com/bif/bif-sdk-go/dto"
 	"strings"
 )
@@ -62,7 +60,7 @@ Returns:
 
 Call permissions: 只有监管节点地址可以调用
 */
-func (peerCer *PeerCertificate) RegisterCertificate(from common.Address, registerCertificate *dto.RegisterCertificateInfo) (string, error) {
+func (peerCer *PeerCertificate) RegisterCertificate(signTxParams *SysTxParams, registerCertificate *dto.RegisterCertificateInfo) (string, error) {
 	// encoding
 	// registerCertificate is a struct we need to use the components.
 	registerCertificate.Id = registerCertificate.PublicKey
@@ -73,9 +71,12 @@ func (peerCer *PeerCertificate) RegisterCertificate(from common.Address, registe
 		return "", err
 	}
 
-	transaction := peerCer.super.prePareTransaction(from, PeerCertificateContractAddr, types.ComplexString(hexutil.Encode(inputEncode)))
+	signedTx, err := peerCer.super.prePareSignTransaction(signTxParams, inputEncode, common.StringToAddress(PeerCertificateContractAddr))
+	if err != nil{
+		return "", err
+	}
 
-	return peerCer.super.sendTransaction(transaction)
+	return peerCer.super.sendRawTransaction(signedTx)
 }
 
 /*
@@ -91,16 +92,19 @@ Returns:
 
 Call permissions: 只有监管节点地址可以调用
 */
-func (peerCer *PeerCertificate) RevokedCertificate(from common.Address, id string) (string, error) {
+func (peerCer *PeerCertificate) RevokedCertificate(signTxParams *SysTxParams, id string) (string, error) {
 	// encoding
 	inputEncode, err := peerCer.abi.Pack("revokedCertificate", id)
 	if err != nil {
 		return "", err
 	}
 
-	transaction := peerCer.super.prePareTransaction(from, PeerCertificateContractAddr, types.ComplexString(hexutil.Encode(inputEncode)))
+	signedTx, err := peerCer.super.prePareSignTransaction(signTxParams, inputEncode, common.StringToAddress(PeerCertificateContractAddr))
+	if err != nil{
+		return "", err
+	}
 
-	return peerCer.super.sendTransaction(transaction)
+	return peerCer.super.sendRawTransaction(signedTx)
 }
 
 /*

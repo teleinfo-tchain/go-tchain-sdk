@@ -1,14 +1,14 @@
 package System
 
 import (
-	"fmt"
 	"github.com/bif/bif-sdk-go"
 	"github.com/bif/bif-sdk-go/common"
-	"github.com/bif/bif-sdk-go/common/hexutil"
+	"github.com/bif/bif-sdk-go/core/block"
 	"github.com/bif/bif-sdk-go/dto"
 	"github.com/bif/bif-sdk-go/providers"
 	"github.com/bif/bif-sdk-go/system"
 	"github.com/bif/bif-sdk-go/test/resources"
+	"math/big"
 	"strconv"
 	"testing"
 )
@@ -25,6 +25,27 @@ func TestPeerRegisterCertificate(t *testing.T) {
 		t.Log(err)
 		t.FailNow()
 	}
+
+	chainId, err := connection.Core.GetChainId()
+	if err != nil {
+		t.Log(err)
+		t.FailNow()
+	}
+
+	nonce, err := connection.Core.GetTransactionCount(coinBase, block.LATEST)
+	if err != nil {
+		t.Log(err)
+		t.FailNow()
+	}
+
+	sysTxParams := new(system.SysTxParams)
+	sysTxParams.From = common.StringToAddress(coinBase)
+	sysTxParams.PrivateKey = resources.CoinBasePriKey
+	sysTxParams.Gas = 2000000
+	sysTxParams.GasPrice = big.NewInt(35)
+	sysTxParams.Nonce = nonce.Uint64()
+	sysTxParams.ChainId = big.NewInt(0).SetUint64(chainId)
+
 	peerCer := connection.System.NewPeerCertificate()
 
 	registerCertificateInfo := new(dto.RegisterCertificateInfo)
@@ -39,13 +60,14 @@ func TestPeerRegisterCertificate(t *testing.T) {
 	registerCertificateInfo.Port = port
 	registerCertificateInfo.CompanyName = "tele info"
 	registerCertificateInfo.CompanyCode = "341004600017214"
-	fmt.Println(hexutil.Encode(common.FromHex(coinBase)))
-	//registerCertificateInfo
-	peerRegisterCertificateHash, err := peerCer.RegisterCertificate(common.StringToAddress(coinBase), registerCertificateInfo)
+
+	// registerCertificateInfo
+	peerRegisterCertificateHash, err := peerCer.RegisterCertificate(sysTxParams, registerCertificateInfo)
 	if err != nil {
 		t.Error(err)
 		t.FailNow()
 	}
+
 	t.Log(peerRegisterCertificateHash, err)
 }
 
@@ -56,8 +78,28 @@ func TestPeerRevokedCertificate(t *testing.T) {
 		t.Log(err)
 		t.FailNow()
 	}
+	chainId, err := connection.Core.GetChainId()
+	if err != nil {
+		t.Log(err)
+		t.FailNow()
+	}
+
+	nonce, err := connection.Core.GetTransactionCount(coinBase, block.LATEST)
+	if err != nil {
+		t.Log(err)
+		t.FailNow()
+	}
+
+	sysTxParams := new(system.SysTxParams)
+	sysTxParams.From = common.StringToAddress(coinBase)
+	sysTxParams.PrivateKey = resources.CoinBasePriKey
+	sysTxParams.Gas = 2000000
+	sysTxParams.GasPrice = big.NewInt(35)
+	sysTxParams.Nonce = nonce.Uint64()
+	sysTxParams.ChainId = big.NewInt(0).SetUint64(chainId)
+
 	peerCer := connection.System.NewPeerCertificate()
-	transactionHash, err := peerCer.RevokedCertificate(common.StringToAddress(coinBase), publicKeyTest)
+	transactionHash, err := peerCer.RevokedCertificate(sysTxParams, publicKeyTest)
 	if err != nil {
 		t.Error(err)
 		t.FailNow()

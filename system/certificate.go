@@ -4,8 +4,6 @@ import (
 	"errors"
 	"github.com/bif/bif-sdk-go/abi"
 	"github.com/bif/bif-sdk-go/common"
-	"github.com/bif/bif-sdk-go/common/hexutil"
-	"github.com/bif/bif-sdk-go/complex/types"
 	"github.com/bif/bif-sdk-go/dto"
 	"strings"
 )
@@ -69,7 +67,7 @@ Call permissions: 只有信任锚地址可以调用
 
 BUG(rpc):颁发证书时的Period是否必须以年为单位？？
 */
-func (cer *Certificate) RegisterCertificate(from common.Address, registerCertificate *dto.RegisterCertificate) (string, error) {
+func (cer *Certificate) RegisterCertificate(signTxParams *SysTxParams, registerCertificate *dto.RegisterCertificate) (string, error) {
 	// encoding
 	// registerCertificate is a struct we need to use the components.
 	var values []interface{}
@@ -78,11 +76,13 @@ func (cer *Certificate) RegisterCertificate(from common.Address, registerCertifi
 	if err != nil {
 		return "", err
 	}
-	transaction := new(dto.TransactionParameters)
-	transaction.From = from.String()
-	transaction.To = CertificateContractAddr
-	transaction.Data = types.ComplexString(hexutil.Encode(inputEncode))
-	return cer.super.sendTransaction(transaction)
+
+	signedTx, err := cer.super.prePareSignTransaction(signTxParams, inputEncode, common.StringToAddress(CertificateContractAddr))
+	if err != nil{
+		return "", err
+	}
+
+	return cer.super.sendRawTransaction(signedTx)
 }
 
 /*
@@ -98,17 +98,19 @@ Returns:
 
 Call permissions: 只有证书颁发者可以调用
 */
-func (cer *Certificate) RevokedCertificate(from common.Address, id string) (string, error) {
+func (cer *Certificate) RevokedCertificate(signTxParams *SysTxParams, id string) (string, error) {
 	// encoding
 	inputEncode, err := cer.abi.Pack("revokedCertificate", id)
 	if err != nil {
 		return "", err
 	}
-	transaction := new(dto.TransactionParameters)
-	transaction.From = from.String()
-	transaction.To = CertificateContractAddr
-	transaction.Data = types.ComplexString(hexutil.Encode(inputEncode))
-	return cer.super.sendTransaction(transaction)
+
+	signedTx, err := cer.super.prePareSignTransaction(signTxParams, inputEncode, common.StringToAddress(CertificateContractAddr))
+	if err != nil{
+		return "", err
+	}
+
+	return cer.super.sendRawTransaction(signedTx)
 }
 
 /*
@@ -123,17 +125,16 @@ Returns:
 
 Call permissions: 只有证书颁发者可以调用
 */
-func (cer *Certificate) RevokedCertificates(from common.Address) (string, error) {
+func (cer *Certificate) RevokedCertificates(signTxParams *SysTxParams) (string, error) {
 	// encoding
-	inputEncode, err := cer.abi.Pack("revokedCertificates")
-	if err != nil {
+	inputEncode, _ := cer.abi.Pack("revokedCertificates")
+
+	signedTx, err := cer.super.prePareSignTransaction(signTxParams, inputEncode, common.StringToAddress(CertificateContractAddr))
+	if err != nil{
 		return "", err
 	}
-	transaction := new(dto.TransactionParameters)
-	transaction.From = from.String()
-	transaction.To = CertificateContractAddr
-	transaction.Data = types.ComplexString(hexutil.Encode(inputEncode))
-	return cer.super.sendTransaction(transaction)
+
+	return cer.super.sendRawTransaction(signedTx)
 }
 
 /*

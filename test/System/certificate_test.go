@@ -3,9 +3,12 @@ package System
 import (
 	"github.com/bif/bif-sdk-go"
 	"github.com/bif/bif-sdk-go/common"
+	"github.com/bif/bif-sdk-go/core/block"
 	"github.com/bif/bif-sdk-go/dto"
 	"github.com/bif/bif-sdk-go/providers"
+	"github.com/bif/bif-sdk-go/system"
 	"github.com/bif/bif-sdk-go/test/resources"
+	"math/big"
 	"testing"
 )
 
@@ -18,6 +21,27 @@ func TestRegisterCertificate(t *testing.T) {
 		t.Log(err)
 		t.FailNow()
 	}
+
+	chainId, err := connection.Core.GetChainId()
+	if err != nil {
+		t.Log(err)
+		t.FailNow()
+	}
+
+	nonce, err := connection.Core.GetTransactionCount(coinBase, block.LATEST)
+	if err != nil {
+		t.Log(err)
+		t.FailNow()
+	}
+
+	sysTxParams := new(system.SysTxParams)
+	sysTxParams.From = common.StringToAddress(coinBase)
+	sysTxParams.PrivateKey = resources.CoinBasePriKey
+	sysTxParams.Gas = 2000000
+	sysTxParams.GasPrice = big.NewInt(35)
+	sysTxParams.Nonce = nonce.Uint64()
+	sysTxParams.ChainId = big.NewInt(0).SetUint64(chainId)
+
 	cer := connection.System.NewCertificate()
 
 	registerCertificate := new(dto.RegisterCertificate)
@@ -30,8 +54,8 @@ func TestRegisterCertificate(t *testing.T) {
 	registerCertificate.SubjectPublicKey = ""
 	registerCertificate.SubjectAlgorithm = ""
 	registerCertificate.SubjectSignature = ""
-	//registerCertificate
-	registerCertificateHash, err := cer.RegisterCertificate(common.StringToAddress(coinBase), registerCertificate)
+	// registerCertificate
+	registerCertificateHash, err := cer.RegisterCertificate(sysTxParams, registerCertificate)
 	if err != nil {
 		t.Error(err)
 		t.FailNow()
@@ -46,9 +70,30 @@ func TestRevokedCertificate(t *testing.T) {
 		t.Log(err)
 		t.FailNow()
 	}
+
+	chainId, err := connection.Core.GetChainId()
+	if err != nil {
+		t.Log(err)
+		t.FailNow()
+	}
+
+	nonce, err := connection.Core.GetTransactionCount(coinBase, block.LATEST)
+	if err != nil {
+		t.Log(err)
+		t.FailNow()
+	}
+
+	sysTxParams := new(system.SysTxParams)
+	sysTxParams.From = common.StringToAddress(coinBase)
+	sysTxParams.PrivateKey = resources.CoinBasePriKey
+	sysTxParams.Gas = 2000000
+	sysTxParams.GasPrice = big.NewInt(35)
+	sysTxParams.Nonce = nonce.Uint64()
+	sysTxParams.ChainId = big.NewInt(0).SetUint64(chainId)
+
 	cer := connection.System.NewCertificate()
 
-	transactionHash, err := cer.RevokedCertificate(common.StringToAddress(coinBase), coinBase)
+	transactionHash, err := cer.RevokedCertificate(sysTxParams, coinBase)
 	if err != nil {
 		t.Error(err)
 		t.FailNow()
@@ -63,9 +108,30 @@ func TestRevokedCertificates(t *testing.T) {
 		t.Log(err)
 		t.FailNow()
 	}
+
+	chainId, err := connection.Core.GetChainId()
+	if err != nil {
+		t.Log(err)
+		t.FailNow()
+	}
+
+	nonce, err := connection.Core.GetTransactionCount(coinBase, block.LATEST)
+	if err != nil {
+		t.Log(err)
+		t.FailNow()
+	}
+
+	sysTxParams := new(system.SysTxParams)
+	sysTxParams.From = common.StringToAddress(coinBase)
+	sysTxParams.PrivateKey = resources.CoinBasePriKey
+	sysTxParams.Gas = 2000000
+	sysTxParams.GasPrice = big.NewInt(35)
+	sysTxParams.Nonce = nonce.Uint64()
+	sysTxParams.ChainId = big.NewInt(0).SetUint64(chainId)
+
 	cer := connection.System.NewCertificate()
 
-	transactionHash, err := cer.RevokedCertificates(common.StringToAddress(coinBase))
+	transactionHash, err := cer.RevokedCertificates(sysTxParams)
 	if err != nil {
 		t.Error(err)
 		t.FailNow()

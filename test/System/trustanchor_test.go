@@ -3,9 +3,12 @@ package System
 import (
 	"github.com/bif/bif-sdk-go"
 	"github.com/bif/bif-sdk-go/common"
+	"github.com/bif/bif-sdk-go/core/block"
 	"github.com/bif/bif-sdk-go/dto"
 	"github.com/bif/bif-sdk-go/providers"
+	"github.com/bif/bif-sdk-go/system"
 	"github.com/bif/bif-sdk-go/test/resources"
+	"math/big"
 	"testing"
 )
 
@@ -24,13 +27,33 @@ const (
 	TrustAnchorDesc        = "info test"
 )
 
-func TestRegisterTrustAnchor(t *testing.T) {
+func TestRegisterBaseTrustAnchor(t *testing.T) {
 	var connection = bif.NewBif(providers.NewHTTPProvider(resources.IP+":"+resources.Port, 10, false))
 	coinBase, err := connection.Core.GetCoinBase()
 	if err != nil {
 		t.Error(err)
 		t.FailNow()
 	}
+	chainId, err := connection.Core.GetChainId()
+	if err != nil {
+		t.Log(err)
+		t.FailNow()
+	}
+
+	nonce, err := connection.Core.GetTransactionCount(coinBase, block.LATEST)
+	if err != nil {
+		t.Log(err)
+		t.FailNow()
+	}
+
+	sysTxParams := new(system.SysTxParams)
+	sysTxParams.From = common.StringToAddress(coinBase)
+	sysTxParams.PrivateKey = resources.CoinBasePriKey
+	sysTxParams.Gas = 2000000
+	sysTxParams.GasPrice = big.NewInt(35)
+	sysTxParams.Nonce = nonce.Uint64()
+	sysTxParams.ChainId = big.NewInt(0).SetUint64(chainId)
+
 	anchor := connection.System.NewTrustAnchor()
 
 	registerBaseAnchor := new(dto.RegisterAnchor)
@@ -44,13 +67,43 @@ func TestRegisterTrustAnchor(t *testing.T) {
 	registerBaseAnchor.ServerUrl = TrustAnchorServerUrl
 	registerBaseAnchor.Email = TrustAnchorEmail
 	registerBaseAnchor.Desc = TrustAnchorDesc
-	//registerBaseAnchor
-	registerBaseAnchorHash, err := anchor.RegisterTrustAnchor(common.StringToAddress(coinBase), registerBaseAnchor)
+	// registerBaseAnchor
+	registerBaseAnchorHash, err := anchor.RegisterTrustAnchor(sysTxParams, registerBaseAnchor)
 	if err != nil {
 		t.Error(err)
 		t.FailNow()
 	}
 	t.Log(registerBaseAnchorHash)
+}
+
+func TestRegisterExtendTrustAnchor(t *testing.T) {
+	var connection = bif.NewBif(providers.NewHTTPProvider(resources.IP+":"+resources.Port, 10, false))
+	coinBase, err := connection.Core.GetCoinBase()
+	if err != nil {
+		t.Error(err)
+		t.FailNow()
+	}
+	chainId, err := connection.Core.GetChainId()
+	if err != nil {
+		t.Log(err)
+		t.FailNow()
+	}
+
+	nonce, err := connection.Core.GetTransactionCount(coinBase, block.LATEST)
+	if err != nil {
+		t.Log(err)
+		t.FailNow()
+	}
+
+	sysTxParams := new(system.SysTxParams)
+	sysTxParams.From = common.StringToAddress(coinBase)
+	sysTxParams.PrivateKey = resources.CoinBasePriKey
+	sysTxParams.Gas = 2000000
+	sysTxParams.GasPrice = big.NewInt(35)
+	sysTxParams.Nonce = nonce.Uint64()
+	sysTxParams.ChainId = big.NewInt(0).SetUint64(chainId)
+
+	anchor := connection.System.NewTrustAnchor()
 
 	registerExtendAnchor := new(dto.RegisterAnchor)
 	registerExtendAnchor.Anchor = common.StringToAddress(ExtendAnchorAddr).String()
@@ -63,8 +116,8 @@ func TestRegisterTrustAnchor(t *testing.T) {
 	registerExtendAnchor.ServerUrl = TrustAnchorServerUrl
 	registerExtendAnchor.Email = TrustAnchorEmail
 	registerExtendAnchor.Desc = TrustAnchorDesc
-	//registerExtendAnchor
-	registerExtendAnchorHash, err := anchor.RegisterTrustAnchor(common.StringToAddress(coinBase), registerExtendAnchor)
+	// registerExtendAnchor
+	registerExtendAnchorHash, err := anchor.RegisterTrustAnchor(sysTxParams, registerExtendAnchor)
 	if err != nil {
 		t.Error(err)
 		t.FailNow()
@@ -79,9 +132,29 @@ func TestUnRegisterTrustAnchor(t *testing.T) {
 		t.Error(err)
 		t.FailNow()
 	}
+	chainId, err := connection.Core.GetChainId()
+	if err != nil {
+		t.Log(err)
+		t.FailNow()
+	}
+
+	nonce, err := connection.Core.GetTransactionCount(coinBase, block.LATEST)
+	if err != nil {
+		t.Log(err)
+		t.FailNow()
+	}
+
+	sysTxParams := new(system.SysTxParams)
+	sysTxParams.From = common.StringToAddress(coinBase)
+	sysTxParams.PrivateKey = resources.CoinBasePriKey
+	sysTxParams.Gas = 2000000
+	sysTxParams.GasPrice = big.NewInt(35)
+	sysTxParams.Nonce = nonce.Uint64()
+	sysTxParams.ChainId = big.NewInt(0).SetUint64(chainId)
+
 	anchor := connection.System.NewTrustAnchor()
 
-	transactionHash, err := anchor.UnRegisterTrustAnchor(common.StringToAddress(coinBase))
+	transactionHash, err := anchor.UnRegisterTrustAnchor(sysTxParams)
 	if err != nil {
 		t.Error(err)
 		t.FailNow()
@@ -132,6 +205,26 @@ func TestUpdateAnchorInfo(t *testing.T) {
 		t.Error(err)
 		t.FailNow()
 	}
+	chainId, err := connection.Core.GetChainId()
+	if err != nil {
+		t.Log(err)
+		t.FailNow()
+	}
+
+	nonce, err := connection.Core.GetTransactionCount(coinBase, block.LATEST)
+	if err != nil {
+		t.Log(err)
+		t.FailNow()
+	}
+
+	sysTxParams := new(system.SysTxParams)
+	sysTxParams.From = common.StringToAddress(coinBase)
+	sysTxParams.PrivateKey = resources.CoinBasePriKey
+	sysTxParams.Gas = 2000000
+	sysTxParams.GasPrice = big.NewInt(35)
+	sysTxParams.Nonce = nonce.Uint64()
+	sysTxParams.ChainId = big.NewInt(0).SetUint64(chainId)
+
 	anchor := connection.System.NewTrustAnchor()
 
 	extendAnchorInfo := new(dto.UpdateAnchorInfo)
@@ -142,7 +235,7 @@ func TestUpdateAnchorInfo(t *testing.T) {
 	extendAnchorInfo.Email = "0www.email.teleinfo.cn"
 	extendAnchorInfo.Desc = "0info test"
 
-	transactionHash, err := anchor.UpdateAnchorInfo(common.StringToAddress(coinBase), extendAnchorInfo)
+	transactionHash, err := anchor.UpdateAnchorInfo(sysTxParams, extendAnchorInfo)
 	if err != nil {
 		t.Error(err)
 		t.FailNow()
@@ -157,9 +250,29 @@ func TestExtractOwnBounty(t *testing.T) {
 		t.Error(err)
 		t.FailNow()
 	}
+	chainId, err := connection.Core.GetChainId()
+	if err != nil {
+		t.Log(err)
+		t.FailNow()
+	}
+
+	nonce, err := connection.Core.GetTransactionCount(coinBase, block.LATEST)
+	if err != nil {
+		t.Log(err)
+		t.FailNow()
+	}
+
+	sysTxParams := new(system.SysTxParams)
+	sysTxParams.From = common.StringToAddress(coinBase)
+	sysTxParams.PrivateKey = resources.CoinBasePriKey
+	sysTxParams.Gas = 2000000
+	sysTxParams.GasPrice = big.NewInt(35)
+	sysTxParams.Nonce = nonce.Uint64()
+	sysTxParams.ChainId = big.NewInt(0).SetUint64(chainId)
+
 	anchor := connection.System.NewTrustAnchor()
 
-	transactionHash, err := anchor.ExtractOwnBounty(common.StringToAddress(coinBase))
+	transactionHash, err := anchor.ExtractOwnBounty(sysTxParams)
 	if err != nil {
 		t.Error(err)
 		t.FailNow()
@@ -301,9 +414,29 @@ func TestVoteElect(t *testing.T) {
 		t.Error(err)
 		t.FailNow()
 	}
+	chainId, err := connection.Core.GetChainId()
+	if err != nil {
+		t.Log(err)
+		t.FailNow()
+	}
+
+	nonce, err := connection.Core.GetTransactionCount(coinBase, block.LATEST)
+	if err != nil {
+		t.Log(err)
+		t.FailNow()
+	}
+
+	sysTxParams := new(system.SysTxParams)
+	sysTxParams.From = common.StringToAddress(coinBase)
+	sysTxParams.PrivateKey = resources.CoinBasePriKey
+	sysTxParams.Gas = 2000000
+	sysTxParams.GasPrice = big.NewInt(35)
+	sysTxParams.Nonce = nonce.Uint64()
+	sysTxParams.ChainId = big.NewInt(0).SetUint64(chainId)
+
 	anchor := connection.System.NewTrustAnchor()
 
-	transactionHash, err := anchor.VoteElect(common.StringToAddress(coinBase), coinBase)
+	transactionHash, err := anchor.VoteElect(sysTxParams, coinBase)
 	if err != nil {
 		t.Error(err)
 		t.FailNow()
@@ -318,8 +451,28 @@ func TestCancelVote(t *testing.T) {
 		t.Error(err)
 		t.FailNow()
 	}
+	chainId, err := connection.Core.GetChainId()
+	if err != nil {
+		t.Log(err)
+		t.FailNow()
+	}
+
+	nonce, err := connection.Core.GetTransactionCount(coinBase, block.LATEST)
+	if err != nil {
+		t.Log(err)
+		t.FailNow()
+	}
+
+	sysTxParams := new(system.SysTxParams)
+	sysTxParams.From = common.StringToAddress(coinBase)
+	sysTxParams.PrivateKey = resources.CoinBasePriKey
+	sysTxParams.Gas = 2000000
+	sysTxParams.GasPrice = big.NewInt(35)
+	sysTxParams.Nonce = nonce.Uint64()
+	sysTxParams.ChainId = big.NewInt(0).SetUint64(chainId)
+
 	anchor := connection.System.NewTrustAnchor()
-	transactionHash, err := anchor.CancelVote(common.StringToAddress(coinBase), coinBase)
+	transactionHash, err := anchor.CancelVote(sysTxParams, coinBase)
 	if err != nil {
 		t.Error(err)
 		t.FailNow()

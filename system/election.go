@@ -3,8 +3,6 @@ package system
 import (
 	"github.com/bif/bif-sdk-go/abi"
 	"github.com/bif/bif-sdk-go/common"
-	"github.com/bif/bif-sdk-go/common/hexutil"
-	"github.com/bif/bif-sdk-go/complex/types"
 	"github.com/bif/bif-sdk-go/dto"
 	"math/big"
 	"strings"
@@ -57,7 +55,7 @@ const ElectionAbiJSON = `[
 {"constant": false,"name":"unStake","inputs":[],"outputs":[],"type":"function"},
 {"constant": false,"name":"extractOwnBounty","inputs":[],"outputs":[],"type":"function"},
 {"anonymous":false,"inputs":[{"indexed":false,"name":"methodName","type":"string"},{"indexed":false,"name":"status","type":"uint32"},{"indexed":false,"name":"reason","type":"string"},{"indexed":false,"name":"time","type":"uint256"}],"name":"electEvent","type":"event"},
-{"constant": false,"name":"issueAdditionalBounty","inputs":[],"outputs":[],"type":"function"},
+{"constant": false,"name":"issueAdditionalBounty","inputs":[],"outputs":[],"type":"function"}
 ]`
 
 // Election - The Election Module
@@ -92,18 +90,23 @@ Returns:
 
 Call permissions: ？？？
 */
-func (e *Election) RegisterWitness(from common.Address, witness *dto.RegisterWitness) (string, error) {
+func (e *Election) RegisterWitness(signTxParams *SysTxParams, witness *dto.RegisterWitness) (string, error) {
 	// encode
 	// witness is a struct we need to use the components.
 	var values []interface{}
 	values = e.super.structToInterface(*witness, values)
 	inputEncode, err := e.abi.Pack("registerWitness", values...)
+
 	if err != nil {
 		return "", err
 	}
 
-	transaction := e.super.prePareTransaction(from, ElectionContractAddr, types.ComplexString(hexutil.Encode(inputEncode)))
-	return e.super.sendTransaction(transaction)
+	signedTx, err := e.super.prePareSignTransaction(signTxParams, inputEncode, common.StringToAddress(ElectionContractAddr))
+	if err != nil{
+		return "", err
+	}
+
+	return e.super.sendRawTransaction(signedTx)
 }
 
 /*
@@ -118,12 +121,16 @@ Returns:
 
 Call permissions: 只能自己取消自己
 */
-func (e *Election) UnRegisterWitness(from common.Address) (string, error) {
+func (e *Election) UnRegisterWitness(signTxParams *SysTxParams) (string, error) {
 	// encoding
 	inputEncode, _ := e.abi.Pack("unregisterWitness")
 
-	transaction := e.super.prePareTransaction(from, ElectionContractAddr, types.ComplexString(hexutil.Encode(inputEncode)))
-	return e.super.sendTransaction(transaction)
+	signedTx, err := e.super.prePareSignTransaction(signTxParams, inputEncode, common.StringToAddress(ElectionContractAddr))
+	if err != nil{
+		return "", err
+	}
+
+	return e.super.sendRawTransaction(signedTx)
 }
 
 /*
@@ -197,13 +204,19 @@ Returns:
 
 Call permissions: ？？？
 */
-func (e *Election) VoteWitnesses(from common.Address, candidate string) (string, error) {
+func (e *Election) VoteWitnesses(signTxParams *SysTxParams, candidate string) (string, error) {
 	// encoding
-	inputEncode, _ := e.abi.Pack("voteWitnesses", candidate)
+	inputEncode, err := e.abi.Pack("voteWitnesses", candidate)
+	if err != nil {
+		return "", err
+	}
 
-	transaction := e.super.prePareTransaction(from, ElectionContractAddr, types.ComplexString(hexutil.Encode(inputEncode)))
+	signedTx, err := e.super.prePareSignTransaction(signTxParams, inputEncode, common.StringToAddress(ElectionContractAddr))
+	if err != nil{
+		return "", err
+	}
 
-	return e.super.sendTransaction(transaction)
+	return e.super.sendRawTransaction(signedTx)
 }
 
 /*
@@ -218,13 +231,16 @@ Returns:
 
 Call permissions: ？？？
 */
-func (e *Election) CancelVote(from common.Address) (string, error) {
+func (e *Election) CancelVote(signTxParams *SysTxParams) (string, error) {
 	// encoding
 	inputEncode, _ := e.abi.Pack("cancelVote")
 
-	transaction := e.super.prePareTransaction(from, ElectionContractAddr, types.ComplexString(hexutil.Encode(inputEncode)))
+	signedTx, err := e.super.prePareSignTransaction(signTxParams, inputEncode, common.StringToAddress(ElectionContractAddr))
+	if err != nil{
+		return "", err
+	}
 
-	return e.super.sendTransaction(transaction)
+	return e.super.sendRawTransaction(signedTx)
 }
 
 /*
@@ -239,13 +255,16 @@ Returns:
 
 Call permissions: ？？？
 */
-func (e *Election) StartProxy(from common.Address) (string, error) {
+func (e *Election) StartProxy(signTxParams *SysTxParams) (string, error) {
 	// encoding
 	inputEncode, _ := e.abi.Pack("startProxy")
 
-	transaction := e.super.prePareTransaction(from, ElectionContractAddr, types.ComplexString(hexutil.Encode(inputEncode)))
+	signedTx, err := e.super.prePareSignTransaction(signTxParams, inputEncode, common.StringToAddress(ElectionContractAddr))
+	if err != nil{
+		return "", err
+	}
 
-	return e.super.sendTransaction(transaction)
+	return e.super.sendRawTransaction(signedTx)
 }
 
 /*
@@ -260,13 +279,16 @@ Returns:
 
 Call permissions: ？？？
 */
-func (e *Election) StopProxy(from common.Address) (string, error) {
+func (e *Election) StopProxy(signTxParams *SysTxParams) (string, error) {
 	// encoding
 	inputEncode, _ := e.abi.Pack("stopProxy")
 
-	transaction := e.super.prePareTransaction(from, ElectionContractAddr, types.ComplexString(hexutil.Encode(inputEncode)))
+	signedTx, err := e.super.prePareSignTransaction(signTxParams, inputEncode, common.StringToAddress(ElectionContractAddr))
+	if err != nil{
+		return "", err
+	}
 
-	return e.super.sendTransaction(transaction)
+	return e.super.sendRawTransaction(signedTx)
 }
 
 /*
@@ -281,13 +303,16 @@ Returns:
 
 Call permissions: ？？？
 */
-func (e *Election) CancelProxy(from common.Address) (string, error) {
+func (e *Election) CancelProxy(signTxParams *SysTxParams) (string, error) {
 	// encoding
 	inputEncode, _ := e.abi.Pack("cancelProxy")
 
-	transaction := e.super.prePareTransaction(from, ElectionContractAddr, types.ComplexString(hexutil.Encode(inputEncode)))
+	signedTx, err := e.super.prePareSignTransaction(signTxParams, inputEncode, common.StringToAddress(ElectionContractAddr))
+	if err != nil{
+		return "", err
+	}
 
-	return e.super.sendTransaction(transaction)
+	return e.super.sendRawTransaction(signedTx)
 }
 
 /*
@@ -303,16 +328,19 @@ Returns:
 
 Call permissions: ？？？
 */
-func (e *Election) SetProxy(from common.Address, proxy string) (string, error) {
+func (e *Election) SetProxy(signTxParams *SysTxParams, proxy string) (string, error) {
 	// encoding
 	inputEncode, err := e.abi.Pack("setProxy", proxy)
 	if err != nil {
 		return "", err
 	}
 
-	transaction := e.super.prePareTransaction(from, ElectionContractAddr, types.ComplexString(hexutil.Encode(inputEncode)))
+	signedTx, err := e.super.prePareSignTransaction(signTxParams, inputEncode, common.StringToAddress(ElectionContractAddr))
+	if err != nil{
+		return "", err
+	}
 
-	return e.super.sendTransaction(transaction)
+	return e.super.sendRawTransaction(signedTx)
 }
 
 /*
@@ -328,16 +356,19 @@ Returns:
 
 Call permissions: ？？？
 */
-func (e *Election) Stake(from common.Address, stakeCount *big.Int) (string, error) {
+func (e *Election) Stake(signTxParams *SysTxParams, stakeCount *big.Int) (string, error) {
 	// encoding
 	inputEncode, err := e.abi.Pack("stake", stakeCount)
 	if err != nil {
 		return "", err
 	}
 
-	transaction := e.super.prePareTransaction(from, ElectionContractAddr, types.ComplexString(hexutil.Encode(inputEncode)))
+	signedTx, err := e.super.prePareSignTransaction(signTxParams, inputEncode, common.StringToAddress(ElectionContractAddr))
+	if err != nil{
+		return "", err
+	}
 
-	return e.super.sendTransaction(transaction)
+	return e.super.sendRawTransaction(signedTx)
 }
 
 /*
@@ -352,13 +383,16 @@ Returns:
 
 Call permissions: ？？？
 */
-func (e *Election) UnStake(from common.Address) (string, error) {
+func (e *Election) UnStake(signTxParams *SysTxParams) (string, error) {
 	// encoding
 	inputEncode, _ := e.abi.Pack("unStake")
 
-	transaction := e.super.prePareTransaction(from, ElectionContractAddr, types.ComplexString(hexutil.Encode(inputEncode)))
+	signedTx, err := e.super.prePareSignTransaction(signTxParams, inputEncode, common.StringToAddress(ElectionContractAddr))
+	if err != nil{
+		return "", err
+	}
 
-	return e.super.sendTransaction(transaction)
+	return e.super.sendRawTransaction(signedTx)
 }
 
 /*
@@ -426,13 +460,16 @@ Returns:
 
 Call permissions: ？？
 */
-func (e *Election) ExtractOwnBounty(from common.Address) (string, error) {
+func (e *Election) ExtractOwnBounty(signTxParams *SysTxParams) (string, error) {
 	// encoding
 	inputEncode, _ := e.abi.Pack("extractOwnBounty")
 
-	transaction := e.super.prePareTransaction(from, ElectionContractAddr, types.ComplexString(hexutil.Encode(inputEncode)))
+	signedTx, err := e.super.prePareSignTransaction(signTxParams, inputEncode, common.StringToAddress(ElectionContractAddr))
+	if err != nil{
+		return "", err
+	}
 
-	return e.super.sendTransaction(transaction)
+	return e.super.sendRawTransaction(signedTx)
 }
 
 /*
@@ -447,13 +484,16 @@ Returns:
 
 Call permissions: ？？
 */
-func (e *Election) IssueAdditionalBounty(from common.Address) (string, error) {
+func (e *Election) IssueAdditionalBounty(signTxParams *SysTxParams) (string, error) {
 	// encoding
 	inputEncode, _ := e.abi.Pack("issueAdditionalBounty")
 
-	transaction := e.super.prePareTransaction(from, ElectionContractAddr, types.ComplexString(hexutil.Encode(inputEncode)))
+	signedTx, err := e.super.prePareSignTransaction(signTxParams, inputEncode, common.StringToAddress(ElectionContractAddr))
+	if err != nil{
+		return "", err
+	}
 
-	return e.super.sendTransaction(transaction)
+	return e.super.sendRawTransaction(signedTx)
 }
 
 /*

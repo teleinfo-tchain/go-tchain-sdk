@@ -3,8 +3,6 @@ package system
 import (
 	"github.com/bif/bif-sdk-go/abi"
 	"github.com/bif/bif-sdk-go/common"
-	"github.com/bif/bif-sdk-go/common/hexutil"
-	"github.com/bif/bif-sdk-go/complex/types"
 	"github.com/bif/bif-sdk-go/dto"
 	"strings"
 )
@@ -47,9 +45,9 @@ const TrustAnchorAbiJSON = `[
 {"constant": false,"name":"unRegisterTrustAnchor","inputs":[],"outputs":[],"type":"function"},
 {"constant": false,"name":"updateAnchorInfo","inputs":[{"name":"companyUrl","type":"string"},{"name":"website","type":"string"},{"name":"documentUrl","type":"string"},{"name":"serverUrl","type":"string"},{"name":"email","type":"string"},{"name":"desc","type":"string"}],"outputs":[],"type":"function"},
 {"constant": false,"name":"extractOwnBounty","inputs":[],"outputs":[],"type":"function"},
-{"anonymous":false,"inputs":[{"indexed":false,"name":"methodName","type":"string"},{"indexed":false,"name":"status","type":"uint32"},{"indexed":false,"name":"reason","type":"string"},{"indexed":false,"name":"time","type":"uint256"}],"name":"trustAnchorEvent","type":"event"},
+{"anonymous":false,"inputs":[{"indexed":false,"name":"methodName","type":"string"},{"indexed":false,"name":"status","type":"uint32"},{"indexed":false,"name":"reason","type":"string"},{"indexed":false,"name":"time","type":"uint256"}],"name":"trustAnchorEvent","type":"event"}]
 {"constant": false,"name":"voteElect","inputs":[{"name":"candidate","type":"string"}],"outputs":[],"type":"function"},
-{"constant": false,"name":"cancelVote","inputs":[{"name":"candidate","type":"string"}],"outputs":[],"type":"function"},
+{"constant": false,"name":"cancelVote","inputs":[{"name":"candidate","type":"string"}],"outputs":[],"type":"function"}
 ]`
 
 // Anchor - The Anchor Module
@@ -91,7 +89,7 @@ Returns:
 
 Call permissions: 如果是注册根信任锚，必须是超级节点才可以注册
 */
-func (anc *Anchor) RegisterTrustAnchor(from common.Address, registerAnchor *dto.RegisterAnchor) (string, error) {
+func (anc *Anchor) RegisterTrustAnchor(signTxParams *SysTxParams, registerAnchor *dto.RegisterAnchor) (string, error) {
 	// encoding
 	// RegisterAnchor is a struct we need to use the components.
 	var values []interface{}
@@ -101,9 +99,12 @@ func (anc *Anchor) RegisterTrustAnchor(from common.Address, registerAnchor *dto.
 		return "", err
 	}
 
-	transaction := anc.super.prePareTransaction(from, TrustAnchorContractAddr, types.ComplexString(hexutil.Encode(inputEncode)))
+	signedTx, err := anc.super.prePareSignTransaction(signTxParams, inputEncode, common.StringToAddress(TrustAnchorContractAddr))
+	if err != nil{
+		return "", err
+	}
 
-	return anc.super.sendTransaction(transaction)
+	return anc.super.sendRawTransaction(signedTx)
 }
 
 /*
@@ -118,16 +119,16 @@ Returns:
 
 Call permissions: 只能注销自己的信任锚
 */
-func (anc *Anchor) UnRegisterTrustAnchor(from common.Address) (string, error) {
+func (anc *Anchor) UnRegisterTrustAnchor(signTxParams *SysTxParams) (string, error) {
 	// encoding
-	inputEncode, err := anc.abi.Pack("unRegisterTrustAnchor")
-	if err != nil {
+	inputEncode, _ := anc.abi.Pack("unRegisterTrustAnchor")
+
+	signedTx, err := anc.super.prePareSignTransaction(signTxParams, inputEncode, common.StringToAddress(TrustAnchorContractAddr))
+	if err != nil{
 		return "", err
 	}
 
-	transaction := anc.super.prePareTransaction(from, TrustAnchorContractAddr, types.ComplexString(hexutil.Encode(inputEncode)))
-
-	return anc.super.sendTransaction(transaction)
+	return anc.super.sendRawTransaction(signedTx)
 }
 
 /*
@@ -195,7 +196,7 @@ Returns:
 
 Call permissions: 只能修改自己的
 */
-func (anc *Anchor) UpdateAnchorInfo(from common.Address, extendAnchorInfo *dto.UpdateAnchorInfo) (string, error) {
+func (anc *Anchor) UpdateAnchorInfo(signTxParams *SysTxParams, extendAnchorInfo *dto.UpdateAnchorInfo) (string, error) {
 	// encoding
 	// extendAnchorInfo is a struct we need to use the components.
 	var values []interface{}
@@ -205,9 +206,12 @@ func (anc *Anchor) UpdateAnchorInfo(from common.Address, extendAnchorInfo *dto.U
 		return "", err
 	}
 
-	transaction := anc.super.prePareTransaction(from, TrustAnchorContractAddr, types.ComplexString(hexutil.Encode(inputEncode)))
+	signedTx, err := anc.super.prePareSignTransaction(signTxParams, inputEncode, common.StringToAddress(TrustAnchorContractAddr))
+	if err != nil{
+		return "", err
+	}
 
-	return anc.super.sendTransaction(transaction)
+	return anc.super.sendRawTransaction(signedTx)
 }
 
 /*
@@ -222,16 +226,16 @@ Returns:
 
 Call permissions: 只能提取自己的
 */
-func (anc *Anchor) ExtractOwnBounty(from common.Address) (string, error) {
+func (anc *Anchor) ExtractOwnBounty(signTxParams *SysTxParams) (string, error) {
 	// encoding
-	inputEncode, err := anc.abi.Pack("extractOwnBounty")
-	if err != nil {
+	inputEncode, _ := anc.abi.Pack("extractOwnBounty")
+
+	signedTx, err := anc.super.prePareSignTransaction(signTxParams, inputEncode, common.StringToAddress(TrustAnchorContractAddr))
+	if err != nil{
 		return "", err
 	}
 
-	transaction := anc.super.prePareTransaction(from, TrustAnchorContractAddr, types.ComplexString(hexutil.Encode(inputEncode)))
-
-	return anc.super.sendTransaction(transaction)
+	return anc.super.sendRawTransaction(signedTx)
 }
 
 /*
@@ -442,16 +446,19 @@ Returns:
 
 Call permissions: 只有超级节点才可投票
 */
-func (anc *Anchor) VoteElect(from common.Address, candidate string) (string, error) {
+func (anc *Anchor) VoteElect(signTxParams *SysTxParams, candidate string) (string, error) {
 	// encoding
 	inputEncode, err := anc.abi.Pack("voteElect", candidate)
 	if err != nil {
 		return "", err
 	}
 
-	transaction := anc.super.prePareTransaction(from, TrustAnchorContractAddr, types.ComplexString(hexutil.Encode(inputEncode)))
+	signedTx, err := anc.super.prePareSignTransaction(signTxParams, inputEncode, common.StringToAddress(TrustAnchorContractAddr))
+	if err != nil{
+		return "", err
+	}
 
-	return anc.super.sendTransaction(transaction)
+	return anc.super.sendRawTransaction(signedTx)
 }
 
 /*
@@ -467,16 +474,19 @@ Returns:
 
 Call permissions: 只有超级节点才可投票
 */
-func (anc *Anchor) CancelVote(from common.Address, candidate string) (string, error) {
+func (anc *Anchor) CancelVote(signTxParams *SysTxParams, candidate string) (string, error) {
 	// encoding
 	inputEncode, err := anc.abi.Pack("cancelVote", candidate)
 	if err != nil {
 		return "", err
 	}
 
-	transaction := anc.super.prePareTransaction(from, TrustAnchorContractAddr, types.ComplexString(hexutil.Encode(inputEncode)))
+	signedTx, err := anc.super.prePareSignTransaction(signTxParams, inputEncode, common.StringToAddress(TrustAnchorContractAddr))
+	if err != nil{
+		return "", err
+	}
 
-	return anc.super.sendTransaction(transaction)
+	return anc.super.sendRawTransaction(signedTx)
 }
 
 /*

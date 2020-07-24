@@ -25,7 +25,7 @@ func TestCoreSendRawTransaction(t *testing.T) {
 	privKey := resources.CoinBasePriKey
 	from := common.StringToAddress(resources.CoinBase)
 	to := common.StringToAddress(resources.AddressTwo)
-	tx := &utils.Txdata{
+	tx := &utils.TxData{
 		AccountNonce: nonce.Uint64(),
 		Price:     big.NewInt(25),
 		GasLimit:  2000000,
@@ -45,7 +45,7 @@ func TestCoreSendRawTransaction(t *testing.T) {
 		t.FailNow()
 	}
 
-	res, _ := utils.SignTransaction(tx, privKey, int64(chainId))
+	res, _ := utils.SignTransaction(tx, privKey, big.NewInt(0).SetUint64(chainId))
 	txIDRaw, err := connection.Core.SendRawTransaction(hexutil.Encode(res.Raw))
 
 	if err != nil {

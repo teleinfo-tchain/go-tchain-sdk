@@ -3,8 +3,11 @@ package System
 import (
 	"github.com/bif/bif-sdk-go"
 	"github.com/bif/bif-sdk-go/common"
+	"github.com/bif/bif-sdk-go/core/block"
 	"github.com/bif/bif-sdk-go/providers"
+	"github.com/bif/bif-sdk-go/system"
 	"github.com/bif/bif-sdk-go/test/resources"
+	"math/big"
 	"testing"
 )
 
@@ -15,10 +18,29 @@ func TestInitializationDDO(t *testing.T) {
 		t.Error(err)
 		t.FailNow()
 	}
+	chainId, err := connection.Core.GetChainId()
+	if err != nil {
+		t.Log(err)
+		t.FailNow()
+	}
+
+	nonce, err := connection.Core.GetTransactionCount(coinBase, block.LATEST)
+	if err != nil {
+		t.Log(err)
+		t.FailNow()
+	}
+
+	sysTxParams := new(system.SysTxParams)
+	sysTxParams.From = common.StringToAddress(coinBase)
+	sysTxParams.PrivateKey = resources.CoinBasePriKey
+	sysTxParams.Gas = 2000000
+	sysTxParams.GasPrice = big.NewInt(35)
+	sysTxParams.Nonce = nonce.Uint64()
+	sysTxParams.ChainId = big.NewInt(0).SetUint64(chainId)
 
 	doc := connection.System.NewDoc()
 
-	initializationDDOHash, err := doc.InitializationDDO(common.StringToAddress(coinBase), 2)
+	initializationDDOHash, err := doc.InitializationDDO(sysTxParams, 2)
 	if err != nil {
 		t.Error(err)
 		t.FailNow()
@@ -34,10 +56,29 @@ func TestSetBidName(t *testing.T) {
 		t.Error(err)
 		t.FailNow()
 	}
+	chainId, err := connection.Core.GetChainId()
+	if err != nil {
+		t.Log(err)
+		t.FailNow()
+	}
+
+	nonce, err := connection.Core.GetTransactionCount(coinBase, block.LATEST)
+	if err != nil {
+		t.Log(err)
+		t.FailNow()
+	}
+
+	sysTxParams := new(system.SysTxParams)
+	sysTxParams.From = common.StringToAddress(coinBase)
+	sysTxParams.PrivateKey = resources.CoinBasePriKey
+	sysTxParams.Gas = 2000000
+	sysTxParams.GasPrice = big.NewInt(35)
+	sysTxParams.Nonce = nonce.Uint64()
+	sysTxParams.ChainId = big.NewInt(0).SetUint64(chainId)
 
 	doc := connection.System.NewDoc()
 
-	setBidHash, err := doc.SetBidName(common.StringToAddress(coinBase), "testTele")
+	setBidHash, err := doc.SetBidName(sysTxParams, "testTele2")
 	if err != nil {
 		t.Error(err)
 		t.FailNow()
@@ -73,9 +114,29 @@ func TestAddPublicKey(t *testing.T) {
 		t.FailNow()
 	}
 
+	chainId, err := connection.Core.GetChainId()
+	if err != nil {
+		t.Log(err)
+		t.FailNow()
+	}
+
+	nonce, err := connection.Core.GetTransactionCount(coinBase, block.LATEST)
+	if err != nil {
+		t.Log(err)
+		t.FailNow()
+	}
+
+	sysTxParams := new(system.SysTxParams)
+	sysTxParams.From = common.StringToAddress(coinBase)
+	sysTxParams.PrivateKey = resources.CoinBasePriKey
+	sysTxParams.Gas = 2000000
+	sysTxParams.GasPrice = big.NewInt(35)
+	sysTxParams.Nonce = nonce.Uint64()
+	sysTxParams.ChainId = big.NewInt(0).SetUint64(chainId)
+
 	doc := connection.System.NewDoc()
 
-	AddPublicKeyHash, err := doc.AddPublicKey(common.StringToAddress(coinBase), "test", "1", "123")
+	AddPublicKeyHash, err := doc.AddPublicKey(sysTxParams, "test", "1", "123")
 	if err != nil {
 		t.Error(err)
 		t.FailNow()
@@ -92,9 +153,29 @@ func TestDeletePublicKey(t *testing.T) {
 		t.FailNow()
 	}
 
+	chainId, err := connection.Core.GetChainId()
+	if err != nil {
+		t.Log(err)
+		t.FailNow()
+	}
+
+	nonce, err := connection.Core.GetTransactionCount(coinBase, block.LATEST)
+	if err != nil {
+		t.Log(err)
+		t.FailNow()
+	}
+
+	sysTxParams := new(system.SysTxParams)
+	sysTxParams.From = common.StringToAddress(coinBase)
+	sysTxParams.PrivateKey = resources.CoinBasePriKey
+	sysTxParams.Gas = 2000000
+	sysTxParams.GasPrice = big.NewInt(35)
+	sysTxParams.Nonce = nonce.Uint64()
+	sysTxParams.ChainId = big.NewInt(0).SetUint64(chainId)
+
 	doc := connection.System.NewDoc()
 
-	deletePublicKeyHash, err := doc.DeletePublicKey(common.StringToAddress(coinBase), "123")
+	deletePublicKeyHash, err := doc.DeletePublicKey(sysTxParams, "123")
 	if err != nil {
 		t.Error(err)
 		t.FailNow()
@@ -111,9 +192,29 @@ func TestAddProof(t *testing.T) {
 		t.FailNow()
 	}
 
+	chainId, err := connection.Core.GetChainId()
+	if err != nil {
+		t.Log(err)
+		t.FailNow()
+	}
+
+	nonce, err := connection.Core.GetTransactionCount(coinBase, block.LATEST)
+	if err != nil {
+		t.Log(err)
+		t.FailNow()
+	}
+
+	sysTxParams := new(system.SysTxParams)
+	sysTxParams.From = common.StringToAddress(coinBase)
+	sysTxParams.PrivateKey = resources.CoinBasePriKey
+	sysTxParams.Gas = 2000000
+	sysTxParams.GasPrice = big.NewInt(35)
+	sysTxParams.Nonce = nonce.Uint64()
+	sysTxParams.ChainId = big.NewInt(0).SetUint64(chainId)
+
 	doc := connection.System.NewDoc()
 
-	addProofHash, err := doc.AddProof(common.StringToAddress(coinBase), "123", "testProof")
+	addProofHash, err := doc.AddProof(sysTxParams, "123", "testProof")
 	if err != nil {
 		t.Error(err)
 		t.FailNow()
@@ -130,9 +231,28 @@ func TestDeleteProof(t *testing.T) {
 		t.FailNow()
 	}
 
+	chainId, err := connection.Core.GetChainId()
+	if err != nil {
+		t.Log(err)
+		t.FailNow()
+	}
+
+	nonce, err := connection.Core.GetTransactionCount(coinBase, block.LATEST)
+	if err != nil {
+		t.Log(err)
+		t.FailNow()
+	}
+
+	sysTxParams := new(system.SysTxParams)
+	sysTxParams.From = common.StringToAddress(coinBase)
+	sysTxParams.PrivateKey = resources.CoinBasePriKey
+	sysTxParams.Gas = 2000000
+	sysTxParams.GasPrice = big.NewInt(35)
+	sysTxParams.Nonce = nonce.Uint64()
+	sysTxParams.ChainId = big.NewInt(0).SetUint64(chainId)
 	doc := connection.System.NewDoc()
 
-	deleteProofHash, err := doc.DeleteProof(common.StringToAddress(coinBase), "testProof")
+	deleteProofHash, err := doc.DeleteProof(sysTxParams, "testProof")
 	if err != nil {
 		t.Error(err)
 		t.FailNow()
@@ -149,9 +269,29 @@ func TestAddAttribute(t *testing.T) {
 		t.FailNow()
 	}
 
+	chainId, err := connection.Core.GetChainId()
+	if err != nil {
+		t.Log(err)
+		t.FailNow()
+	}
+
+	nonce, err := connection.Core.GetTransactionCount(coinBase, block.LATEST)
+	if err != nil {
+		t.Log(err)
+		t.FailNow()
+	}
+
+	sysTxParams := new(system.SysTxParams)
+	sysTxParams.From = common.StringToAddress(coinBase)
+	sysTxParams.PrivateKey = resources.CoinBasePriKey
+	sysTxParams.Gas = 2000000
+	sysTxParams.GasPrice = big.NewInt(35)
+	sysTxParams.Nonce = nonce.Uint64()
+	sysTxParams.ChainId = big.NewInt(0).SetUint64(chainId)
+
 	doc := connection.System.NewDoc()
 
-	addAttributeHash, err := doc.AddAttribute(common.StringToAddress(coinBase), "testAttr", "attr")
+	addAttributeHash, err := doc.AddAttribute(sysTxParams, "testAttr", "attr")
 	if err != nil {
 		t.Error(err)
 		t.FailNow()
@@ -168,9 +308,29 @@ func TestDeleteAttribute(t *testing.T) {
 		t.FailNow()
 	}
 
+	chainId, err := connection.Core.GetChainId()
+	if err != nil {
+		t.Log(err)
+		t.FailNow()
+	}
+
+	nonce, err := connection.Core.GetTransactionCount(coinBase, block.LATEST)
+	if err != nil {
+		t.Log(err)
+		t.FailNow()
+	}
+
+	sysTxParams := new(system.SysTxParams)
+	sysTxParams.From = common.StringToAddress(coinBase)
+	sysTxParams.PrivateKey = resources.CoinBasePriKey
+	sysTxParams.Gas = 2000000
+	sysTxParams.GasPrice = big.NewInt(35)
+	sysTxParams.Nonce = nonce.Uint64()
+	sysTxParams.ChainId = big.NewInt(0).SetUint64(chainId)
+
 	doc := connection.System.NewDoc()
 
-	deleteAttributeHash, err := doc.DeleteAttribute(common.StringToAddress(coinBase), "testAttr", "attr")
+	deleteAttributeHash, err := doc.DeleteAttribute(sysTxParams, "testAttr", "attr")
 	if err != nil {
 		t.Error(err)
 		t.FailNow()
@@ -187,9 +347,29 @@ func TestEnable(t *testing.T) {
 		t.FailNow()
 	}
 
+	chainId, err := connection.Core.GetChainId()
+	if err != nil {
+		t.Log(err)
+		t.FailNow()
+	}
+
+	nonce, err := connection.Core.GetTransactionCount(coinBase, block.LATEST)
+	if err != nil {
+		t.Log(err)
+		t.FailNow()
+	}
+
+	sysTxParams := new(system.SysTxParams)
+	sysTxParams.From = common.StringToAddress(coinBase)
+	sysTxParams.PrivateKey = resources.CoinBasePriKey
+	sysTxParams.Gas = 2000000
+	sysTxParams.GasPrice = big.NewInt(35)
+	sysTxParams.Nonce = nonce.Uint64()
+	sysTxParams.ChainId = big.NewInt(0).SetUint64(chainId)
+
 	doc := connection.System.NewDoc()
 
-	enableHash, err := doc.Enable(common.StringToAddress(coinBase))
+	enableHash, err := doc.Enable(sysTxParams)
 	if err != nil {
 		t.Error(err)
 		t.FailNow()
@@ -206,9 +386,29 @@ func TestDisable(t *testing.T) {
 		t.FailNow()
 	}
 
+	chainId, err := connection.Core.GetChainId()
+	if err != nil {
+		t.Log(err)
+		t.FailNow()
+	}
+
+	nonce, err := connection.Core.GetTransactionCount(coinBase, block.LATEST)
+	if err != nil {
+		t.Log(err)
+		t.FailNow()
+	}
+
+	sysTxParams := new(system.SysTxParams)
+	sysTxParams.From = common.StringToAddress(coinBase)
+	sysTxParams.PrivateKey = resources.CoinBasePriKey
+	sysTxParams.Gas = 2000000
+	sysTxParams.GasPrice = big.NewInt(35)
+	sysTxParams.Nonce = nonce.Uint64()
+	sysTxParams.ChainId = big.NewInt(0).SetUint64(chainId)
+
 	doc := connection.System.NewDoc()
 
-	disableHash, err := doc.Disable(common.StringToAddress(coinBase))
+	disableHash, err := doc.Disable(sysTxParams)
 	if err != nil {
 		t.Error(err)
 		t.FailNow()
