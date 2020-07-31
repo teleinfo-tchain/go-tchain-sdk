@@ -4,7 +4,6 @@ import (
 	"crypto/ecdsa"
 	"encoding/hex"
 	"errors"
-	"fmt"
 	"github.com/bif/bif-sdk-go/account/keystore"
 	"github.com/bif/bif-sdk-go/common"
 	"github.com/bif/bif-sdk-go/common/rlp"
@@ -174,6 +173,7 @@ func (account *Account) Decrypt(keystoreJson []byte, isSM2 bool, password string
  	- error
 
   Call permissions: Anyone
+  TODO: 签署交易在构造交易时，*TxData中的NT， NV， NR，NS暂未处理，后期需要加上
 */
 func (account *Account) SignTransaction(transaction *TxData, privateKey string, chainId *big.Int) (*SignTransactionResult, error) {
 	// 1 check input
@@ -247,7 +247,7 @@ func (account *Account) RecoverTransaction(rawTxString string, isSM2 bool) (stri
 	}
 
 	err = rlp.DecodeBytes(rawTx, &tx)
-	fmt.Printf("tx is %v \n", tx)
+	// fmt.Printf("tx is %v \n", tx)
 	if err != nil {
 		return "", err
 	}

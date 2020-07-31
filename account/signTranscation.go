@@ -17,17 +17,22 @@ type TxData struct {
 	AccountNonce uint64          `json:"nonce"    gencodec:"required"`
 	Price        *big.Int        `json:"gasPrice" gencodec:"required"`
 	GasLimit     uint64          `json:"gas"      gencodec:"required"`
-	Sender       *common.Address `json:"from"     gencodec:"required"`
+	Sender       *common.Address `json:"from"     rlp:"nil"`
 	Recipient    *common.Address `json:"to"       rlp:"nil"` // nil means contract creation
 	Amount       *big.Int        `json:"value"    gencodec:"required"`
 	Payload      []byte          `json:"input"    gencodec:"required"`
 
-	// Signature values
+	// account Signature values
 	T *big.Int `json:"t" gencodec:"required"`
 	V *big.Int `json:"v" gencodec:"required"`
 	R *big.Int `json:"r" gencodec:"required"`
 	S *big.Int `json:"s" gencodec:"required"`
 
+	// node Signature values
+	NT *big.Int `json:"nt" gencodec:"required"`
+	NV *big.Int `json:"nv" gencodec:"required"`
+	NR *big.Int `json:"nr" gencodec:"required"`
+	NS *big.Int `json:"ns" gencodec:"required"`
 	// This is only used when marshaling to JSON.
 	Hash *common.Hash `json:"hash" rlp:"-"`
 }
@@ -79,7 +84,7 @@ func (bfs BIFSigner) SignatureValue(sig []byte) (r, s, v *big.Int, err error) {
 // needs to be in the [R || S || V] format where V is 0 or 1.
 func (bfs BIFSigner) SignatureValues(sig []byte) (R, S, V *big.Int, err error) {
 	R, S, V, err = bfs.SignatureValue(sig)
-	fmt.Println("v is ", V)
+	// fmt.Println("v is ", V)
 	if err != nil {
 		return nil, nil, nil, err
 	}
@@ -119,9 +124,9 @@ func SignTx(tx *TxData, s BIFSigner, prv *ecdsa.PrivateKey) (*TxData, error) {
 	if err != nil {
 		return nil, err
 	}
-	fmt.Println("Hash is ", h[:])
-	fmt.Println("sig is ", sig)
-	fmt.Println("sig len is ", len(sig))
+	// fmt.Println("Hash is ", h[:])
+	// fmt.Println("sig is ", sig)
+	// fmt.Println("sig len is ", len(sig))
 	return tx.WithSignature(s, sig)
 }
 

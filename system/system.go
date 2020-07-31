@@ -29,6 +29,7 @@ type LogData struct {
 }
 
 // 系统合约交易构建参数
+// TODO： 在使用此本地签署交易时，注意签署的内容是否要增加，其参数用于prePareSignTransaction，涉及account.TxData中的交易构建！！！（后续可能会增加）
 type SysTxParams struct {
 	From        common.Address // 系统合约发起方账户地址
 	Password    string         // 解密私钥的密码
@@ -93,6 +94,10 @@ func (sys *System) prePareSignTransaction(signTxParams *SysTxParams, payLoad []b
 		R:            new(big.Int),
 		S:            new(big.Int),
 		T:            big.NewInt(0),
+		NT:           new(big.Int),
+		NV:           new(big.Int),
+		NR:           new(big.Int),
+		NS:           new(big.Int),
 	}
 	acc := account.NewAccount()
 	signResult, err := acc.SignTransaction(signTx, signTxParams.PrivateKey, signTxParams.ChainId)

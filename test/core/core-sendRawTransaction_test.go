@@ -27,16 +27,20 @@ func TestCoreSendRawTransaction(t *testing.T) {
 	to := common.StringToAddress(resources.AddressTwo)
 	tx := &account.TxData{
 		AccountNonce: nonce.Uint64(),
-		Price:     big.NewInt(25),
-		GasLimit:  2000000,
-		Sender:    &from,
-		Recipient: &to,
-		Amount:    big.NewInt(50000000000),
-		Payload:   nil,
-		V:         new(big.Int),
-		R:         new(big.Int),
-		S:         new(big.Int),
-		T:         new(big.Int),
+		Price:        big.NewInt(25),
+		GasLimit:     2000000,
+		Sender:       &from,
+		Recipient:    &to,
+		Amount:       big.NewInt(50000000000),
+		Payload:      nil,
+		V:            new(big.Int),
+		R:            new(big.Int),
+		S:            new(big.Int),
+		T:            new(big.Int),
+		NT:           new(big.Int),
+		NV:           new(big.Int),
+		NR:           new(big.Int),
+		NS:           new(big.Int),
 	}
 
 	chainId, err := connection.Core.GetChainId()

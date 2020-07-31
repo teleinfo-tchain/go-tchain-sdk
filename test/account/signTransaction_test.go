@@ -37,7 +37,7 @@ func TestCoreSignTransactionSm2(t *testing.T) {
 	}
 
 	from := common.StringToAddress(sender)
-	if from != common.StringToAddress(resources.AddressSM2){
+	if from != common.StringToAddress(resources.AddressSM2) {
 		t.Errorf("Address and private key do not match")
 		t.FailNow()
 	}
@@ -55,6 +55,10 @@ func TestCoreSignTransactionSm2(t *testing.T) {
 		R:            new(big.Int),
 		S:            new(big.Int),
 		T:            big.NewInt(0),
+		NT:           new(big.Int),
+		NV:           new(big.Int),
+		NR:           new(big.Int),
+		NS:           new(big.Int),
 	}
 
 	acc := account.NewAccount()
@@ -94,7 +98,7 @@ func TestCoreSignTransactionNoSm2(t *testing.T) {
 	}
 
 	from := common.StringToAddress(sender)
-	if from != common.StringToAddress(resources.CoinBase){
+	if from != common.StringToAddress(resources.CoinBase) {
 		t.Errorf("Address and private key do not match")
 		t.FailNow()
 	}
@@ -102,16 +106,20 @@ func TestCoreSignTransactionNoSm2(t *testing.T) {
 	to := common.StringToAddress(resources.AddressSM2)
 	tx := &account.TxData{
 		AccountNonce: nonce.Uint64(),
-		Price:     big.NewInt(35),
-		GasLimit:  2000000,
-		Sender:    &from,
-		Recipient: &to,
-		Amount:    big.NewInt(50000000000),
-		Payload:   nil,
-		V:         new(big.Int),
-		R:         new(big.Int),
-		S:         new(big.Int),
-		T:         big.NewInt(0),
+		Price:        big.NewInt(35),
+		GasLimit:     2000000,
+		Sender:       &from,
+		Recipient:    &to,
+		Amount:       big.NewInt(50000000000),
+		Payload:      nil,
+		V:            new(big.Int),
+		R:            new(big.Int),
+		S:            new(big.Int),
+		T:            big.NewInt(0),
+		NT:           new(big.Int),
+		NV:           new(big.Int),
+		NR:           new(big.Int),
+		NS:           new(big.Int),
 	}
 
 	acc := account.NewAccount()
