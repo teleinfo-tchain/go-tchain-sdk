@@ -1,13 +1,13 @@
-package test
+package account
 
 import (
 	"github.com/bif/bif-sdk-go"
+	"github.com/bif/bif-sdk-go/account"
 	"github.com/bif/bif-sdk-go/common"
 	"github.com/bif/bif-sdk-go/common/hexutil"
 	"github.com/bif/bif-sdk-go/core/block"
 	"github.com/bif/bif-sdk-go/providers"
 	"github.com/bif/bif-sdk-go/test/resources"
-	"github.com/bif/bif-sdk-go/utils"
 	"math/big"
 	"testing"
 )
@@ -30,7 +30,7 @@ func TestCoreSignTransactionSm2(t *testing.T) {
 	// fmt.Println("nonce is ",nonce.Uint64())
 	privateKey := resources.AddressPriKey
 	var cryType uint = 0
-	sender, err := utils.GetAddressFromPrivate(privateKey, cryType)
+	sender, err := account.GetAddressFromPrivate(privateKey, cryType)
 	if err != nil {
 		t.Error(err)
 		t.FailNow()
@@ -43,7 +43,7 @@ func TestCoreSignTransactionSm2(t *testing.T) {
 	}
 
 	to := common.StringToAddress(resources.AddressTwo)
-	tx := &utils.TxData{
+	tx := &account.TxData{
 		AccountNonce: nonce.Uint64(),
 		Price:        big.NewInt(30),
 		GasLimit:     2000000,
@@ -57,7 +57,8 @@ func TestCoreSignTransactionSm2(t *testing.T) {
 		T:            big.NewInt(0),
 	}
 
-	res, _ := utils.SignTransaction(tx, privateKey, big.NewInt(0).SetUint64(chainId))
+	acc := account.NewAccount()
+	res, _ := acc.SignTransaction(tx, privateKey, big.NewInt(0).SetUint64(chainId))
 
 	txIDRaw, err := connection.Core.SendRawTransaction(hexutil.Encode(res.Raw))
 
@@ -86,7 +87,7 @@ func TestCoreSignTransactionNoSm2(t *testing.T) {
 
 	privateKey := resources.CoinBasePriKey
 	var cryType uint = 1
-	sender, err := utils.GetAddressFromPrivate(privateKey, cryType)
+	sender, err := account.GetAddressFromPrivate(privateKey, cryType)
 	if err != nil {
 		t.Error(err)
 		t.FailNow()
@@ -99,7 +100,7 @@ func TestCoreSignTransactionNoSm2(t *testing.T) {
 	}
 
 	to := common.StringToAddress(resources.AddressSM2)
-	tx := &utils.TxData{
+	tx := &account.TxData{
 		AccountNonce: nonce.Uint64(),
 		Price:     big.NewInt(35),
 		GasLimit:  2000000,
@@ -113,7 +114,8 @@ func TestCoreSignTransactionNoSm2(t *testing.T) {
 		T:         big.NewInt(0),
 	}
 
-	res, _ := utils.SignTransaction(tx, privateKey, big.NewInt(0).SetUint64(chainId))
+	acc := account.NewAccount()
+	res, _ := acc.SignTransaction(tx, privateKey, big.NewInt(0).SetUint64(chainId))
 	txIDRaw, err := connection.Core.SendRawTransaction(hexutil.Encode(res.Raw))
 
 	if err != nil {

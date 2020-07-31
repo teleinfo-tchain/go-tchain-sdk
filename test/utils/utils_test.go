@@ -1,6 +1,7 @@
 package test
 
 import (
+	"bytes"
 	"encoding/json"
 	"fmt"
 	"github.com/bif/bif-sdk-go/utils"
@@ -9,136 +10,7 @@ import (
 	"testing"
 )
 
-var (
-	util = utils.NewUtils()
-
-	toWeiTests = []test5{
-		{inputOne: `1`, inputTwo: []string{}, want: "1e+18"},
-		{inputOne: `1`, inputTwo: []string{"bifer"}, want: "1e+18"},
-		{inputOne: `1`, inputTwo: []string{"finney"}, want: "1e+15"},
-		{inputOne: `1`, inputTwo: []string{"szabo"}, want: "1e+12"},
-		{inputOne: `1`, inputTwo: []string{"shannon"}, want: "1000000000"},
-		{inputOne: `1`, inputTwo: []string{"shannon", "bifer"}, wantErr: utils.ErrParameter},
-		{inputOne: `1`, inputTwo: []string{"shan"}, wantErr: utils.ErrUintNoExist},
-		{inputOne: `1asd`, inputTwo: []string{}, wantErr: utils.ErrNumberString},
-	}
-
-	fromWeiTests = []test5{
-		{inputOne: `1`, inputTwo: []string{}, want: "1e-18"},
-		{inputOne: `1`, inputTwo: []string{"bifer"}, want: "1e-18"},
-		{inputOne: `1`, inputTwo: []string{"finney"}, want: "1e-15"},
-		{inputOne: `1`, inputTwo: []string{"szabo"}, want: "1e-12"},
-		{inputOne: `1`, inputTwo: []string{"shannon"}, want: "1e-09"},
-		{inputOne: `1`, inputTwo: []string{"shannon", "bifer"}, wantErr: utils.ErrParameter},
-		{inputOne: `1`, inputTwo: []string{"shan"}, wantErr: utils.ErrUintNoExist},
-		{inputOne: `1asd`, inputTwo: []string{}, wantErr: utils.ErrNumberString},
-	}
-
-	byteToHexTests = []test3{
-		{input: []byte{72, 101, 108, 108, 111, 33, 37}, want: "0x48656c6c6f2125"},
-	}
-
-	sm3Tests = []test1{
-		{input: `234`, want: "0x4910a0057a0cf8c5297f47bc650a1e080c2f33cc5d6fd6a7428ef63d3e3a6e29"},
-		{input: `0xea`, want: "0x04991392012bc6618739cf856ca07878283b310b45aada09bcfaab1420aa72c0"},
-		{input: ``, wantErr: utils.ErrInvalidSm3},
-	}
-
-	sha3Tests = []test1{
-		{input: `234`, want: "0xc1912fee45d61c87cc5ea59dae311904cd86b84fee17cc96966216f811ce6a79"},
-		{input: `0xea`, want: "0x2f20677459120677484f7104c76deb6846a2c071f9b3152c103bb12cd54d1a4a"},
-		{input: `c1912fee45d61c87cc5ea59dae31190fffff232d`, want: "0x4fb647abf5735d02e3a8a6c94c29977abed5bcc26e646c8e079e46759c1e0b04"},
-		{input: ``, wantErr: utils.ErrInvalidSha3},
-	}
-
-	sha3RawTests = []test1{
-		{input: `234`, want: "0xc1912fee45d61c87cc5ea59dae311904cd86b84fee17cc96966216f811ce6a79"},
-		{input: `0xea`, want: "0x2f20677459120677484f7104c76deb6846a2c071f9b3152c103bb12cd54d1a4a"},
-		{input: ``, want: "0xc5d2460186f7233c927e7db2dcc703c0e500b653ca82273b7bfad8045d85a470"},
-	}
-
-	checkBidChecksumTests = []test1{
-		{input: `0xc1912fEE45d61C87Cc5EA59DaE31190FFFFf232d`, want: true},
-	}
-
-	isBidTests = []test1{
-		{input: `0xc1912fee45d61c87cc5ea59dae31190fffff232d`, want: true},
-		{input: `c1912fee45d61c87cc5ea59dae31190fffff232d`, want: true},
-		{input: `0XC1912FEE45D61C87CC5EA59DAE31190FFFFF232D`, want: true},
-		{input: `0xc1912fEE45d61C87Cc5EA59DaE31190FFFFf232d`, want: true},
-		{input: `0xC1912fEE45d61C87Cc5EA59DaE31190FFFFf232d`, want: false},
-	}
-
-	toChecksumBidTests = []test1{
-		{input: `0xc1912fee45d61c87cc5ea59dae31190fffff232d`, want: "0xc1912fEE45d61C87Cc5EA59DaE31190FFFFf232d"},
-		{input: `0XC1912FEE45D61C87CC5EA59DAE31190FFFFF232D`, want: "0xc1912fEE45d61C87Cc5EA59DaE31190FFFFf232d"},
-		{input: `0Xaaa`, wantErr: utils.ErrInvalidBid},
-		{input: `0xcg912fee45d61c87cc5ea59dae31190fffff232d`, wantErr: utils.ErrInvalidBid},
-	}
-
-	numberToHexTests = []test4{
-		{input: `234`, want: "0xea"},
-		{input: `0x123`, want: "0x123"},
-		{input: 234, want: "0xea"},
-		{input: 123, want: "0x7b"},
-		{input: -1, want: "-0x1"},
-		{input: "-1", want: "-0x1"},
-		{input: "sss", wantErr: utils.ErrNumberString},
-	}
-
-	toHexTests = []test4{
-		{input: `234`, want: "0xea"},
-		{input: 234, want: "0xea"},
-		{input: "I have 100€", want: "0x49206861766520313030e282ac"},
-		{input: "sss", want: "0x737373"},
-		{input: -1, want: "-0x1"},
-		{input: "-1", want: "-0x1"},
-		{input: big.NewInt(-2), want: "-0x2"},
-		{input: 1.2, wantErr: utils.ErrNumberInput},
-	}
-
-	toBNTests = []test4{
-		{input: `1234`, want: big.NewInt(1234)},
-		{input: `0xea`, want: big.NewInt(234)},
-		{input: 234, want: big.NewInt(234)},
-		{input: 0x2, want: big.NewInt(2)},
-		{input: -1, want: big.NewInt(-1)},
-		{input: big.NewRat(2, 1), wantErr: utils.ErrNumberInput},
-		{input: "sss", wantErr: utils.ErrNumberString},
-	}
-
-	isBNTests = []test4{
-		{input: `-1`, want: false},
-		{input: `-asd`, want: false},
-		{input: 0x1, want: false},
-		{input: big.NewInt(2), want: true},
-		{input: big.NewFloat(2), want: false},
-		{input: big.NewRat(2, 1), want: false},
-	}
-
-	padLeftTests = []test2{
-		{input1: `0x3456ff`, input2: 20, input3: []string{}, want: "0x000000000000003456ff"},
-		{input1: `0x3456ff`, input2: 20, input3: []string{"x"}, want: "0xxxxxxxxxxxxxxx3456ff"},
-		{input1: `Hello`, input2: 20, input3: []string{"x"}, want: "xxxxxxxxxxxxxxxHello"},
-	}
-
-	padRightTests = []test2{
-		{input1: `0x3456ff`, input2: 20, input3: []string{}, want: "0x3456ff00000000000000"},
-		{input1: `0x3456ff`, input2: 20, input3: []string{"x"}, want: "0x3456ffxxxxxxxxxxxxxx"},
-		{input1: `0x3456ff`, input2: 20, input3: []string{"xd"}, want: "0x3456ffxdxdxdxdxdxdxd"},
-		{input1: `Hello`, input2: 20, input3: []string{"x"}, want: "Helloxxxxxxxxxxxxxxx"},
-	}
-
-	toTwosComplementTests = []test4{
-		{input: `-1`, want: "0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff"},
-		{input: -1, want: "0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff"},
-		{input: 0x1, want: "0x0000000000000000000000000000000000000000000000000000000000000001"},
-		{input: -15, want: "0xfffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff1"},
-		{input: -0x1, want: "0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff"},
-		{input: "0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff", wantErr: utils.ErrBigInt},
-		{input: "asd", wantErr: utils.ErrNumberInput},
-	}
-)
+var util = utils.NewUtils()
 
 func checkError(t *testing.T, input string, got, want error) bool {
 	if got == nil {
@@ -173,191 +45,248 @@ func checkNumberError(t *testing.T, input interface{}, got, want error) bool {
 }
 
 func TestToWei(t *testing.T) {
-	for _, test := range toWeiTests {
-		res, err := util.ToWei(test.inputOne, test.inputTwo...)
-		if !checkError(t, test.inputOne, err, test.wantErr) {
+	for _, test := range []struct {
+		balance string
+		uint    []string
+		expect  *big.Int
+		wantErr error
+	}{
+		// {"1", nil, big.NewInt(1000000000000000000), nil},
+		{"1.000000000555599001", nil, big.NewInt(1000000000555599001), nil},
+		// {"1", []string{"bifer"}, big.NewInt(1000000000000000000), nil},
+		// {"1", []string{"finney"}, big.NewInt(1000000000000000), nil},
+		// {"1", []string{"szabo"}, big.NewInt(1000000000000), nil},
+		// {"1", []string{"shannon"}, big.NewInt(1000000000), nil},
+		// {"1", []string{"shannon", "bifer"}, big.NewInt(1000000000), nil},
+		// {"1", []string{"shan"}, nil, utils.ErrUintNoExist},
+	} {
+		res, err := util.ToWei(test.balance, test.uint...)
+		if !checkNumberError(t, test.balance, err, test.wantErr) {
 			continue
 		}
-		if res != test.want.(string) {
-			t.Errorf("input %s %v: value mismatch: got %s, want %s", test.inputOne, test.inputTwo, res, test.want)
+		if res.Cmp(test.expect) != 0 {
+			t.Errorf("balance is  %v, uint is %v, value mismatch: got %v, want %s", test.balance, test.uint, res, test.expect)
 			continue
 		}
 	}
 }
 
 func TestFromWei(t *testing.T) {
-	for _, test := range fromWeiTests {
-		res, err := util.FromWei(test.inputOne, test.inputTwo...)
-		if !checkError(t, test.inputOne, err, test.wantErr) {
+	for _, test := range []struct {
+		balance *big.Int
+		uint    []string
+		expect  string
+		wantErr error
+	}{
+		// {big.NewInt(1000000000000000000), nil, "1", nil},
+		{big.NewInt(1000000001000000013), nil, "1.0000002", nil},
+		{big.NewInt(10000001), []string{"tbifer"}, "1.0000001e-23", nil},
+		// {big.NewInt(1000000000000000000), []string{"bifer"}, "1", nil},
+		// {big.NewInt(1000000000000000), []string{"finney"}, "1", nil},
+		// {big.NewInt(1000000000000), []string{"szabo"}, "1", nil},
+		// {big.NewInt(1000000000), []string{"shannon"}, "1", nil},
+		// {big.NewInt(1000000000), []string{"shannon", "bifer"}, "1", nil},
+		// {big.NewInt(1), []string{"shan"}, "", utils.ErrUintNoExist},
+	} {
+		res, err := util.FromWei(test.balance, test.uint...)
+		if !checkNumberError(t, test.balance, err, test.wantErr) {
 			continue
 		}
-		if res != test.want.(string) {
-			t.Errorf("input %s %v: value mismatch: got %s, want %s", test.inputOne, test.inputTwo, res, test.want)
+		if res != test.expect {
+			t.Errorf("balance is  %v, uint is %v, value mismatch: got %v, want %s", test.balance, test.uint, res, test.expect)
 			continue
 		}
 	}
 }
 
 func TestByteToHex(t *testing.T) {
-	for _, test := range byteToHexTests {
-		res := util.ByteToHex(test.input)
+	for _, test := range []struct {
+		byteArr []byte
+		expect  string
+		wantErr error
+	}{
+		{[]byte{72, 101, 108, 108, 111, 33, 37}, "0x48656c6c6f2125", nil},
+	} {
+		res := util.ByteToHex(test.byteArr)
 
-		if res != test.want.(string) {
-			t.Errorf("input %v: value mismatch: got %s, want %s", test.input, res, test.want)
+		if res != test.expect {
+			t.Errorf("input %v: value mismatch: got %s, want %s", test.byteArr, res, test.expect)
 			continue
 		}
 	}
 }
 
 func TestSm3(t *testing.T) {
-	for _, test := range sm3Tests {
+	for _, test := range []struct {
+		input   string
+		expect  string
+		wantErr error
+	}{
+		{"234", "0x4910a0057a0cf8c5297f47bc650a1e080c2f33cc5d6fd6a7428ef63d3e3a6e29", nil},
+		{"0xea", "0x04991392012bc6618739cf856ca07878283b310b45aada09bcfaab1420aa72c0", nil},
+		{"", "", utils.ErrInvalidSm3},
+	} {
 		res, err := util.Sm3(test.input)
 		if !checkError(t, test.input, err, test.wantErr) {
 			continue
 		}
-		if res != test.want.(string) {
-			t.Errorf("input %s: value mismatch: got %s, want %s", test.input, res, test.want)
+		if res != test.expect {
+			t.Errorf("input %s: value mismatch: got %s, want %s", test.input, res, test.expect)
 			continue
 		}
 	}
 }
 
 func TestSha3(t *testing.T) {
-	for _, test := range sha3Tests {
+	for _, test := range []struct {
+		input   string
+		expect  string
+		wantErr error
+	}{
+		{"234", "0xc1912fee45d61c87cc5ea59dae311904cd86b84fee17cc96966216f811ce6a79", nil},
+		{"0xea", "0x2f20677459120677484f7104c76deb6846a2c071f9b3152c103bb12cd54d1a4a", nil},
+		{"c1912fee45d61c87cc5ea59dae31190fffff232d", "0x4fb647abf5735d02e3a8a6c94c29977abed5bcc26e646c8e079e46759c1e0b04", nil},
+		{"", "", utils.ErrInvalidSha3},
+	} {
 		res, err := util.Sha3(test.input)
 		if !checkError(t, test.input, err, test.wantErr) {
 			continue
 		}
-		if res != test.want.(string) {
-			t.Errorf("input %s: value mismatch: got %s, want %s", test.input, res, test.want)
+		if res != test.expect {
+			t.Errorf("input %s: value mismatch: got %s, want %s", test.input, res, test.expect)
 			continue
 		}
 	}
 }
 
 func TestSha3Raw(t *testing.T) {
-	for _, test := range sha3RawTests {
+	for _, test := range []struct {
+		input  string
+		expect string
+	}{
+		{"234", "0xc1912fee45d61c87cc5ea59dae311904cd86b84fee17cc96966216f811ce6a79"},
+		{"0xea", "0x2f20677459120677484f7104c76deb6846a2c071f9b3152c103bb12cd54d1a4a"},
+		{"c1912fee45d61c87cc5ea59dae31190fffff232d", "0x4fb647abf5735d02e3a8a6c94c29977abed5bcc26e646c8e079e46759c1e0b04"},
+		{"", utils.Sha3Null},
+	} {
 		res := util.Sha3Raw(test.input)
-		if res != test.want.(string) {
-			t.Errorf("input %s: value mismatch: got %s, want %s", test.input, res, test.want)
+		if res != test.expect {
+			t.Errorf("input %s: value mismatch: got %s, want %s", test.input, res, test.expect)
 			continue
 		}
 	}
 }
 
 func TestCheckBidChecksum(t *testing.T) {
-	for _, test := range checkBidChecksumTests {
+	for _, test := range []struct {
+		input  string
+		expect bool
+	}{
+		{"0x6469643a6269643ab9A09F33669435E7ef1bEaEd", true},
+		{"0x6469643a6269643ab9A09F33669435E7ef1bEaEd", true},
+		{"0x6469643a6269643AC117c1794Fc7a27Bd301AE52", true},
+		{"0x6469643a6269643AC117c1794Fc7a27Bd301Ae52", false},
+	} {
 		res := util.CheckBidChecksum(test.input)
-		if res != test.want.(bool) {
-			t.Errorf("input %s: value mismatch: got %t, want %t", test.input, res, test.want)
+		if res != test.expect {
+			t.Errorf("input %s: value mismatch: got %t, want %t", test.input, res, test.expect)
 			continue
 		}
 	}
 }
 
 func TestIsBid(t *testing.T) {
-	for _, test := range isBidTests {
-		res := util.IsBid(test.input)
-		if res != test.want.(bool) {
-			t.Errorf("input %s: value mismatch: got %t, want %t", test.input, res, test.want)
+	for _, test := range []struct {
+		bidAddress string
+		expect     bool
+	}{
+		{"did:bid:590ed37615bdfefa496224c7", true},
+		{"0x6469643a6269643a590ed37615bdfefa496224c7", true},
+		{"6469643a6269643a590ed37615bdfefa496224c7", false},
+		{"6469643a6269643A590ed37615bdfefa496224c7", false},
+	} {
+		isBid := util.IsBid(test.bidAddress)
+
+		if isBid != test.expect {
+			t.Errorf("bidAddress is  %s, got %t, want %t", test.bidAddress, isBid, test.expect)
 			continue
 		}
 	}
 }
 
 func TestToChecksumBid(t *testing.T) {
-	for _, test := range toChecksumBidTests {
-		res, err := util.ToChecksumBid(test.input)
-		if !checkNumberError(t, test.input, err, test.wantErr) {
-			continue
-		}
-		if res != test.want.(string) {
-			t.Errorf("input %v: value mismatch: got %s, want %s", test.input, res, test.want)
-			continue
-		}
-	}
-}
-
-func TestNumberToHex(t *testing.T) {
-	for _, test := range numberToHexTests {
-		res, err := util.NumberToHex(test.input)
-		if !checkNumberError(t, test.input, err, test.wantErr) {
-			continue
-		}
-		if res != test.want.(string) {
-			t.Errorf("input %v: value mismatch: got %s, want %s", test.input, res, test.want)
-			continue
-		}
-	}
-}
-
-func TestToHex(t *testing.T) {
-	for _, test := range toHexTests {
-		res, err := util.ToHex(test.input)
-		if !checkNumberError(t, test.input, err, test.wantErr) {
-			continue
-		}
-		if res != test.want.(string) {
-			t.Errorf("input %v: value mismatch: got %s, want %s", test.input, res, test.want)
-			continue
-		}
-	}
-}
-
-func TestToBN(t *testing.T) {
-	for _, test := range toBNTests {
-		res, err := util.ToBN(test.input)
-		if !checkNumberError(t, test.input, err, test.wantErr) {
-			continue
-		}
-		if res.Cmp(test.want.(*big.Int)) != 0 {
-			t.Errorf("input %v: value mismatch: got %v, want %v", test.input, res, test.want)
-			continue
-		}
-	}
-}
-
-func TestIsBN(t *testing.T) {
-	for _, test := range isBNTests {
-		res := util.IsBN(test.input)
-		if res != test.want.(bool) {
-			t.Errorf("input %v: value mismatch: got %t, want %t", test.input, res, test.want)
+	for _, test := range []struct {
+		input  string
+		expect string
+	}{
+		{"did:bid:590ed37615bdfefa496224c7", "0x6469643A6269643A590eD37615BDFeFA496224C7"},
+		{"did:bid:c935bd29a90fbeea87badf3e", "0x6469643a6269643AC935BD29A90fbEea87baDF3e"},
+		{"0x6469643a6269643AC935BD29A90fbEea87baDF3e", "0x6469643a6269643AC935BD29A90fbEea87baDF3e"},
+		{"6469643a6269643aC935BD29A90fbEea87baDF3e", "0x6469643a6269643AC935BD29A90fbEea87baDF3e"},
+	} {
+		res := util.ToChecksumBid(test.input)
+		if res != test.expect {
+			t.Errorf("input %v: value mismatch: got %s, want %s", test.input, res, test.expect)
 			continue
 		}
 	}
 }
 
 func TestPadLeft(t *testing.T) {
-	for _, test := range padLeftTests {
-		res := util.PadLeft(test.input1, test.input2, test.input3...)
-		if res != test.want.(string) {
-			t.Errorf("input %s:  number %d  value mismatch: got %s, want %s", test.input1, test.input2, res, test.want)
+	for _, test := range []struct {
+		slice  []byte
+		length int
+		expect []byte
+	}{
+		{[]byte{1, 2, 3, 4}, 8, []byte{0, 0, 0, 0, 1, 2, 3, 4}},
+		{[]byte{1, 2, 3, 4}, 2, []byte{1, 2, 3, 4}},
+	} {
+		res := util.LeftPadBytes(test.slice, test.length)
+		if !bytes.Equal(res, test.expect) {
+			t.Errorf("slice %v:  length %d  value mismatch: got %v, want %v", test.slice, test.length, res, test.expect)
 			continue
 		}
 	}
 }
 
 func TestPadRight(t *testing.T) {
-	for _, test := range padRightTests {
-		res := util.PadRight(test.input1, test.input2, test.input3...)
-		if res != test.want.(string) {
-			t.Errorf("input %s:  number %d  value mismatch: got %s, want %s", test.input1, test.input2, res, test.want)
+	for _, test := range []struct {
+		slice  []byte
+		length int
+		expect []byte
+	}{
+		{[]byte{1, 2, 3, 4}, 8, []byte{1, 2, 3, 4, 0, 0, 0, 0}},
+		{[]byte{1, 2, 3, 4}, 2, []byte{1, 2, 3, 4}},
+	} {
+		res := util.RightPadBytes(test.slice, test.length)
+		if !bytes.Equal(res, test.expect) {
+			t.Errorf("slice %v:  length %d  value mismatch: got %v, want %v", test.slice, test.length, res, test.expect)
 			continue
 		}
 	}
 }
 
 func TestToTwosComplement(t *testing.T) {
-	for _, test := range toTwosComplementTests {
+	for _, test := range []struct {
+		input   *big.Int
+		expect  string
+		wantErr error
+	}{
+		{big.NewInt(-1), "0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff", nil},
+		{big.NewInt(0x1), "0x0000000000000000000000000000000000000000000000000000000000000001", nil},
+		{big.NewInt(-15), "0xfffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff1", nil},
+		{big.NewInt(-0x1), "0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff", nil},
+	} {
 		res, err := util.ToTwosComplement(test.input)
 		if !checkNumberError(t, test.input, err, test.wantErr) {
 			continue
 		}
-		if res != test.want.(string) {
-			t.Errorf("input %v: value mismatch: got %s, want %s", test.input, res, test.want)
+		if res != test.expect {
+			t.Errorf("input is %v: value mismatch: got %s, want %s", test.input, res, test.expect)
 			continue
 		}
 	}
+
 }
 
 func TestByteCodeDeploy(t *testing.T) {

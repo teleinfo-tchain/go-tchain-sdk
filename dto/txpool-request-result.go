@@ -4,7 +4,6 @@ import (
 	"encoding/json"
 	"github.com/bif/bif-sdk-go/common"
 	"github.com/bif/bif-sdk-go/common/hexutil"
-	customerror "github.com/bif/bif-sdk-go/constants"
 )
 
 type TxPoolRequestResult struct {
@@ -36,7 +35,7 @@ func (pointer *TxPoolRequestResult) ToTxPoolStatus() (map[string]hexutil.Uint, e
 	result := (pointer).Result.(map[string]interface{})
 
 	if len(result) == 0 {
-		return nil, customerror.EMPTYRESPONSE
+		return nil, EMPTYRESPONSE
 	}
 
 	status := make(map[string]hexutil.Uint, len(result))
@@ -44,7 +43,7 @@ func (pointer *TxPoolRequestResult) ToTxPoolStatus() (map[string]hexutil.Uint, e
 	marshal, err := json.Marshal(result)
 
 	if err != nil {
-		return nil, customerror.UNPARSEABLEINTERFACE
+		return nil, UNPARSEABLEINTERFACE
 	}
 
 	err = json.Unmarshal(marshal, &status)
@@ -60,7 +59,7 @@ func (pointer *TxPoolRequestResult) ToTxPoolInspect() (map[string]map[string]map
 	result := (pointer).Result.(map[string]interface{})
 
 	if len(result) == 0 {
-		return nil, customerror.EMPTYRESPONSE
+		return nil, EMPTYRESPONSE
 	}
 
 	inspect := make(map[string]map[string]map[string]string, len(result))
@@ -68,7 +67,7 @@ func (pointer *TxPoolRequestResult) ToTxPoolInspect() (map[string]map[string]map
 	marshal, err := json.Marshal(result)
 
 	if err != nil {
-		return nil, customerror.UNPARSEABLEINTERFACE
+		return nil, UNPARSEABLEINTERFACE
 	}
 
 	err = json.Unmarshal(marshal, &inspect)
@@ -84,7 +83,7 @@ func (pointer *TxPoolRequestResult) ToTxPoolContent() (map[string]map[string]map
 	result := (pointer).Result.(map[string]interface{})
 
 	if len(result) == 0 {
-		return nil, customerror.EMPTYRESPONSE
+		return nil, EMPTYRESPONSE
 	}
 
 	transactions := make(map[string]map[string]map[string]*RPCTransaction, len(result))
@@ -92,7 +91,7 @@ func (pointer *TxPoolRequestResult) ToTxPoolContent() (map[string]map[string]map
 	marshal, err := json.Marshal(result)
 
 	if err != nil {
-		return nil, customerror.UNPARSEABLEINTERFACE
+		return nil, UNPARSEABLEINTERFACE
 	}
 
 	err = json.Unmarshal(marshal, &transactions)

@@ -1,8 +1,8 @@
 package system
 
 import (
+	"github.com/bif/bif-sdk-go/common/hexutil"
 	"github.com/bif/bif-sdk-go/dto"
-	"github.com/bif/bif-sdk-go/utils"
 	"math/big"
 )
 
@@ -34,7 +34,7 @@ BUG(agl): rpc接收的类型为*rpc.BlockNumber？？？
 */
 func (dp *DPoS) GetValidators(blockNumber *big.Int) ([]string, error) {
 	params := make([]interface{}, 1)
-	params[0] = utils.IntToHex(blockNumber)
+	params[0] = hexutil.EncodeBig(blockNumber)
 
 	pointer := &dto.SystemRequestResult{}
 

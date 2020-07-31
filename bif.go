@@ -20,7 +20,6 @@ import (
 	"github.com/bif/bif-sdk-go/debug"
 	"github.com/bif/bif-sdk-go/dto"
 	"github.com/bif/bif-sdk-go/net"
-	"github.com/bif/bif-sdk-go/personal"
 	"github.com/bif/bif-sdk-go/providers"
 	"github.com/bif/bif-sdk-go/system"
 	"github.com/bif/bif-sdk-go/txpool"
@@ -33,7 +32,6 @@ type Bif struct {
 	Provider providers.ProviderInterface
 	Core     *core.Core
 	Net      *net.Net
-	Personal *personal.Personal
 	Utils    *utils.Utils
 	System   *system.System
 	Debug    *debug.Debug
@@ -50,7 +48,6 @@ func NewBif(provider providers.ProviderInterface) *Bif {
 	bif.Provider = provider
 	bif.Core = core.NewCore(provider)
 	bif.Net = net.NewNet(provider)
-	bif.Personal = personal.NewPersonal(provider)
 	bif.Utils = utils.NewUtils()
 	bif.System = system.NewSystem(provider)
 	bif.TxPool = txpool.NewTxPool(provider)

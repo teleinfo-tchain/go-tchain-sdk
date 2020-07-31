@@ -9,7 +9,6 @@ import (
 	"github.com/bif/bif-sdk-go/common/hexutil"
 	"github.com/bif/bif-sdk-go/common/rlp"
 	"github.com/bif/bif-sdk-go/crypto"
-	"github.com/bif/bif-sdk-go/utils"
 	"golang.org/x/crypto/sha3"
 	"math/big"
 )
@@ -143,7 +142,7 @@ func (tx *TxData) PreCheck(privateKey string) (bool, error) {
 		cryptoType = 1
 	}
 
-	publicAddr, err := utils.GetAddressFromPrivate(privateKey, cryptoType)
+	publicAddr, err := GetAddressFromPrivate(privateKey, cryptoType)
 	if err != nil {
 		return false, errors.New("not invalid privateKey")
 	}

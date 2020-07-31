@@ -2,7 +2,6 @@ package dto
 
 import (
 	"encoding/json"
-	customerror "github.com/bif/bif-sdk-go/constants"
 )
 
 type DebugRequestResult struct {
@@ -30,7 +29,7 @@ func (pointer *DebugRequestResult) ToDumpBlock() (*Dump, error) {
 
 	result := (pointer).Result.(map[string]interface{})
 	if len(result) == 0 {
-		return nil, customerror.EMPTYRESPONSE
+		return nil, EMPTYRESPONSE
 	}
 
 	dump := &Dump{}

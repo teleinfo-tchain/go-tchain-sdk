@@ -19,8 +19,7 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/bif/bif-sdk-go/complex/types"
-	"github.com/bif/bif-sdk-go/constants"
+	"github.com/bif/bif-sdk-go/common/types"
 
 	"encoding/json"
 	"fmt"
@@ -177,7 +176,7 @@ func (pointer *RequestResult) ToTransactionReceipt() (*TransactionReceipt, error
 	result := (pointer).Result.(map[string]interface{})
 
 	if len(result) == 0 {
-		return nil, customerror.EMPTYRESPONSE
+		return nil, EMPTYRESPONSE
 	}
 
 	transactionReceipt := &TransactionReceipt{}
@@ -185,7 +184,7 @@ func (pointer *RequestResult) ToTransactionReceipt() (*TransactionReceipt, error
 	marshal, err := json.Marshal(result)
 
 	if err != nil {
-		return nil, customerror.UNPARSEABLEINTERFACE
+		return nil, UNPARSEABLEINTERFACE
 	}
 
 	err = json.Unmarshal(marshal, transactionReceipt)
@@ -202,7 +201,7 @@ func (pointer *RequestResult) checkResponse() error {
 	}
 
 	if pointer.Result == nil {
-		return customerror.EMPTYRESPONSE
+		return EMPTYRESPONSE
 	}
 
 	return nil

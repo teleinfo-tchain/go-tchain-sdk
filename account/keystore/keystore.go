@@ -23,7 +23,7 @@ package keystore
 import (
 	"crypto/ecdsa"
 	"errors"
-	"github.com/bif/bif-sdk-go/common/accounts"
+	"github.com/bif/bif-sdk-go/account/accounts"
 	"path/filepath"
 )
 

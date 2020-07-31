@@ -22,6 +22,7 @@ import (
 	"encoding/hex"
 	"encoding/json"
 	"fmt"
+	"github.com/bif/bif-sdk-go/account/accounts"
 	"io"
 	"io/ioutil"
 	"os"
@@ -30,7 +31,6 @@ import (
 	"time"
 
 	"github.com/bif/bif-sdk-go/common"
-	"github.com/bif/bif-sdk-go/common/accounts"
 	"github.com/bif/bif-sdk-go/crypto"
 	"github.com/pborman/uuid"
 )

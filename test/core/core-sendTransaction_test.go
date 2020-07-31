@@ -17,7 +17,7 @@ package test
 import (
 	"encoding/json"
 	"github.com/bif/bif-sdk-go"
-	"github.com/bif/bif-sdk-go/complex/types"
+	"github.com/bif/bif-sdk-go/common/types"
 	"github.com/bif/bif-sdk-go/core/block"
 	"github.com/bif/bif-sdk-go/dto"
 	"github.com/bif/bif-sdk-go/providers"
@@ -43,7 +43,7 @@ func TestCoreSendTransaction(t *testing.T) {
 	balance, err := connection.Core.GetBalance(toAddress, block.LATEST)
 	if err == nil {
 		util := utils.NewUtils()
-		balBif, _ := util.FromWei(balance.String())
+		balBif, _ := util.FromWei(balance)
 		t.Log("toAddress balance is ", balBif)
 	}
 

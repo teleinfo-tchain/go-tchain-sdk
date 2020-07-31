@@ -228,6 +228,7 @@ func (account *Account) SignTransaction(transaction *TxData, privateKey string, 
  	- error
 
   Call permissions: Anyone
+  Bug:国密解密有问题
 */
 func (account *Account) RecoverTransaction(rawTxString string, isSM2 bool) (string, error) {
 	if rawTxString[:2] == "0x" || rawTxString[:2] == "0X" {
@@ -246,7 +247,6 @@ func (account *Account) RecoverTransaction(rawTxString string, isSM2 bool) (stri
 	}
 
 	err = rlp.DecodeBytes(rawTx, &tx)
-	fmt.Println()
 	fmt.Printf("tx is %v \n", tx)
 	if err != nil {
 		return "", err

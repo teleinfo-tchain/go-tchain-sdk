@@ -5,9 +5,9 @@ import (
 	"crypto/ecdsa"
 	"encoding/hex"
 	"errors"
+	"github.com/bif/bif-sdk-go/account/keystore"
 	"github.com/bif/bif-sdk-go/common"
 	"github.com/bif/bif-sdk-go/crypto"
-	"github.com/bif/bif-sdk-go/utils/keystore"
 	"io/ioutil"
 )
 

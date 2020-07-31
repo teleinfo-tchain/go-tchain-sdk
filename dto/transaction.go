@@ -18,7 +18,7 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"github.com/bif/bif-sdk-go/complex/types"
+	"github.com/bif/bif-sdk-go/common/types"
 	"math/big"
 )
 

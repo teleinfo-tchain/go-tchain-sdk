@@ -7,7 +7,6 @@ import (
 	"github.com/bif/bif-sdk-go/core/block"
 	"github.com/bif/bif-sdk-go/providers"
 	"github.com/bif/bif-sdk-go/test/resources"
-	"github.com/bif/bif-sdk-go/utils"
 	"io/ioutil"
 	"math/big"
 	"testing"
@@ -77,8 +76,8 @@ func TestRecoverTransaction(t *testing.T) {
 		isSM2       bool
 		rawTx       string
 	}{
-		// {"国密交易签名解析", resources.AddressSM2, true, "0xf87f82936d23831e8480946469643a6269643a7368eb1b26408f44721e20bd946469643a6269643ac935bd29a90fbeea87badf3e850ba43b740080808202bda0283d1cb7b8800b8ad4af0251ac8add797fddb0960f3a6190420542c58bd3c283a07c0dde04349f05737df8f67562e2babfdfe3b64a22e54c18e0e65e935748429a"},
-		{"非国密交易签名解析", resources.CoinBase, false, "0xf87f82936d23831e8480946469643a6269643ac935bd29a90fbeea87badf3e946469643a6269643a7368eb1b26408f44721e20bd850ba43b740080018202bda0578eaf57135aa31984dcc8fb6aa825550dd4ae56f69bfc3595636df2a5d98e38a05f9acfaa1cf9bd6a32be87c8b41eecfacf25fc5cffa18e6c803d0cd893a93466"},
+		{"国密交易签名解析", resources.AddressSM2, true, "0xf87f82936d23831e8480946469643a6269643a7368eb1b26408f44721e20bd946469643a6269643ac935bd29a90fbeea87badf3e850ba43b740080808202bda0283d1cb7b8800b8ad4af0251ac8add797fddb0960f3a6190420542c58bd3c283a07c0dde04349f05737df8f67562e2babfdfe3b64a22e54c18e0e65e935748429a"},
+		// {"非国密交易签名解析", resources.CoinBase, false, "0xf87f82936d23831e8480946469643a6269643ac935bd29a90fbeea87badf3e946469643a6269643a7368eb1b26408f44721e20bd850ba43b740080018202bda0578eaf57135aa31984dcc8fb6aa825550dd4ae56f69bfc3595636df2a5d98e38a05f9acfaa1cf9bd6a32be87c8b41eecfacf25fc5cffa18e6c803d0cd893a93466"},
 		// 这个为什么会抛出panic？？？？  不应该提示错误吗？
 		// E:\code\go\pkg\mod\github.com\teleinfo-bif\bit-gmsm@v1.0.5\sm2\sm2.go
 		// E:\code\go\pkg\mod\github.com\teleinfo-bif\bit-gmsm@v1.0.5\sm2\p256.go
@@ -124,7 +123,7 @@ func TestSignTransaction(t *testing.T) {
 		{"国密签名", 0, resources.AddressSM2, resources.AddressPriKey, resources.CoinBase},
 		// {"非国密签名", 1, resources.CoinBase, resources.CoinBasePriKey, resources.AddressSM2},
 	} {
-		sender, err := utils.GetAddressFromPrivate(test.privateKey, test.cryType)
+		sender, err := account.GetAddressFromPrivate(test.privateKey, test.cryType)
 		if err != nil {
 			t.Error(err)
 			t.FailNow()

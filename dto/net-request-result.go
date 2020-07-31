@@ -2,7 +2,6 @@ package dto
 
 import (
 	"encoding/json"
-	customerror "github.com/bif/bif-sdk-go/constants"
 )
 
 type NetRequestResult struct {
@@ -52,7 +51,7 @@ func (pointer *NetRequestResult) ToPeerInfo() ([]*PeerInfo, error) {
 		result := v.(map[string]interface{})
 
 		if len(result) == 0 {
-			return nil, customerror.EMPTYRESPONSE
+			return nil, EMPTYRESPONSE
 		}
 
 		info := &PeerInfo{}
@@ -60,7 +59,7 @@ func (pointer *NetRequestResult) ToPeerInfo() ([]*PeerInfo, error) {
 		marshal, err := json.Marshal(result)
 
 		if err != nil {
-			return nil, customerror.UNPARSEABLEINTERFACE
+			return nil, UNPARSEABLEINTERFACE
 		}
 
 		err = json.Unmarshal(marshal, info)
@@ -81,7 +80,7 @@ func (pointer *NetRequestResult) ToNodeInfo() (*NodeInfo, error) {
 
 	result := (pointer).Result.(map[string]interface{})
 	if len(result) == 0 {
-		return nil, customerror.EMPTYRESPONSE
+		return nil, EMPTYRESPONSE
 	}
 
 	nodeInfo := &NodeInfo{}
@@ -89,7 +88,7 @@ func (pointer *NetRequestResult) ToNodeInfo() (*NodeInfo, error) {
 	marshal, err := json.Marshal(result)
 
 	if err != nil {
-		return nil, customerror.UNPARSEABLEINTERFACE
+		return nil, UNPARSEABLEINTERFACE
 	}
 
 	err = json.Unmarshal(marshal, nodeInfo)

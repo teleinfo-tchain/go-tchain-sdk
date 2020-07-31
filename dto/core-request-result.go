@@ -4,7 +4,6 @@ import (
 	"encoding/json"
 	"github.com/bif/bif-sdk-go/common"
 	"github.com/bif/bif-sdk-go/common/hexutil"
-	customerror "github.com/bif/bif-sdk-go/constants"
 	"math/big"
 )
 
@@ -48,11 +47,11 @@ func (pointer *CoreRequestResult) ToSyncingResponse() (*SyncingResponse, error) 
 	case map[string]interface{}:
 		result = (pointer).Result.(map[string]interface{})
 	default:
-		return nil, customerror.UNPARSEABLEINTERFACE
+		return nil, UNPARSEABLEINTERFACE
 	}
 
 	if len(result) == 0 {
-		return nil, customerror.EMPTYRESPONSE
+		return nil, EMPTYRESPONSE
 	}
 
 	syncingResponse := &SyncingResponse{}
@@ -60,7 +59,7 @@ func (pointer *CoreRequestResult) ToSyncingResponse() (*SyncingResponse, error) 
 	marshal, err := json.Marshal(result)
 
 	if err != nil {
-		return nil, customerror.UNPARSEABLEINTERFACE
+		return nil, UNPARSEABLEINTERFACE
 	}
 
 	err = json.Unmarshal(marshal, syncingResponse)
@@ -78,7 +77,7 @@ func (pointer *CoreRequestResult) ToTransactionResponse() (*TransactionResponse,
 	result := (pointer).Result.(map[string]interface{})
 
 	if len(result) == 0 {
-		return nil, customerror.EMPTYRESPONSE
+		return nil, EMPTYRESPONSE
 	}
 
 	transactionResponse := &TransactionResponse{}
@@ -86,7 +85,7 @@ func (pointer *CoreRequestResult) ToTransactionResponse() (*TransactionResponse,
 	marshal, err := json.Marshal(result)
 
 	if err != nil {
-		return nil, customerror.UNPARSEABLEINTERFACE
+		return nil, UNPARSEABLEINTERFACE
 	}
 
 	err = json.Unmarshal(marshal, transactionResponse)
@@ -103,7 +102,7 @@ func (pointer *CoreRequestResult) ToSignTransactionResponse() (*SignTransactionR
 	result := (pointer).Result.(map[string]interface{})
 
 	if len(result) == 0 {
-		return nil, customerror.EMPTYRESPONSE
+		return nil, EMPTYRESPONSE
 	}
 
 	signTransactionResponse := &SignTransactionResponse{}
@@ -111,7 +110,7 @@ func (pointer *CoreRequestResult) ToSignTransactionResponse() (*SignTransactionR
 	marshal, err := json.Marshal(result)
 
 	if err != nil {
-		return nil, customerror.UNPARSEABLEINTERFACE
+		return nil, UNPARSEABLEINTERFACE
 	}
 
 	err = json.Unmarshal(marshal, signTransactionResponse)
@@ -128,13 +127,13 @@ func (pointer *CoreRequestResult) ToBlock(transactionDetails bool) (interface{},
 	result := (pointer).Result.(map[string]interface{})
 
 	if len(result) == 0 {
-		return nil, customerror.EMPTYRESPONSE
+		return nil, EMPTYRESPONSE
 	}
 
 	marshal, err := json.Marshal(result)
 
 	if err != nil {
-		return nil, customerror.UNPARSEABLEINTERFACE
+		return nil, UNPARSEABLEINTERFACE
 	}
 
 	var block interface{}
@@ -163,7 +162,7 @@ func (pointer *CoreRequestResult) ToPendingTransactions() ([]*TransactionRespons
 		result := v.(map[string]interface{})
 
 		if len(result) == 0 {
-			return nil, customerror.EMPTYRESPONSE
+			return nil, EMPTYRESPONSE
 		}
 
 		info := &TransactionResponse{}
@@ -171,12 +170,12 @@ func (pointer *CoreRequestResult) ToPendingTransactions() ([]*TransactionRespons
 		marshal, err := json.Marshal(result)
 
 		if err != nil {
-			return nil, customerror.UNPARSEABLEINTERFACE
+			return nil, UNPARSEABLEINTERFACE
 		}
 
 		err = json.Unmarshal(marshal, info)
 		if err != nil {
-			return nil, customerror.UNPARSEABLEINTERFACE
+			return nil, UNPARSEABLEINTERFACE
 		}
 
 		pendingTransactions[i] = info
@@ -196,7 +195,7 @@ func (pointer *CoreRequestResult) ToProof() (*AccountResult, error) {
 	result := (pointer).Result.(map[string]interface{})
 
 	if len(result) == 0 {
-		return nil, customerror.EMPTYRESPONSE
+		return nil, EMPTYRESPONSE
 	}
 
 	accountResult := &AccountResult{}
@@ -204,7 +203,7 @@ func (pointer *CoreRequestResult) ToProof() (*AccountResult, error) {
 	marshal, err := json.Marshal(result)
 
 	if err != nil {
-		return nil, customerror.UNPARSEABLEINTERFACE
+		return nil, UNPARSEABLEINTERFACE
 	}
 
 	err = json.Unmarshal(marshal, accountResult)

@@ -15,12 +15,10 @@
 package providers
 
 import (
-	"math/rand"
-
-	"github.com/bif/bif-sdk-go/constants"
-
+	"errors"
 	"github.com/bif/bif-sdk-go/providers/util"
 	"golang.org/x/net/websocket"
+	"math/rand"
 )
 
 type WebSocketProvider struct {
@@ -61,6 +59,6 @@ func (provider WebSocketProvider) Close() error {
 		return provider.ws.Close()
 	}
 
-	return customerror.WEBSOCKETNOTDENIFIED
+	return errors.New("websocket connection dont exist")
 
 }

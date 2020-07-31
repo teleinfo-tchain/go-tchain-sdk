@@ -5,13 +5,13 @@ import (
 	"encoding/hex"
 	"errors"
 	"github.com/bif/bif-sdk-go/abi"
+	"github.com/bif/bif-sdk-go/account"
+	"github.com/bif/bif-sdk-go/account/keystore"
 	"github.com/bif/bif-sdk-go/common"
 	"github.com/bif/bif-sdk-go/common/hexutil"
 	"github.com/bif/bif-sdk-go/crypto"
 	"github.com/bif/bif-sdk-go/dto"
 	"github.com/bif/bif-sdk-go/providers"
-	"github.com/bif/bif-sdk-go/utils"
-	"github.com/bif/bif-sdk-go/utils/keystore"
 	"math/big"
 	"reflect"
 	"strings"
@@ -81,7 +81,7 @@ func (sys *System) prePareSignTransaction(signTxParams *SysTxParams, payLoad []b
 		signTxParams.PrivateKey = privateKey
 	}
 
-	signTx := &utils.TxData{
+	signTx := &account.TxData{
 		AccountNonce: signTxParams.Nonce,
 		Price:        signTxParams.GasPrice,
 		GasLimit:     signTxParams.Gas,
@@ -94,7 +94,8 @@ func (sys *System) prePareSignTransaction(signTxParams *SysTxParams, payLoad []b
 		S:            new(big.Int),
 		T:            big.NewInt(0),
 	}
-	signResult, err := utils.SignTransaction(signTx, signTxParams.PrivateKey, signTxParams.ChainId)
+	acc := account.NewAccount()
+	signResult, err := acc.SignTransaction(signTx, signTxParams.PrivateKey, signTxParams.ChainId)
 	if err != nil {
 		return "", err
 	}

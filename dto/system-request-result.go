@@ -3,7 +3,6 @@ package dto
 import (
 	"encoding/json"
 	"github.com/bif/bif-sdk-go/common"
-	customerror "github.com/bif/bif-sdk-go/constants"
 	"math/big"
 )
 
@@ -36,7 +35,7 @@ func (pointer *SystemRequestResult) ToPeerCertificate() (*PeerCertificate, error
 	result := (pointer).Result.(map[string]interface{})
 
 	if len(result) == 0 {
-		return nil, customerror.EMPTYRESPONSE
+		return nil, EMPTYRESPONSE
 	}
 
 	peerCertificate := &PeerCertificate{}
@@ -44,7 +43,7 @@ func (pointer *SystemRequestResult) ToPeerCertificate() (*PeerCertificate, error
 	marshal, err := json.Marshal(result)
 
 	if err != nil {
-		return nil, customerror.UNPARSEABLEINTERFACE
+		return nil, UNPARSEABLEINTERFACE
 	}
 
 	err = json.Unmarshal(marshal, peerCertificate)
@@ -60,7 +59,7 @@ func (pointer *SystemRequestResult) ToTrustAnchor() (*TrustAnchor, error) {
 	result := (pointer).Result.(map[string]interface{})
 
 	if len(result) == 0 {
-		return nil, customerror.EMPTYRESPONSE
+		return nil, EMPTYRESPONSE
 	}
 
 	trustAnchor := &TrustAnchor{}
@@ -68,7 +67,7 @@ func (pointer *SystemRequestResult) ToTrustAnchor() (*TrustAnchor, error) {
 	marshal, err := json.Marshal(result)
 
 	if err != nil {
-		return nil, customerror.UNPARSEABLEINTERFACE
+		return nil, UNPARSEABLEINTERFACE
 	}
 
 	err = json.Unmarshal(marshal, trustAnchor)
@@ -90,7 +89,7 @@ func (pointer *SystemRequestResult) ToTrustAnchorVoter() ([]*TrustAnchorVoter, e
 		result := v.(map[string]interface{})
 
 		if len(result) == 0 {
-			return nil, customerror.EMPTYRESPONSE
+			return nil, EMPTYRESPONSE
 		}
 
 		info := &TrustAnchorVoter{}
@@ -98,12 +97,12 @@ func (pointer *SystemRequestResult) ToTrustAnchorVoter() ([]*TrustAnchorVoter, e
 		marshal, err := json.Marshal(result)
 
 		if err != nil {
-			return nil, customerror.UNPARSEABLEINTERFACE
+			return nil, UNPARSEABLEINTERFACE
 		}
 
 		err = json.Unmarshal(marshal, info)
 		if err != nil {
-			return nil, customerror.UNPARSEABLEINTERFACE
+			return nil, UNPARSEABLEINTERFACE
 		}
 
 		trustAnchorVoterLi[i] = info
@@ -120,7 +119,7 @@ func (pointer *SystemRequestResult) ToCertificateInfo() (*CertificateInfo, error
 	result := (pointer).Result.(map[string]interface{})
 
 	if len(result) == 0 {
-		return nil, customerror.EMPTYRESPONSE
+		return nil, EMPTYRESPONSE
 	}
 
 	certificateInfo := &CertificateInfo{}
@@ -143,7 +142,7 @@ func (pointer *SystemRequestResult) ToCertificateIssuerSignature() (*IssuerSigna
 	result := (pointer).Result.(map[string]interface{})
 
 	if len(result) == 0 {
-		return nil, customerror.EMPTYRESPONSE
+		return nil, EMPTYRESPONSE
 	}
 
 	issuerSignature := &IssuerSignature{}
@@ -166,7 +165,7 @@ func (pointer *SystemRequestResult) ToCertificateSubjectSignature() (*SubjectSig
 	result := (pointer).Result.(map[string]interface{})
 
 	if len(result) == 0 {
-		return nil, customerror.EMPTYRESPONSE
+		return nil, EMPTYRESPONSE
 	}
 
 	subjectSignature := &SubjectSignature{}
@@ -189,7 +188,7 @@ func (pointer *SystemRequestResult) ToDocument() (*Document, error) {
 	result := (pointer).Result.(map[string]interface{})
 
 	if len(result) == 0 {
-		return nil, customerror.EMPTYRESPONSE
+		return nil, EMPTYRESPONSE
 	}
 
 	document := &Document{}
@@ -212,7 +211,7 @@ func (pointer *SystemRequestResult) ToElectionCandidate() (*Candidate, error) {
 	result := (pointer).Result.(map[string]interface{})
 
 	if len(result) == 0 {
-		return nil, customerror.EMPTYRESPONSE
+		return nil, EMPTYRESPONSE
 	}
 
 	candidate := &Candidate{}
@@ -243,7 +242,7 @@ func (pointer *SystemRequestResult) ToElectionCandidates() ([]*Candidate, error)
 		result := v.(map[string]interface{})
 
 		if len(result) == 0 {
-			return nil, customerror.EMPTYRESPONSE
+			return nil, EMPTYRESPONSE
 		}
 
 		info := &Candidate{}
@@ -251,12 +250,12 @@ func (pointer *SystemRequestResult) ToElectionCandidates() ([]*Candidate, error)
 		marshal, err := json.Marshal(result)
 
 		if err != nil {
-			return nil, customerror.UNPARSEABLEINTERFACE
+			return nil, UNPARSEABLEINTERFACE
 		}
 
 		err = json.Unmarshal(marshal, info)
 		if err != nil {
-			return nil, customerror.UNPARSEABLEINTERFACE
+			return nil, UNPARSEABLEINTERFACE
 		}
 
 		candidates[i] = info
@@ -274,7 +273,7 @@ func (pointer *SystemRequestResult) ToElectionVoter() (*Voter, error) {
 	result := (pointer).Result.(map[string]interface{})
 
 	if len(result) == 0 {
-		return nil, customerror.EMPTYRESPONSE
+		return nil, EMPTYRESPONSE
 	}
 
 	voter := &Voter{}
@@ -304,7 +303,7 @@ func (pointer *SystemRequestResult) ToElectionVoterList() ([]*Voter, error) {
 		result := v.(map[string]interface{})
 
 		if len(result) == 0 {
-			return nil, customerror.EMPTYRESPONSE
+			return nil, EMPTYRESPONSE
 		}
 
 		info := &Voter{}
@@ -312,12 +311,12 @@ func (pointer *SystemRequestResult) ToElectionVoterList() ([]*Voter, error) {
 		marshal, err := json.Marshal(result)
 
 		if err != nil {
-			return nil, customerror.UNPARSEABLEINTERFACE
+			return nil, UNPARSEABLEINTERFACE
 		}
 
 		err = json.Unmarshal(marshal, info)
 		if err != nil {
-			return nil, customerror.UNPARSEABLEINTERFACE
+			return nil, UNPARSEABLEINTERFACE
 		}
 
 		voters[i] = info
@@ -334,7 +333,7 @@ func (pointer *SystemRequestResult) ToElectionStake() (*Stake, error) {
 
 	result := (pointer).Result.(map[string]interface{})
 	if len(result) == 0 {
-		return nil, customerror.EMPTYRESPONSE
+		return nil, EMPTYRESPONSE
 	}
 
 	stake := &Stake{}
@@ -357,7 +356,7 @@ func (pointer *SystemRequestResult) ToRoundStateInfo() (*RoundStateInfo, error) 
 	result := (pointer).Result.(map[string]interface{})
 
 	if len(result) == 0 {
-		return nil, customerror.EMPTYRESPONSE
+		return nil, EMPTYRESPONSE
 	}
 
 	roundStateInfo := &RoundStateInfo{}
@@ -377,7 +376,7 @@ func (pointer *SystemRequestResult) ToRoundChangeSetInfo() (*RoundChangeSetInfo,
 	result := (pointer).Result.(map[string]interface{})
 
 	if len(result) == 0 {
-		return nil, customerror.EMPTYRESPONSE
+		return nil, EMPTYRESPONSE
 	}
 
 	roundChangeSetInfo := &RoundChangeSetInfo{}
@@ -397,7 +396,7 @@ func (pointer *SystemRequestResult) ToBacklogs() (map[string][]*Message, error) 
 	result := (pointer).Result.(map[string]interface{})
 
 	if len(result) == 0 {
-		return nil, customerror.EMPTYRESPONSE
+		return nil, EMPTYRESPONSE
 	}
 
 	backlogs := make(map[string][]*Message, len(result))
@@ -405,7 +404,7 @@ func (pointer *SystemRequestResult) ToBacklogs() (map[string][]*Message, error) 
 	marshal, err := json.Marshal(result)
 
 	if err != nil {
-		return nil, customerror.UNPARSEABLEINTERFACE
+		return nil, UNPARSEABLEINTERFACE
 	}
 
 	err = json.Unmarshal(marshal, &backlogs)

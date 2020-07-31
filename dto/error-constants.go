@@ -12,42 +12,13 @@
    along with go-bif.  If not, see <http://www.gnu.org/licenses/>.
 *********************************************************************************/
 
-package test
+package dto
 
-import (
-	"github.com/bif/bif-sdk-go/test/resources"
-	"testing"
+import "errors"
 
-	"github.com/bif/bif-sdk-go"
-	"github.com/bif/bif-sdk-go/dto"
-	"github.com/bif/bif-sdk-go/providers"
-	"math/big"
+var (
+	// EMPTYRESPONSE - Server response is empty
+	EMPTYRESPONSE = errors.New("empty response")
+	// UNPARSEABLEINTERFACE - the conversion failed
+	UNPARSEABLEINTERFACE = errors.New("unParsable Interface")
 )
-
-func TestPersonalSendTransaction(t *testing.T) {
-
-	var connection = bif.NewBif(providers.NewHTTPProvider(resources.IP+":"+resources.Port, 10, false))
-
-	coinBase, err := connection.Core.GetCoinBase()
-
-	if err != nil {
-		t.Error(err)
-		t.FailNow()
-	}
-
-	transaction := new(dto.TransactionParameters)
-	transaction.From = coinBase
-	transaction.To = coinBase
-	transaction.Value = big.NewInt(10)
-	transaction.Gas = big.NewInt(40000)
-
-	txID, err := connection.Personal.SendTransaction(transaction, "teleinfo")
-
-	if err != nil {
-		t.Error(err)
-		t.FailNow()
-	}
-
-	t.Log(txID)
-
-}

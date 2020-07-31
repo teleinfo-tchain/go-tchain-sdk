@@ -49,9 +49,9 @@ func ToHexArray(b [][]byte) []string {
 func FromHex(s string) []byte {
 	var buffer bytes.Buffer
 
-	if has0xPrefix(s) {
+	if Has0xPrefix(s) {
 		s = s[2:]
-	} else if hasDidBidPrefix(s) {
+	} else if HasDidBidPrefix(s) {
 		s = s[8:]
 		buffer.Write([]byte("did:bid:"))
 	}
@@ -89,12 +89,12 @@ func CopyBytes(b []byte) (copiedBytes []byte) {
 	return
 }
 
-// has0xPrefix validates str begins with '0x' or '0X'.
-func has0xPrefix(str string) bool {
+// Has0xPrefix validates str begins with '0x' or '0X'.
+func Has0xPrefix(str string) bool {
 	return len(str) >= 2 && str[0] == '0' && (str[1] == 'x' || str[1] == 'X')
 }
 
-func hasDidBidPrefix(str string) bool {
+func HasDidBidPrefix(str string) bool {
 	return len(str) >= 8 && strings.HasPrefix(str, "did:bid:")
 }
 
@@ -103,8 +103,8 @@ func isHexCharacter(c byte) bool {
 	return ('0' <= c && c <= '9') || ('a' <= c && c <= 'f') || ('A' <= c && c <= 'F')
 }
 
-// isHex validates whether each byte is valid hexadecimal string.
-func isHex(str string) bool {
+// IsHex validates whether each byte is valid hexadecimal string.
+func IsHex(str string) bool {
 	if len(str)%2 != 0 {
 		return false
 	}

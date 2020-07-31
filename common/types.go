@@ -29,7 +29,7 @@ import (
 	"strings"
 
 	"github.com/bif/bif-sdk-go/common/hexutil"
-	//"golang.org/x/crypto/sha3"
+	// "golang.org/x/crypto/sha3"
 )
 
 // Lengths of hashes and addresses in bytes.
@@ -179,7 +179,7 @@ func (h UnprefixedHash) MarshalText() ([]byte, error) {
 	return []byte(hex.EncodeToString(h[:])), nil
 }
 
-/////////// Address
+// ///////// Address
 
 // Address represents the 20 byte address of an Ethereum account.
 type Address [AddressLength]byte
@@ -230,12 +230,12 @@ func HexToAddress(s string) Address { return BytesToAddress(FromHex(s)) }
 // IsHexAddress verifies whether a string can represent a valid hex-encoded
 // Ethereum address or not.
 func IsHexAddress(s string) bool {
-	if has0xPrefix(s) {
+	if Has0xPrefix(s) {
 		s = s[2:]
-		return len(s) == 2*AddressLength && isHex(s)
-	} else if hasDidBidPrefix(s) {
+		return len(s) == 2*AddressLength && IsHex(s)
+	} else if HasDidBidPrefix(s) {
 		s = s[8:]
-		return len(s) == 2*AddressLength-16 && isHex(s)
+		return len(s) == 2*AddressLength-16 && IsHex(s)
 	}
 	return false
 }
@@ -248,7 +248,7 @@ func (a Address) Hash() Hash { return BytesToHash(a[:]) }
 
 // Hex returns an EIP55-compliant hex string representation of the address.
 func (a Address) Hex() string {
-	//unchecksummed := ByteAddressToString(a[:])
+	// unchecksummed := ByteAddressToString(a[:])
 	unchecksummed := hex.EncodeToString(a[:])
 	sha := sha3.NewLegacyKeccak256()
 	sha.Write([]byte(unchecksummed))
@@ -267,7 +267,7 @@ func (a Address) Hex() string {
 		}
 	}
 	return "0x" + string(result)
-	//return unchecksummed
+	// return unchecksummed
 }
 
 // String implements fmt.Stringer.
