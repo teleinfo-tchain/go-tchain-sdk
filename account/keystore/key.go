@@ -23,6 +23,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"github.com/bif/bif-sdk-go/account/accounts"
+	"github.com/bif/bif-sdk-go/utils"
 	"io"
 	"io/ioutil"
 	"os"
@@ -30,7 +31,6 @@ import (
 	"strings"
 	"time"
 
-	"github.com/bif/bif-sdk-go/common"
 	"github.com/bif/bif-sdk-go/crypto"
 	"github.com/pborman/uuid"
 )
@@ -42,7 +42,7 @@ const (
 type Key struct {
 	Id uuid.UUID // Version 4 "random" for unique id not derived from key data
 	// to simplify lookups we also store the address
-	Address common.Address
+	Address utils.Address
 	// we only store privateKey as publicKey/address can be derived from it
 	// privateKey in this struct is always in plaintext
 	PrivateKey *ecdsa.PrivateKey
@@ -50,7 +50,7 @@ type Key struct {
 
 type keyStore interface {
 	// Loads and decrypts the key from disk.
-	GetKey(addr common.Address, filename string, auth string) (*Key, error)
+	GetKey(addr utils.Address, filename string, auth string) (*Key, error)
 	// Writes and encrypts the key.
 	StoreKey(filename string, k *Key, auth string) error
 	// Joins filename with the key directory unless it is already absolute.
@@ -128,7 +128,7 @@ func (k *Key) UnmarshalJSON(j []byte) (err error) {
 		return err
 	}
 
-	k.Address = common.BytesToAddress(addr)
+	k.Address = utils.BytesToAddress(addr)
 	k.PrivateKey = privkey
 
 	return nil
@@ -192,9 +192,9 @@ func writeTemporaryKeyFile(file string, content []byte) (string, error) {
 
 // keyFileName implements the naming convention for keyfiles:
 // UTC--<created_at UTC ISO8601>-<address hex>
-func keyFileName(keyAddr common.Address) string {
+func keyFileName(keyAddr utils.Address) string {
 	ts := time.Now().UTC()
-	addr := common.ByteAddressToString(keyAddr[:])
+	addr := utils.ByteAddressToString(keyAddr[:])
 	addr = strings.ReplaceAll(addr, ":", "-")
 	return fmt.Sprintf("UTC--%s--%s", toISO8601(ts), addr)
 }

@@ -2,8 +2,8 @@ package system
 
 import (
 	"github.com/bif/bif-sdk-go/abi"
-	"github.com/bif/bif-sdk-go/common"
 	"github.com/bif/bif-sdk-go/dto"
+	"github.com/bif/bif-sdk-go/utils"
 	"strings"
 )
 
@@ -71,7 +71,7 @@ func (peerCer *PeerCertificate) RegisterCertificate(signTxParams *SysTxParams, r
 		return "", err
 	}
 
-	signedTx, err := peerCer.super.prePareSignTransaction(signTxParams, inputEncode, common.StringToAddress(PeerCertificateContractAddr))
+	signedTx, err := peerCer.super.prePareSignTransaction(signTxParams, inputEncode, utils.StringToAddress(PeerCertificateContractAddr))
 	if err != nil{
 		return "", err
 	}
@@ -99,7 +99,7 @@ func (peerCer *PeerCertificate) RevokedCertificate(signTxParams *SysTxParams, id
 		return "", err
 	}
 
-	signedTx, err := peerCer.super.prePareSignTransaction(signTxParams, inputEncode, common.StringToAddress(PeerCertificateContractAddr))
+	signedTx, err := peerCer.super.prePareSignTransaction(signTxParams, inputEncode, utils.StringToAddress(PeerCertificateContractAddr))
 	if err != nil{
 		return "", err
 	}

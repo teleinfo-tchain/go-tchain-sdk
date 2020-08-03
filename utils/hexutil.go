@@ -2,8 +2,7 @@ package utils
 
 import (
 	"encoding/hex"
-	"github.com/bif/bif-sdk-go/common"
-	"github.com/bif/bif-sdk-go/common/hexutil"
+	"github.com/bif/bif-sdk-go/utils/hexutil"
 	"math/big"
 	"math/rand"
 	"strconv"
@@ -23,10 +22,10 @@ import (
   Call permissions: Anyone
 */
 func (util *Utils) IsHex(input string) bool {
-	if common.Has0xPrefix(input) {
+	if Has0xPrefix(input) {
 		input = input[2:]
 	}
-	return common.IsHex(input)
+	return IsHex(input)
 }
 
 /*
@@ -42,12 +41,12 @@ func (util *Utils) IsHex(input string) bool {
   Call permissions: Anyone
 */
 func (util *Utils) IsHexStrict(input string) bool {
-	if common.Has0xPrefix(input) {
+	if Has0xPrefix(input) {
 		input = input[2:]
 	} else {
 		return false
 	}
-	return common.IsHex(input)
+	return IsHex(input)
 }
 
 /*

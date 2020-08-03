@@ -19,8 +19,7 @@ package hexutil_test
 import (
 	"encoding/json"
 	"fmt"
-
-	"github.com/bif/bif-sdk-go/common/hexutil"
+	"github.com/bif/bif-sdk-go/utils/hexutil"
 )
 
 type MyType [5]byte

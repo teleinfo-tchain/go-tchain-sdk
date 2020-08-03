@@ -7,11 +7,11 @@ import (
 	"github.com/bif/bif-sdk-go/abi"
 	"github.com/bif/bif-sdk-go/account"
 	"github.com/bif/bif-sdk-go/account/keystore"
-	"github.com/bif/bif-sdk-go/common"
-	"github.com/bif/bif-sdk-go/common/hexutil"
 	"github.com/bif/bif-sdk-go/crypto"
 	"github.com/bif/bif-sdk-go/dto"
 	"github.com/bif/bif-sdk-go/providers"
+	"github.com/bif/bif-sdk-go/utils"
+	"github.com/bif/bif-sdk-go/utils/hexutil"
 	"math/big"
 	"reflect"
 	"strings"
@@ -31,14 +31,14 @@ type LogData struct {
 // 系统合约交易构建参数
 // TODO： 在使用此本地签署交易时，注意签署的内容是否要增加，其参数用于prePareSignTransaction，涉及account.TxData中的交易构建！！！（后续可能会增加）
 type SysTxParams struct {
-	From        common.Address // 系统合约发起方账户地址
-	Password    string         // 解密私钥的密码
-	KeyFileData []byte         // keystore文件内容
-	PrivateKey  string         // 发起方账户对应的私钥
-	GasPrice    *big.Int       // 交易的gas价格，默认是网络gas价格的平均值
-	Gas         uint64         // 交易可使用的gas，未使用的gas会退回
-	Nonce       uint64         // 从该账户发起交易的Nonce值
-	ChainId     *big.Int       // 链的ChainId
+	From        utils.Address // 系统合约发起方账户地址
+	Password    string        // 解密私钥的密码
+	KeyFileData []byte        // keystore文件内容
+	PrivateKey  string        // 发起方账户对应的私钥
+	GasPrice    *big.Int      // 交易的gas价格，默认是网络gas价格的平均值
+	Gas         uint64        // 交易可使用的gas，未使用的gas会退回
+	Nonce       uint64        // 从该账户发起交易的Nonce值
+	ChainId     *big.Int      // 链的ChainId
 }
 
 // NewSystem - System Module constructor to set the default provider
@@ -48,7 +48,7 @@ func NewSystem(provider providers.ProviderInterface) *System {
 	return system
 }
 
-func getPrivateKeyFromFile(addrParse common.Address, keyJson []byte, password string) (string, error) {
+func getPrivateKeyFromFile(addrParse utils.Address, keyJson []byte, password string) (string, error) {
 	var key *keystore.Key
 	var err error
 
@@ -73,7 +73,7 @@ func getPrivateKeyFromFile(addrParse common.Address, keyJson []byte, password st
 
 	prePareSignTransaction - 构造交易
 */
-func (sys *System) prePareSignTransaction(signTxParams *SysTxParams, payLoad []byte, contractAddr common.Address) (string, error) {
+func (sys *System) prePareSignTransaction(signTxParams *SysTxParams, payLoad []byte, contractAddr utils.Address) (string, error) {
 	if signTxParams.PrivateKey == "" {
 		privateKey, err := getPrivateKeyFromFile(signTxParams.From, signTxParams.KeyFileData, signTxParams.Password)
 		if err != nil {
@@ -94,10 +94,10 @@ func (sys *System) prePareSignTransaction(signTxParams *SysTxParams, payLoad []b
 		R:            new(big.Int),
 		S:            new(big.Int),
 		T:            big.NewInt(0),
-		NT:           new(big.Int),
-		NV:           new(big.Int),
-		NR:           new(big.Int),
-		NS:           new(big.Int),
+		// NT:           new(big.Int),
+		// NV:           new(big.Int),
+		// NR:           new(big.Int),
+		// NS:           new(big.Int),
 	}
 	acc := account.NewAccount()
 	signResult, err := acc.SignTransaction(signTx, signTxParams.PrivateKey, signTxParams.ChainId)
@@ -159,7 +159,7 @@ func decodeTxHash(transactionHash string) (*LogData, error) {
 	if err != nil {
 		return nil, err
 	}
-	err = ABI.Methods["log"].Outputs.Unpack(unpacked, common.FromHex(transactionHash))
+	err = ABI.Methods["log"].Outputs.Unpack(unpacked, utils.FromHex(transactionHash))
 	if err != nil {
 		return nil, err
 	}

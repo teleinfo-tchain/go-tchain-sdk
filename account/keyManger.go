@@ -6,8 +6,8 @@ import (
 	"encoding/hex"
 	"errors"
 	"github.com/bif/bif-sdk-go/account/keystore"
-	"github.com/bif/bif-sdk-go/common"
 	"github.com/bif/bif-sdk-go/crypto"
+	"github.com/bif/bif-sdk-go/utils"
 	"io/ioutil"
 )
 
@@ -59,7 +59,7 @@ func GetPrivateKeyFromFile(addrParse string, privateKeyFile, password string) (s
 	}
 	var key *keystore.Key
 
-	addr := common.StringToAddress(addrParse)
+	addr := utils.StringToAddress(addrParse)
 	if bytes.HasPrefix(addr.Bytes(), []byte("did:bid:")) && addr[8] == 115 {
 		key, err = keystore.DecryptKey(keyJson, password, crypto.SM2)
 	} else {
@@ -70,7 +70,7 @@ func GetPrivateKeyFromFile(addrParse string, privateKeyFile, password string) (s
 	}
 	privateKey := hex.EncodeToString(key.PrivateKey.D.Bytes())
 	addrRes := crypto.PubkeyToAddress(key.PrivateKey.PublicKey)
-	if addrParse != common.ByteAddressToString(addrRes.Bytes()) {
+	if addrParse != utils.ByteAddressToString(addrRes.Bytes()) {
 		return "", "", errors.New("addrParse Not Match keyStoreFile")
 	}
 	return privateKey, addrRes.String(), nil
@@ -78,7 +78,7 @@ func GetPrivateKeyFromFile(addrParse string, privateKeyFile, password string) (s
 
 // 3. 私钥转文件
 func PrivateKeyToKeyStoreFile(keyDir string, addrParse string, privateKey string, password string) (string, error) {
-	addr := common.StringToAddress(addrParse)
+	addr := utils.StringToAddress(addrParse)
 	var cryptoType crypto.CryptoType
 	if bytes.HasPrefix(addr.Bytes(), []byte("did:bid:")) && addr[8] == 115 {
 		cryptoType = crypto.SM2
@@ -90,7 +90,7 @@ func PrivateKeyToKeyStoreFile(keyDir string, addrParse string, privateKey string
 		return "", err
 	}
 	addrRes := crypto.PubkeyToAddress(privateKeyN.PublicKey)
-	if addrParse != common.ByteAddressToString(addrRes.Bytes()) {
+	if addrParse != utils.ByteAddressToString(addrRes.Bytes()) {
 		return "", errors.New("addrParse Not Match privateKey")
 	}
 

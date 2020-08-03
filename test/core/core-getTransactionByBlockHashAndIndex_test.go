@@ -57,6 +57,8 @@ func TestCoreTransactionByBlockHashAndIndex(t *testing.T) {
 	// time.Sleep(time.Second*10)
 	time.Sleep(time.Second)
 
+	// 如果失败可以用这个哈希
+	// txID := "0xe363f06cc47383bcc61468dd753e42c8a31f661be36b84118572c10487ece760"
 	txFromHash, err := connection.Core.GetTransactionByHash(txID)
 
 	if err != nil {

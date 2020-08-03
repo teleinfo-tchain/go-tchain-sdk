@@ -19,7 +19,7 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/bif/bif-sdk-go/common/types"
+	"github.com/bif/bif-sdk-go/utils/types"
 
 	"encoding/json"
 	"fmt"

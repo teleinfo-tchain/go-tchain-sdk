@@ -2,12 +2,12 @@ package System
 
 import (
 	"github.com/bif/bif-sdk-go"
-	"github.com/bif/bif-sdk-go/common"
 	"github.com/bif/bif-sdk-go/core/block"
 	"github.com/bif/bif-sdk-go/dto"
 	"github.com/bif/bif-sdk-go/providers"
 	"github.com/bif/bif-sdk-go/system"
 	"github.com/bif/bif-sdk-go/test/resources"
+	"github.com/bif/bif-sdk-go/utils"
 	"math/big"
 	"strconv"
 	"testing"
@@ -39,7 +39,7 @@ func TestPeerRegisterCertificate(t *testing.T) {
 	}
 
 	sysTxParams := new(system.SysTxParams)
-	sysTxParams.From = common.StringToAddress(coinBase)
+	sysTxParams.From = utils.StringToAddress(coinBase)
 	sysTxParams.PrivateKey = resources.CoinBasePriKey
 	sysTxParams.Gas = 2000000
 	sysTxParams.GasPrice = big.NewInt(35)
@@ -91,7 +91,7 @@ func TestPeerRevokedCertificate(t *testing.T) {
 	}
 
 	sysTxParams := new(system.SysTxParams)
-	sysTxParams.From = common.StringToAddress(coinBase)
+	sysTxParams.From = utils.StringToAddress(coinBase)
 	sysTxParams.PrivateKey = resources.CoinBasePriKey
 	sysTxParams.Gas = 2000000
 	sysTxParams.GasPrice = big.NewInt(35)

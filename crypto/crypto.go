@@ -20,13 +20,13 @@ import (
 	"crypto/ecdsa"
 	"encoding/hex"
 	"errors"
+	"github.com/bif/bif-sdk-go/utils"
 	"io"
 	"io/ioutil"
 	"math/big"
 	"os"
 
-	"github.com/bif/bif-sdk-go/common"
-	"github.com/bif/bif-sdk-go/common/math"
+	"github.com/bif/bif-sdk-go/utils/math"
 )
 
 // Keccak256 calculates and returns the Keccak256 hash of the input data.
@@ -43,7 +43,7 @@ func Keccak256(cryptoType CryptoType, data ...[]byte) []byte {
 
 // Keccak256Hash calculates and returns the Keccak256 hash of the input data,
 // converting it to an internal Hash data structure.
-func Keccak256Hash(cryptoType CryptoType, data ...[]byte) (h common.Hash) {
+func Keccak256Hash(cryptoType CryptoType, data ...[]byte) (h utils.Hash) {
 	switch cryptoType {
 	case SM2:
 		return Keccak256HashSm2(data...)
@@ -182,7 +182,7 @@ func ValidateSignatureValues(v byte, r, s *big.Int, homestead bool) bool {
 	return true
 }
 
-func PubkeyToAddress(p ecdsa.PublicKey) common.Address {
+func PubkeyToAddress(p ecdsa.PublicKey) utils.Address {
 	if S256Sm2().IsOnCurve(p.X, p.Y) {
 		return PubkeyToAddressSm2(p)
 	}

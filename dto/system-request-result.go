@@ -2,7 +2,7 @@ package dto
 
 import (
 	"encoding/json"
-	"github.com/bif/bif-sdk-go/common"
+	"github.com/bif/bif-sdk-go/utils"
 	"math/big"
 )
 
@@ -11,19 +11,19 @@ type SystemRequestResult struct {
 }
 
 type Voter struct {
-	Owner             common.Address   `json:"owner"`             // 投票人的地址
-	IsProxy           bool             `json:"isProxy"`           // 是否是代理人
-	ProxyVoteCount    *big.Int         `json:"proxyVoteCount"`    // 收到的代理的票数
-	Proxy             common.Address   `json:"proxy"`             // 该节点设置的代理人
-	LastVoteCount     *big.Int         `json:"lastVoteCount"`     // 上次投的票数
-	LastVoteTimeStamp *big.Int         `json:"lastVoteTimeStamp"` // 上次投票时间戳
-	VoteCandidates    []common.Address `json:"voteCandidates"`    // 投了哪些人
+	Owner             utils.Address   `json:"owner"`             // 投票人的地址
+	IsProxy           bool            `json:"isProxy"`           // 是否是代理人
+	ProxyVoteCount    *big.Int        `json:"proxyVoteCount"`    // 收到的代理的票数
+	Proxy             utils.Address   `json:"proxy"`             // 该节点设置的代理人
+	LastVoteCount     *big.Int        `json:"lastVoteCount"`     // 上次投的票数
+	LastVoteTimeStamp *big.Int        `json:"lastVoteTimeStamp"` // 上次投票时间戳
+	VoteCandidates    []utils.Address `json:"voteCandidates"`    // 投了哪些人
 }
 
 type Stake struct {
-	Owner              common.Address `json:"owner"`              // 抵押代币的所有人
-	StakeCount         *big.Int       `json:"stakeCount"`         // 抵押的代币数量
-	LastStakeTimeStamp *big.Int       `json:"lastStakeTimeStamp"` // 上次抵押时间戳
+	Owner              utils.Address `json:"owner"`              // 抵押代币的所有人
+	StakeCount         *big.Int      `json:"stakeCount"`         // 抵押的代币数量
+	LastStakeTimeStamp *big.Int      `json:"lastStakeTimeStamp"` // 上次抵押时间戳
 }
 
 func (pointer *SystemRequestResult) ToPeerCertificate() (*PeerCertificate, error) {

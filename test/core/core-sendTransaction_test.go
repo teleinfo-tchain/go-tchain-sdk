@@ -17,12 +17,12 @@ package test
 import (
 	"encoding/json"
 	"github.com/bif/bif-sdk-go"
-	"github.com/bif/bif-sdk-go/common/types"
 	"github.com/bif/bif-sdk-go/core/block"
 	"github.com/bif/bif-sdk-go/dto"
 	"github.com/bif/bif-sdk-go/providers"
 	"github.com/bif/bif-sdk-go/test/resources"
 	"github.com/bif/bif-sdk-go/utils"
+	"github.com/bif/bif-sdk-go/utils/types"
 	"io/ioutil"
 	"math/big"
 	"testing"

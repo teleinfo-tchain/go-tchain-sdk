@@ -9,7 +9,7 @@ import (
 
 func TestGetNodeInfo(t *testing.T) {
 
-	var connection = net.NewNet(providers.NewHTTPProvider(resources.IP51+":"+resources.Port, 10, false))
+	var connection = net.NewNet(providers.NewHTTPProvider(resources.IP+":"+resources.Port, 10, false))
 
 	nodeInfo, err := connection.GetNodeInfo()
 

@@ -5,22 +5,22 @@ import (
 	"crypto/ecdsa"
 	"errors"
 	"fmt"
-	"github.com/bif/bif-sdk-go/common"
-	"github.com/bif/bif-sdk-go/common/hexutil"
-	"github.com/bif/bif-sdk-go/common/rlp"
 	"github.com/bif/bif-sdk-go/crypto"
+	"github.com/bif/bif-sdk-go/utils"
+	"github.com/bif/bif-sdk-go/utils/hexutil"
+	"github.com/bif/bif-sdk-go/utils/rlp"
 	"golang.org/x/crypto/sha3"
 	"math/big"
 )
 
 type TxData struct {
-	AccountNonce uint64          `json:"nonce"    gencodec:"required"`
-	Price        *big.Int        `json:"gasPrice" gencodec:"required"`
-	GasLimit     uint64          `json:"gas"      gencodec:"required"`
-	Sender       *common.Address `json:"from"     rlp:"nil"`
-	Recipient    *common.Address `json:"to"       rlp:"nil"` // nil means contract creation
-	Amount       *big.Int        `json:"value"    gencodec:"required"`
-	Payload      []byte          `json:"input"    gencodec:"required"`
+	AccountNonce uint64         `json:"nonce"    gencodec:"required"`
+	Price        *big.Int       `json:"gasPrice" gencodec:"required"`
+	GasLimit     uint64         `json:"gas"      gencodec:"required"`
+	Sender       *utils.Address `json:"from"     rlp:"nil"`
+	Recipient    *utils.Address `json:"to"       rlp:"nil"` // nil means contract creation
+	Amount       *big.Int       `json:"value"    gencodec:"required"`
+	Payload      []byte         `json:"input"    gencodec:"required"`
 
 	// account Signature values
 	T *big.Int `json:"t" gencodec:"required"`
@@ -28,13 +28,13 @@ type TxData struct {
 	R *big.Int `json:"r" gencodec:"required"`
 	S *big.Int `json:"s" gencodec:"required"`
 
-	// node Signature values
-	NT *big.Int `json:"nt" gencodec:"required"`
-	NV *big.Int `json:"nv" gencodec:"required"`
-	NR *big.Int `json:"nr" gencodec:"required"`
-	NS *big.Int `json:"ns" gencodec:"required"`
+	// // node Signature values
+	// NT *big.Int `json:"nt" gencodec:"required"`
+	// NV *big.Int `json:"nv" gencodec:"required"`
+	// NR *big.Int `json:"nr" gencodec:"required"`
+	// NS *big.Int `json:"ns" gencodec:"required"`
 	// This is only used when marshaling to JSON.
-	Hash *common.Hash `json:"hash" rlp:"-"`
+	Hash *utils.Hash `json:"hash" rlp:"-"`
 }
 
 type SignTransactionResult struct {
@@ -42,7 +42,7 @@ type SignTransactionResult struct {
 	Tx  *TxData       `json:"tx"`
 }
 
-func rlpHash(x interface{}) (h common.Hash) {
+func rlpHash(x interface{}) (h utils.Hash) {
 	hw := sha3.NewLegacyKeccak256()
 	rlp.Encode(hw, x)
 	hw.Sum(h[:0])
@@ -55,7 +55,7 @@ type BIFSigner struct {
 
 // Hash returns the hash to be signed by the sender.
 // It does not uniquely identify the transaction.
-func (bfs BIFSigner) Hash(tx *TxData) common.Hash {
+func (bfs BIFSigner) Hash(tx *TxData) utils.Hash {
 	return rlpHash([]interface{}{
 		tx.AccountNonce,
 		tx.Price,
@@ -152,7 +152,7 @@ func (tx *TxData) PreCheck(privateKey string) (bool, error) {
 		return false, errors.New("not invalid privateKey")
 	}
 
-	if *tx.Sender != common.StringToAddress(publicAddr) {
+	if *tx.Sender != utils.StringToAddress(publicAddr) {
 		return false, errors.New("the sender does not match privateKey")
 	}
 

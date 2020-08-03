@@ -19,7 +19,7 @@ package crypto
 import (
 	"crypto/ecdsa"
 	"crypto/elliptic"
-	"github.com/bif/bif-sdk-go/common"
+	"github.com/bif/bif-sdk-go/utils"
 	"github.com/teleinfo-bif/bit-gmsm/sm2"
 	"github.com/teleinfo-bif/bit-gmsm/sm3"
 	"math/big"
@@ -36,7 +36,7 @@ func Keccak256Sm2(data ...[]byte) []byte {
 
 // Keccak256Hash calculates and returns the Keccak256 hash of the input data,
 // converting it to an internal Hash data structure.
-func Keccak256HashSm2(data ...[]byte) (h common.Hash) {
+func Keccak256HashSm2(data ...[]byte) (h utils.Hash) {
 	d := sm3.New()
 	for _, b := range data {
 		d.Write(b)
@@ -107,9 +107,9 @@ func ValidateSignatureValuesSm2(v byte, r, s *big.Int, homestead bool) bool {
 	return true
 }
 
-func PubkeyToAddressSm2(p ecdsa.PublicKey) common.Address {
+func PubkeyToAddressSm2(p ecdsa.PublicKey) utils.Address {
 	pubBytes := FromECDSAPub(&p)
 	addr := Keccak256(SM2, pubBytes[1:])[12:]
 	addr[8] = 115
-	return common.BytesToAddress(addr)
+	return utils.BytesToAddress(addr)
 }

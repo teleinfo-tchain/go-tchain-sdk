@@ -33,9 +33,9 @@ import (
 	"encoding/hex"
 	"encoding/json"
 	"fmt"
-	"github.com/bif/bif-sdk-go/common"
-	"github.com/bif/bif-sdk-go/common/math"
 	"github.com/bif/bif-sdk-go/crypto"
+	"github.com/bif/bif-sdk-go/utils"
+	"github.com/bif/bif-sdk-go/utils/math"
 	"github.com/pborman/uuid"
 	"golang.org/x/crypto/pbkdf2"
 	"golang.org/x/crypto/scrypt"
@@ -78,7 +78,7 @@ type keyStorePassphrase struct {
 	skipKeyFileVerification bool
 }
 
-func (ks keyStorePassphrase) GetKey(addr common.Address, filename, auth string) (*Key, error) {
+func (ks keyStorePassphrase) GetKey(addr utils.Address, filename, auth string) (*Key, error) {
 	// Load the key from the keystore and decrypt its contents
 	keyjson, err := ioutil.ReadFile(filename)
 	if err != nil {
@@ -102,7 +102,7 @@ func (ks keyStorePassphrase) GetKey(addr common.Address, filename, auth string) 
 }
 
 // StoreKey generates a key, encrypts with 'auth' and stores in the given directory
-func StoreKey(dir, auth string, scryptN, scryptP int, cryptoType crypto.CryptoType) (common.Address, error) {
+func StoreKey(dir, auth string, scryptN, scryptP int, cryptoType crypto.CryptoType) (utils.Address, error) {
 	_, a, err := storeNewKey(&keyStorePassphrase{dir, scryptN, scryptP, false}, rand.Reader, auth, cryptoType)
 	return a.Address, err
 }
@@ -193,7 +193,7 @@ func EncryptKey(key *Key, auth string, scryptN, scryptP int) ([]byte, error) {
 		return nil, err
 	}
 	encryptedKeyJSONV3 := encryptedKeyJSONV3{
-		common.ByteAddressToString(key.Address[:]),
+		utils.ByteAddressToString(key.Address[:]),
 		cryptoStruct,
 		key.Id.String(),
 		version,

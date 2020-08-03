@@ -3,6 +3,7 @@ package test
 import (
 	"bytes"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"github.com/bif/bif-sdk-go/utils"
 	"io/ioutil"
@@ -44,6 +45,14 @@ func checkNumberError(t *testing.T, input interface{}, got, want error) bool {
 	return false
 }
 
+var (
+	kbifer, _ = new(big.Int).SetString("1000000000000000000000", 10)
+	grand, _  = new(big.Int).SetString("1000000000000000000000", 10)
+	mbifer, _ = new(big.Int).SetString("1000000000000000000000000", 10)
+	gbifer, _ = new(big.Int).SetString("1000000000000000000000000000", 10)
+	tbifer, _ = new(big.Int).SetString("1011100000000000000000000000000", 10)
+)
+
 func TestToWei(t *testing.T) {
 	for _, test := range []struct {
 		balance string
@@ -51,21 +60,43 @@ func TestToWei(t *testing.T) {
 		expect  *big.Int
 		wantErr error
 	}{
-		// {"1", nil, big.NewInt(1000000000000000000), nil},
+		{"001.00000001", []string{"kwei"}, nil, errors.New(fmt.Sprintf("while converting number %s to wei,  too many decimal points not met", "001.00000001"))},
+		{"-001.001", []string{"kwei"}, big.NewInt(-1001), nil},
+		{"1.10", []string{"kwei"}, big.NewInt(1100), nil},
 		{"1.000000000555599001", nil, big.NewInt(1000000000555599001), nil},
-		// {"1", []string{"bifer"}, big.NewInt(1000000000000000000), nil},
-		// {"1", []string{"finney"}, big.NewInt(1000000000000000), nil},
-		// {"1", []string{"szabo"}, big.NewInt(1000000000000), nil},
-		// {"1", []string{"shannon"}, big.NewInt(1000000000), nil},
-		// {"1", []string{"shannon", "bifer"}, big.NewInt(1000000000), nil},
-		// {"1", []string{"shan"}, nil, utils.ErrUintNoExist},
+		{"1", nil, big.NewInt(1000000000000000000), nil},
+		{"1", []string{"wei"}, big.NewInt(1), nil},
+		{"1", []string{"kwei"}, big.NewInt(1000), nil},
+		{"1", []string{"babbage"}, big.NewInt(1000), nil},
+		{"1", []string{"femtobifer"}, big.NewInt(1000), nil},
+		{"1", []string{"mwei"}, big.NewInt(1000000), nil},
+		{"1", []string{"lovelace"}, big.NewInt(1000000), nil},
+		{"1", []string{"picobifer"}, big.NewInt(1000000), nil},
+		{"1", []string{"gwei"}, big.NewInt(1000000000), nil},
+		{"1", []string{"shannon"}, big.NewInt(1000000000), nil},
+		{"1", []string{"nanobifer"}, big.NewInt(1000000000), nil},
+		{"1", []string{"nano"}, big.NewInt(1000000000), nil},
+		{"1", []string{"szabo"}, big.NewInt(1000000000000), nil},
+		{"1", []string{"microbifer"}, big.NewInt(1000000000000), nil},
+		{"1", []string{"micro"}, big.NewInt(1000000000000), nil},
+		{"1", []string{"finney"}, big.NewInt(1000000000000000), nil},
+		{"1", []string{"millibifer"}, big.NewInt(1000000000000000), nil},
+		{"1", []string{"milli"}, big.NewInt(1000000000000000), nil},
+		{"1", []string{"bifer"}, big.NewInt(1000000000000000000), nil},
+		{"1", []string{"kbifer"}, kbifer, nil},
+		{"1", []string{"grand"}, grand, nil},
+		{"1", []string{"mbifer"}, mbifer, nil},
+		{"1", []string{"gbifer"}, gbifer, nil},
+		{"1.0111", []string{"tbifer"}, tbifer, nil},
+		{"1", []string{"shannon", "bifer"}, big.NewInt(1000000000), nil},
+		{"1", []string{"shan"}, nil, utils.ErrUintNoExist},
 	} {
 		res, err := util.ToWei(test.balance, test.uint...)
 		if !checkNumberError(t, test.balance, err, test.wantErr) {
 			continue
 		}
 		if res.Cmp(test.expect) != 0 {
-			t.Errorf("balance is  %v, uint is %v, value mismatch: got %v, want %s", test.balance, test.uint, res, test.expect)
+			t.Errorf("balance is  %v, uint is %v, value mismatch: got %v, want %v", test.balance, test.uint, res, test.expect)
 			continue
 		}
 	}
@@ -78,15 +109,33 @@ func TestFromWei(t *testing.T) {
 		expect  string
 		wantErr error
 	}{
-		// {big.NewInt(1000000000000000000), nil, "1", nil},
-		{big.NewInt(1000000001000000013), nil, "1.0000002", nil},
-		{big.NewInt(10000001), []string{"tbifer"}, "1.0000001e-23", nil},
-		// {big.NewInt(1000000000000000000), []string{"bifer"}, "1", nil},
-		// {big.NewInt(1000000000000000), []string{"finney"}, "1", nil},
-		// {big.NewInt(1000000000000), []string{"szabo"}, "1", nil},
-		// {big.NewInt(1000000000), []string{"shannon"}, "1", nil},
-		// {big.NewInt(1000000000), []string{"shannon", "bifer"}, "1", nil},
-		// {big.NewInt(1), []string{"shan"}, "", utils.ErrUintNoExist},
+		{big.NewInt(-1000000000555599118), nil, "-1.000000000555599118", nil},
+		{big.NewInt(1000000000000000000), nil, "1", nil},
+		{big.NewInt(1), []string{"wei"}, "1", nil},
+		{big.NewInt(1000), []string{"kwei"}, "1", nil},
+		{big.NewInt(1000), []string{"babbage"}, "1", nil},
+		{big.NewInt(1000), []string{"femtobifer"}, "1", nil},
+		{big.NewInt(1000000), []string{"mwei"}, "1", nil},
+		{big.NewInt(1000000), []string{"lovelace"}, "1", nil},
+		{big.NewInt(1000000), []string{"picobifer"}, "1", nil},
+		{big.NewInt(1000000000), []string{"gwei"}, "1", nil},
+		{big.NewInt(1000000000), []string{"shannon"}, "1", nil},
+		{big.NewInt(1000000000), []string{"nanobifer"}, "1", nil},
+		{big.NewInt(1000000000), []string{"nano"}, "1", nil},
+		{big.NewInt(1000000000000), []string{"szabo"}, "1", nil},
+		{big.NewInt(1000000000000), []string{"microbifer"}, "1", nil},
+		{big.NewInt(1000000000000), []string{"micro"}, "1", nil},
+		{big.NewInt(1000000000000000), []string{"finney"}, "1", nil},
+		{big.NewInt(1000000000000000), []string{"millibifer"}, "1", nil},
+		{big.NewInt(1000000000000000), []string{"milli"}, "1", nil},
+		{big.NewInt(1000000000000000000), []string{"bifer"}, "1", nil},
+		{big.NewInt(1000000000), []string{"shannon", "bifer"}, "1", nil},
+		{big.NewInt(1), []string{"shan"}, "", utils.ErrUintNoExist},
+		{kbifer, []string{"kbifer"}, "1", nil},
+		{grand, []string{"grand"}, "1", nil},
+		{mbifer, []string{"mbifer"}, "1", nil},
+		{gbifer, []string{"gbifer"}, "1", nil},
+		{tbifer, []string{"tbifer"}, "1.0111", nil},
 	} {
 		res, err := util.FromWei(test.balance, test.uint...)
 		if !checkNumberError(t, test.balance, err, test.wantErr) {

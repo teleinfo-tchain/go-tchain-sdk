@@ -2,8 +2,8 @@ package dto
 
 import (
 	"encoding/json"
-	"github.com/bif/bif-sdk-go/common"
-	"github.com/bif/bif-sdk-go/common/hexutil"
+	"github.com/bif/bif-sdk-go/utils"
+	"github.com/bif/bif-sdk-go/utils/hexutil"
 	"math/big"
 )
 
@@ -18,12 +18,12 @@ type SyncingResponse struct {
 }
 
 type AccountResult struct {
-	Address      common.Address  `json:"address"`
+	Address      utils.Address   `json:"address"`
 	AccountProof []string        `json:"accountProof"`
 	Balance      *hexutil.Big    `json:"balance"`
-	CodeHash     common.Hash     `json:"codeHash"`
+	CodeHash     utils.Hash      `json:"codeHash"`
 	Nonce        hexutil.Uint64  `json:"nonce"`
-	StorageHash  common.Hash     `json:"storageHash"`
+	StorageHash  utils.Hash      `json:"storageHash"`
 	StorageProof []StorageResult `json:"storageProof"`
 }
 

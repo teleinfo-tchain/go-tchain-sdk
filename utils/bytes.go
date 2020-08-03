@@ -15,7 +15,7 @@
 // along with the go-bif library. If not, see <http://www.gnu.org/licenses/>.
 
 // Package common contains various helper functions.
-package common
+package utils
 
 import (
 	"bytes"

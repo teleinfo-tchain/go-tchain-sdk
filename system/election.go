@@ -2,8 +2,8 @@ package system
 
 import (
 	"github.com/bif/bif-sdk-go/abi"
-	"github.com/bif/bif-sdk-go/common"
 	"github.com/bif/bif-sdk-go/dto"
+	"github.com/bif/bif-sdk-go/utils"
 	"math/big"
 	"strings"
 )
@@ -101,7 +101,7 @@ func (e *Election) RegisterWitness(signTxParams *SysTxParams, witness *dto.Regis
 		return "", err
 	}
 
-	signedTx, err := e.super.prePareSignTransaction(signTxParams, inputEncode, common.StringToAddress(ElectionContractAddr))
+	signedTx, err := e.super.prePareSignTransaction(signTxParams, inputEncode, utils.StringToAddress(ElectionContractAddr))
 	if err != nil{
 		return "", err
 	}
@@ -125,7 +125,7 @@ func (e *Election) UnRegisterWitness(signTxParams *SysTxParams) (string, error) 
 	// encoding
 	inputEncode, _ := e.abi.Pack("unregisterWitness")
 
-	signedTx, err := e.super.prePareSignTransaction(signTxParams, inputEncode, common.StringToAddress(ElectionContractAddr))
+	signedTx, err := e.super.prePareSignTransaction(signTxParams, inputEncode, utils.StringToAddress(ElectionContractAddr))
 	if err != nil{
 		return "", err
 	}
@@ -211,7 +211,7 @@ func (e *Election) VoteWitnesses(signTxParams *SysTxParams, candidate string) (s
 		return "", err
 	}
 
-	signedTx, err := e.super.prePareSignTransaction(signTxParams, inputEncode, common.StringToAddress(ElectionContractAddr))
+	signedTx, err := e.super.prePareSignTransaction(signTxParams, inputEncode, utils.StringToAddress(ElectionContractAddr))
 	if err != nil{
 		return "", err
 	}
@@ -235,7 +235,7 @@ func (e *Election) CancelVote(signTxParams *SysTxParams) (string, error) {
 	// encoding
 	inputEncode, _ := e.abi.Pack("cancelVote")
 
-	signedTx, err := e.super.prePareSignTransaction(signTxParams, inputEncode, common.StringToAddress(ElectionContractAddr))
+	signedTx, err := e.super.prePareSignTransaction(signTxParams, inputEncode, utils.StringToAddress(ElectionContractAddr))
 	if err != nil{
 		return "", err
 	}
@@ -259,7 +259,7 @@ func (e *Election) StartProxy(signTxParams *SysTxParams) (string, error) {
 	// encoding
 	inputEncode, _ := e.abi.Pack("startProxy")
 
-	signedTx, err := e.super.prePareSignTransaction(signTxParams, inputEncode, common.StringToAddress(ElectionContractAddr))
+	signedTx, err := e.super.prePareSignTransaction(signTxParams, inputEncode, utils.StringToAddress(ElectionContractAddr))
 	if err != nil{
 		return "", err
 	}
@@ -283,7 +283,7 @@ func (e *Election) StopProxy(signTxParams *SysTxParams) (string, error) {
 	// encoding
 	inputEncode, _ := e.abi.Pack("stopProxy")
 
-	signedTx, err := e.super.prePareSignTransaction(signTxParams, inputEncode, common.StringToAddress(ElectionContractAddr))
+	signedTx, err := e.super.prePareSignTransaction(signTxParams, inputEncode, utils.StringToAddress(ElectionContractAddr))
 	if err != nil{
 		return "", err
 	}
@@ -307,7 +307,7 @@ func (e *Election) CancelProxy(signTxParams *SysTxParams) (string, error) {
 	// encoding
 	inputEncode, _ := e.abi.Pack("cancelProxy")
 
-	signedTx, err := e.super.prePareSignTransaction(signTxParams, inputEncode, common.StringToAddress(ElectionContractAddr))
+	signedTx, err := e.super.prePareSignTransaction(signTxParams, inputEncode, utils.StringToAddress(ElectionContractAddr))
 	if err != nil{
 		return "", err
 	}
@@ -335,7 +335,7 @@ func (e *Election) SetProxy(signTxParams *SysTxParams, proxy string) (string, er
 		return "", err
 	}
 
-	signedTx, err := e.super.prePareSignTransaction(signTxParams, inputEncode, common.StringToAddress(ElectionContractAddr))
+	signedTx, err := e.super.prePareSignTransaction(signTxParams, inputEncode, utils.StringToAddress(ElectionContractAddr))
 	if err != nil{
 		return "", err
 	}
@@ -363,7 +363,7 @@ func (e *Election) Stake(signTxParams *SysTxParams, stakeCount *big.Int) (string
 		return "", err
 	}
 
-	signedTx, err := e.super.prePareSignTransaction(signTxParams, inputEncode, common.StringToAddress(ElectionContractAddr))
+	signedTx, err := e.super.prePareSignTransaction(signTxParams, inputEncode, utils.StringToAddress(ElectionContractAddr))
 	if err != nil{
 		return "", err
 	}
@@ -387,7 +387,7 @@ func (e *Election) UnStake(signTxParams *SysTxParams) (string, error) {
 	// encoding
 	inputEncode, _ := e.abi.Pack("unStake")
 
-	signedTx, err := e.super.prePareSignTransaction(signTxParams, inputEncode, common.StringToAddress(ElectionContractAddr))
+	signedTx, err := e.super.prePareSignTransaction(signTxParams, inputEncode, utils.StringToAddress(ElectionContractAddr))
 	if err != nil{
 		return "", err
 	}
@@ -464,7 +464,7 @@ func (e *Election) ExtractOwnBounty(signTxParams *SysTxParams) (string, error) {
 	// encoding
 	inputEncode, _ := e.abi.Pack("extractOwnBounty")
 
-	signedTx, err := e.super.prePareSignTransaction(signTxParams, inputEncode, common.StringToAddress(ElectionContractAddr))
+	signedTx, err := e.super.prePareSignTransaction(signTxParams, inputEncode, utils.StringToAddress(ElectionContractAddr))
 	if err != nil{
 		return "", err
 	}
@@ -488,7 +488,7 @@ func (e *Election) IssueAdditionalBounty(signTxParams *SysTxParams) (string, err
 	// encoding
 	inputEncode, _ := e.abi.Pack("issueAdditionalBounty")
 
-	signedTx, err := e.super.prePareSignTransaction(signTxParams, inputEncode, common.StringToAddress(ElectionContractAddr))
+	signedTx, err := e.super.prePareSignTransaction(signTxParams, inputEncode, utils.StringToAddress(ElectionContractAddr))
 	if err != nil{
 		return "", err
 	}

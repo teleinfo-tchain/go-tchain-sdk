@@ -20,14 +20,13 @@ import (
 	"bytes"
 	"encoding/hex"
 	"fmt"
+	"github.com/bif/bif-sdk-go/utils"
 	"math"
 	"math/big"
 	"reflect"
 	"strconv"
 	"strings"
 	"testing"
-
-	"github.com/bif/bif-sdk-go/common"
 )
 
 // TestPack tests the general pack/unpack tests in packing_test.go
@@ -74,8 +73,8 @@ func TestMethodPack(t *testing.T) {
 	}
 
 	sig := abi.Methods["slice"].ID
-	sig = append(sig, common.LeftPadBytes([]byte{1}, 32)...)
-	sig = append(sig, common.LeftPadBytes([]byte{2}, 32)...)
+	sig = append(sig, utils.LeftPadBytes([]byte{1}, 32)...)
+	sig = append(sig, utils.LeftPadBytes([]byte{2}, 32)...)
 
 	packed, err := abi.Pack("slice", []uint32{1, 2})
 	if err != nil {
@@ -86,14 +85,14 @@ func TestMethodPack(t *testing.T) {
 		t.Errorf("expected %x got %x", sig, packed)
 	}
 
-	var addrA, addrB = common.Address{1}, common.Address{2}
+	var addrA, addrB = utils.Address{1}, utils.Address{2}
 	sig = abi.Methods["sliceAddress"].ID
-	sig = append(sig, common.LeftPadBytes([]byte{32}, 32)...)
-	sig = append(sig, common.LeftPadBytes([]byte{2}, 32)...)
-	sig = append(sig, common.LeftPadBytes(addrA[:], 32)...)
-	sig = append(sig, common.LeftPadBytes(addrB[:], 32)...)
+	sig = append(sig, utils.LeftPadBytes([]byte{32}, 32)...)
+	sig = append(sig, utils.LeftPadBytes([]byte{2}, 32)...)
+	sig = append(sig, utils.LeftPadBytes(addrA[:], 32)...)
+	sig = append(sig, utils.LeftPadBytes(addrB[:], 32)...)
 
-	packed, err = abi.Pack("sliceAddress", []common.Address{addrA, addrB})
+	packed, err = abi.Pack("sliceAddress", []utils.Address{addrA, addrB})
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -101,18 +100,18 @@ func TestMethodPack(t *testing.T) {
 		t.Errorf("expected %x got %x", sig, packed)
 	}
 
-	var addrC, addrD = common.Address{3}, common.Address{4}
+	var addrC, addrD = utils.Address{3}, utils.Address{4}
 	sig = abi.Methods["sliceMultiAddress"].ID
-	sig = append(sig, common.LeftPadBytes([]byte{64}, 32)...)
-	sig = append(sig, common.LeftPadBytes([]byte{160}, 32)...)
-	sig = append(sig, common.LeftPadBytes([]byte{2}, 32)...)
-	sig = append(sig, common.LeftPadBytes(addrA[:], 32)...)
-	sig = append(sig, common.LeftPadBytes(addrB[:], 32)...)
-	sig = append(sig, common.LeftPadBytes([]byte{2}, 32)...)
-	sig = append(sig, common.LeftPadBytes(addrC[:], 32)...)
-	sig = append(sig, common.LeftPadBytes(addrD[:], 32)...)
+	sig = append(sig, utils.LeftPadBytes([]byte{64}, 32)...)
+	sig = append(sig, utils.LeftPadBytes([]byte{160}, 32)...)
+	sig = append(sig, utils.LeftPadBytes([]byte{2}, 32)...)
+	sig = append(sig, utils.LeftPadBytes(addrA[:], 32)...)
+	sig = append(sig, utils.LeftPadBytes(addrB[:], 32)...)
+	sig = append(sig, utils.LeftPadBytes([]byte{2}, 32)...)
+	sig = append(sig, utils.LeftPadBytes(addrC[:], 32)...)
+	sig = append(sig, utils.LeftPadBytes(addrD[:], 32)...)
 
-	packed, err = abi.Pack("sliceMultiAddress", []common.Address{addrA, addrB}, []common.Address{addrC, addrD})
+	packed, err = abi.Pack("sliceMultiAddress", []utils.Address{addrA, addrB}, []utils.Address{addrC, addrD})
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -121,8 +120,8 @@ func TestMethodPack(t *testing.T) {
 	}
 
 	sig = abi.Methods["slice256"].ID
-	sig = append(sig, common.LeftPadBytes([]byte{1}, 32)...)
-	sig = append(sig, common.LeftPadBytes([]byte{2}, 32)...)
+	sig = append(sig, utils.LeftPadBytes([]byte{1}, 32)...)
+	sig = append(sig, utils.LeftPadBytes([]byte{2}, 32)...)
 
 	packed, err = abi.Pack("slice256", []*big.Int{big.NewInt(1), big.NewInt(2)})
 	if err != nil {
@@ -135,15 +134,15 @@ func TestMethodPack(t *testing.T) {
 
 	a := [2][2]*big.Int{{big.NewInt(1), big.NewInt(1)}, {big.NewInt(2), big.NewInt(0)}}
 	sig = abi.Methods["nestedArray"].ID
-	sig = append(sig, common.LeftPadBytes([]byte{1}, 32)...)
-	sig = append(sig, common.LeftPadBytes([]byte{1}, 32)...)
-	sig = append(sig, common.LeftPadBytes([]byte{2}, 32)...)
-	sig = append(sig, common.LeftPadBytes([]byte{0}, 32)...)
-	sig = append(sig, common.LeftPadBytes([]byte{0xa0}, 32)...)
-	sig = append(sig, common.LeftPadBytes([]byte{2}, 32)...)
-	sig = append(sig, common.LeftPadBytes(addrC[:], 32)...)
-	sig = append(sig, common.LeftPadBytes(addrD[:], 32)...)
-	packed, err = abi.Pack("nestedArray", a, []common.Address{addrC, addrD})
+	sig = append(sig, utils.LeftPadBytes([]byte{1}, 32)...)
+	sig = append(sig, utils.LeftPadBytes([]byte{1}, 32)...)
+	sig = append(sig, utils.LeftPadBytes([]byte{2}, 32)...)
+	sig = append(sig, utils.LeftPadBytes([]byte{0}, 32)...)
+	sig = append(sig, utils.LeftPadBytes([]byte{0xa0}, 32)...)
+	sig = append(sig, utils.LeftPadBytes([]byte{2}, 32)...)
+	sig = append(sig, utils.LeftPadBytes(addrC[:], 32)...)
+	sig = append(sig, utils.LeftPadBytes(addrD[:], 32)...)
+	packed, err = abi.Pack("nestedArray", a, []utils.Address{addrC, addrD})
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -152,13 +151,13 @@ func TestMethodPack(t *testing.T) {
 	}
 
 	sig = abi.Methods["nestedArray2"].ID
-	sig = append(sig, common.LeftPadBytes([]byte{0x20}, 32)...)
-	sig = append(sig, common.LeftPadBytes([]byte{0x40}, 32)...)
-	sig = append(sig, common.LeftPadBytes([]byte{0x80}, 32)...)
-	sig = append(sig, common.LeftPadBytes([]byte{1}, 32)...)
-	sig = append(sig, common.LeftPadBytes([]byte{1}, 32)...)
-	sig = append(sig, common.LeftPadBytes([]byte{1}, 32)...)
-	sig = append(sig, common.LeftPadBytes([]byte{1}, 32)...)
+	sig = append(sig, utils.LeftPadBytes([]byte{0x20}, 32)...)
+	sig = append(sig, utils.LeftPadBytes([]byte{0x40}, 32)...)
+	sig = append(sig, utils.LeftPadBytes([]byte{0x80}, 32)...)
+	sig = append(sig, utils.LeftPadBytes([]byte{1}, 32)...)
+	sig = append(sig, utils.LeftPadBytes([]byte{1}, 32)...)
+	sig = append(sig, utils.LeftPadBytes([]byte{1}, 32)...)
+	sig = append(sig, utils.LeftPadBytes([]byte{1}, 32)...)
 	packed, err = abi.Pack("nestedArray2", [2][]uint8{{1}, {1}})
 	if err != nil {
 		t.Fatal(err)
@@ -168,16 +167,16 @@ func TestMethodPack(t *testing.T) {
 	}
 
 	sig = abi.Methods["nestedSlice"].ID
-	sig = append(sig, common.LeftPadBytes([]byte{0x20}, 32)...)
-	sig = append(sig, common.LeftPadBytes([]byte{0x02}, 32)...)
-	sig = append(sig, common.LeftPadBytes([]byte{0x40}, 32)...)
-	sig = append(sig, common.LeftPadBytes([]byte{0xa0}, 32)...)
-	sig = append(sig, common.LeftPadBytes([]byte{2}, 32)...)
-	sig = append(sig, common.LeftPadBytes([]byte{1}, 32)...)
-	sig = append(sig, common.LeftPadBytes([]byte{2}, 32)...)
-	sig = append(sig, common.LeftPadBytes([]byte{2}, 32)...)
-	sig = append(sig, common.LeftPadBytes([]byte{1}, 32)...)
-	sig = append(sig, common.LeftPadBytes([]byte{2}, 32)...)
+	sig = append(sig, utils.LeftPadBytes([]byte{0x20}, 32)...)
+	sig = append(sig, utils.LeftPadBytes([]byte{0x02}, 32)...)
+	sig = append(sig, utils.LeftPadBytes([]byte{0x40}, 32)...)
+	sig = append(sig, utils.LeftPadBytes([]byte{0xa0}, 32)...)
+	sig = append(sig, utils.LeftPadBytes([]byte{2}, 32)...)
+	sig = append(sig, utils.LeftPadBytes([]byte{1}, 32)...)
+	sig = append(sig, utils.LeftPadBytes([]byte{2}, 32)...)
+	sig = append(sig, utils.LeftPadBytes([]byte{2}, 32)...)
+	sig = append(sig, utils.LeftPadBytes([]byte{1}, 32)...)
+	sig = append(sig, utils.LeftPadBytes([]byte{2}, 32)...)
 	packed, err = abi.Pack("nestedSlice", [][]uint8{{1, 2}, {1, 2}})
 	if err != nil {
 		t.Fatal(err)
@@ -193,25 +192,25 @@ func TestPackNumber(t *testing.T) {
 		packed []byte
 	}{
 		// Protocol limits
-		{reflect.ValueOf(0), common.Hex2Bytes("0000000000000000000000000000000000000000000000000000000000000000")},
-		{reflect.ValueOf(1), common.Hex2Bytes("0000000000000000000000000000000000000000000000000000000000000001")},
-		{reflect.ValueOf(-1), common.Hex2Bytes("ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff")},
+		{reflect.ValueOf(0), utils.Hex2Bytes("0000000000000000000000000000000000000000000000000000000000000000")},
+		{reflect.ValueOf(1), utils.Hex2Bytes("0000000000000000000000000000000000000000000000000000000000000001")},
+		{reflect.ValueOf(-1), utils.Hex2Bytes("ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff")},
 
 		// Type corner cases
-		{reflect.ValueOf(uint8(math.MaxUint8)), common.Hex2Bytes("00000000000000000000000000000000000000000000000000000000000000ff")},
-		{reflect.ValueOf(uint16(math.MaxUint16)), common.Hex2Bytes("000000000000000000000000000000000000000000000000000000000000ffff")},
-		{reflect.ValueOf(uint32(math.MaxUint32)), common.Hex2Bytes("00000000000000000000000000000000000000000000000000000000ffffffff")},
-		{reflect.ValueOf(uint64(math.MaxUint64)), common.Hex2Bytes("000000000000000000000000000000000000000000000000ffffffffffffffff")},
+		{reflect.ValueOf(uint8(math.MaxUint8)), utils.Hex2Bytes("00000000000000000000000000000000000000000000000000000000000000ff")},
+		{reflect.ValueOf(uint16(math.MaxUint16)), utils.Hex2Bytes("000000000000000000000000000000000000000000000000000000000000ffff")},
+		{reflect.ValueOf(uint32(math.MaxUint32)), utils.Hex2Bytes("00000000000000000000000000000000000000000000000000000000ffffffff")},
+		{reflect.ValueOf(uint64(math.MaxUint64)), utils.Hex2Bytes("000000000000000000000000000000000000000000000000ffffffffffffffff")},
 
-		{reflect.ValueOf(int8(math.MaxInt8)), common.Hex2Bytes("000000000000000000000000000000000000000000000000000000000000007f")},
-		{reflect.ValueOf(int16(math.MaxInt16)), common.Hex2Bytes("0000000000000000000000000000000000000000000000000000000000007fff")},
-		{reflect.ValueOf(int32(math.MaxInt32)), common.Hex2Bytes("000000000000000000000000000000000000000000000000000000007fffffff")},
-		{reflect.ValueOf(int64(math.MaxInt64)), common.Hex2Bytes("0000000000000000000000000000000000000000000000007fffffffffffffff")},
+		{reflect.ValueOf(int8(math.MaxInt8)), utils.Hex2Bytes("000000000000000000000000000000000000000000000000000000000000007f")},
+		{reflect.ValueOf(int16(math.MaxInt16)), utils.Hex2Bytes("0000000000000000000000000000000000000000000000000000000000007fff")},
+		{reflect.ValueOf(int32(math.MaxInt32)), utils.Hex2Bytes("000000000000000000000000000000000000000000000000000000007fffffff")},
+		{reflect.ValueOf(int64(math.MaxInt64)), utils.Hex2Bytes("0000000000000000000000000000000000000000000000007fffffffffffffff")},
 
-		{reflect.ValueOf(int8(math.MinInt8)), common.Hex2Bytes("ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff80")},
-		{reflect.ValueOf(int16(math.MinInt16)), common.Hex2Bytes("ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff8000")},
-		{reflect.ValueOf(int32(math.MinInt32)), common.Hex2Bytes("ffffffffffffffffffffffffffffffffffffffffffffffffffffffff80000000")},
-		{reflect.ValueOf(int64(math.MinInt64)), common.Hex2Bytes("ffffffffffffffffffffffffffffffffffffffffffffffff8000000000000000")},
+		{reflect.ValueOf(int8(math.MinInt8)), utils.Hex2Bytes("ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff80")},
+		{reflect.ValueOf(int16(math.MinInt16)), utils.Hex2Bytes("ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff8000")},
+		{reflect.ValueOf(int32(math.MinInt32)), utils.Hex2Bytes("ffffffffffffffffffffffffffffffffffffffffffffffffffffffff80000000")},
+		{reflect.ValueOf(int64(math.MinInt64)), utils.Hex2Bytes("ffffffffffffffffffffffffffffffffffffffffffffffff8000000000000000")},
 	}
 	for i, tt := range tests {
 		packed := packNum(tt.value)

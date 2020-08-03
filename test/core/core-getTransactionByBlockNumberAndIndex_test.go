@@ -16,10 +16,10 @@ package test
 
 import (
 	"github.com/bif/bif-sdk-go"
-	"github.com/bif/bif-sdk-go/common/hexutil"
 	"github.com/bif/bif-sdk-go/dto"
 	"github.com/bif/bif-sdk-go/providers"
 	"github.com/bif/bif-sdk-go/test/resources"
+	"github.com/bif/bif-sdk-go/utils/hexutil"
 	"math/big"
 	"testing"
 	"time"

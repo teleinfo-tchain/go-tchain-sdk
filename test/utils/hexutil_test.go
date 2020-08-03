@@ -3,7 +3,7 @@ package test
 import (
 	"bytes"
 	"errors"
-	"github.com/bif/bif-sdk-go/common/hexutil"
+	"github.com/bif/bif-sdk-go/utils/hexutil"
 	"math/big"
 	"testing"
 )

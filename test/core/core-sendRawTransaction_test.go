@@ -3,11 +3,11 @@ package test
 import (
 	"github.com/bif/bif-sdk-go"
 	"github.com/bif/bif-sdk-go/account"
-	"github.com/bif/bif-sdk-go/common"
-	"github.com/bif/bif-sdk-go/common/hexutil"
 	"github.com/bif/bif-sdk-go/core/block"
 	"github.com/bif/bif-sdk-go/providers"
 	"github.com/bif/bif-sdk-go/test/resources"
+	"github.com/bif/bif-sdk-go/utils"
+	"github.com/bif/bif-sdk-go/utils/hexutil"
 	"math/big"
 	"testing"
 )
@@ -23,8 +23,8 @@ func TestCoreSendRawTransaction(t *testing.T) {
 	}
 
 	privKey := resources.CoinBasePriKey
-	from := common.StringToAddress(resources.CoinBase)
-	to := common.StringToAddress(resources.AddressTwo)
+	from := utils.StringToAddress(resources.CoinBase)
+	to := utils.StringToAddress(resources.AddressTwo)
 	tx := &account.TxData{
 		AccountNonce: nonce.Uint64(),
 		Price:        big.NewInt(25),
@@ -37,10 +37,10 @@ func TestCoreSendRawTransaction(t *testing.T) {
 		R:            new(big.Int),
 		S:            new(big.Int),
 		T:            new(big.Int),
-		NT:           new(big.Int),
-		NV:           new(big.Int),
-		NR:           new(big.Int),
-		NS:           new(big.Int),
+		// NT:           new(big.Int),
+		// NV:           new(big.Int),
+		// NR:           new(big.Int),
+		// NS:           new(big.Int),
 	}
 
 	chainId, err := connection.Core.GetChainId()
@@ -60,3 +60,4 @@ func TestCoreSendRawTransaction(t *testing.T) {
 	t.Log(txIDRaw)
 
 }
+

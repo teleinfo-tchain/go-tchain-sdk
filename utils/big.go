@@ -14,35 +14,20 @@
 // You should have received a copy of the GNU Lesser General Public License
 // along with the go-bif library. If not, see <http://www.gnu.org/licenses/>.
 
-package common
+package utils
 
-import (
-	"fmt"
+import "math/big"
+
+// Common big integers often used
+var (
+	Big1 = big.NewInt(1)
+	Big2 = big.NewInt(2)
+	Big3 = big.NewInt(3)
+	// add for dpos start
+	Big4 = big.NewInt(4)
+	// add for dpos end
+	Big0   = big.NewInt(0)
+	Big32  = big.NewInt(32)
+	Big256 = big.NewInt(256)
+	Big257 = big.NewInt(257)
 )
-
-// StorageSize is a wrapper around a float value that supports user friendly
-// formatting.
-type StorageSize float64
-
-// String implements the stringer common.
-func (s StorageSize) String() string {
-	if s > 1048576 {
-		return fmt.Sprintf("%.2f MiB", s/1048576)
-	} else if s > 1024 {
-		return fmt.Sprintf("%.2f KiB", s/1024)
-	} else {
-		return fmt.Sprintf("%.2f B", s)
-	}
-}
-
-// TerminalString implements log.TerminalStringer, formatting a string for console
-// output during logging.
-func (s StorageSize) TerminalString() string {
-	if s > 1048576 {
-		return fmt.Sprintf("%.2fMiB", s/1048576)
-	} else if s > 1024 {
-		return fmt.Sprintf("%.2fKiB", s/1024)
-	} else {
-		return fmt.Sprintf("%.2fB", s)
-	}
-}

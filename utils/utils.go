@@ -1,12 +1,12 @@
 package utils
 
 import (
+	"bytes"
 	"encoding/hex"
 	"encoding/json"
 	"errors"
 	"fmt"
-	"github.com/bif/bif-sdk-go/common"
-	"github.com/bif/bif-sdk-go/common/math"
+	"github.com/bif/bif-sdk-go/utils/math"
 	"github.com/teleinfo-bif/bit-gmsm/sm3"
 	"golang.org/x/crypto/sha3"
 	"math/big"
@@ -34,7 +34,6 @@ var (
 	ErrInvalidSm3   = errors.New("invalid input, input is null")
 	ErrBigInt       = errors.New("big int not in -2*255——2*255-1")
 	ErrUintNoExist  = errors.New("uint not exist")
-	ErrInvalidValue = errors.New("invalid number string")
 )
 
 // Utils - The Utils Module
@@ -54,15 +53,12 @@ var biferUint = map[string]string{
 	"nobifer":    "0",
 	"wei":        "1",
 	"kwei":       "1000",
-	"Kwei":       "1000",
 	"babbage":    "1000",
 	"femtobifer": "1000",
 	"mwei":       "1000000",
-	"Mwei":       "1000000",
 	"lovelace":   "1000000",
 	"picobifer":  "1000000",
 	"gwei":       "1000000000",
-	"Gwei":       "1000000000",
 	"shannon":    "1000000000",
 	"nanobifer":  "1000000000",
 	"nano":       "1000000000",
@@ -85,11 +81,11 @@ var biferUint = map[string]string{
    	EN - Converts any bif value value into wei
  	CN - 将任何bif值转换为wei
   Params:
-  	- balance, *big.Float 要转换的bif金额
+  	- balance,string 要转换的bif金额
   	- uint（可选）,  string  转换的单位，默认为bifer
 
   Returns:
-   	- *big.Int，转换为以wei为单位的bif余额
+   	- string，转换为以wei为单位的bif余额
    	- error
 
   Call permissions: Anyone
@@ -101,20 +97,66 @@ func (util *Utils) ToWei(balance string, uint ...string) (*big.Int, error) {
 	if len(uint) >= 1 {
 		value, ok := biferUint[strings.ToLower(uint[0])]
 		if !ok {
-			return nil, ErrUintNoExist
+			return nil, errors.New("uint not exist")
 		}
 		number = value
 	} else {
 		number = biferUint[bifer]
 	}
-	value, _ := new(big.Float).SetString(number)
-	bal, ok := new(big.Float).SetString(balance)
-	if !ok {
-		return nil, ErrInvalidValue
+	value, _ := new(big.Int).SetString(number, 10)
+
+	// 判断输入的正负
+	var isNeg = false
+	if balance[0] == '-' {
+		isNeg = true
+		balance = balance[1:]
 	}
-	// fmt.Println("bal is ", bal)
-	res, _ := new(big.Float).Mul(bal, value).Int(new(big.Int))
-	return res, nil
+
+	balSplit := strings.Split(balance, ".")
+	if len(balSplit) > 2 {
+		return nil, errors.New(fmt.Sprintf("while converting number %s to wei,  too many decimal points not met", balance))
+	}
+
+	whole, ok := new(big.Int).SetString(balSplit[0], 10)
+	if !ok {
+		return nil, errors.New("trans fail")
+	}
+
+	if len(balSplit) > 1 {
+		if len(balSplit[1]) > len(number)-1{
+			return nil, errors.New(fmt.Sprintf("while converting number %s to wei,  too many decimal points not met", balance))
+		}
+		for len(balSplit[1]) < len(number)-1{
+			balSplit[1] += "0"
+		}
+		fraction, ok := new(big.Int).SetString(balSplit[1], 10)
+		if !ok {
+			return nil, errors.New("trans fail")
+		}
+		whole.Add(whole.Mul(whole, value), fraction)
+		if isNeg{
+			return whole.Neg(whole), nil
+		}
+		return whole, nil
+	} else {
+		if isNeg{
+			whole.Mul(whole, value)
+			return whole.Neg(whole), nil
+		}
+		return whole.Mul(whole, value), nil
+	}
+
+	// value, err := decimal.NewFromString(number)
+	// if err != nil {
+	// 	return "", errors.New("trans fail")
+	// }
+	//
+	// bal, err := decimal.NewFromString(balance)
+	// if err != nil {
+	// 	return "", errors.New("trans fail")
+	// }
+	//
+	// return bal.Mul(value).String(), nil
 }
 
 /*
@@ -122,7 +164,7 @@ func (util *Utils) ToWei(balance string, uint ...string) (*big.Int, error) {
    	EN - Converts any wei value into a bif value
  	CN - 将任何以wei为单位的数值转换为其他单位的数值
   Params:
-  	- balance, *big.Float 要转换的bif金额
+  	- balance, *big.Int 要转换的bif值
   	- uint（可选）,  string  转换的单位，默认为bifer
 
   Returns:
@@ -137,24 +179,34 @@ func (util *Utils) FromWei(balance *big.Int, uint ...string) (string, error) {
 	if len(uint) >= 1 {
 		value, ok := biferUint[strings.ToLower(uint[0])]
 		if !ok {
-			return "", ErrUintNoExist
+			return "", errors.New("uint not exist")
 		}
 		number = value
 	} else {
 		number = biferUint[bifer]
 	}
+	value, _ := new(big.Int).SetString(number, 10)
+	// 判断输入的正负
+	sign := balance.Sign()
+	if sign == -1 {
+		balance = balance.Neg(balance)
+	}
+	fraction := new(big.Int)
+	whole := new(big.Int)
+	fraction.Mod(balance, value)
+	whole.Div(balance, value)
+	if sign == -1 {
+		whole = whole.Neg(whole)
+	}
 
-	divisor := new(big.Float)
-	n, _ := divisor.SetString(number)
-	fmt.Println("value ", n)
-	fmt.Println(new(big.Float).SetInt(balance))
+	// 根据模是否为0判断是否还需拼接
+	if fraction.Cmp(big.NewInt(0)) == 0 {
+		return whole.String(), nil
+	} else {
+		res := whole.String() + "." + string(bytes.Repeat([]byte{48}, len(number)-len(fraction.String())-1)) + fraction.String()
+		return strings.TrimRight(res, "0"), nil
+	}
 
-	resValue := new(big.Float)
-	res := resValue.Quo(new(big.Float).SetInt(balance), n)
-	fmt.Println("res is ", res)
-	fmt.Println("res is ", res.String())
-	fmt.Println("res string is ", res.Text('g', len(number)))
-	return resValue.Quo(new(big.Float).SetInt(balance), n).String(), nil
 }
 
 /*
@@ -174,7 +226,7 @@ func (util *Utils) FromWei(balance *big.Int, uint ...string) (string, error) {
 func (util *Utils) Sm3(str string) (string, error) {
 	var hexBytes []byte
 	if util.IsHexStrict(str) {
-		hexBytes = common.Hex2Bytes(str[2:])
+		hexBytes = Hex2Bytes(str[2:])
 	} else {
 		hexBytes = []byte(str)
 	}
@@ -278,7 +330,7 @@ func (util *Utils) Sha3Raw(str string) string {
   Call permissions: Anyone
 */
 func (util *Utils) CheckBidChecksum(bid string) bool {
-	unCheckBid := common.HexToAddress(bid).Hex()
+	unCheckBid := HexToAddress(bid).Hex()
 	return bid == unCheckBid
 }
 
@@ -296,10 +348,10 @@ func (util *Utils) CheckBidChecksum(bid string) bool {
   Debug 这里地址判单没有使用common中提供的，因为其没有对其进行校验和检查
 */
 func (util *Utils) IsBid(bid string) bool {
-	if common.Has0xPrefix(bid) {
+	if Has0xPrefix(bid) {
 		bid = bid[2:]
 		return longBidCheck(bid)
-	} else if common.HasDidBidPrefix(bid) {
+	} else if HasDidBidPrefix(bid) {
 		bid = bid[8:]
 		return shortBidCheck(bid)
 	}
@@ -315,7 +367,7 @@ func longBidCheck(bid string) bool {
 	} else if res2.MatchString(bid) || res3.MatchString(bid) {
 		return true
 	} else {
-		return bid == common.HexToAddress(bid).Hex()
+		return bid == HexToAddress(bid).Hex()
 	}
 }
 
@@ -329,7 +381,7 @@ func shortBidCheck(bid string) bool {
 		return true
 	} else {
 		bid = "0x6469643A6269643A" + bid
-		return bid == common.HexToAddress(bid).Hex()
+		return bid == HexToAddress(bid).Hex()
 	}
 }
 
@@ -347,7 +399,7 @@ func shortBidCheck(bid string) bool {
   Debug: 是否还判断是否前缀为did:bid:？？？
 */
 func (util *Utils) ToChecksumBid(bid string) string {
-	return common.HexToAddress(bid).Hex()
+	return HexToAddress(bid).Hex()
 }
 
 /*
@@ -381,7 +433,7 @@ func (util *Utils) ByteToHex(byteArr []byte) string {
   Call permissions: Anyone
 */
 func (util *Utils) LeftPadBytes(slice []byte, l int) []byte {
-	return common.LeftPadBytes(slice, l)
+	return LeftPadBytes(slice, l)
 }
 
 /*
@@ -398,7 +450,7 @@ func (util *Utils) LeftPadBytes(slice []byte, l int) []byte {
   Call permissions: Anyone
 */
 func (util *Utils) RightPadBytes(slice []byte, l int) []byte {
-	return common.RightPadBytes(slice, l)
+	return RightPadBytes(slice, l)
 }
 
 /*

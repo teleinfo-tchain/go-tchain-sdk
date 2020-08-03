@@ -1,8 +1,8 @@
 package dto
 
 import (
-	"github.com/bif/bif-sdk-go/common"
-	"github.com/bif/bif-sdk-go/common/hexutil"
+	"github.com/bif/bif-sdk-go/utils"
+	"github.com/bif/bif-sdk-go/utils/hexutil"
 	"math/big"
 	"time"
 )
@@ -32,7 +32,7 @@ type MessageSet struct {
 // RoundStateInfoResponse is the information of RoundState
 type RoundStateInfo struct {
 	Commits    *MessageSet `json:"commits"`
-	LockedHash common.Hash `json:"lockedHash"`
+	LockedHash utils.Hash  `json:"lockedHash"`
 	Prepares   *MessageSet `json:"prepares"`
 	Proposer   string      `json:"proposer"`
 	Round      *big.Int    `json:"round"`
@@ -173,38 +173,38 @@ type SubjectSignature struct {
 	did文档合约
 */
 type PublicKey struct {
-	Id         common.Address `json:"id"`
-	KeyId      []byte         `json:"key_id"`
-	Type       []byte         `json:"type"`
-	Controller []byte         `json:"controller"`
-	Authority  []byte         `json:"authority"` // 公钥权限
-	PublicKey  []byte         `json:"publicKey"`
+	Id         utils.Address `json:"id"`
+	KeyId      []byte        `json:"key_id"`
+	Type       []byte        `json:"type"`
+	Controller []byte        `json:"controller"`
+	Authority  []byte        `json:"authority"` // 公钥权限
+	PublicKey  []byte        `json:"publicKey"`
 }
 
 type Authentication struct {
-	Id        common.Address `json:"id"`
-	ProofId   []byte         `json:"proofId"`
-	Issuer    common.Address `json:"type"`
-	PublicKey []byte         `json:"public_key"`
+	Id        utils.Address `json:"id"`
+	ProofId   []byte        `json:"proofId"`
+	Issuer    utils.Address `json:"type"`
+	PublicKey []byte        `json:"public_key"`
 }
 
 type Attribute struct {
-	Id       common.Address `json:"id"`
-	AttrType []byte         `json:"attr_type"`
-	Value    []byte         `json:"value"`
+	Id       utils.Address `json:"id"`
+	AttrType []byte        `json:"attr_type"`
+	Value    []byte        `json:"value"`
 }
 
 type Document struct {
-	Id              common.Address `json:"id"` // bid
-	Contexts        []byte         `json:"context"`
-	Name            []byte         `json:"name"`            // bid标识符昵称
-	Type            []byte         `json:"type"`            // bid的类型，包括0: 普通用户,1:智能合约以及设备，2: 企业或者组织，BID类型一经设置，永不能变
-	PublicKeys      []byte         `json:"publicKeys"`      // 用户用于身份认证的公钥信息
-	Authentications []byte         `json:"authentications"` // 用户身份认证列表信息
-	Attributes      []byte         `json:"attributes"`      // 用户填写的个人信息值
-	IsEnable        []byte         `json:"is_enable"`       // 该BID是否启用
-	CreateTime      time.Time      `json:"createTime"`
-	UpdateTime      time.Time      `json:"updateTime"`
+	Id              utils.Address `json:"id"` // bid
+	Contexts        []byte        `json:"context"`
+	Name            []byte        `json:"name"`            // bid标识符昵称
+	Type            []byte        `json:"type"`            // bid的类型，包括0: 普通用户,1:智能合约以及设备，2: 企业或者组织，BID类型一经设置，永不能变
+	PublicKeys      []byte        `json:"publicKeys"`      // 用户用于身份认证的公钥信息
+	Authentications []byte        `json:"authentications"` // 用户身份认证列表信息
+	Attributes      []byte        `json:"attributes"`      // 用户填写的个人信息值
+	IsEnable        []byte        `json:"is_enable"`       // 该BID是否启用
+	CreateTime      time.Time     `json:"createTime"`
+	UpdateTime      time.Time     `json:"updateTime"`
 }
 
 /*

@@ -29,7 +29,7 @@ func TestNetVersion(t *testing.T) {
 	var connection = bif.NewBif(providers.NewHTTPProvider(resources.IP+":"+resources.Port, 10, false))
 
 	// Possible options
-	po := []string{"1", "2", "3", "4", "42"}
+	po := []string{"1", "2", "3", "4", "42", "333"}
 
 	version, err := connection.Net.GetVersion()
 
@@ -38,8 +38,7 @@ func TestNetVersion(t *testing.T) {
 		t.FailNow()
 	}
 
-	t.Log(version)
-
+	sort.Strings(po)
 	if found := sort.SearchStrings(po, version); found < len(po) && po[found] != version {
 		t.Error(errors.New("invalid network"))
 		t.Fail()

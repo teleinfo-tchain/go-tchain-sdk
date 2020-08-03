@@ -17,11 +17,11 @@
 package abi
 
 import (
+	"github.com/bif/bif-sdk-go/utils"
 	"math/big"
 	"reflect"
 	"testing"
 
-	"github.com/bif/bif-sdk-go/common"
 	"github.com/bif/bif-sdk-go/crypto"
 )
 
@@ -32,31 +32,31 @@ func TestMakeTopics(t *testing.T) {
 	tests := []struct {
 		name    string
 		args    args
-		want    [][]common.Hash
+		want    [][]utils.Hash
 		wantErr bool
 	}{
 		{
 			"support fixed byte types, right padded to 32 bytes",
 			args{[][]interface{}{{[5]byte{1, 2, 3, 4, 5}}}},
-			[][]common.Hash{{common.Hash{1, 2, 3, 4, 5}}},
+			[][]utils.Hash{{utils.Hash{1, 2, 3, 4, 5}}},
 			false,
 		},
 		{
 			"support common hash types in topics",
-			args{[][]interface{}{{common.Hash{1, 2, 3, 4, 5}}}},
-			[][]common.Hash{{common.Hash{1, 2, 3, 4, 5}}},
+			args{[][]interface{}{{utils.Hash{1, 2, 3, 4, 5}}}},
+			[][]utils.Hash{{utils.Hash{1, 2, 3, 4, 5}}},
 			false,
 		},
 		{
 			"support address types in topics",
-			args{[][]interface{}{{common.Address{1, 2, 3, 4, 5}}}},
-			[][]common.Hash{{common.Hash{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 2, 3, 4, 5}}},
+			args{[][]interface{}{{utils.Address{1, 2, 3, 4, 5}}}},
+			[][]utils.Hash{{utils.Hash{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 2, 3, 4, 5}}},
 			false,
 		},
 		{
 			"support *big.Int types in topics",
 			args{[][]interface{}{{big.NewInt(1).Lsh(big.NewInt(2), 254)}}},
-			[][]common.Hash{{common.Hash{128}}},
+			[][]utils.Hash{{utils.Hash{128}}},
 			false,
 		},
 		{
@@ -65,9 +65,9 @@ func TestMakeTopics(t *testing.T) {
 				{true},
 				{false},
 			}},
-			[][]common.Hash{
-				{common.Hash{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1}},
-				{common.Hash{0}},
+			[][]utils.Hash{
+				{utils.Hash{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1}},
+				{utils.Hash{0}},
 			},
 			false,
 		},
@@ -87,32 +87,32 @@ func TestMakeTopics(t *testing.T) {
 				{uint32(65536)},
 				{uint64(4294967296)},
 			}},
-			[][]common.Hash{
-				{common.Hash{255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 254}},
-				{common.Hash{255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 253}},
-				{common.Hash{255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 252}},
-				{common.Hash{255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 251}},
-				{common.Hash{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1}},
-				{common.Hash{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0}},
-				{common.Hash{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0}},
-				{common.Hash{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0}},
-				{common.Hash{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1}},
-				{common.Hash{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0}},
-				{common.Hash{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0}},
-				{common.Hash{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0}},
+			[][]utils.Hash{
+				{utils.Hash{255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 254}},
+				{utils.Hash{255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 253}},
+				{utils.Hash{255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 252}},
+				{utils.Hash{255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 251}},
+				{utils.Hash{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1}},
+				{utils.Hash{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0}},
+				{utils.Hash{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0}},
+				{utils.Hash{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0}},
+				{utils.Hash{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1}},
+				{utils.Hash{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0}},
+				{utils.Hash{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0}},
+				{utils.Hash{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0}},
 			},
 			false,
 		},
 		{
 			"support string types in topics",
 			args{[][]interface{}{{"hello world"}}},
-			[][]common.Hash{{crypto.Keccak256Hash(crypto.SECP256K1, []byte("hello world"))}},
+			[][]utils.Hash{{crypto.Keccak256Hash(crypto.SECP256K1, []byte("hello world"))}},
 			false,
 		},
 		{
 			"support byte slice types in topics",
 			args{[][]interface{}{{[]byte{1, 2, 3}}}},
-			[][]common.Hash{{crypto.Keccak256Hash(crypto.SECP256K1, []byte{1, 2, 3})}},
+			[][]utils.Hash{{crypto.Keccak256Hash(crypto.SECP256K1, []byte{1, 2, 3})}},
 			false,
 		},
 	}
@@ -135,7 +135,7 @@ type args struct {
 	resultObj func() interface{}
 	resultMap func() map[string]interface{}
 	fields    Arguments
-	topics    []common.Hash
+	topics    []utils.Hash
 }
 
 type bytesStruct struct {
@@ -149,7 +149,7 @@ type int256Struct struct {
 }
 
 type hashStruct struct {
-	HashValue common.Hash
+	HashValue utils.Hash
 }
 
 type funcStruct struct {
@@ -184,7 +184,7 @@ func setupTopicsTests() []topicTest {
 					Type:    bytesType,
 					Indexed: true,
 				}},
-				topics: []common.Hash{
+				topics: []utils.Hash{
 					{1, 2, 3, 4, 5},
 				},
 			},
@@ -203,7 +203,7 @@ func setupTopicsTests() []topicTest {
 					Type:    int8Type,
 					Indexed: true,
 				}},
-				topics: []common.Hash{
+				topics: []utils.Hash{
 					{255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255,
 						255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255},
 				},
@@ -223,7 +223,7 @@ func setupTopicsTests() []topicTest {
 					Type:    int256Type,
 					Indexed: true,
 				}},
-				topics: []common.Hash{
+				topics: []utils.Hash{
 					{255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255,
 						255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255},
 				},
@@ -243,7 +243,7 @@ func setupTopicsTests() []topicTest {
 					Type:    stringType,
 					Indexed: true,
 				}},
-				topics: []common.Hash{
+				topics: []utils.Hash{
 					crypto.Keccak256Hash(crypto.SECP256K1, []byte("stringtopic")),
 				},
 			},
@@ -266,7 +266,7 @@ func setupTopicsTests() []topicTest {
 					Type:    funcType,
 					Indexed: true,
 				}},
-				topics: []common.Hash{
+				topics: []utils.Hash{
 					{0, 0, 0, 0, 0, 0, 0, 0, 255, 255, 255, 255, 255, 255, 255, 255,
 						255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255},
 				},
@@ -284,7 +284,7 @@ func setupTopicsTests() []topicTest {
 					Type:    tupleType,
 					Indexed: true,
 				}},
-				topics: []common.Hash{},
+				topics: []utils.Hash{},
 			},
 			wantErr: true,
 		},
@@ -299,7 +299,7 @@ func setupTopicsTests() []topicTest {
 					Type:    int256Type,
 					Indexed: false,
 				}},
-				topics: []common.Hash{
+				topics: []utils.Hash{
 					{255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255,
 						255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255},
 				},
@@ -317,7 +317,7 @@ func setupTopicsTests() []topicTest {
 					Type:    tupleType,
 					Indexed: true,
 				}},
-				topics: []common.Hash{{0}},
+				topics: []utils.Hash{{0}},
 			},
 			wantErr: true,
 		},
@@ -334,7 +334,7 @@ func setupTopicsTests() []topicTest {
 					Type:    funcType,
 					Indexed: true,
 				}},
-				topics: []common.Hash{
+				topics: []utils.Hash{
 					{0, 0, 0, 0, 0, 0, 0, 128, 255, 255, 255, 255, 255, 255, 255, 255,
 						255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255},
 				},

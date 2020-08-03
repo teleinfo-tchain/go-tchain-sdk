@@ -5,9 +5,9 @@ import (
 	"encoding/hex"
 	"errors"
 	"github.com/bif/bif-sdk-go/account/keystore"
-	"github.com/bif/bif-sdk-go/common"
-	"github.com/bif/bif-sdk-go/common/rlp"
 	"github.com/bif/bif-sdk-go/crypto"
+	"github.com/bif/bif-sdk-go/utils"
+	"github.com/bif/bif-sdk-go/utils/rlp"
 	"math/big"
 )
 
@@ -42,7 +42,7 @@ func publicKeyStrToAddress(pubBytes []byte, isSM2 bool) (string, error) {
 			addr[8] = 103
 		}
 	}
-	return common.BytesToAddress(addr).String(), nil
+	return utils.BytesToAddress(addr).String(), nil
 }
 
  /*
@@ -173,7 +173,7 @@ func (account *Account) Decrypt(keystoreJson []byte, isSM2 bool, password string
  	- error
 
   Call permissions: Anyone
-  TODO: 签署交易在构造交易时，*TxData中的NT， NV， NR，NS暂未处理，后期需要加上
+  TODO: 签署交易在构造交易时，*TxData中的NT， NV， NR，NS暂未处理，后期需要加上(现在未加，因为加上后，使用Send_rawTransaction)报错。rlp: input list has too many elements for types.Txdata
 */
 func (account *Account) SignTransaction(transaction *TxData, privateKey string, chainId *big.Int) (*SignTransactionResult, error) {
 	// 1 check input
@@ -187,7 +187,7 @@ func (account *Account) SignTransaction(transaction *TxData, privateKey string, 
 	if transaction.Sender[8] == 115 {
 		cryptoType = crypto.SM2
 	} else {
-		transaction.T = common.Big1
+		transaction.T = utils.Big1
 		cryptoType = crypto.SECP256K1
 	}
 
@@ -229,6 +229,7 @@ func (account *Account) SignTransaction(transaction *TxData, privateKey string, 
 
   Call permissions: Anyone
   Bug:国密解密有问题
+  TODO：由于解密交易和签名交易的还没统一，后期需要修改，将rlp.DecodeBytes(rawTx, &tx)加上错误处理（即上文注释的部分）
 */
 func (account *Account) RecoverTransaction(rawTxString string, isSM2 bool) (string, error) {
 	if rawTxString[:2] == "0x" || rawTxString[:2] == "0X" {
@@ -246,11 +247,12 @@ func (account *Account) RecoverTransaction(rawTxString string, isSM2 bool) (stri
 		return "", err
 	}
 
-	err = rlp.DecodeBytes(rawTx, &tx)
-	// fmt.Printf("tx is %v \n", tx)
-	if err != nil {
-		return "", err
-	}
+	// err = rlp.DecodeBytes(rawTx, &tx)
+	// // fmt.Printf("tx is %v \n", tx)
+	// if err != nil {
+	// 	return "", err
+	// }
+	rlp.DecodeBytes(rawTx, &tx)
 
 	// fmt.Printf("%v \n ", tx)
 	// deprecated: 应该可以从txSign中拿到或者其他的方法

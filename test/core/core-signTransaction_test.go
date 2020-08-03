@@ -17,11 +17,11 @@ package test
 import (
 	"fmt"
 	"github.com/bif/bif-sdk-go"
-	"github.com/bif/bif-sdk-go/common"
-	"github.com/bif/bif-sdk-go/common/hexutil"
 	"github.com/bif/bif-sdk-go/dto"
 	"github.com/bif/bif-sdk-go/providers"
 	"github.com/bif/bif-sdk-go/test/resources"
+	"github.com/bif/bif-sdk-go/utils"
+	"github.com/bif/bif-sdk-go/utils/hexutil"
 	"math/big"
 	"testing"
 )
@@ -46,7 +46,7 @@ func TestCoreSignTransaction(t *testing.T) {
 	}
 
 	t.Log(txID.Raw)
-	addressTwoHex := hexutil.Encode(common.FromHex(resources.AddressTwo))
+	addressTwoHex := hexutil.Encode(utils.FromHex(resources.AddressTwo))
 
 	if txID.Transaction.To != addressTwoHex {
 		t.Errorf(fmt.Sprintf("Expected %s | Got: %s", addressTwoHex, txID.Transaction.To))

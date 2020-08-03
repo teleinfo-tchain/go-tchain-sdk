@@ -14,40 +14,26 @@
 // You should have received a copy of the GNU Lesser General Public License
 // along with the go-bif library. If not, see <http://www.gnu.org/licenses/>.
 
-package common
+package test
 
 import (
-	"encoding/json"
-	"fmt"
-	"io/ioutil"
+	"github.com/bif/bif-sdk-go/utils"
+	"testing"
 )
 
-// LoadJSON reads the given file and unmarshals its content.
-func LoadJSON(file string, val interface{}) error {
-	content, err := ioutil.ReadFile(file)
-	if err != nil {
-		return err
+func TestStorageSizeString(t *testing.T) {
+	tests := []struct {
+		size utils.StorageSize
+		str  string
+	}{
+		{2381273, "2.27 MiB"},
+		{2192, "2.14 KiB"},
+		{12, "12.00 B"},
 	}
-	if err := json.Unmarshal(content, val); err != nil {
-		if syntaxerr, ok := err.(*json.SyntaxError); ok {
-			line := findLine(content, syntaxerr.Offset)
-			return fmt.Errorf("JSON syntax error at %v:%v: %v", file, line, err)
-		}
-		return fmt.Errorf("JSON unmarshal error in %v: %v", file, err)
-	}
-	return nil
-}
 
-// findLine returns the line number for the given offset into data.
-func findLine(data []byte, offset int64) (line int) {
-	line = 1
-	for i, r := range string(data) {
-		if int64(i) >= offset {
-			return
-		}
-		if r == '\n' {
-			line++
+	for _, test := range tests {
+		if test.size.String() != test.str {
+			t.Errorf("%f: got %q, want %q", float64(test.size), test.size.String(), test.str)
 		}
 	}
-	return
 }

@@ -2,12 +2,12 @@ package System
 
 import (
 	"github.com/bif/bif-sdk-go"
-	"github.com/bif/bif-sdk-go/common"
 	"github.com/bif/bif-sdk-go/core/block"
 	"github.com/bif/bif-sdk-go/dto"
 	"github.com/bif/bif-sdk-go/providers"
 	"github.com/bif/bif-sdk-go/system"
 	"github.com/bif/bif-sdk-go/test/resources"
+	"github.com/bif/bif-sdk-go/utils"
 	"io/ioutil"
 	"math/big"
 	"testing"
@@ -40,7 +40,7 @@ func TestRegisterWitness(t *testing.T) {
 	}
 
 	sysTxParams := new(system.SysTxParams)
-	sysTxParams.From = common.StringToAddress(coinBase)
+	sysTxParams.From = utils.StringToAddress(coinBase)
 	sysTxParams.PrivateKey = ""
 	sysTxParams.Password = "teleinfo"
 	sysTxParams.KeyFileData = keyJson
@@ -87,7 +87,7 @@ func TestUnRegisterWitness(t *testing.T) {
 	}
 
 	sysTxParams := new(system.SysTxParams)
-	sysTxParams.From = common.StringToAddress(coinBase)
+	sysTxParams.From = utils.StringToAddress(coinBase)
 	sysTxParams.PrivateKey = resources.CoinBasePriKey
 	sysTxParams.Gas = 2000000
 	sysTxParams.GasPrice = big.NewInt(35)
@@ -181,7 +181,7 @@ func TestVoteWitnesses(t *testing.T) {
 	}
 
 	sysTxParams := new(system.SysTxParams)
-	sysTxParams.From = common.StringToAddress(coinBase)
+	sysTxParams.From = utils.StringToAddress(coinBase)
 	sysTxParams.PrivateKey = resources.CoinBasePriKey
 	sysTxParams.Gas = 2000000
 	sysTxParams.GasPrice = big.NewInt(35)
@@ -223,7 +223,7 @@ func TestElectCancelVote(t *testing.T) {
 	}
 
 	sysTxParams := new(system.SysTxParams)
-	sysTxParams.From = common.StringToAddress(coinBase)
+	sysTxParams.From = utils.StringToAddress(coinBase)
 	sysTxParams.PrivateKey = resources.CoinBasePriKey
 	sysTxParams.Gas = 2000000
 	sysTxParams.GasPrice = big.NewInt(35)
@@ -263,7 +263,7 @@ func TestStartProxy(t *testing.T) {
 	}
 
 	sysTxParams := new(system.SysTxParams)
-	sysTxParams.From = common.StringToAddress(coinBase)
+	sysTxParams.From = utils.StringToAddress(coinBase)
 	sysTxParams.PrivateKey = resources.CoinBasePriKey
 	sysTxParams.Gas = 2000000
 	sysTxParams.GasPrice = big.NewInt(35)
@@ -303,7 +303,7 @@ func TestStopProxy(t *testing.T) {
 	}
 
 	sysTxParams := new(system.SysTxParams)
-	sysTxParams.From = common.StringToAddress(coinBase)
+	sysTxParams.From = utils.StringToAddress(coinBase)
 	sysTxParams.PrivateKey = resources.CoinBasePriKey
 	sysTxParams.Gas = 2000000
 	sysTxParams.GasPrice = big.NewInt(35)
@@ -344,7 +344,7 @@ func TestCancelProxy(t *testing.T) {
 	}
 
 	sysTxParams := new(system.SysTxParams)
-	sysTxParams.From = common.StringToAddress(coinBase)
+	sysTxParams.From = utils.StringToAddress(coinBase)
 	sysTxParams.PrivateKey = resources.CoinBasePriKey
 	sysTxParams.Gas = 2000000
 	sysTxParams.GasPrice = big.NewInt(35)
@@ -385,7 +385,7 @@ func TestSetProxy(t *testing.T) {
 	}
 
 	sysTxParams := new(system.SysTxParams)
-	sysTxParams.From = common.StringToAddress(coinBase)
+	sysTxParams.From = utils.StringToAddress(coinBase)
 	sysTxParams.PrivateKey = resources.CoinBasePriKey
 	sysTxParams.Gas = 2000000
 	sysTxParams.GasPrice = big.NewInt(35)
@@ -427,7 +427,7 @@ func TestStake(t *testing.T) {
 	}
 
 	sysTxParams := new(system.SysTxParams)
-	sysTxParams.From = common.StringToAddress(coinBase)
+	sysTxParams.From = utils.StringToAddress(coinBase)
 	sysTxParams.PrivateKey = resources.CoinBasePriKey
 	sysTxParams.Gas = 2000000
 	sysTxParams.GasPrice = big.NewInt(35)
@@ -468,7 +468,7 @@ func TestUnStake(t *testing.T) {
 	}
 
 	sysTxParams := new(system.SysTxParams)
-	sysTxParams.From = common.StringToAddress(coinBase)
+	sysTxParams.From = utils.StringToAddress(coinBase)
 	sysTxParams.PrivateKey = resources.CoinBasePriKey
 	sysTxParams.Gas = 2000000
 	sysTxParams.GasPrice = big.NewInt(35)
@@ -554,7 +554,7 @@ func TestElectionExtractOwnBounty(t *testing.T) {
 	}
 
 	sysTxParams := new(system.SysTxParams)
-	sysTxParams.From = common.StringToAddress(coinBase)
+	sysTxParams.From = utils.StringToAddress(coinBase)
 	sysTxParams.PrivateKey = resources.CoinBasePriKey
 	sysTxParams.Gas = 2000000
 	sysTxParams.GasPrice = big.NewInt(35)
@@ -595,7 +595,7 @@ func TestIssueAdditionalBounty(t *testing.T) {
 	}
 
 	sysTxParams := new(system.SysTxParams)
-	sysTxParams.From = common.StringToAddress(coinBase)
+	sysTxParams.From = utils.StringToAddress(coinBase)
 	sysTxParams.PrivateKey = resources.CoinBasePriKey
 	sysTxParams.Gas = 2000000
 	sysTxParams.GasPrice = big.NewInt(35)

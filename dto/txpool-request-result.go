@@ -2,8 +2,8 @@ package dto
 
 import (
 	"encoding/json"
-	"github.com/bif/bif-sdk-go/common"
-	"github.com/bif/bif-sdk-go/common/hexutil"
+	"github.com/bif/bif-sdk-go/utils"
+	"github.com/bif/bif-sdk-go/utils/hexutil"
 )
 
 type TxPoolRequestResult struct {
@@ -11,12 +11,12 @@ type TxPoolRequestResult struct {
 }
 
 type RPCTransaction struct {
-	BlockHash        common.Hash    `json:"blockHash"`
+	BlockHash        utils.Hash     `json:"blockHash"`
 	BlockNumber      *hexutil.Big   `json:"blockNumber"`
 	From             string         `json:"from"`
 	Gas              hexutil.Uint64 `json:"gas"`
 	GasPrice         *hexutil.Big   `json:"gasPrice"`
-	Hash             common.Hash    `json:"hash"`
+	Hash             utils.Hash     `json:"hash"`
 	Input            hexutil.Bytes  `json:"input"`
 	Nonce            hexutil.Uint64 `json:"nonce"`
 	To               string         `json:"to"`

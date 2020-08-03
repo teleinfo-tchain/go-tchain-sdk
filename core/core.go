@@ -16,10 +16,10 @@ package core
 
 import (
 	"errors"
-	"github.com/bif/bif-sdk-go/common/hexutil"
 	"github.com/bif/bif-sdk-go/core/block"
 	"github.com/bif/bif-sdk-go/dto"
 	"github.com/bif/bif-sdk-go/providers"
+	"github.com/bif/bif-sdk-go/utils/hexutil"
 	"math/big"
 	"strings"
 )

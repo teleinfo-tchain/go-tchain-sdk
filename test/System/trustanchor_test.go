@@ -2,12 +2,12 @@ package System
 
 import (
 	"github.com/bif/bif-sdk-go"
-	"github.com/bif/bif-sdk-go/common"
 	"github.com/bif/bif-sdk-go/core/block"
 	"github.com/bif/bif-sdk-go/dto"
 	"github.com/bif/bif-sdk-go/providers"
 	"github.com/bif/bif-sdk-go/system"
 	"github.com/bif/bif-sdk-go/test/resources"
+	"github.com/bif/bif-sdk-go/utils"
 	"math/big"
 	"testing"
 )
@@ -47,7 +47,7 @@ func TestRegisterBaseTrustAnchor(t *testing.T) {
 	}
 
 	sysTxParams := new(system.SysTxParams)
-	sysTxParams.From = common.StringToAddress(coinBase)
+	sysTxParams.From = utils.StringToAddress(coinBase)
 	sysTxParams.PrivateKey = resources.CoinBasePriKey
 	sysTxParams.Gas = 2000000
 	sysTxParams.GasPrice = big.NewInt(35)
@@ -57,7 +57,7 @@ func TestRegisterBaseTrustAnchor(t *testing.T) {
 	anchor := connection.System.NewTrustAnchor()
 
 	registerBaseAnchor := new(dto.RegisterAnchor)
-	registerBaseAnchor.Anchor = common.StringToAddress(BaseAnchorAddr).String()
+	registerBaseAnchor.Anchor = utils.StringToAddress(BaseAnchorAddr).String()
 	registerBaseAnchor.AnchorType = BaseAnchorType
 	registerBaseAnchor.AnchorName = TrustAnchorName
 	registerBaseAnchor.Company = TrustAnchorCompany
@@ -96,7 +96,7 @@ func TestRegisterExtendTrustAnchor(t *testing.T) {
 	}
 
 	sysTxParams := new(system.SysTxParams)
-	sysTxParams.From = common.StringToAddress(coinBase)
+	sysTxParams.From = utils.StringToAddress(coinBase)
 	sysTxParams.PrivateKey = resources.CoinBasePriKey
 	sysTxParams.Gas = 2000000
 	sysTxParams.GasPrice = big.NewInt(35)
@@ -106,7 +106,7 @@ func TestRegisterExtendTrustAnchor(t *testing.T) {
 	anchor := connection.System.NewTrustAnchor()
 
 	registerExtendAnchor := new(dto.RegisterAnchor)
-	registerExtendAnchor.Anchor = common.StringToAddress(ExtendAnchorAddr).String()
+	registerExtendAnchor.Anchor = utils.StringToAddress(ExtendAnchorAddr).String()
 	registerExtendAnchor.AnchorType = ExtendAnchorType
 	registerExtendAnchor.AnchorName = TrustAnchorName
 	registerExtendAnchor.Company = TrustAnchorCompany
@@ -145,7 +145,7 @@ func TestUnRegisterTrustAnchor(t *testing.T) {
 	}
 
 	sysTxParams := new(system.SysTxParams)
-	sysTxParams.From = common.StringToAddress(coinBase)
+	sysTxParams.From = utils.StringToAddress(coinBase)
 	sysTxParams.PrivateKey = resources.CoinBasePriKey
 	sysTxParams.Gas = 2000000
 	sysTxParams.GasPrice = big.NewInt(35)
@@ -218,7 +218,7 @@ func TestUpdateAnchorInfo(t *testing.T) {
 	}
 
 	sysTxParams := new(system.SysTxParams)
-	sysTxParams.From = common.StringToAddress(coinBase)
+	sysTxParams.From = utils.StringToAddress(coinBase)
 	sysTxParams.PrivateKey = resources.CoinBasePriKey
 	sysTxParams.Gas = 2000000
 	sysTxParams.GasPrice = big.NewInt(35)
@@ -263,7 +263,7 @@ func TestExtractOwnBounty(t *testing.T) {
 	}
 
 	sysTxParams := new(system.SysTxParams)
-	sysTxParams.From = common.StringToAddress(coinBase)
+	sysTxParams.From = utils.StringToAddress(coinBase)
 	sysTxParams.PrivateKey = resources.CoinBasePriKey
 	sysTxParams.Gas = 2000000
 	sysTxParams.GasPrice = big.NewInt(35)
@@ -427,7 +427,7 @@ func TestVoteElect(t *testing.T) {
 	}
 
 	sysTxParams := new(system.SysTxParams)
-	sysTxParams.From = common.StringToAddress(coinBase)
+	sysTxParams.From = utils.StringToAddress(coinBase)
 	sysTxParams.PrivateKey = resources.CoinBasePriKey
 	sysTxParams.Gas = 2000000
 	sysTxParams.GasPrice = big.NewInt(35)
@@ -464,7 +464,7 @@ func TestCancelVote(t *testing.T) {
 	}
 
 	sysTxParams := new(system.SysTxParams)
-	sysTxParams.From = common.StringToAddress(coinBase)
+	sysTxParams.From = utils.StringToAddress(coinBase)
 	sysTxParams.PrivateKey = resources.CoinBasePriKey
 	sysTxParams.Gas = 2000000
 	sysTxParams.GasPrice = big.NewInt(35)
