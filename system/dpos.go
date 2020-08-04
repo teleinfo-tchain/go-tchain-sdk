@@ -29,8 +29,6 @@ Returns:
 	- error
 
 Call permissions: Anyone
-
-BUG(agl): rpc接收的类型为*rpc.BlockNumber？？？
 */
 func (dp *DPoS) GetValidators(blockNumber *big.Int) ([]string, error) {
 	params := make([]interface{}, 1)

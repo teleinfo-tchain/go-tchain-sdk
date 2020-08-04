@@ -230,7 +230,7 @@ func (account *Account) SignTransaction(transaction *TxData, privateKey string, 
  	- error
 
   Call permissions: Anyone
-  Bug:国密解密有问题
+  BUG:国密解密有问题(SM2初始化的问题)
   TODO：由于解密交易和签名交易的还没统一，后期需要修改，将rlp.DecodeBytes(rawTx, &tx)加上错误处理（即上文注释的部分）
 */
 func (account *Account) RecoverTransaction(rawTxString string, isSM2 bool) (string, error) {

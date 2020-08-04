@@ -25,6 +25,7 @@ import (
 	"io/ioutil"
 	"math/big"
 	"testing"
+	"time"
 )
 
 func TestCoreContract(t *testing.T) {
@@ -47,9 +48,18 @@ func TestCoreContract(t *testing.T) {
 	var connection = bif.NewBif(providers.NewHTTPProvider(resources.IP+":"+resources.Port, 10, false))
 	byteCode := unmarshalResponse.ByteCode
 	contract, err := connection.Core.NewContract(unmarshalResponse.Abi)
+	if err != nil {
+		t.Error(err)
+		t.FailNow()
+	}
 
 	transaction := new(dto.TransactionParameters)
 	coinBase, err := connection.Core.GetCoinBase()
+	if err != nil {
+		t.Error(err)
+		t.FailNow()
+	}
+
 	transaction.From = coinBase
 	transaction.Gas = big.NewInt(4000000)
 
@@ -64,6 +74,7 @@ func TestCoreContract(t *testing.T) {
 	var receipt *dto.TransactionReceipt
 
 	for receipt == nil {
+		time.Sleep(time.Second)
 		receipt, err = connection.Core.GetTransactionReceipt(hash)
 	}
 
@@ -74,7 +85,7 @@ func TestCoreContract(t *testing.T) {
 
 	t.Log("Contract Address: ", receipt.ContractAddress)
 
-	transaction.To = receipt.ContractAddress
+	transaction.To = "did:bid:d759f48eb6d51137bae9743d"
 
 	result, err := contract.Call(transaction, "name")
 
@@ -138,11 +149,17 @@ func TestCoreContract(t *testing.T) {
 
 	t.Log(hash)
 
+	receipt = nil
+	for receipt == nil {
+		time.Sleep(time.Second)
+		receipt, err = connection.Core.GetTransactionReceipt(hash)
+	}
+	t.Log(receipt.Logs[0].Data)
+
 	reallyBigInt, _ := big.NewInt(0).SetString("20", 16)
 	_, err = contract.Send(transaction, "approve", utils.StringToAddress(coinBase), reallyBigInt)
 	if err != nil {
 		t.Errorf("Can't send approve transaction")
 		t.FailNow()
 	}
-
 }

@@ -64,8 +64,6 @@ Returns:
 	- error
 
 Call permissions: 只有信任锚地址可以调用
-
-BUG(rpc):颁发证书时的Period是否必须以年为单位？？
 */
 func (cer *Certificate) RegisterCertificate(signTxParams *SysTxParams, registerCertificate *dto.RegisterCertificate) (string, error) {
 	// encoding
@@ -78,7 +76,7 @@ func (cer *Certificate) RegisterCertificate(signTxParams *SysTxParams, registerC
 	}
 
 	signedTx, err := cer.super.prePareSignTransaction(signTxParams, inputEncode, utils.StringToAddress(CertificateContractAddr))
-	if err != nil{
+	if err != nil {
 		return "", err
 	}
 
@@ -106,7 +104,7 @@ func (cer *Certificate) RevokedCertificate(signTxParams *SysTxParams, id string)
 	}
 
 	signedTx, err := cer.super.prePareSignTransaction(signTxParams, inputEncode, utils.StringToAddress(CertificateContractAddr))
-	if err != nil{
+	if err != nil {
 		return "", err
 	}
 
@@ -130,7 +128,7 @@ func (cer *Certificate) RevokedCertificates(signTxParams *SysTxParams) (string, 
 	inputEncode, _ := cer.abi.Pack("revokedCertificates")
 
 	signedTx, err := cer.super.prePareSignTransaction(signTxParams, inputEncode, utils.StringToAddress(CertificateContractAddr))
-	if err != nil{
+	if err != nil {
 		return "", err
 	}
 

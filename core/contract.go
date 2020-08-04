@@ -17,6 +17,7 @@ package core
 import (
 	Abi "github.com/bif/bif-sdk-go/abi"
 	"github.com/bif/bif-sdk-go/dto"
+	"github.com/bif/bif-sdk-go/utils"
 	"github.com/bif/bif-sdk-go/utils/types"
 	"strings"
 )
@@ -29,7 +30,10 @@ type Contract struct {
 
 // NewContract - Contract abstraction
 func (core *Core) NewContract(abi string) (*Contract, error) {
-	parsedAbi, _ := Abi.JSON(strings.NewReader(abi))
+	parsedAbi, err := Abi.JSON(strings.NewReader(abi))
+	if err != nil{
+		return nil, err
+	}
 
 	contract := new(Contract)
 	contract.abi = parsedAbi
@@ -43,14 +47,13 @@ func (contract *Contract) prepareTransaction(transaction *dto.TransactionParamet
 	if err != nil {
 		return nil, err
 	}
-	transaction.Data = types.ComplexString(inputEncode)
+	transaction.Data = types.ComplexString("0x"+utils.Bytes2Hex(inputEncode))
 	return transaction, nil
 
 }
 
 func (contract *Contract) Call(transaction *dto.TransactionParameters, functionName string, args ...interface{}) (*dto.RequestResult, error) {
 	transaction, err := contract.prepareTransaction(transaction, functionName, args)
-
 	if err != nil {
 		return nil, err
 	}
@@ -76,8 +79,7 @@ func (contract *Contract) Deploy(transaction *dto.TransactionParameters, byteCod
 	if err != nil {
 		return "", err
 	}
-	transaction.Data = types.ComplexString(byteCode) + types.ComplexString(inputEncode)
+	transaction.Data = types.ComplexString(byteCode) + types.ComplexString(utils.Bytes2Hex(inputEncode))
 	return contract.super.SendTransaction(transaction)
-
 }
 

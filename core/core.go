@@ -535,7 +535,6 @@ func (core *Core) Call(transaction *dto.TransactionParameters) (*dto.RequestResu
  	- error
 
   Call permissions: Anyone
-  Debug  *dto.TransactionReceipt 的数据结构没有root，对吗？？？？？？
 */
 func (core *Core) GetTransactionReceipt(hash string) (*dto.TransactionReceipt, error) {
 
