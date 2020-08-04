@@ -85,7 +85,7 @@ func TestCoreContract(t *testing.T) {
 
 	t.Log("Contract Address: ", receipt.ContractAddress)
 
-	transaction.To = "did:bid:d759f48eb6d51137bae9743d"
+	transaction.To = receipt.ContractAddress
 
 	result, err := contract.Call(transaction, "name")
 
