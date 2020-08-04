@@ -26,8 +26,11 @@ import (
 	"github.com/bif/bif-sdk-go/utils"
 )
 
-// Web3 - The Web3 Module
-// Web3 - Web3模块
+/*
+	Bif - The Bif Module
+
+	Bif - Bif模块
+*/
 type Bif struct {
 	Provider providers.ProviderInterface
 	Core     *core.Core
@@ -55,12 +58,18 @@ func NewBif(provider providers.ProviderInterface) *Bif {
 	return bif
 }
 
-// ClientVersion - Returns the current client version.
-//
-// ClientVersion - 返回当前客户端版本.
-//
-// Returns
-//	- String - The current client version
+/*
+  ClientVersion:
+	EN - Returns the current client version.
+	CN - 返回当前客户端版本
+  Params:
+  	- None
+  Returns:
+  	- string - 当前客户端版本
+    - error
+
+  Call permissions: Anyone
+*/
 func (bif Bif) ClientVersion() (string, error) {
 
 	pointer := &dto.RequestResult{}

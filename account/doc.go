@@ -12,12 +12,5 @@
    along with go-bif.  If not, see <http://www.gnu.org/licenses/>.
 *********************************************************************************/
 
-// Package abi 实现Bif ABI（Application Binary Interface）。
-//
-// The BIF ABI is strongly typed, known at compile time
-// and static. This ABI will handle basic type casting; unsigned
-// to signed and visa versa. It does not handle slice casting such
-// as unsigned slice to signed slice. Bit size type casting is also
-// handled. ints with a bit size of 32 will be properly cast to int256,
-// etc.
-package abi
+// Package account 实现bif账户生成、签署交易和数据的功能
+package account

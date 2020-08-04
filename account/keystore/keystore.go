@@ -14,10 +14,9 @@
 // You should have received a copy of the GNU Lesser General Public License
 // along with the go-bif library. If not, see <http://www.gnu.org/licenses/>.
 
-// Package keystore implements encrypted storage of secp256k1 private keys.
+// Package keystore 实现secp256k1私钥的加密存储
 //
-// Keys are stored as encrypted JSON files according to the Web3 Secret Storage specification.
-// See https://github.com/ethereum/wiki/wiki/Web3-Secret-Storage-Definition for more information.
+// 根据Bif Secret Storage规范，将密钥存储为加密的JSON文件。
 package keystore
 
 import (
