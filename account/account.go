@@ -1,6 +1,7 @@
 package account
 
 import (
+	"bytes"
 	"crypto/ecdsa"
 	"encoding/hex"
 	"errors"
@@ -9,6 +10,7 @@ import (
 	"github.com/bif/bif-sdk-go/utils"
 	"github.com/bif/bif-sdk-go/utils/rlp"
 	"math/big"
+	"strconv"
 )
 
 // SignatureLength indicates the byte length required to carry a signature with recovery id.
@@ -45,7 +47,7 @@ func publicKeyStrToAddress(pubBytes []byte, isSM2 bool) (string, error) {
 	return utils.BytesToAddress(addr).String(), nil
 }
 
- /*
+/*
   Create:
    	EN - Generate public and private key pair
  	CN - 生成公私钥对
@@ -57,7 +59,7 @@ func publicKeyStrToAddress(pubBytes []byte, isSM2 bool) (string, error) {
   	- error
 
   Call permissions: Anyone
-  */
+*/
 func (account *Account) Create(isSM2 bool) (string, string, error) {
 	cryptoType := cryptoType(isSM2)
 	privateKeyECDSA, err := crypto.GenerateKey(cryptoType)
@@ -303,14 +305,147 @@ func (account *Account) RecoverTransaction(rawTxString string, isSM2 bool) (stri
 
   Call permissions: Anyone
 */
-func (account *Account) HashMessage(message string) {
+func (account *Account) HashMessage(message string, isSm2 bool) string {
+	util := utils.NewUtils()
+	var messageHex string
+	if !util.IsHexStrict(message) {
+		messageHex = util.Utf8ToHex(message)
+	} else {
+		messageHex = message
+	}
+	messageBytes := utils.Hex2Bytes(messageHex[2:])
+	preamble := "\x19Ethereum Signed Message:\n" + strconv.Itoa(len(messageBytes))
+	var buffer bytes.Buffer
+	buffer.Write([]byte(preamble))
+	buffer.Write(messageBytes)
 
+	var cryptoType crypto.CryptoType
+	if isSm2 {
+		cryptoType = crypto.SM2
+	} else {
+		cryptoType = crypto.SECP256K1
+	}
+	hashBytes := crypto.Keccak256(cryptoType, buffer.Bytes())
+	return "0x" + utils.Bytes2Hex(hashBytes)
 }
 
-func (account *Account) Sign() {
+/*
+  Sign:
+   	EN - Signs arbitrary data
+ 	CN - 根据给定数据进行签名
+  Params:
+  	- signData: *SignData 指定的签名数据
+ 	- privateKey: string, 私钥（transaction中的from地址对应的私钥）
+ 	- isSm2: bool, 私钥生成的类型是否采用国密，如果是则为true，否则为false
+ 	- chainId: int64, 链的ChainId
 
+  Returns:
+  	- *Signature
+ 	- error
+
+  Call permissions: Anyone
+  Deprecated: 这个接口暂时没有用
+*/
+func (account *Account) Sign(signData *SignData, privateKey string, isSm2 bool, chainId *big.Int) (*SignData, error) {
+	// 1 Get signature type based on Sender type
+	var cryptoType crypto.CryptoType
+	if isSm2 {
+		signData.T = utils.Big0
+		cryptoType = crypto.SM2
+	} else {
+		signData.T = utils.Big1
+		cryptoType = crypto.SECP256K1
+	}
+
+	privKey, err := crypto.HexToECDSA(privateKey, cryptoType)
+	if err != nil {
+		return nil, err
+	}
+
+	// 2 New Signer
+	signer := &BIFSigner{
+		chainId:    chainId,
+		chainIdMul: new(big.Int).Mul(chainId, big.NewInt(2)),
+	}
+
+	signed, err := SignDt(signData, *signer, privKey)
+
+	if err != nil {
+		return nil, err
+	}
+
+	return signed, nil
 }
 
-func (account *Account) Recover() {
+/*
+  Recover:
+   	EN - Recovers the Bif address which was used to sign the given data
+ 	CN - 恢复用于签名给定数据的Bif地址
+  Params:
+  	- rlpTransaction, string, RLP编码的交易
 
+  Returns:
+  	- string, 签名该交易的地址，为hexString
+ 	- error
+
+  Call permissions: Anyone
+  Bug:国密解密有问题
+*/
+func (account *Account) Recover(rawTxString string, isSM2 bool) (string, error) {
+	if rawTxString[:2] == "0x" || rawTxString[:2] == "0X" {
+		rawTxString = rawTxString[2:]
+	}
+
+	rawTx, err := hex.DecodeString(rawTxString)
+	if err != nil {
+		return "", err
+	}
+
+	var tx TxData
+	rawTx, err = hex.DecodeString(rawTxString)
+	if err != nil {
+		return "", err
+	}
+
+	// err = rlp.DecodeBytes(rawTx, &tx)
+	// // fmt.Printf("tx is %v \n", tx)
+	// if err != nil {
+	// 	return "", err
+	// }
+	rlp.DecodeBytes(rawTx, &tx)
+
+	// fmt.Printf("%v \n ", tx)
+	// deprecated: 应该可以从txSign中拿到或者其他的方法
+	signer := &BIFSigner{
+		chainId:    big.NewInt(333),
+		chainIdMul: new(big.Int).Mul(big.NewInt(333), big.NewInt(2)),
+	}
+	sigHash := signer.Hash(&tx)
+
+	r, s := tx.R.Bytes(), tx.S.Bytes()
+	// deprecated: 国密加密不知道为啥会变长
+	sig := make([]byte, SignatureLength+1)
+	copy(sig[32-len(r):32], r)
+	copy(sig[64-len(s):64], s)
+	var v byte
+	if signer.chainId.Sign() != 0 {
+		tx.V.Sub(tx.V, signer.chainIdMul)
+		v = byte(tx.V.Uint64() - 35)
+	} else {
+		v = byte(tx.V.Uint64() - 27)
+
+	}
+
+	sig[64] = v
+	if isSM2 {
+		sig[65] = byte(0)
+	} else {
+		sig[65] = byte(1)
+	}
+	// _, err = crypto.HexToECDSA(resources.AddressPriKey, crypto.SM2)
+	pubBytes, err := crypto.Ecrecover(sigHash[:], sig)
+	if err != nil {
+		return "", err
+	}
+	return publicKeyStrToAddress(pubBytes, isSM2)
 }

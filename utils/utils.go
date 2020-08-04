@@ -85,12 +85,10 @@ var biferUint = map[string]string{
   	- uint（可选）,  string  转换的单位，默认为bifer
 
   Returns:
-   	- string，转换为以wei为单位的bif余额
+   	- *big.Int，转换为以wei为单位的bif余额
    	- error
 
   Call permissions: Anyone
-
-  Debug: 转换时，将浮点数转换为int，（同时判断，是否符合bif的单位转化，这点需要添加）
 */
 func (util *Utils) ToWei(balance string, uint ...string) (*big.Int, error) {
 	var number string
@@ -172,7 +170,6 @@ func (util *Utils) ToWei(balance string, uint ...string) (*big.Int, error) {
    	- error
 
   Call permissions: Anyone
-  Debug: 精度问题
 */
 func (util *Utils) FromWei(balance *big.Int, uint ...string) (string, error) {
 	var number string
@@ -345,7 +342,7 @@ func (util *Utils) CheckBidChecksum(bid string) bool {
   	- bool,如果为有效的bid则返回true，否则为false
 
   Call permissions: Anyone
-  Debug 这里地址判单没有使用common中提供的，因为其没有对其进行校验和检查
+  Debug 这里地址判断没有使用common中提供的，因为其没有对其进行校验和检查
 */
 func (util *Utils) IsBid(bid string) bool {
 	if Has0xPrefix(bid) {

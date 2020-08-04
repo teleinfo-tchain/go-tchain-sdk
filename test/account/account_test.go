@@ -92,7 +92,7 @@ func TestRecoverTransaction(t *testing.T) {
 		}
 		// fmt.Println(common.HexToAddress(test.signAddress).String())
 		if utils.HexToAddress(test.signAddress) != utils.HexToAddress(recoverAddress) {
-			t.Error(test.id+": signAddress is not match recoverAddress")
+			t.Error(test.id + ": signAddress is not match recoverAddress")
 			t.FailNow()
 		}
 
@@ -123,7 +123,6 @@ func TestSignTransaction(t *testing.T) {
 			t.Errorf("Failed getChainId")
 			t.FailNow()
 		}
-
 
 		sender, err := account.GetAddressFromPrivate(test.privateKey, test.cryType)
 		if err != nil {
@@ -163,6 +162,67 @@ func TestSignTransaction(t *testing.T) {
 			t.FailNow()
 		}
 		t.Logf("%s : %v \n", test.id, res.Raw)
-		// t.Logf("%#v \n", res.Raw)
+		// t.Logf("%#v \n", res.Tx.Hash)
+	}
+}
+
+func TestHashMessage(t *testing.T) {
+	for _, test := range []struct {
+		message     string
+		isSm2       bool
+		hashMessage string
+	}{
+		{"Hello World", false, "0xa1de988600a42c4b4ab089b619297c17d53cffae5d5120d82d8a92d0bb3b78f2"},
+		{utils.NewUtils().Utf8ToHex("Hello World"), false, "0xa1de988600a42c4b4ab089b619297c17d53cffae5d5120d82d8a92d0bb3b78f2"},
+	} {
+		acc := account.NewAccount()
+		res := acc.HashMessage(test.message, test.isSm2)
+		if res != test.hashMessage {
+			t.Errorf("hash error, input is %s, result is %s, expect is %s \n", test.message, res, test.hashMessage)
+			t.FailNow()
+		}
+
+	}
+}
+
+func TestSign(t *testing.T) {
+	for _, test := range []struct {
+		id         string
+		isSm2      bool
+		privateKey string
+		message    string
+	}{
+		// {"国密签名", true, resources.AddressPriKey, "Some data"},
+		{"非国密签名", false, resources.CoinBasePriKey, "Some data"},
+	} {
+		var connection = bif.NewBif(providers.NewHTTPProvider(resources.IP+":"+resources.Port, 10, false))
+
+		chainId, err := connection.Core.GetChainId()
+		if err != nil {
+			t.Errorf("Failed getChainId")
+			t.FailNow()
+		}
+
+		acc := account.NewAccount()
+		messageHash := acc.HashMessage(test.message, test.isSm2)
+		sign := &account.SignData{
+			Message:     test.message,
+			MessageHash: messageHash,
+			V:           new(big.Int),
+			R:           new(big.Int),
+			S:           new(big.Int),
+			T:           big.NewInt(0),
+			// NT:           new(big.Int),
+			// NV:           new(big.Int),
+			// NR:           new(big.Int),
+			// NS:           new(big.Int),
+		}
+
+		res, err := acc.Sign(sign, test.privateKey, test.isSm2, big.NewInt(0).SetUint64(chainId))
+		if err != nil {
+			t.Error(err)
+			t.FailNow()
+		}
+		t.Logf("%s : %v \n", test.id, res)
 	}
 }

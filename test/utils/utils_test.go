@@ -360,8 +360,11 @@ func TestByteCodeDeploy(t *testing.T) {
 		t.FailNow()
 	}
 
-	res, err := util.ByteCodeDeploy(unmarshalResponse.Abi, unmarshalResponse.Bytecode, big.NewInt(2))
-	fmt.Println(res, err)
+	_, err = util.ByteCodeDeploy(unmarshalResponse.Abi, unmarshalResponse.Bytecode, big.NewInt(2))
+	if err != nil {
+		t.Error(err)
+		t.FailNow()
+	}
 }
 
 func TestByteCodeInteract(t *testing.T) {
@@ -386,6 +389,9 @@ func TestByteCodeInteract(t *testing.T) {
 		t.FailNow()
 	}
 
-	res, err := util.ByteCodeInteract(unmarshalResponse.Abi, "multiply", big.NewInt(2))
-	fmt.Println(res, err)
+	_, err = util.ByteCodeInteract(unmarshalResponse.Abi, "multiply", big.NewInt(2))
+	if err != nil {
+		t.Error(err)
+		t.FailNow()
+	}
 }
