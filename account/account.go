@@ -173,12 +173,8 @@ func (account *Account) Decrypt(keystoreJson []byte, isSM2 bool, password string
 // - Value     *big.Int  （可选）交易转移的bifer，以wei为单位
 // - Data      []byte    （可选）合约函数交互中调用的数据的ABI字节字符串或者合约创建时初始的字节码
 // - ChainId   *big.Int   签署此交易时要使用的链ID，默认是Core.GetChainId
-func (account *Account) preCheckTx(signData *SignTxParams, privateKey string, isSM2 bool) (*txData, error) {
-	// 暂缓判断
-	if signData.Gas < 0 {
-		return nil, errors.New("params(GasPrice|Value|ChainId) should not be less than 0")
-	}
 
+func (account *Account) preCheckTx(signData *SignTxParams, privateKey string, isSM2 bool) (*txData, error) {
 	if signData.Gas == 0 {
 		return nil, errors.New("gas should be greater than 0")
 	}

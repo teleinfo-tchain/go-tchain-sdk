@@ -108,7 +108,7 @@ func TestSignTransaction(t *testing.T) {
 		to         string
 		isSM2      bool
 	}{
-		{"国密签名转账", resources.AddressSM2, resources.AddressPriKey, resources.CoinBase, true},
+		// {"国密签名转账", resources.AddressSM2, resources.AddressPriKey, resources.CoinBase, true},
 		{"非国密签名转账", resources.CoinBase, resources.CoinBasePriKey, resources.AddressSM2, false},
 	} {
 		var connection = bif.NewBif(providers.NewHTTPProvider(resources.IP+":"+resources.Port, 10, false))
@@ -124,16 +124,24 @@ func TestSignTransaction(t *testing.T) {
 			t.FailNow()
 		}
 
+		// tx := &account.SignTxParams{
+		// 	To:       test.to,
+		// 	Nonce:    nonce.Uint64(),
+		// 	Gas:      2000000,
+		// 	GasPrice: big.NewInt(30),
+		// 	Value:    big.NewInt(50000000000),
+		// 	Data:     nil,
+		// 	ChainId:  big.NewInt(0).SetUint64(chainId),
+		// }
 		tx := &account.SignTxParams{
 			To:       test.to,
-			Nonce:    nonce.Uint64(),
+			Nonce:    0,
 			Gas:      2000000,
-			GasPrice: big.NewInt(30),
+			GasPrice: nil,
 			Value:    big.NewInt(50000000000),
 			Data:     nil,
-			ChainId:  big.NewInt(0).SetUint64(chainId),
+			ChainId:  nil,
 		}
-
 		res, err := connection.Account.SignTransaction(tx, test.privateKey, test.isSM2)
 
 		if err != nil {

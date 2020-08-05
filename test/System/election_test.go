@@ -7,8 +7,6 @@ import (
 	"github.com/bif/bif-sdk-go/providers"
 	"github.com/bif/bif-sdk-go/system"
 	"github.com/bif/bif-sdk-go/test/resources"
-	"github.com/bif/bif-sdk-go/utils"
-	"io/ioutil"
 	"math/big"
 	"testing"
 )
@@ -16,35 +14,24 @@ import (
 // 注册成为候选者节点
 func TestRegisterWitness(t *testing.T) {
 	var connection = bif.NewBif(providers.NewHTTPProvider(resources.IP+":"+resources.Port, 10, false))
-	coinBase, err := connection.Core.GetCoinBase()
-	if err != nil {
-		t.Log(err)
-		t.FailNow()
-	}
-
 	chainId, err := connection.Core.GetChainId()
 	if err != nil {
 		t.Log(err)
 		t.FailNow()
 	}
 
-	nonce, err := connection.Core.GetTransactionCount(coinBase, block.LATEST)
+	nonce, err := connection.Core.GetTransactionCount(testAddress, block.LATEST)
 	if err != nil {
-		t.Log(err)
-		t.FailNow()
-	}
-	keyJson, err := ioutil.ReadFile("../resources/superNodeKeyStore/UTC--172.17.6.53--did-bid-c935bd29a90fbeea87badf3e")
-	if err != nil{
 		t.Log(err)
 		t.FailNow()
 	}
 
 	sysTxParams := new(system.SysTxParams)
-	sysTxParams.From = utils.StringToAddress(coinBase)
-	sysTxParams.Password = "teleinfo"
-	sysTxParams.KeyFileData = keyJson
-	sysTxParams.Gas = 2000000
+	sysTxParams.IsSM2 = isSM2
+	sysTxParams.Password = password
+	sysTxParams.KeyFileData = keyFileData
 	sysTxParams.GasPrice = big.NewInt(35)
+	sysTxParams.Gas = 2000000
 	sysTxParams.Nonce = nonce.Uint64()
 	sysTxParams.ChainId = big.NewInt(0).SetUint64(chainId)
 
@@ -67,29 +54,24 @@ func TestRegisterWitness(t *testing.T) {
 // 取消成为候选者节点
 func TestUnRegisterWitness(t *testing.T) {
 	var connection = bif.NewBif(providers.NewHTTPProvider(resources.IP+":"+resources.Port, 10, false))
-	coinBase, err := connection.Core.GetCoinBase()
-	if err != nil {
-		t.Log(err)
-		t.FailNow()
-	}
-
 	chainId, err := connection.Core.GetChainId()
 	if err != nil {
 		t.Log(err)
 		t.FailNow()
 	}
 
-	nonce, err := connection.Core.GetTransactionCount(coinBase, block.LATEST)
+	nonce, err := connection.Core.GetTransactionCount(testAddress, block.LATEST)
 	if err != nil {
 		t.Log(err)
 		t.FailNow()
 	}
 
 	sysTxParams := new(system.SysTxParams)
-	sysTxParams.From = utils.StringToAddress(coinBase)
-
-	sysTxParams.Gas = 2000000
+	sysTxParams.IsSM2 = isSM2
+	sysTxParams.Password = password
+	sysTxParams.KeyFileData = keyFileData
 	sysTxParams.GasPrice = big.NewInt(35)
+	sysTxParams.Gas = 2000000
 	sysTxParams.Nonce = nonce.Uint64()
 	sysTxParams.ChainId = big.NewInt(0).SetUint64(chainId)
 
@@ -161,36 +143,24 @@ func TestGetAllCandidates(t *testing.T) {
 
 func TestVoteWitnesses(t *testing.T) {
 	var connection = bif.NewBif(providers.NewHTTPProvider(resources.IP+":"+resources.Port, 10, false))
-	coinBase, err := connection.Core.GetCoinBase()
-	if err != nil {
-		t.Error(err)
-		t.FailNow()
-	}
-
 	chainId, err := connection.Core.GetChainId()
 	if err != nil {
 		t.Log(err)
 		t.FailNow()
 	}
 
-	nonce, err := connection.Core.GetTransactionCount(coinBase, block.LATEST)
+	nonce, err := connection.Core.GetTransactionCount(testAddress, block.LATEST)
 	if err != nil {
 		t.Log(err)
 		t.FailNow()
 	}
 
-	keyJson, err := ioutil.ReadFile("../resources/superNodeKeyStore/UTC--172.17.6.53--did-bid-c935bd29a90fbeea87badf3e")
-	if err != nil{
-		t.Log(err)
-		t.FailNow()
-	}
-
 	sysTxParams := new(system.SysTxParams)
-	sysTxParams.From = utils.StringToAddress(coinBase)
-	sysTxParams.Password = "teleinfo"
-	sysTxParams.KeyFileData = keyJson
-	sysTxParams.Gas = 2000000
+	sysTxParams.IsSM2 = isSM2
+	sysTxParams.Password = password
+	sysTxParams.KeyFileData = keyFileData
 	sysTxParams.GasPrice = big.NewInt(35)
+	sysTxParams.Gas = 2000000
 	sysTxParams.Nonce = nonce.Uint64()
 	sysTxParams.ChainId = big.NewInt(0).SetUint64(chainId)
 
@@ -210,29 +180,24 @@ func TestVoteWitnesses(t *testing.T) {
 
 func TestElectCancelVote(t *testing.T) {
 	var connection = bif.NewBif(providers.NewHTTPProvider(resources.IP+":"+resources.Port, 10, false))
-	coinBase, err := connection.Core.GetCoinBase()
-	if err != nil {
-		t.Error(err)
-		t.FailNow()
-	}
-
 	chainId, err := connection.Core.GetChainId()
 	if err != nil {
 		t.Log(err)
 		t.FailNow()
 	}
 
-	nonce, err := connection.Core.GetTransactionCount(coinBase, block.LATEST)
+	nonce, err := connection.Core.GetTransactionCount(testAddress, block.LATEST)
 	if err != nil {
 		t.Log(err)
 		t.FailNow()
 	}
 
 	sysTxParams := new(system.SysTxParams)
-	sysTxParams.From = utils.StringToAddress(coinBase)
-
-	sysTxParams.Gas = 2000000
+	sysTxParams.IsSM2 = isSM2
+	sysTxParams.Password = password
+	sysTxParams.KeyFileData = keyFileData
 	sysTxParams.GasPrice = big.NewInt(35)
+	sysTxParams.Gas = 2000000
 	sysTxParams.Nonce = nonce.Uint64()
 	sysTxParams.ChainId = big.NewInt(0).SetUint64(chainId)
 
@@ -250,29 +215,24 @@ func TestElectCancelVote(t *testing.T) {
 
 func TestStartProxy(t *testing.T) {
 	var connection = bif.NewBif(providers.NewHTTPProvider(resources.IP+":"+resources.Port, 10, false))
-	coinBase, err := connection.Core.GetCoinBase()
-	if err != nil {
-		t.Error(err)
-		t.FailNow()
-	}
-
 	chainId, err := connection.Core.GetChainId()
 	if err != nil {
 		t.Log(err)
 		t.FailNow()
 	}
 
-	nonce, err := connection.Core.GetTransactionCount(coinBase, block.LATEST)
+	nonce, err := connection.Core.GetTransactionCount(testAddress, block.LATEST)
 	if err != nil {
 		t.Log(err)
 		t.FailNow()
 	}
 
 	sysTxParams := new(system.SysTxParams)
-	sysTxParams.From = utils.StringToAddress(coinBase)
-
-	sysTxParams.Gas = 2000000
+	sysTxParams.IsSM2 = isSM2
+	sysTxParams.Password = password
+	sysTxParams.KeyFileData = keyFileData
 	sysTxParams.GasPrice = big.NewInt(35)
+	sysTxParams.Gas = 2000000
 	sysTxParams.Nonce = nonce.Uint64()
 	sysTxParams.ChainId = big.NewInt(0).SetUint64(chainId)
 
@@ -290,29 +250,24 @@ func TestStartProxy(t *testing.T) {
 
 func TestStopProxy(t *testing.T) {
 	var connection = bif.NewBif(providers.NewHTTPProvider(resources.IP+":"+resources.Port, 10, false))
-	coinBase, err := connection.Core.GetCoinBase()
-	if err != nil {
-		t.Error(err)
-		t.FailNow()
-	}
-
 	chainId, err := connection.Core.GetChainId()
 	if err != nil {
 		t.Log(err)
 		t.FailNow()
 	}
 
-	nonce, err := connection.Core.GetTransactionCount(coinBase, block.LATEST)
+	nonce, err := connection.Core.GetTransactionCount(testAddress, block.LATEST)
 	if err != nil {
 		t.Log(err)
 		t.FailNow()
 	}
 
 	sysTxParams := new(system.SysTxParams)
-	sysTxParams.From = utils.StringToAddress(coinBase)
-
-	sysTxParams.Gas = 2000000
+	sysTxParams.IsSM2 = isSM2
+	sysTxParams.Password = password
+	sysTxParams.KeyFileData = keyFileData
 	sysTxParams.GasPrice = big.NewInt(35)
+	sysTxParams.Gas = 2000000
 	sysTxParams.Nonce = nonce.Uint64()
 	sysTxParams.ChainId = big.NewInt(0).SetUint64(chainId)
 
@@ -331,29 +286,24 @@ func TestStopProxy(t *testing.T) {
 // not set proxy
 func TestCancelProxy(t *testing.T) {
 	var connection = bif.NewBif(providers.NewHTTPProvider(resources.IP+":"+resources.Port, 10, false))
-	coinBase, err := connection.Core.GetCoinBase()
-	if err != nil {
-		t.Error(err)
-		t.FailNow()
-	}
-
 	chainId, err := connection.Core.GetChainId()
 	if err != nil {
 		t.Log(err)
 		t.FailNow()
 	}
 
-	nonce, err := connection.Core.GetTransactionCount(coinBase, block.LATEST)
+	nonce, err := connection.Core.GetTransactionCount(testAddress, block.LATEST)
 	if err != nil {
 		t.Log(err)
 		t.FailNow()
 	}
 
 	sysTxParams := new(system.SysTxParams)
-	sysTxParams.From = utils.StringToAddress(coinBase)
-
-	sysTxParams.Gas = 2000000
+	sysTxParams.IsSM2 = isSM2
+	sysTxParams.Password = password
+	sysTxParams.KeyFileData = keyFileData
 	sysTxParams.GasPrice = big.NewInt(35)
+	sysTxParams.Gas = 2000000
 	sysTxParams.Nonce = nonce.Uint64()
 	sysTxParams.ChainId = big.NewInt(0).SetUint64(chainId)
 
@@ -372,36 +322,24 @@ func TestCancelProxy(t *testing.T) {
 // account registered as a proxy is not allowed to use a proxy??
 func TestSetProxy(t *testing.T) {
 	var connection = bif.NewBif(providers.NewHTTPProvider(resources.IP+":"+resources.Port, 10, false))
-	coinBase, err := connection.Core.GetCoinBase()
-	if err != nil {
-		t.Error(err)
-		t.FailNow()
-	}
-
 	chainId, err := connection.Core.GetChainId()
 	if err != nil {
 		t.Log(err)
 		t.FailNow()
 	}
 
-	nonce, err := connection.Core.GetTransactionCount(coinBase, block.LATEST)
+	nonce, err := connection.Core.GetTransactionCount(testAddress, block.LATEST)
 	if err != nil {
 		t.Log(err)
 		t.FailNow()
 	}
 
-	keyJson, err := ioutil.ReadFile("../resources/superNodeKeyStore/UTC--172.17.6.53--did-bid-c935bd29a90fbeea87badf3e")
-	if err != nil{
-		t.Log(err)
-		t.FailNow()
-	}
-
 	sysTxParams := new(system.SysTxParams)
-	sysTxParams.From = utils.StringToAddress(coinBase)
-	sysTxParams.Password = "teleinfo"
-	sysTxParams.KeyFileData = keyJson
-	sysTxParams.Gas = 2000000
+	sysTxParams.IsSM2 = isSM2
+	sysTxParams.Password = password
+	sysTxParams.KeyFileData = keyFileData
 	sysTxParams.GasPrice = big.NewInt(35)
+	sysTxParams.Gas = 2000000
 	sysTxParams.Nonce = nonce.Uint64()
 	sysTxParams.ChainId = big.NewInt(0).SetUint64(chainId)
 
@@ -421,36 +359,24 @@ func TestSetProxy(t *testing.T) {
 // 权益抵押
 func TestStake(t *testing.T) {
 	var connection = bif.NewBif(providers.NewHTTPProvider(resources.IP+":"+resources.Port, 10, false))
-	coinBase, err := connection.Core.GetCoinBase()
-	if err != nil {
-		t.Error(err)
-		t.FailNow()
-	}
-
 	chainId, err := connection.Core.GetChainId()
 	if err != nil {
 		t.Log(err)
 		t.FailNow()
 	}
 
-	nonce, err := connection.Core.GetTransactionCount(coinBase, block.LATEST)
+	nonce, err := connection.Core.GetTransactionCount(testAddress, block.LATEST)
 	if err != nil {
 		t.Log(err)
 		t.FailNow()
 	}
 
-	keyJson, err := ioutil.ReadFile("../resources/superNodeKeyStore/UTC--172.17.6.53--did-bid-c935bd29a90fbeea87badf3e")
-	if err != nil{
-		t.Log(err)
-		t.FailNow()
-	}
-
 	sysTxParams := new(system.SysTxParams)
-	sysTxParams.From = utils.StringToAddress(coinBase)
-	sysTxParams.Password = "teleinfo"
-	sysTxParams.KeyFileData = keyJson
-	sysTxParams.Gas = 2000000
+	sysTxParams.IsSM2 = isSM2
+	sysTxParams.Password = password
+	sysTxParams.KeyFileData = keyFileData
 	sysTxParams.GasPrice = big.NewInt(35)
+	sysTxParams.Gas = 2000000
 	sysTxParams.Nonce = nonce.Uint64()
 	sysTxParams.ChainId = big.NewInt(0).SetUint64(chainId)
 
@@ -469,29 +395,24 @@ func TestStake(t *testing.T) {
 // 权益抵押撤销
 func TestUnStake(t *testing.T) {
 	var connection = bif.NewBif(providers.NewHTTPProvider(resources.IP+":"+resources.Port, 10, false))
-	coinBase, err := connection.Core.GetCoinBase()
-	if err != nil {
-		t.Error(err)
-		t.FailNow()
-	}
-
 	chainId, err := connection.Core.GetChainId()
 	if err != nil {
 		t.Log(err)
 		t.FailNow()
 	}
 
-	nonce, err := connection.Core.GetTransactionCount(coinBase, block.LATEST)
+	nonce, err := connection.Core.GetTransactionCount(testAddress, block.LATEST)
 	if err != nil {
 		t.Log(err)
 		t.FailNow()
 	}
 
 	sysTxParams := new(system.SysTxParams)
-	sysTxParams.From = utils.StringToAddress(coinBase)
-
-	sysTxParams.Gas = 2000000
+	sysTxParams.IsSM2 = isSM2
+	sysTxParams.Password = password
+	sysTxParams.KeyFileData = keyFileData
 	sysTxParams.GasPrice = big.NewInt(35)
+	sysTxParams.Gas = 2000000
 	sysTxParams.Nonce = nonce.Uint64()
 	sysTxParams.ChainId = big.NewInt(0).SetUint64(chainId)
 
@@ -555,29 +476,24 @@ func TestGetRestBIFBounty(t *testing.T) {
 
 func TestElectionExtractOwnBounty(t *testing.T) {
 	var connection = bif.NewBif(providers.NewHTTPProvider(resources.IP+":"+resources.Port, 10, false))
-	coinBase, err := connection.Core.GetCoinBase()
-	if err != nil {
-		t.Error(err)
-		t.FailNow()
-	}
-
 	chainId, err := connection.Core.GetChainId()
 	if err != nil {
 		t.Log(err)
 		t.FailNow()
 	}
 
-	nonce, err := connection.Core.GetTransactionCount(coinBase, block.LATEST)
+	nonce, err := connection.Core.GetTransactionCount(testAddress, block.LATEST)
 	if err != nil {
 		t.Log(err)
 		t.FailNow()
 	}
 
 	sysTxParams := new(system.SysTxParams)
-	sysTxParams.From = utils.StringToAddress(coinBase)
-
-	sysTxParams.Gas = 2000000
+	sysTxParams.IsSM2 = isSM2
+	sysTxParams.Password = password
+	sysTxParams.KeyFileData = keyFileData
 	sysTxParams.GasPrice = big.NewInt(35)
+	sysTxParams.Gas = 2000000
 	sysTxParams.Nonce = nonce.Uint64()
 	sysTxParams.ChainId = big.NewInt(0).SetUint64(chainId)
 
@@ -596,29 +512,24 @@ func TestElectionExtractOwnBounty(t *testing.T) {
 // ？？？？？？？？？？？这个没有输出日志吗？？？？？
 func TestIssueAdditionalBounty(t *testing.T) {
 	var connection = bif.NewBif(providers.NewHTTPProvider(resources.IP+":"+resources.Port, 10, false))
-	coinBase, err := connection.Core.GetCoinBase()
-	if err != nil {
-		t.Error(err)
-		t.FailNow()
-	}
-
 	chainId, err := connection.Core.GetChainId()
 	if err != nil {
 		t.Log(err)
 		t.FailNow()
 	}
 
-	nonce, err := connection.Core.GetTransactionCount(coinBase, block.LATEST)
+	nonce, err := connection.Core.GetTransactionCount(testAddress, block.LATEST)
 	if err != nil {
 		t.Log(err)
 		t.FailNow()
 	}
 
 	sysTxParams := new(system.SysTxParams)
-	sysTxParams.From = utils.StringToAddress(coinBase)
-
-	sysTxParams.Gas = 2000000
+	sysTxParams.IsSM2 = isSM2
+	sysTxParams.Password = password
+	sysTxParams.KeyFileData = keyFileData
 	sysTxParams.GasPrice = big.NewInt(35)
+	sysTxParams.Gas = 2000000
 	sysTxParams.Nonce = nonce.Uint64()
 	sysTxParams.ChainId = big.NewInt(0).SetUint64(chainId)
 

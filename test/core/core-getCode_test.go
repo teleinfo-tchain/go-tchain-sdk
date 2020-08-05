@@ -73,7 +73,7 @@ func TestCoreGetCode(t *testing.T) {
 
 	transaction.From = coinBase
 	transaction.Gas = big.NewInt(4000000)
-	hash, err := contract.Deploy(transaction, byteCode, nil)
+	hash, err := contract.Deploy(transaction, byteCode)
 
 	if err != nil {
 		t.Error(err)

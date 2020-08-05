@@ -3,7 +3,6 @@ package system
 import (
 	"github.com/bif/bif-sdk-go/abi"
 	"github.com/bif/bif-sdk-go/dto"
-	"github.com/bif/bif-sdk-go/utils"
 	"strings"
 )
 
@@ -100,7 +99,7 @@ func (anc *Anchor) RegisterTrustAnchor(signTxParams *SysTxParams, registerAnchor
 		return "", err
 	}
 
-	signedTx, err := anc.super.prePareSignTransaction(signTxParams, inputEncode, utils.StringToAddress(TrustAnchorContractAddr))
+	signedTx, err := anc.super.prePareSignTransaction(signTxParams, inputEncode, TrustAnchorContractAddr)
 	if err != nil {
 		return "", err
 	}
@@ -125,7 +124,7 @@ func (anc *Anchor) UnRegisterTrustAnchor(signTxParams *SysTxParams) (string, err
 	// encoding
 	inputEncode, _ := anc.abi.Pack("unRegisterTrustAnchor")
 
-	signedTx, err := anc.super.prePareSignTransaction(signTxParams, inputEncode, utils.StringToAddress(TrustAnchorContractAddr))
+	signedTx, err := anc.super.prePareSignTransaction(signTxParams, inputEncode, TrustAnchorContractAddr)
 	if err != nil {
 		return "", err
 	}
@@ -211,7 +210,7 @@ func (anc *Anchor) UpdateAnchorInfo(signTxParams *SysTxParams, extendAnchorInfo 
 		return "", err
 	}
 
-	signedTx, err := anc.super.prePareSignTransaction(signTxParams, inputEncode, utils.StringToAddress(TrustAnchorContractAddr))
+	signedTx, err := anc.super.prePareSignTransaction(signTxParams, inputEncode, TrustAnchorContractAddr)
 	if err != nil {
 		return "", err
 	}
@@ -236,7 +235,7 @@ func (anc *Anchor) ExtractOwnBounty(signTxParams *SysTxParams) (string, error) {
 	// encoding
 	inputEncode, _ := anc.abi.Pack("extractOwnBounty")
 
-	signedTx, err := anc.super.prePareSignTransaction(signTxParams, inputEncode, utils.StringToAddress(TrustAnchorContractAddr))
+	signedTx, err := anc.super.prePareSignTransaction(signTxParams, inputEncode, TrustAnchorContractAddr)
 	if err != nil {
 		return "", err
 	}
@@ -469,7 +468,7 @@ func (anc *Anchor) VoteElect(signTxParams *SysTxParams, candidate string) (strin
 		return "", err
 	}
 
-	signedTx, err := anc.super.prePareSignTransaction(signTxParams, inputEncode, utils.StringToAddress(TrustAnchorContractAddr))
+	signedTx, err := anc.super.prePareSignTransaction(signTxParams, inputEncode, TrustAnchorContractAddr)
 	if err != nil {
 		return "", err
 	}
@@ -498,7 +497,7 @@ func (anc *Anchor) CancelVote(signTxParams *SysTxParams, candidate string) (stri
 		return "", err
 	}
 
-	signedTx, err := anc.super.prePareSignTransaction(signTxParams, inputEncode, utils.StringToAddress(TrustAnchorContractAddr))
+	signedTx, err := anc.super.prePareSignTransaction(signTxParams, inputEncode, TrustAnchorContractAddr)
 	if err != nil {
 		return "", err
 	}

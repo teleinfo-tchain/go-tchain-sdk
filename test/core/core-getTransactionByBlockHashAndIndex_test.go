@@ -15,6 +15,7 @@
 package test
 
 import (
+	"fmt"
 	"github.com/bif/bif-sdk-go"
 	"github.com/bif/bif-sdk-go/dto"
 	"github.com/bif/bif-sdk-go/providers"
@@ -24,7 +25,7 @@ import (
 	"time"
 )
 
-func TestCoreTransactionByBlockHashAndIndex(t *testing.T) {
+func TestGetTransactionByBlockHashAndIndex(t *testing.T) {
 
 	var connection = bif.NewBif(providers.NewHTTPProvider(resources.IP+":"+resources.Port, 10, false))
 
@@ -53,20 +54,15 @@ func TestCoreTransactionByBlockHashAndIndex(t *testing.T) {
 		t.FailNow()
 	}
 
-	//  wait for a block
-	// time.Sleep(time.Second*10)
-	time.Sleep(time.Second)
-
-	// 如果失败可以用这个哈希
-	// txID := "0xe363f06cc47383bcc61468dd753e42c8a31f661be36b84118572c10487ece760"
-	txFromHash, err := connection.Core.GetTransactionByHash(txID)
-
-	if err != nil {
-		t.Error(err)
-		t.FailNow()
+	var txFromHash *dto.TransactionResponse
+	for {
+		time.Sleep(time.Second*2)
+		txFromHash, err = connection.Core.GetTransactionByHash(txID)
+		if txFromHash!=nil && fmt.Sprintf("%d", txFromHash.BlockNumber) != "0"{
+			break
+		}
 	}
 
-	// // if it fails, it may be that the time is too short and the transaction has not been executed
 	tx, err := connection.Core.GetTransactionByBlockHashAndIndex(txFromHash.BlockHash, txFromHash.TransactionIndex)
 
 	if err != nil {

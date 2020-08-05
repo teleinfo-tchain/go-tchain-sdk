@@ -15,6 +15,7 @@
 package test
 
 import (
+	"fmt"
 	"github.com/bif/bif-sdk-go"
 	"github.com/bif/bif-sdk-go/dto"
 	"github.com/bif/bif-sdk-go/providers"
@@ -54,19 +55,16 @@ func TestGetTransactionByBlockNumberAndIndex(t *testing.T) {
 		t.FailNow()
 	}
 
-	//  wait for a block
-	time.Sleep(time.Second)
-
 	//  如果交易没有执行，则用已有的交易hash测试
-	// txID := "0x99e87282b319c80682ad9cdd621b726bd1ee6c583b0cef0e9a05ba6d2f0fbc21"
-	txFromHash, err := connection.Core.GetTransactionByHash(txID)
-
-	if err != nil {
-		t.Error(err)
-		t.FailNow()
+	// txID := "0x1abaf67025a43fd5d3ecc19d3b67003ee1caf863aa642fca5248c153ca7ea5fc"
+	var txFromHash *dto.TransactionResponse
+	for {
+		time.Sleep(time.Second*2)
+		txFromHash, err = connection.Core.GetTransactionByHash(txID)
+		if txFromHash!=nil && fmt.Sprintf("%d", txFromHash.BlockNumber) != "0"{
+			break
+		}
 	}
-
-	// if it fails, it may be that the time is too short and the transaction has not been executed
 	tx, err := connection.Core.GetTransactionByBlockNumberAndIndex(hexutil.EncodeBig(txFromHash.BlockNumber), txFromHash.TransactionIndex)
 
 	if err != nil {

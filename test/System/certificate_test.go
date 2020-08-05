@@ -8,7 +8,6 @@ import (
 	"github.com/bif/bif-sdk-go/system"
 	"github.com/bif/bif-sdk-go/test/resources"
 	"github.com/bif/bif-sdk-go/utils"
-	"io/ioutil"
 	"math/big"
 	"testing"
 )
@@ -17,43 +16,31 @@ import (
 // 证书的颁布，
 func TestRegisterCertificate(t *testing.T) {
 	var connection = bif.NewBif(providers.NewHTTPProvider(resources.IP+":"+resources.Port, 10, false))
-	coinBase, err := connection.Core.GetCoinBase()
-	if err != nil {
-		t.Log(err)
-		t.FailNow()
-	}
-
 	chainId, err := connection.Core.GetChainId()
 	if err != nil {
 		t.Log(err)
 		t.FailNow()
 	}
 
-	nonce, err := connection.Core.GetTransactionCount(coinBase, block.LATEST)
+	nonce, err := connection.Core.GetTransactionCount(testAddress, block.LATEST)
 	if err != nil {
 		t.Log(err)
 		t.FailNow()
 	}
 
-	keyJson, err := ioutil.ReadFile("../resources/superNodeKeyStore/UTC--172.17.6.53--did-bid-c935bd29a90fbeea87badf3e")
-	if err != nil{
-		t.Log(err)
-		t.FailNow()
-	}
-
 	sysTxParams := new(system.SysTxParams)
-	sysTxParams.From = utils.StringToAddress(coinBase)
-	sysTxParams.Password = "teleinfo"
-	sysTxParams.KeyFileData = keyJson
-	sysTxParams.Gas = 2000000
+	sysTxParams.IsSM2 = isSM2
+	sysTxParams.Password = password
+	sysTxParams.KeyFileData = keyFileData
 	sysTxParams.GasPrice = big.NewInt(35)
+	sysTxParams.Gas = 2000000
 	sysTxParams.Nonce = nonce.Uint64()
 	sysTxParams.ChainId = big.NewInt(0).SetUint64(chainId)
 
 	cer := connection.System.NewCertificate()
 
 	registerCertificate := new(dto.RegisterCertificate)
-	registerCertificate.Id = utils.StringToAddress(coinBase).String()
+	registerCertificate.Id = utils.StringToAddress(testAddress).String()
 	registerCertificate.Context = "context_test"
 	registerCertificate.Subject = "did:bid:6cc796b8d6e2fbebc9b3cf9e"
 	registerCertificate.Period = 3
@@ -73,42 +60,30 @@ func TestRegisterCertificate(t *testing.T) {
 
 func TestRevokedCertificate(t *testing.T) {
 	var connection = bif.NewBif(providers.NewHTTPProvider(resources.IP+":"+resources.Port, 10, false))
-	coinBase, err := connection.Core.GetCoinBase()
-	if err != nil {
-		t.Log(err)
-		t.FailNow()
-	}
-
 	chainId, err := connection.Core.GetChainId()
 	if err != nil {
 		t.Log(err)
 		t.FailNow()
 	}
 
-	nonce, err := connection.Core.GetTransactionCount(coinBase, block.LATEST)
+	nonce, err := connection.Core.GetTransactionCount(testAddress, block.LATEST)
 	if err != nil {
 		t.Log(err)
 		t.FailNow()
 	}
 
-	keyJson, err := ioutil.ReadFile("../resources/superNodeKeyStore/UTC--172.17.6.53--did-bid-c935bd29a90fbeea87badf3e")
-	if err != nil{
-		t.Log(err)
-		t.FailNow()
-	}
-
 	sysTxParams := new(system.SysTxParams)
-	sysTxParams.From = utils.StringToAddress(coinBase)
-	sysTxParams.Password = "teleinfo"
-	sysTxParams.KeyFileData = keyJson
-	sysTxParams.Gas = 2000000
+	sysTxParams.IsSM2 = isSM2
+	sysTxParams.Password = password
+	sysTxParams.KeyFileData = keyFileData
 	sysTxParams.GasPrice = big.NewInt(35)
+	sysTxParams.Gas = 2000000
 	sysTxParams.Nonce = nonce.Uint64()
 	sysTxParams.ChainId = big.NewInt(0).SetUint64(chainId)
 
 	cer := connection.System.NewCertificate()
 
-	transactionHash, err := cer.RevokedCertificate(sysTxParams, coinBase)
+	transactionHash, err := cer.RevokedCertificate(sysTxParams, testAddress)
 	if err != nil {
 		t.Error(err)
 		t.FailNow()
@@ -118,29 +93,24 @@ func TestRevokedCertificate(t *testing.T) {
 
 func TestRevokedCertificates(t *testing.T) {
 	var connection = bif.NewBif(providers.NewHTTPProvider(resources.IP+":"+resources.Port, 10, false))
-	coinBase, err := connection.Core.GetCoinBase()
-	if err != nil {
-		t.Log(err)
-		t.FailNow()
-	}
-
 	chainId, err := connection.Core.GetChainId()
 	if err != nil {
 		t.Log(err)
 		t.FailNow()
 	}
 
-	nonce, err := connection.Core.GetTransactionCount(coinBase, block.LATEST)
+	nonce, err := connection.Core.GetTransactionCount(testAddress, block.LATEST)
 	if err != nil {
 		t.Log(err)
 		t.FailNow()
 	}
 
 	sysTxParams := new(system.SysTxParams)
-	sysTxParams.From = utils.StringToAddress(coinBase)
-
-	sysTxParams.Gas = 2000000
+	sysTxParams.IsSM2 = isSM2
+	sysTxParams.Password = password
+	sysTxParams.KeyFileData = keyFileData
 	sysTxParams.GasPrice = big.NewInt(35)
+	sysTxParams.Gas = 2000000
 	sysTxParams.Nonce = nonce.Uint64()
 	sysTxParams.ChainId = big.NewInt(0).SetUint64(chainId)
 

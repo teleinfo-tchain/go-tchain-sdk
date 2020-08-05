@@ -4,7 +4,6 @@ import (
 	"errors"
 	"github.com/bif/bif-sdk-go/abi"
 	"github.com/bif/bif-sdk-go/dto"
-	"github.com/bif/bif-sdk-go/utils"
 	"strings"
 )
 
@@ -85,7 +84,7 @@ func (doc *Doc) Init(signTxParams *SysTxParams, bidType uint64) (string, error) 
 		return "", err
 	}
 
-	signedTx, err := doc.super.prePareSignTransaction(signTxParams, inputEncode, utils.StringToAddress(DocContractAddr))
+	signedTx, err := doc.super.prePareSignTransaction(signTxParams, inputEncode, DocContractAddr)
 	if err != nil {
 		return "", err
 	}
@@ -118,7 +117,7 @@ func (doc *Doc) SetBidName(signTxParams *SysTxParams, id string, bidName string)
 		return "", err
 	}
 
-	signedTx, err := doc.super.prePareSignTransaction(signTxParams, inputEncode, utils.StringToAddress(DocContractAddr))
+	signedTx, err := doc.super.prePareSignTransaction(signTxParams, inputEncode, DocContractAddr)
 	if err != nil {
 		return "", err
 	}
@@ -193,7 +192,7 @@ func (doc *Doc) AddPublic(signTxParams *SysTxParams, id string, publicType strin
 		return "", err
 	}
 
-	signedTx, err := doc.super.prePareSignTransaction(signTxParams, inputEncode, utils.StringToAddress(DocContractAddr))
+	signedTx, err := doc.super.prePareSignTransaction(signTxParams, inputEncode, DocContractAddr)
 	if err != nil {
 		return "", err
 	}
@@ -223,7 +222,7 @@ func (doc *Doc) DelPublic(signTxParams *SysTxParams, id string, publicKey string
 		return "", err
 	}
 
-	signedTx, err := doc.super.prePareSignTransaction(signTxParams, inputEncode, utils.StringToAddress(DocContractAddr))
+	signedTx, err := doc.super.prePareSignTransaction(signTxParams, inputEncode, DocContractAddr)
 	if err != nil {
 		return "", err
 	}
@@ -252,7 +251,7 @@ func (doc *Doc) AddAuth(signTxParams *SysTxParams, id string, auth string) (stri
 		return "", err
 	}
 
-	signedTx, err := doc.super.prePareSignTransaction(signTxParams, inputEncode, utils.StringToAddress(DocContractAddr))
+	signedTx, err := doc.super.prePareSignTransaction(signTxParams, inputEncode, DocContractAddr)
 	if err != nil {
 		return "", err
 	}
@@ -281,7 +280,7 @@ func (doc *Doc) DelAuth(signTxParams *SysTxParams, id string, auth string) (stri
 		return "", err
 	}
 
-	signedTx, err := doc.super.prePareSignTransaction(signTxParams, inputEncode, utils.StringToAddress(DocContractAddr))
+	signedTx, err := doc.super.prePareSignTransaction(signTxParams, inputEncode, DocContractAddr)
 	if err != nil {
 		return "", err
 	}
@@ -310,7 +309,7 @@ func (doc *Doc) AddService(signTxParams *SysTxParams, id string, serviceId strin
 		return "", err
 	}
 
-	signedTx, err := doc.super.prePareSignTransaction(signTxParams, inputEncode, utils.StringToAddress(DocContractAddr))
+	signedTx, err := doc.super.prePareSignTransaction(signTxParams, inputEncode, DocContractAddr)
 	if err != nil {
 		return "", err
 	}
@@ -339,11 +338,10 @@ func (doc *Doc) DelService(signTxParams *SysTxParams, id string, serviceId strin
 		return "", err
 	}
 
-	signedTx, err := doc.super.prePareSignTransaction(signTxParams, inputEncode, utils.StringToAddress(DocContractAddr))
+	signedTx, err := doc.super.prePareSignTransaction(signTxParams, inputEncode, DocContractAddr)
 	if err != nil {
 		return "", err
 	}
-
 	return doc.super.sendRawTransaction(signedTx)
 }
 
@@ -371,7 +369,7 @@ func (doc *Doc) AddProof(signTxParams *SysTxParams, id string, proofType string,
 		return "", err
 	}
 
-	signedTx, err := doc.super.prePareSignTransaction(signTxParams, inputEncode, utils.StringToAddress(DocContractAddr))
+	signedTx, err := doc.super.prePareSignTransaction(signTxParams, inputEncode, DocContractAddr)
 	if err != nil {
 		return "", err
 	}
@@ -400,7 +398,7 @@ func (doc *Doc) DelProof(signTxParams *SysTxParams, id string) (string, error) {
 		return "", err
 	}
 
-	signedTx, err := doc.super.prePareSignTransaction(signTxParams, inputEncode, utils.StringToAddress(DocContractAddr))
+	signedTx, err := doc.super.prePareSignTransaction(signTxParams, inputEncode, DocContractAddr)
 	if err != nil {
 		return "", err
 	}
@@ -430,7 +428,7 @@ func (doc *Doc) AddExtra(signTxParams *SysTxParams, id string, extra string) (st
 		return "", err
 	}
 
-	signedTx, err := doc.super.prePareSignTransaction(signTxParams, inputEncode, utils.StringToAddress(DocContractAddr))
+	signedTx, err := doc.super.prePareSignTransaction(signTxParams, inputEncode, DocContractAddr)
 	if err != nil {
 		return "", err
 	}
@@ -459,7 +457,7 @@ func (doc *Doc) DelExtra(signTxParams *SysTxParams, id string) (string, error) {
 		return "", err
 	}
 
-	signedTx, err := doc.super.prePareSignTransaction(signTxParams, inputEncode, utils.StringToAddress(DocContractAddr))
+	signedTx, err := doc.super.prePareSignTransaction(signTxParams, inputEncode, DocContractAddr)
 	if err != nil {
 		return "", err
 	}
@@ -485,7 +483,7 @@ func (doc *Doc) Enable(signTxParams *SysTxParams, id string) (string, error) {
 	// encoding
 	inputEncode, _ := doc.abi.Pack("enable", id)
 
-	signedTx, err := doc.super.prePareSignTransaction(signTxParams, inputEncode, utils.StringToAddress(DocContractAddr))
+	signedTx, err := doc.super.prePareSignTransaction(signTxParams, inputEncode, DocContractAddr)
 	if err != nil {
 		return "", err
 	}
@@ -511,7 +509,7 @@ func (doc *Doc) Disable(signTxParams *SysTxParams, id string) (string, error) {
 	// encoding
 	inputEncode, _ := doc.abi.Pack("disable", id)
 
-	signedTx, err := doc.super.prePareSignTransaction(signTxParams, inputEncode, utils.StringToAddress(DocContractAddr))
+	signedTx, err := doc.super.prePareSignTransaction(signTxParams, inputEncode, DocContractAddr)
 	if err != nil {
 		return "", err
 	}

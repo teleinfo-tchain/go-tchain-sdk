@@ -28,37 +28,35 @@ const (
 	TrustAnchorDesc        = "info test"
 )
 
+const (
+	isSM2 = false
+	password = "teleinfo"
+	testAddress = resources.CoinBase
+
+)
+// 对应的是test Address 的keyStore
+var keyFileData, _ = ioutil.ReadFile("../resources/superNodeKeyStore/UTC--172.17.6.53--did-bid-c935bd29a90fbeea87badf3e")
+
 func TestRegisterBaseTrustAnchor(t *testing.T) {
 	var connection = bif.NewBif(providers.NewHTTPProvider(resources.IP+":"+resources.Port, 10, false))
-	coinBase, err := connection.Core.GetCoinBase()
-	if err != nil {
-		t.Error(err)
-		t.FailNow()
-	}
 	chainId, err := connection.Core.GetChainId()
 	if err != nil {
 		t.Log(err)
 		t.FailNow()
 	}
 
-	nonce, err := connection.Core.GetTransactionCount(coinBase, block.LATEST)
+	nonce, err := connection.Core.GetTransactionCount(testAddress, block.LATEST)
 	if err != nil {
 		t.Log(err)
 		t.FailNow()
 	}
 
-	keyJson, err := ioutil.ReadFile("../resources/superNodeKeyStore/UTC--172.17.6.53--did-bid-c935bd29a90fbeea87badf3e")
-	if err != nil{
-		t.Log(err)
-		t.FailNow()
-	}
-
 	sysTxParams := new(system.SysTxParams)
-	sysTxParams.From = utils.StringToAddress(coinBase)
-	sysTxParams.Password = "teleinfo"
-	sysTxParams.KeyFileData = keyJson
-	sysTxParams.Gas = 2000000
+	sysTxParams.IsSM2 = isSM2
+	sysTxParams.Password = password
+	sysTxParams.KeyFileData = keyFileData
 	sysTxParams.GasPrice = big.NewInt(35)
+	sysTxParams.Gas = 2000000
 	sysTxParams.Nonce = nonce.Uint64()
 	sysTxParams.ChainId = big.NewInt(0).SetUint64(chainId)
 
@@ -86,35 +84,24 @@ func TestRegisterBaseTrustAnchor(t *testing.T) {
 
 func TestRegisterExtendTrustAnchor(t *testing.T) {
 	var connection = bif.NewBif(providers.NewHTTPProvider(resources.IP+":"+resources.Port, 10, false))
-	coinBase, err := connection.Core.GetCoinBase()
-	if err != nil {
-		t.Error(err)
-		t.FailNow()
-	}
 	chainId, err := connection.Core.GetChainId()
 	if err != nil {
 		t.Log(err)
 		t.FailNow()
 	}
 
-	nonce, err := connection.Core.GetTransactionCount(coinBase, block.LATEST)
+	nonce, err := connection.Core.GetTransactionCount(testAddress, block.LATEST)
 	if err != nil {
 		t.Log(err)
 		t.FailNow()
 	}
 
-	keyJson, err := ioutil.ReadFile("../resources/superNodeKeyStore/UTC--172.17.6.53--did-bid-c935bd29a90fbeea87badf3e")
-	if err != nil{
-		t.Log(err)
-		t.FailNow()
-	}
-
 	sysTxParams := new(system.SysTxParams)
-	sysTxParams.From = utils.StringToAddress(coinBase)
-	sysTxParams.Password = "teleinfo"
-	sysTxParams.KeyFileData = keyJson
-	sysTxParams.Gas = 2000000
+	sysTxParams.IsSM2 = isSM2
+	sysTxParams.Password = password
+	sysTxParams.KeyFileData = keyFileData
 	sysTxParams.GasPrice = big.NewInt(35)
+	sysTxParams.Gas = 2000000
 	sysTxParams.Nonce = nonce.Uint64()
 	sysTxParams.ChainId = big.NewInt(0).SetUint64(chainId)
 
@@ -142,28 +129,24 @@ func TestRegisterExtendTrustAnchor(t *testing.T) {
 
 func TestUnRegisterTrustAnchor(t *testing.T) {
 	var connection = bif.NewBif(providers.NewHTTPProvider(resources.IP+":"+resources.Port, 10, false))
-	coinBase, err := connection.Core.GetCoinBase()
-	if err != nil {
-		t.Error(err)
-		t.FailNow()
-	}
 	chainId, err := connection.Core.GetChainId()
 	if err != nil {
 		t.Log(err)
 		t.FailNow()
 	}
 
-	nonce, err := connection.Core.GetTransactionCount(coinBase, block.LATEST)
+	nonce, err := connection.Core.GetTransactionCount(testAddress, block.LATEST)
 	if err != nil {
 		t.Log(err)
 		t.FailNow()
 	}
 
 	sysTxParams := new(system.SysTxParams)
-	sysTxParams.From = utils.StringToAddress(coinBase)
-
-	sysTxParams.Gas = 2000000
+	sysTxParams.IsSM2 = isSM2
+	sysTxParams.Password = password
+	sysTxParams.KeyFileData = keyFileData
 	sysTxParams.GasPrice = big.NewInt(35)
+	sysTxParams.Gas = 2000000
 	sysTxParams.Nonce = nonce.Uint64()
 	sysTxParams.ChainId = big.NewInt(0).SetUint64(chainId)
 
@@ -215,35 +198,24 @@ func TestIsTrustAnchor(t *testing.T) {
 
 func TestUpdateAnchorInfo(t *testing.T) {
 	var connection = bif.NewBif(providers.NewHTTPProvider(resources.IP+":"+resources.Port, 10, false))
-	coinBase, err := connection.Core.GetCoinBase()
-	if err != nil {
-		t.Error(err)
-		t.FailNow()
-	}
 	chainId, err := connection.Core.GetChainId()
 	if err != nil {
 		t.Log(err)
 		t.FailNow()
 	}
 
-	nonce, err := connection.Core.GetTransactionCount(coinBase, block.LATEST)
+	nonce, err := connection.Core.GetTransactionCount(testAddress, block.LATEST)
 	if err != nil {
 		t.Log(err)
 		t.FailNow()
 	}
 
-	keyJson, err := ioutil.ReadFile("../resources/superNodeKeyStore/UTC--172.17.6.53--did-bid-c935bd29a90fbeea87badf3e")
-	if err != nil{
-		t.Log(err)
-		t.FailNow()
-	}
-
 	sysTxParams := new(system.SysTxParams)
-	sysTxParams.From = utils.StringToAddress(coinBase)
-	sysTxParams.Password = "teleinfo"
-	sysTxParams.KeyFileData = keyJson
-	sysTxParams.Gas = 2000000
+	sysTxParams.IsSM2 = isSM2
+	sysTxParams.Password = password
+	sysTxParams.KeyFileData = keyFileData
 	sysTxParams.GasPrice = big.NewInt(35)
+	sysTxParams.Gas = 2000000
 	sysTxParams.Nonce = nonce.Uint64()
 	sysTxParams.ChainId = big.NewInt(0).SetUint64(chainId)
 
@@ -267,28 +239,24 @@ func TestUpdateAnchorInfo(t *testing.T) {
 
 func TestExtractOwnBounty(t *testing.T) {
 	var connection = bif.NewBif(providers.NewHTTPProvider(resources.IP+":"+resources.Port, 10, false))
-	coinBase, err := connection.Core.GetCoinBase()
-	if err != nil {
-		t.Error(err)
-		t.FailNow()
-	}
 	chainId, err := connection.Core.GetChainId()
 	if err != nil {
 		t.Log(err)
 		t.FailNow()
 	}
 
-	nonce, err := connection.Core.GetTransactionCount(coinBase, block.LATEST)
+	nonce, err := connection.Core.GetTransactionCount(testAddress, block.LATEST)
 	if err != nil {
 		t.Log(err)
 		t.FailNow()
 	}
 
 	sysTxParams := new(system.SysTxParams)
-	sysTxParams.From = utils.StringToAddress(coinBase)
-
-	sysTxParams.Gas = 2000000
+	sysTxParams.IsSM2 = isSM2
+	sysTxParams.Password = password
+	sysTxParams.KeyFileData = keyFileData
 	sysTxParams.GasPrice = big.NewInt(35)
+	sysTxParams.Gas = 2000000
 	sysTxParams.Nonce = nonce.Uint64()
 	sysTxParams.ChainId = big.NewInt(0).SetUint64(chainId)
 
@@ -431,41 +399,30 @@ func TestGetExpendNum(t *testing.T) {
 // 投票超过2/3才能激活信任锚(现在有5个超级节点，超过2/3就是需要有至少4个投票)
 func TestVoteElect(t *testing.T) {
 	var connection = bif.NewBif(providers.NewHTTPProvider(resources.IP+":"+resources.Port, 10, false))
-	coinBase, err := connection.Core.GetCoinBase()
-	if err != nil {
-		t.Error(err)
-		t.FailNow()
-	}
 	chainId, err := connection.Core.GetChainId()
 	if err != nil {
 		t.Log(err)
 		t.FailNow()
 	}
 
-	nonce, err := connection.Core.GetTransactionCount(coinBase, block.LATEST)
+	nonce, err := connection.Core.GetTransactionCount(testAddress, block.LATEST)
 	if err != nil {
 		t.Log(err)
 		t.FailNow()
 	}
 
-	keyJson, err := ioutil.ReadFile("../resources/superNodeKeyStore/UTC--172.17.6.53--did-bid-c935bd29a90fbeea87badf3e")
-	if err != nil{
-		t.Log(err)
-		t.FailNow()
-	}
-
 	sysTxParams := new(system.SysTxParams)
-	sysTxParams.From = utils.StringToAddress(coinBase)
-	sysTxParams.Password = "teleinfo"
-	sysTxParams.KeyFileData = keyJson
-	sysTxParams.Gas = 2000000
+	sysTxParams.IsSM2 = isSM2
+	sysTxParams.Password = password
+	sysTxParams.KeyFileData = keyFileData
 	sysTxParams.GasPrice = big.NewInt(35)
+	sysTxParams.Gas = 2000000
 	sysTxParams.Nonce = nonce.Uint64()
 	sysTxParams.ChainId = big.NewInt(0).SetUint64(chainId)
 
 	anchor := connection.System.NewTrustAnchor()
 
-	transactionHash, err := anchor.VoteElect(sysTxParams, coinBase)
+	transactionHash, err := anchor.VoteElect(sysTxParams, testAddress)
 	if err != nil {
 		t.Error(err)
 		t.FailNow()
@@ -475,40 +432,29 @@ func TestVoteElect(t *testing.T) {
 
 func TestCancelVote(t *testing.T) {
 	var connection = bif.NewBif(providers.NewHTTPProvider(resources.IP+":"+resources.Port, 10, false))
-	coinBase, err := connection.Core.GetCoinBase()
-	if err != nil {
-		t.Error(err)
-		t.FailNow()
-	}
 	chainId, err := connection.Core.GetChainId()
 	if err != nil {
 		t.Log(err)
 		t.FailNow()
 	}
 
-	nonce, err := connection.Core.GetTransactionCount(coinBase, block.LATEST)
+	nonce, err := connection.Core.GetTransactionCount(testAddress, block.LATEST)
 	if err != nil {
 		t.Log(err)
 		t.FailNow()
 	}
 
-	keyJson, err := ioutil.ReadFile("../resources/superNodeKeyStore/UTC--172.17.6.53--did-bid-c935bd29a90fbeea87badf3e")
-	if err != nil{
-		t.Log(err)
-		t.FailNow()
-	}
-
 	sysTxParams := new(system.SysTxParams)
-	sysTxParams.From = utils.StringToAddress(coinBase)
-	sysTxParams.Password = "teleinfo"
-	sysTxParams.KeyFileData = keyJson
-	sysTxParams.Gas = 2000000
+	sysTxParams.IsSM2 = isSM2
+	sysTxParams.Password = password
+	sysTxParams.KeyFileData = keyFileData
 	sysTxParams.GasPrice = big.NewInt(35)
+	sysTxParams.Gas = 2000000
 	sysTxParams.Nonce = nonce.Uint64()
 	sysTxParams.ChainId = big.NewInt(0).SetUint64(chainId)
 
 	anchor := connection.System.NewTrustAnchor()
-	transactionHash, err := anchor.CancelVote(sysTxParams, coinBase)
+	transactionHash, err := anchor.CancelVote(sysTxParams, testAddress)
 	if err != nil {
 		t.Error(err)
 		t.FailNow()

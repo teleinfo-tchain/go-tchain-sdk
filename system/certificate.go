@@ -4,7 +4,6 @@ import (
 	"errors"
 	"github.com/bif/bif-sdk-go/abi"
 	"github.com/bif/bif-sdk-go/dto"
-	"github.com/bif/bif-sdk-go/utils"
 	"strings"
 )
 
@@ -76,7 +75,7 @@ func (cer *Certificate) RegisterCertificate(signTxParams *SysTxParams, registerC
 		return "", err
 	}
 
-	signedTx, err := cer.super.prePareSignTransaction(signTxParams, inputEncode, utils.StringToAddress(CertificateContractAddr))
+	signedTx, err := cer.super.prePareSignTransaction(signTxParams, inputEncode, CertificateContractAddr)
 	if err != nil {
 		return "", err
 	}
@@ -105,7 +104,7 @@ func (cer *Certificate) RevokedCertificate(signTxParams *SysTxParams, id string)
 		return "", err
 	}
 
-	signedTx, err := cer.super.prePareSignTransaction(signTxParams, inputEncode, utils.StringToAddress(CertificateContractAddr))
+	signedTx, err := cer.super.prePareSignTransaction(signTxParams, inputEncode, CertificateContractAddr)
 	if err != nil {
 		return "", err
 	}
@@ -130,7 +129,7 @@ func (cer *Certificate) RevokedCertificates(signTxParams *SysTxParams) (string, 
 	// encoding
 	inputEncode, _ := cer.abi.Pack("revokedCertificates")
 
-	signedTx, err := cer.super.prePareSignTransaction(signTxParams, inputEncode, utils.StringToAddress(CertificateContractAddr))
+	signedTx, err := cer.super.prePareSignTransaction(signTxParams, inputEncode, CertificateContractAddr)
 	if err != nil {
 		return "", err
 	}

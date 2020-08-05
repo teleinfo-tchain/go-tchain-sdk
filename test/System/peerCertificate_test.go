@@ -7,8 +7,6 @@ import (
 	"github.com/bif/bif-sdk-go/providers"
 	"github.com/bif/bif-sdk-go/system"
 	"github.com/bif/bif-sdk-go/test/resources"
-	"github.com/bif/bif-sdk-go/utils"
-	"io/ioutil"
 	"math/big"
 	"strconv"
 	"testing"
@@ -17,40 +15,27 @@ import (
 // 53位的字符
 const publicKeyTest = ""
 
-// 经过超级节点投票，已经将基础信任锚did:bid:c935bd29a90fbeea87badf3e 激活
 //	MessageSha3   什么消息的sha3？？？   Signature 怎么拿到？？？  Id的53个字符，怎么生成的？？？
 func TestPeerRegisterCertificate(t *testing.T) {
 	var connection = bif.NewBif(providers.NewHTTPProvider(resources.IP+":"+resources.Port, 10, false))
-	coinBase, err := connection.Core.GetCoinBase()
-	if err != nil {
-		t.Log(err)
-		t.FailNow()
-	}
-
 	chainId, err := connection.Core.GetChainId()
 	if err != nil {
 		t.Log(err)
 		t.FailNow()
 	}
 
-	nonce, err := connection.Core.GetTransactionCount(coinBase, block.LATEST)
+	nonce, err := connection.Core.GetTransactionCount(testAddress, block.LATEST)
 	if err != nil {
 		t.Log(err)
 		t.FailNow()
 	}
 
-	keyJson, err := ioutil.ReadFile("../resources/superNodeKeyStore/UTC--172.17.6.53--did-bid-c935bd29a90fbeea87badf3e")
-	if err != nil{
-		t.Log(err)
-		t.FailNow()
-	}
-
 	sysTxParams := new(system.SysTxParams)
-	sysTxParams.From = utils.StringToAddress(coinBase)
-	sysTxParams.Password = "teleinfo"
-	sysTxParams.KeyFileData = keyJson
-	sysTxParams.Gas = 2000000
+	sysTxParams.IsSM2 = isSM2
+	sysTxParams.Password = password
+	sysTxParams.KeyFileData = keyFileData
 	sysTxParams.GasPrice = big.NewInt(35)
+	sysTxParams.Gas = 2000000
 	sysTxParams.Nonce = nonce.Uint64()
 	sysTxParams.ChainId = big.NewInt(0).SetUint64(chainId)
 
@@ -83,35 +68,24 @@ func TestPeerRegisterCertificate(t *testing.T) {
 
 func TestPeerRevokedCertificate(t *testing.T) {
 	var connection = bif.NewBif(providers.NewHTTPProvider(resources.IP+":"+resources.Port, 10, false))
-	coinBase, err := connection.Core.GetCoinBase()
-	if err != nil {
-		t.Log(err)
-		t.FailNow()
-	}
 	chainId, err := connection.Core.GetChainId()
 	if err != nil {
 		t.Log(err)
 		t.FailNow()
 	}
 
-	nonce, err := connection.Core.GetTransactionCount(coinBase, block.LATEST)
+	nonce, err := connection.Core.GetTransactionCount(testAddress, block.LATEST)
 	if err != nil {
 		t.Log(err)
 		t.FailNow()
 	}
 
-	keyJson, err := ioutil.ReadFile("../resources/superNodeKeyStore/UTC--172.17.6.53--did-bid-c935bd29a90fbeea87badf3e")
-	if err != nil{
-		t.Log(err)
-		t.FailNow()
-	}
-
 	sysTxParams := new(system.SysTxParams)
-	sysTxParams.From = utils.StringToAddress(coinBase)
-	sysTxParams.Password = "teleinfo"
-	sysTxParams.KeyFileData = keyJson
-	sysTxParams.Gas = 2000000
+	sysTxParams.IsSM2 = isSM2
+	sysTxParams.Password = password
+	sysTxParams.KeyFileData = keyFileData
 	sysTxParams.GasPrice = big.NewInt(35)
+	sysTxParams.Gas = 2000000
 	sysTxParams.Nonce = nonce.Uint64()
 	sysTxParams.ChainId = big.NewInt(0).SetUint64(chainId)
 
