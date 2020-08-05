@@ -7,6 +7,8 @@ import (
 	"errors"
 	"github.com/bif/bif-sdk-go/account/keystore"
 	"github.com/bif/bif-sdk-go/crypto"
+	"github.com/bif/bif-sdk-go/dto"
+	"github.com/bif/bif-sdk-go/providers"
 	"github.com/bif/bif-sdk-go/utils"
 	"github.com/bif/bif-sdk-go/utils/rlp"
 	"math/big"
@@ -18,11 +20,14 @@ import (
 const SignatureLength = 64 + 1 // 64 bytes ECDSA signature + 1 byte recovery id
 
 // Account - The Account Module
-type Account struct{}
+type Account struct {
+	provider providers.ProviderInterface
+}
 
 //  NewAccount - 初始化Account
-func NewAccount() *Account {
+func NewAccount(provider providers.ProviderInterface) *Account {
 	account := new(Account)
+	account.provider = provider
 	return account
 }
 
@@ -161,35 +166,143 @@ func (account *Account) Decrypt(keystoreJson []byte, isSM2 bool, password string
 	return key.Address.String(), hex.EncodeToString(key.PrivateKey.D.Bytes()), nil
 }
 
+// - To        string    （可选）交易的接收方，如果是部署合约，则为空
+// - Nonce     uint64    （可选）整数，可以允许你覆盖你自己的相同nonce的，待pending中的交易；默认是Core.GetTransactionCount()
+// - Gas       uint64     交易可使用的gas，未使用的gas会退回。
+// - GasPrice  *big.Int  （可选）默认是自动确定，交易的gas价格，默认是 Core.GetGasPrice()
+// - Value     *big.Int  （可选）交易转移的bifer，以wei为单位
+// - Data      []byte    （可选）合约函数交互中调用的数据的ABI字节字符串或者合约创建时初始的字节码
+// - ChainId   *big.Int   签署此交易时要使用的链ID，默认是Core.GetChainId
+func (account *Account) preCheckTx(signData *SignTxParams, privateKey string, isSM2 bool) (*txData, error) {
+	// 暂缓判断
+	if signData.Gas < 0 {
+		return nil, errors.New("params(GasPrice|Value|ChainId) should not be less than 0")
+	}
+
+	if signData.Gas == 0 {
+		return nil, errors.New("gas should be greater than 0")
+	}
+
+	var cryptoType uint
+
+	if isSM2 {
+		cryptoType = 0
+	} else {
+		cryptoType = 1
+	}
+
+	publicAddr, err := GetAddressFromPrivate(privateKey, cryptoType)
+	if err != nil {
+		return nil, errors.New("not invalid privateKey")
+	}
+
+	var recipient utils.Address
+
+	if signData.To != "" {
+		recipient = utils.StringToAddress(signData.To)
+	}
+
+	if signData.Nonce == 0 {
+		pointer := &dto.CoreRequestResult{}
+		err := account.provider.SendRequest(pointer, "core_getTransactionCount", []string{publicAddr, "latest"})
+
+		if err != nil {
+			return nil, err
+		}
+
+		signData.Nonce, err = pointer.ToUint64()
+		if err != nil {
+			return nil, err
+		}
+	}
+
+	if signData.GasPrice == nil {
+		pointer := &dto.CoreRequestResult{}
+
+		err := account.provider.SendRequest(pointer, "core_gasPrice", nil)
+
+		if err != nil {
+			return nil, err
+		}
+
+		signData.GasPrice, err = pointer.ToBigInt()
+		if err != nil {
+			return nil, err
+		}
+	}
+
+	if signData.ChainId == nil {
+		pointer := &dto.CoreRequestResult{}
+
+		err := account.provider.SendRequest(pointer, "core_chainId", nil)
+
+		if err != nil {
+			return nil, err
+		}
+
+		signData.ChainId, err = pointer.ToBigInt()
+		if err != nil {
+			return nil, err
+		}
+	}
+
+	sender := utils.StringToAddress(publicAddr)
+	tx := &txData{
+		AccountNonce: signData.Nonce,
+		Price:        signData.GasPrice,
+		GasLimit:     signData.Gas,
+		Sender:       &sender,
+		Recipient:    &recipient,
+		Amount:       signData.Value,
+		Payload:      signData.Data,
+		V:            new(big.Int),
+		R:            new(big.Int),
+		S:            new(big.Int),
+		T:            new(big.Int),
+		// NT:           new(big.Int),
+		// NV:           new(big.Int),
+		// NR:           new(big.Int),
+		// NS:           new(big.Int),
+	}
+	return tx, nil
+}
+
 /*
   SignTransaction:
    	EN -
  	CN - 使用地址私钥给指定的交易签名，返回签名结果
   Params:
-  	- transaction: *TxData 指定的交易信息
+  	- transaction: *SignTxParams 指定的交易信息
+		- To        string    （可选）交易的接收方，如果是部署合约，则为空
+		- Nonce     uint64    （可选）整数，可以允许你覆盖你自己的相同nonce的，待pending中的交易；默认是Core.GetTransactionCount()
+		- Gas       uint64     交易可使用的gas，未使用的gas会退回。
+		- GasPrice  *big.Int  （可选）默认是自动确定，交易的gas价格，默认是 Core.GetGasPrice()
+		- Value     *big.Int  （可选）交易转移的bifer，以wei为单位
+		- Data      []byte    （可选）合约函数交互中调用的数据的ABI字节字符串或者合约创建时初始的字节码
+		- ChainId   *big.Int   签署此交易时要使用的链ID，默认是Core.GetChainId
  	- privateKey: string, 私钥（transaction中的from地址对应的私钥）
- 	- chainId: int64, 链的ChainId
+ 	- isSM2: bool,  私钥生成是否采用国密，是的话为True，否则为false
 
   Returns:
   	- *SignTransactionResult
  	- error
 
   Call permissions: Anyone
-  TODO: 签署交易在构造交易时，*TxData中的NT， NV， NR，NS暂未处理，后期需要加上(现在未加，因为加上后，使用Send_rawTransaction)报错。rlp: input list has too many elements for types.Txdata
+  TODO: 签署交易在构造交易时，*txData中的NT， NV， NR，NS暂未处理，后期需要加上(现在未加，因为加上后，使用Send_rawTransaction)报错。rlp: input list has too many elements for types.Txdata
 */
-func (account *Account) SignTransaction(transaction *TxData, privateKey string, chainId *big.Int) (*SignTransactionResult, error) {
+func (account *Account) SignTransaction(signData *SignTxParams, privateKey string, isSM2 bool) (*SignTransactionResult, error) {
 	// 1 check input
-	ret, err := transaction.PreCheck(privateKey)
-	if !ret {
+	tx, err := account.preCheckTx(signData, privateKey, isSM2)
+	if err!=nil {
 		return nil, err
 	}
 
 	// 2 Get signature type based on Sender type
 	var cryptoType crypto.CryptoType
-	if transaction.Sender[8] == 115 {
+	if isSM2 {
 		cryptoType = crypto.SM2
 	} else {
-		transaction.T = utils.Big1
+		tx.T = utils.Big1
 		cryptoType = crypto.SECP256K1
 	}
 
@@ -200,11 +313,11 @@ func (account *Account) SignTransaction(transaction *TxData, privateKey string, 
 
 	// 3 New Signer
 	signer := &BIFSigner{
-		chainId:    chainId,
-		chainIdMul: new(big.Int).Mul(chainId, big.NewInt(2)),
+		chainId:    signData.ChainId,
+		chainIdMul: new(big.Int).Mul(signData.ChainId, big.NewInt(2)),
 	}
 
-	signed, err := SignTx(transaction, *signer, privKey)
+	signed, err := SignTx(tx, *signer, privKey)
 
 	if err != nil {
 		return nil, err
@@ -243,7 +356,7 @@ func (account *Account) RecoverTransaction(rawTxString string, isSM2 bool) (stri
 		return "", err
 	}
 
-	var tx TxData
+	var tx txData
 	rawTx, err = hex.DecodeString(rawTxString)
 	if err != nil {
 		return "", err
@@ -401,7 +514,7 @@ func (account *Account) Recover(rawTxString string, isSM2 bool) (string, error) 
 		return "", err
 	}
 
-	var tx TxData
+	var tx txData
 	rawTx, err = hex.DecodeString(rawTxString)
 	if err != nil {
 		return "", err

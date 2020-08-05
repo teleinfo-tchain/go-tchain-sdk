@@ -51,6 +51,7 @@ type RoundChangeSetInfo struct {
 
 type RegisterCertificateInfo struct {
 	Id          string // 节点证书的bid,，必须和public_key相同
+	Apply       string
 	PublicKey   string // 53个字符的公钥
 	NodeName    string // 节点名称，不含敏感词的字符串
 	MessageSha3 string // 消息sha3后的16进制字符串

@@ -17,14 +17,14 @@ func TestSystemLogDecode(t *testing.T) {
 	}
 
 	// 0xc8ca132b2483b5f95644bc1472c55c607fa93873ee5072d8882f8c07f069200f
-	log, err := connection.System.SystemLogDecode("0x210873a36d45f76a88504b063c7a9342b9d75d1702e5945526bec9a78c96e726")
+	log, err := connection.System.SystemLogDecode("0x5f4131b6ad51c3444dd1431b1cf263266f60e6a41282a117e23f1a8585d01deb")
 
 	if err != nil {
-		t.Error(err)
+		t.Errorf("err log : %v ", err)
 		t.FailNow()
 	}
 
-	t.Log(log.Method)
-	t.Log(log.Status)
-	t.Log(log.Result)
+	t.Log("method is ", log.Method)
+	t.Log("status is ", log.Status)
+	t.Log("result is ", log.Result)
 }

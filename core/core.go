@@ -481,6 +481,7 @@ func (core *Core) SignTransaction(transaction *dto.TransactionParameters) (*dto.
 	- transaction，*dto.TransactionParameters，交易Call的对象
  	  - From     string                    交易的发起方
  	  - To       string                    交易的接收方
+ 	  - Nonce    *big.Int                  （可选）整数，使用此值，可以允许你覆盖你自己的相同nonce的，待pending中的交易
  	  - Gas      *big.Int                  （可选）默认是自动，交易可使用的gas，未使用的gas会退回。
  	  - GasPrice *big.Int                  （可选）默认是自动确定，交易的gas价格，默认是网络gas价格的平均值 。
  	  - Value    *big.Int                  （可选）交易携带的货币量，以bifer为单位。如果合约创建交易，则为初始的基金

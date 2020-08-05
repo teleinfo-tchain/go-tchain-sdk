@@ -7,11 +7,12 @@ import (
 	"github.com/bif/bif-sdk-go/system"
 	"github.com/bif/bif-sdk-go/test/resources"
 	"github.com/bif/bif-sdk-go/utils"
+	"io/ioutil"
 	"math/big"
 	"testing"
 )
 
-func TestInitializationDDO(t *testing.T) {
+func TestInit(t *testing.T) {
 	var connection = bif.NewBif(providers.NewHTTPProvider(resources.IP+":"+resources.Port, 10, false))
 	coinBase, err := connection.Core.GetCoinBase()
 	if err != nil {
@@ -30,9 +31,16 @@ func TestInitializationDDO(t *testing.T) {
 		t.FailNow()
 	}
 
+	keyJson, err := ioutil.ReadFile("../resources/superNodeKeyStore/UTC--172.17.6.53--did-bid-c935bd29a90fbeea87badf3e")
+	if err != nil{
+		t.Log(err)
+		t.FailNow()
+	}
+
 	sysTxParams := new(system.SysTxParams)
 	sysTxParams.From = utils.StringToAddress(coinBase)
-	sysTxParams.PrivateKey = resources.CoinBasePriKey
+	sysTxParams.Password = "teleinfo"
+	sysTxParams.KeyFileData = keyJson
 	sysTxParams.Gas = 2000000
 	sysTxParams.GasPrice = big.NewInt(35)
 	sysTxParams.Nonce = nonce.Uint64()
@@ -40,13 +48,13 @@ func TestInitializationDDO(t *testing.T) {
 
 	doc := connection.System.NewDoc()
 
-	initializationDDOHash, err := doc.InitializationDDO(sysTxParams, 2)
+	txHash, err := doc.Init(sysTxParams, 2)
 	if err != nil {
 		t.Error(err)
 		t.FailNow()
 	}
 
-	t.Log(initializationDDOHash)
+	t.Log(txHash)
 }
 
 func TestSetBidName(t *testing.T) {
@@ -68,9 +76,16 @@ func TestSetBidName(t *testing.T) {
 		t.FailNow()
 	}
 
+	keyJson, err := ioutil.ReadFile("../resources/superNodeKeyStore/UTC--172.17.6.53--did-bid-c935bd29a90fbeea87badf3e")
+	if err != nil{
+		t.Log(err)
+		t.FailNow()
+	}
+
 	sysTxParams := new(system.SysTxParams)
 	sysTxParams.From = utils.StringToAddress(coinBase)
-	sysTxParams.PrivateKey = resources.CoinBasePriKey
+	sysTxParams.Password = "teleinfo"
+	sysTxParams.KeyFileData = keyJson
 	sysTxParams.Gas = 2000000
 	sysTxParams.GasPrice = big.NewInt(35)
 	sysTxParams.Nonce = nonce.Uint64()
@@ -78,13 +93,13 @@ func TestSetBidName(t *testing.T) {
 
 	doc := connection.System.NewDoc()
 
-	setBidHash, err := doc.SetBidName(sysTxParams, "testTele2")
+	txHash, err := doc.SetBidName(sysTxParams, "1", "testTele2")
 	if err != nil {
 		t.Error(err)
 		t.FailNow()
 	}
 
-	t.Log(setBidHash)
+	t.Log(txHash)
 }
 
 func TestGetDocument(t *testing.T) {
@@ -97,7 +112,7 @@ func TestGetDocument(t *testing.T) {
 
 	doc := connection.System.NewDoc()
 
-	document, err := doc.GetDocument("1")
+	document, err := doc.GetDocument(true, "1")
 	if err != nil {
 		t.Error(err)
 		t.FailNow()
@@ -106,7 +121,7 @@ func TestGetDocument(t *testing.T) {
 	t.Log(document)
 }
 
-func TestAddPublicKey(t *testing.T) {
+func TestAddPublic(t *testing.T) {
 	var connection = bif.NewBif(providers.NewHTTPProvider(resources.IP+":"+resources.Port, 10, false))
 	coinBase, err := connection.Core.GetCoinBase()
 	if err != nil {
@@ -126,9 +141,16 @@ func TestAddPublicKey(t *testing.T) {
 		t.FailNow()
 	}
 
+	keyJson, err := ioutil.ReadFile("../resources/superNodeKeyStore/UTC--172.17.6.53--did-bid-c935bd29a90fbeea87badf3e")
+	if err != nil{
+		t.Log(err)
+		t.FailNow()
+	}
+
 	sysTxParams := new(system.SysTxParams)
 	sysTxParams.From = utils.StringToAddress(coinBase)
-	sysTxParams.PrivateKey = resources.CoinBasePriKey
+	sysTxParams.Password = "teleinfo"
+	sysTxParams.KeyFileData = keyJson
 	sysTxParams.Gas = 2000000
 	sysTxParams.GasPrice = big.NewInt(35)
 	sysTxParams.Nonce = nonce.Uint64()
@@ -136,16 +158,62 @@ func TestAddPublicKey(t *testing.T) {
 
 	doc := connection.System.NewDoc()
 
-	AddPublicKeyHash, err := doc.AddPublicKey(sysTxParams, "test", "1", "123")
+	txHash, err := doc.AddPublic(sysTxParams, "test", "test", "1", "123")
 	if err != nil {
 		t.Error(err)
 		t.FailNow()
 	}
 
-	t.Log(AddPublicKeyHash)
+	t.Log(txHash)
 }
 
-func TestDeletePublicKey(t *testing.T) {
+func TestDelPublic(t *testing.T) {
+	var connection = bif.NewBif(providers.NewHTTPProvider(resources.IP+":"+resources.Port, 10, false))
+	coinBase, err := connection.Core.GetCoinBase()
+	if err != nil {
+		t.Error(err)
+		t.FailNow()
+	}
+
+	chainId, err := connection.Core.GetChainId()
+	if err != nil {
+		t.Log(err)
+		t.FailNow()
+	}
+
+	nonce, err := connection.Core.GetTransactionCount(coinBase, block.LATEST)
+	if err != nil {
+		t.Log(err)
+		t.FailNow()
+	}
+
+	keyJson, err := ioutil.ReadFile("../resources/superNodeKeyStore/UTC--172.17.6.53--did-bid-c935bd29a90fbeea87badf3e")
+	if err != nil{
+		t.Log(err)
+		t.FailNow()
+	}
+
+	sysTxParams := new(system.SysTxParams)
+	sysTxParams.From = utils.StringToAddress(coinBase)
+	sysTxParams.Password = "teleinfo"
+	sysTxParams.KeyFileData = keyJson
+	sysTxParams.Gas = 2000000
+	sysTxParams.GasPrice = big.NewInt(35)
+	sysTxParams.Nonce = nonce.Uint64()
+	sysTxParams.ChainId = big.NewInt(0).SetUint64(chainId)
+
+	doc := connection.System.NewDoc()
+
+	txHash, err := doc.DelPublic(sysTxParams, "test", "123")
+	if err != nil {
+		t.Error(err)
+		t.FailNow()
+	}
+
+	t.Log(txHash)
+}
+
+func TestAddAuth(t *testing.T) {
 	var connection = bif.NewBif(providers.NewHTTPProvider(resources.IP+":"+resources.Port, 10, false))
 	coinBase, err := connection.Core.GetCoinBase()
 	if err != nil {
@@ -167,7 +235,7 @@ func TestDeletePublicKey(t *testing.T) {
 
 	sysTxParams := new(system.SysTxParams)
 	sysTxParams.From = utils.StringToAddress(coinBase)
-	sysTxParams.PrivateKey = resources.CoinBasePriKey
+
 	sysTxParams.Gas = 2000000
 	sysTxParams.GasPrice = big.NewInt(35)
 	sysTxParams.Nonce = nonce.Uint64()
@@ -175,13 +243,151 @@ func TestDeletePublicKey(t *testing.T) {
 
 	doc := connection.System.NewDoc()
 
-	deletePublicKeyHash, err := doc.DeletePublicKey(sysTxParams, "123")
+	txHash, err := doc.AddAuth(sysTxParams, "test", "123")
 	if err != nil {
 		t.Error(err)
 		t.FailNow()
 	}
 
-	t.Log(deletePublicKeyHash)
+	t.Log(txHash)
+}
+
+func TestDelAuth(t *testing.T) {
+	var connection = bif.NewBif(providers.NewHTTPProvider(resources.IP+":"+resources.Port, 10, false))
+	coinBase, err := connection.Core.GetCoinBase()
+	if err != nil {
+		t.Error(err)
+		t.FailNow()
+	}
+
+	chainId, err := connection.Core.GetChainId()
+	if err != nil {
+		t.Log(err)
+		t.FailNow()
+	}
+
+	nonce, err := connection.Core.GetTransactionCount(coinBase, block.LATEST)
+	if err != nil {
+		t.Log(err)
+		t.FailNow()
+	}
+
+	keyJson, err := ioutil.ReadFile("../resources/superNodeKeyStore/UTC--172.17.6.53--did-bid-c935bd29a90fbeea87badf3e")
+	if err != nil{
+		t.Log(err)
+		t.FailNow()
+	}
+
+	sysTxParams := new(system.SysTxParams)
+	sysTxParams.From = utils.StringToAddress(coinBase)
+	sysTxParams.Password = "teleinfo"
+	sysTxParams.KeyFileData = keyJson
+	sysTxParams.Gas = 2000000
+	sysTxParams.GasPrice = big.NewInt(35)
+	sysTxParams.Nonce = nonce.Uint64()
+	sysTxParams.ChainId = big.NewInt(0).SetUint64(chainId)
+
+	doc := connection.System.NewDoc()
+
+	txHash, err := doc.DelAuth(sysTxParams, "test", "123")
+	if err != nil {
+		t.Error(err)
+		t.FailNow()
+	}
+
+	t.Log(txHash)
+}
+
+func TestAddService(t *testing.T) {
+	var connection = bif.NewBif(providers.NewHTTPProvider(resources.IP+":"+resources.Port, 10, false))
+	coinBase, err := connection.Core.GetCoinBase()
+	if err != nil {
+		t.Error(err)
+		t.FailNow()
+	}
+
+	chainId, err := connection.Core.GetChainId()
+	if err != nil {
+		t.Log(err)
+		t.FailNow()
+	}
+
+	nonce, err := connection.Core.GetTransactionCount(coinBase, block.LATEST)
+	if err != nil {
+		t.Log(err)
+		t.FailNow()
+	}
+
+	keyJson, err := ioutil.ReadFile("../resources/superNodeKeyStore/UTC--172.17.6.53--did-bid-c935bd29a90fbeea87badf3e")
+	if err != nil{
+		t.Log(err)
+		t.FailNow()
+	}
+
+	sysTxParams := new(system.SysTxParams)
+	sysTxParams.From = utils.StringToAddress(coinBase)
+	sysTxParams.Password = "teleinfo"
+	sysTxParams.KeyFileData = keyJson
+	sysTxParams.Gas = 2000000
+	sysTxParams.GasPrice = big.NewInt(35)
+	sysTxParams.Nonce = nonce.Uint64()
+	sysTxParams.ChainId = big.NewInt(0).SetUint64(chainId)
+
+	doc := connection.System.NewDoc()
+
+	txHash, err := doc.AddService(sysTxParams, "test", "123", "0", "serviceEndpoint")
+	if err != nil {
+		t.Error(err)
+		t.FailNow()
+	}
+
+	t.Log(txHash)
+}
+
+func TestDelService(t *testing.T) {
+	var connection = bif.NewBif(providers.NewHTTPProvider(resources.IP+":"+resources.Port, 10, false))
+	coinBase, err := connection.Core.GetCoinBase()
+	if err != nil {
+		t.Error(err)
+		t.FailNow()
+	}
+
+	chainId, err := connection.Core.GetChainId()
+	if err != nil {
+		t.Log(err)
+		t.FailNow()
+	}
+
+	nonce, err := connection.Core.GetTransactionCount(coinBase, block.LATEST)
+	if err != nil {
+		t.Log(err)
+		t.FailNow()
+	}
+
+	keyJson, err := ioutil.ReadFile("../resources/superNodeKeyStore/UTC--172.17.6.53--did-bid-c935bd29a90fbeea87badf3e")
+	if err != nil{
+		t.Log(err)
+		t.FailNow()
+	}
+
+	sysTxParams := new(system.SysTxParams)
+	sysTxParams.From = utils.StringToAddress(coinBase)
+	sysTxParams.Password = "teleinfo"
+	sysTxParams.KeyFileData = keyJson
+	sysTxParams.Gas = 2000000
+	sysTxParams.GasPrice = big.NewInt(35)
+	sysTxParams.Nonce = nonce.Uint64()
+	sysTxParams.ChainId = big.NewInt(0).SetUint64(chainId)
+
+	doc := connection.System.NewDoc()
+
+	txHash, err := doc.DelService(sysTxParams, "test", "123")
+	if err != nil {
+		t.Error(err)
+		t.FailNow()
+	}
+
+	t.Log(txHash)
 }
 
 func TestAddProof(t *testing.T) {
@@ -204,9 +410,16 @@ func TestAddProof(t *testing.T) {
 		t.FailNow()
 	}
 
+	keyJson, err := ioutil.ReadFile("../resources/superNodeKeyStore/UTC--172.17.6.53--did-bid-c935bd29a90fbeea87badf3e")
+	if err != nil{
+		t.Log(err)
+		t.FailNow()
+	}
+
 	sysTxParams := new(system.SysTxParams)
 	sysTxParams.From = utils.StringToAddress(coinBase)
-	sysTxParams.PrivateKey = resources.CoinBasePriKey
+	sysTxParams.Password = "teleinfo"
+	sysTxParams.KeyFileData = keyJson
 	sysTxParams.Gas = 2000000
 	sysTxParams.GasPrice = big.NewInt(35)
 	sysTxParams.Nonce = nonce.Uint64()
@@ -214,16 +427,16 @@ func TestAddProof(t *testing.T) {
 
 	doc := connection.System.NewDoc()
 
-	addProofHash, err := doc.AddProof(sysTxParams, "123", "testProof")
+	txHash, err := doc.AddProof(sysTxParams, "123", "0", "testProof", "1")
 	if err != nil {
 		t.Error(err)
 		t.FailNow()
 	}
 
-	t.Log(addProofHash)
+	t.Log(txHash)
 }
 
-func TestDeleteProof(t *testing.T) {
+func TestDelProof(t *testing.T) {
 	var connection = bif.NewBif(providers.NewHTTPProvider(resources.IP+":"+resources.Port, 10, false))
 	coinBase, err := connection.Core.GetCoinBase()
 	if err != nil {
@@ -243,25 +456,32 @@ func TestDeleteProof(t *testing.T) {
 		t.FailNow()
 	}
 
+	keyJson, err := ioutil.ReadFile("../resources/superNodeKeyStore/UTC--172.17.6.53--did-bid-c935bd29a90fbeea87badf3e")
+	if err != nil{
+		t.Log(err)
+		t.FailNow()
+	}
+
 	sysTxParams := new(system.SysTxParams)
 	sysTxParams.From = utils.StringToAddress(coinBase)
-	sysTxParams.PrivateKey = resources.CoinBasePriKey
+	sysTxParams.Password = "teleinfo"
+	sysTxParams.KeyFileData = keyJson
 	sysTxParams.Gas = 2000000
 	sysTxParams.GasPrice = big.NewInt(35)
 	sysTxParams.Nonce = nonce.Uint64()
 	sysTxParams.ChainId = big.NewInt(0).SetUint64(chainId)
 	doc := connection.System.NewDoc()
 
-	deleteProofHash, err := doc.DeleteProof(sysTxParams, "testProof")
+	txHash, err := doc.DelProof(sysTxParams, "123")
 	if err != nil {
 		t.Error(err)
 		t.FailNow()
 	}
 
-	t.Log(deleteProofHash)
+	t.Log(txHash)
 }
 
-func TestAddAttribute(t *testing.T) {
+func TestAddExtra(t *testing.T) {
 	var connection = bif.NewBif(providers.NewHTTPProvider(resources.IP+":"+resources.Port, 10, false))
 	coinBase, err := connection.Core.GetCoinBase()
 	if err != nil {
@@ -281,9 +501,16 @@ func TestAddAttribute(t *testing.T) {
 		t.FailNow()
 	}
 
+	keyJson, err := ioutil.ReadFile("../resources/superNodeKeyStore/UTC--172.17.6.53--did-bid-c935bd29a90fbeea87badf3e")
+	if err != nil{
+		t.Log(err)
+		t.FailNow()
+	}
+
 	sysTxParams := new(system.SysTxParams)
 	sysTxParams.From = utils.StringToAddress(coinBase)
-	sysTxParams.PrivateKey = resources.CoinBasePriKey
+	sysTxParams.Password = "teleinfo"
+	sysTxParams.KeyFileData = keyJson
 	sysTxParams.Gas = 2000000
 	sysTxParams.GasPrice = big.NewInt(35)
 	sysTxParams.Nonce = nonce.Uint64()
@@ -291,16 +518,16 @@ func TestAddAttribute(t *testing.T) {
 
 	doc := connection.System.NewDoc()
 
-	addAttributeHash, err := doc.AddAttribute(sysTxParams, "testAttr", "attr")
+	txHash, err := doc.AddExtra(sysTxParams, "testAttr", "attr")
 	if err != nil {
 		t.Error(err)
 		t.FailNow()
 	}
 
-	t.Log(addAttributeHash)
+	t.Log(txHash)
 }
 
-func TestDeleteAttribute(t *testing.T) {
+func TestDelExtra(t *testing.T) {
 	var connection = bif.NewBif(providers.NewHTTPProvider(resources.IP+":"+resources.Port, 10, false))
 	coinBase, err := connection.Core.GetCoinBase()
 	if err != nil {
@@ -320,9 +547,16 @@ func TestDeleteAttribute(t *testing.T) {
 		t.FailNow()
 	}
 
+	keyJson, err := ioutil.ReadFile("../resources/superNodeKeyStore/UTC--172.17.6.53--did-bid-c935bd29a90fbeea87badf3e")
+	if err != nil{
+		t.Log(err)
+		t.FailNow()
+	}
+
 	sysTxParams := new(system.SysTxParams)
 	sysTxParams.From = utils.StringToAddress(coinBase)
-	sysTxParams.PrivateKey = resources.CoinBasePriKey
+	sysTxParams.Password = "teleinfo"
+	sysTxParams.KeyFileData = keyJson
 	sysTxParams.Gas = 2000000
 	sysTxParams.GasPrice = big.NewInt(35)
 	sysTxParams.Nonce = nonce.Uint64()
@@ -330,13 +564,13 @@ func TestDeleteAttribute(t *testing.T) {
 
 	doc := connection.System.NewDoc()
 
-	deleteAttributeHash, err := doc.DeleteAttribute(sysTxParams, "testAttr", "attr")
+	txHash, err := doc.DelExtra(sysTxParams, "testAttr")
 	if err != nil {
 		t.Error(err)
 		t.FailNow()
 	}
 
-	t.Log(deleteAttributeHash)
+	t.Log(txHash)
 }
 
 func TestEnable(t *testing.T) {
@@ -359,9 +593,16 @@ func TestEnable(t *testing.T) {
 		t.FailNow()
 	}
 
+	keyJson, err := ioutil.ReadFile("../resources/superNodeKeyStore/UTC--172.17.6.53--did-bid-c935bd29a90fbeea87badf3e")
+	if err != nil{
+		t.Log(err)
+		t.FailNow()
+	}
+
 	sysTxParams := new(system.SysTxParams)
 	sysTxParams.From = utils.StringToAddress(coinBase)
-	sysTxParams.PrivateKey = resources.CoinBasePriKey
+	sysTxParams.Password = "teleinfo"
+	sysTxParams.KeyFileData = keyJson
 	sysTxParams.Gas = 2000000
 	sysTxParams.GasPrice = big.NewInt(35)
 	sysTxParams.Nonce = nonce.Uint64()
@@ -369,13 +610,13 @@ func TestEnable(t *testing.T) {
 
 	doc := connection.System.NewDoc()
 
-	enableHash, err := doc.Enable(sysTxParams)
+	txHash, err := doc.Enable(sysTxParams, "1")
 	if err != nil {
 		t.Error(err)
 		t.FailNow()
 	}
 
-	t.Log(enableHash)
+	t.Log(txHash)
 }
 
 func TestDisable(t *testing.T) {
@@ -398,9 +639,16 @@ func TestDisable(t *testing.T) {
 		t.FailNow()
 	}
 
+	keyJson, err := ioutil.ReadFile("../resources/superNodeKeyStore/UTC--172.17.6.53--did-bid-c935bd29a90fbeea87badf3e")
+	if err != nil{
+		t.Log(err)
+		t.FailNow()
+	}
+
 	sysTxParams := new(system.SysTxParams)
 	sysTxParams.From = utils.StringToAddress(coinBase)
-	sysTxParams.PrivateKey = resources.CoinBasePriKey
+	sysTxParams.Password = "teleinfo"
+	sysTxParams.KeyFileData = keyJson
 	sysTxParams.Gas = 2000000
 	sysTxParams.GasPrice = big.NewInt(35)
 	sysTxParams.Nonce = nonce.Uint64()
@@ -408,13 +656,13 @@ func TestDisable(t *testing.T) {
 
 	doc := connection.System.NewDoc()
 
-	disableHash, err := doc.Disable(sysTxParams)
+	txHash, err := doc.Disable(sysTxParams, "1")
 	if err != nil {
 		t.Error(err)
 		t.FailNow()
 	}
 
-	t.Log(disableHash)
+	t.Log(txHash)
 }
 
 func TestIsEnable(t *testing.T) {
@@ -427,7 +675,7 @@ func TestIsEnable(t *testing.T) {
 
 	doc := connection.System.NewDoc()
 
-	isEnable, err := doc.IsEnable("1")
+	isEnable, err := doc.IsEnable(true, "1")
 	if err != nil {
 		t.Error(err)
 		t.FailNow()

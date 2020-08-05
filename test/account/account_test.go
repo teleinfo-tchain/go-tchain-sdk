@@ -13,8 +13,8 @@ import (
 )
 
 func TestCreate(t *testing.T) {
-	acc := account.NewAccount()
-	accountAddress, privateKey, err := acc.Create(false)
+	var connection = bif.NewBif(providers.NewHTTPProvider(resources.IP+":"+resources.Port, 10, false))
+	accountAddress, privateKey, err := connection.Account.Create(false)
 	if err != nil {
 		t.Error(err)
 		t.FailNow()
@@ -23,9 +23,9 @@ func TestCreate(t *testing.T) {
 }
 
 func TestPrivateKeyToAccount(t *testing.T) {
-	acc := account.NewAccount()
-	accountAddress, privateKey, err := acc.Create(false)
-	parsedAccount, err := acc.PrivateKeyToAccount(privateKey, false)
+	var connection = bif.NewBif(providers.NewHTTPProvider(resources.IP+":"+resources.Port, 10, false))
+	accountAddress, privateKey, err := connection.Account.Create(false)
+	parsedAccount, err := connection.Account.PrivateKeyToAccount(privateKey, false)
 	if err != nil {
 		t.Error(err)
 		t.FailNow()
@@ -40,10 +40,10 @@ func TestPrivateKeyToAccount(t *testing.T) {
 }
 
 func TestEncrypt(t *testing.T) {
-	acc := account.NewAccount()
+	var connection = bif.NewBif(providers.NewHTTPProvider(resources.IP+":"+resources.Port, 10, false))
 	privateKey := "683179891753cad00325ae51a7c274ad1f39563ca56e07e4d86c2ef5e9ab82b3"
 	password := "teleinfo"
-	keyJson, err := acc.Encrypt(privateKey, false, password, false)
+	keyJson, err := connection.Account.Encrypt(privateKey, false, password, false)
 	if err != nil {
 		t.Error(err)
 		t.FailNow()
@@ -52,7 +52,7 @@ func TestEncrypt(t *testing.T) {
 }
 
 func TestDecrypt(t *testing.T) {
-	acc := account.NewAccount()
+	var connection = bif.NewBif(providers.NewHTTPProvider(resources.IP+":"+resources.Port, 10, false))
 	privateKeyFile := "../resources/superNodeKeyStore/UTC--172.17.6.51--did-bid-590ed37615bdfefa496224c7"
 	password := "teleinfo"
 	keyJson, err := ioutil.ReadFile(privateKeyFile)
@@ -60,7 +60,7 @@ func TestDecrypt(t *testing.T) {
 		t.Error(err)
 		t.FailNow()
 	}
-	address, privateKey, err := acc.Decrypt(keyJson, false, password)
+	address, privateKey, err := connection.Account.Decrypt(keyJson, false, password)
 	if err != nil {
 		t.Error(err)
 		t.FailNow()
@@ -84,8 +84,8 @@ func TestRecoverTransaction(t *testing.T) {
 		// 这里试着对从GetRawTransactionByHash中获得hash获取；
 		{"非国密交易签名解析", resources.CoinBase, false, "0xf8bf8292fe19829c40946469643a6269643ac935bd29a90fbeea87badf3e946469643a6269643ac935bd29a90fbeea87badf3e0a80018202bda0e96150ad4fd738be89a982dd4a0d739fc3992ebfe48c63ce07e0b5249f03f57ca0481e40b26a7bd13a5b9a5a1429c761152c2a5b44bb7d96ec7e6352cd0952908b018202bda0e96150ad4fd738be89a982dd4a0d739fc3992ebfe48c63ce07e0b5249f03f57ca0481e40b26a7bd13a5b9a5a1429c761152c2a5b44bb7d96ec7e6352cd0952908b"},
 	} {
-		acc := account.NewAccount()
-		recoverAddress, err := acc.RecoverTransaction(test.rawTx, test.isSM2)
+		var connection = bif.NewBif(providers.NewHTTPProvider(resources.IP+":"+resources.Port, 10, false))
+		recoverAddress, err := connection.Account.RecoverTransaction(test.rawTx, test.isSM2)
 		if err != nil {
 			t.Error(err)
 			t.FailNow()
@@ -103,18 +103,18 @@ func TestRecoverTransaction(t *testing.T) {
 func TestSignTransaction(t *testing.T) {
 	for _, test := range []struct {
 		id         string
-		cryType    uint
-		sender     string
+		address    string
 		privateKey string
 		to         string
+		isSM2      bool
 	}{
-		{"国密签名", 0, resources.AddressSM2, resources.AddressPriKey, resources.CoinBase},
-		{"非国密签名", 1, resources.CoinBase, resources.CoinBasePriKey, resources.AddressSM2},
+		{"国密签名转账", resources.AddressSM2, resources.AddressPriKey, resources.CoinBase, true},
+		{"非国密签名转账", resources.CoinBase, resources.CoinBasePriKey, resources.AddressSM2, false},
 	} {
 		var connection = bif.NewBif(providers.NewHTTPProvider(resources.IP+":"+resources.Port, 10, false))
-		nonce, err := connection.Core.GetTransactionCount(test.sender, block.LATEST)
+		nonce, err := connection.Core.GetTransactionCount(test.address, block.LATEST)
 		if err != nil {
-			t.Error(err)
+			t.Errorf("Failed connection")
 			t.FailNow()
 		}
 
@@ -124,45 +124,32 @@ func TestSignTransaction(t *testing.T) {
 			t.FailNow()
 		}
 
-		sender, err := account.GetAddressFromPrivate(test.privateKey, test.cryType)
-		if err != nil {
-			t.Error(err)
-			t.FailNow()
+		tx := &account.SignTxParams{
+			To:       test.to,
+			Nonce:    nonce.Uint64(),
+			Gas:      2000000,
+			GasPrice: big.NewInt(30),
+			Value:    big.NewInt(50000000000),
+			Data:     nil,
+			ChainId:  big.NewInt(0).SetUint64(chainId),
 		}
 
-		from := utils.StringToAddress(sender)
-		if from != utils.StringToAddress(test.sender) {
-			t.Errorf("Address and private key do not match")
-			t.FailNow()
-		}
+		res, err := connection.Account.SignTransaction(tx, test.privateKey, test.isSM2)
 
-		to := utils.StringToAddress(test.to)
-		tx := &account.TxData{
-			AccountNonce: nonce.Uint64(),
-			Price:        big.NewInt(35),
-			GasLimit:     2000000,
-			Sender:       &from,
-			Recipient:    &to,
-			Amount:       big.NewInt(50000000000),
-			Payload:      nil,
-			V:            new(big.Int),
-			R:            new(big.Int),
-			S:            new(big.Int),
-			T:            big.NewInt(0),
-			// NT:           new(big.Int),
-			// NV:           new(big.Int),
-			// NR:           new(big.Int),
-			// NS:           new(big.Int),
-		}
-
-		acc := account.NewAccount()
-		res, err := acc.SignTransaction(tx, test.privateKey, big.NewInt(0).SetUint64(chainId))
 		if err != nil {
 			t.Error(err)
 			t.FailNow()
 		}
 		t.Logf("%s : %v \n", test.id, res.Raw)
 		// t.Logf("%#v \n", res.Tx.Hash)
+
+		txHash, err := connection.Core.SendRawTransaction(res.Raw.String())
+		if err != nil {
+			t.Error(err)
+			t.FailNow()
+		}
+		t.Logf("txHash is %s", txHash)
+
 	}
 }
 
@@ -175,8 +162,8 @@ func TestHashMessage(t *testing.T) {
 		{"Hello World", false, "0xa1de988600a42c4b4ab089b619297c17d53cffae5d5120d82d8a92d0bb3b78f2"},
 		{utils.NewUtils().Utf8ToHex("Hello World"), false, "0xa1de988600a42c4b4ab089b619297c17d53cffae5d5120d82d8a92d0bb3b78f2"},
 	} {
-		acc := account.NewAccount()
-		res := acc.HashMessage(test.message, test.isSm2)
+		var connection = bif.NewBif(providers.NewHTTPProvider(resources.IP+":"+resources.Port, 10, false))
+		res := connection.Account.HashMessage(test.message, test.isSm2)
 		if res != test.hashMessage {
 			t.Errorf("hash error, input is %s, result is %s, expect is %s \n", test.message, res, test.hashMessage)
 			t.FailNow()
@@ -203,8 +190,7 @@ func TestSign(t *testing.T) {
 			t.FailNow()
 		}
 
-		acc := account.NewAccount()
-		messageHash := acc.HashMessage(test.message, test.isSm2)
+		messageHash := connection.Account.HashMessage(test.message, test.isSm2)
 		sign := &account.SignData{
 			Message:     test.message,
 			MessageHash: messageHash,
@@ -218,7 +204,7 @@ func TestSign(t *testing.T) {
 			// NS:           new(big.Int),
 		}
 
-		res, err := acc.Sign(sign, test.privateKey, test.isSm2, big.NewInt(0).SetUint64(chainId))
+		res, err := connection.Account.Sign(sign, test.privateKey, test.isSm2, big.NewInt(0).SetUint64(chainId))
 		if err != nil {
 			t.Error(err)
 			t.FailNow()

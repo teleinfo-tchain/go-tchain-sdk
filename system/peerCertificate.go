@@ -14,8 +14,9 @@ const (
 )
 
 // 节点可信的AbiJson数据
+// registerCertificate增加了apply
 const PeerCertificateAbiJSON = `[
-{"constant": false,"name":"registerCertificate","inputs":[{"name":"id","type":"string"},{"name":"publicKey","type":"string"},{"name":"nodeName","type":"string"},{"name":"messageSha3","type":"string"},{"name":"signature","type":"string"},{"name":"nodeType","type":"uint64"},{"name":"period","type":"uint64"},{"name":"ip","type":"string"},{"name":"port","type":"uint64"},{"name":"companyName","type":"string"},{"name":"companyCode","type":"string"}],"outputs":[],"type":"function"},
+{"constant": false,"name":"registerCertificate","inputs":[{"name":"id","type":"string"},{"name":"apply","type":"string"},{"name":"publicKey","type":"string"},{"name":"nodeName","type":"string"},{"name":"messageSha3","type":"string"},{"name":"signature","type":"string"},{"name":"nodeType","type":"uint64"},{"name":"period","type":"uint64"},{"name":"ip","type":"string"},{"name":"port","type":"uint64"},{"name":"companyName","type":"string"},{"name":"companyCode","type":"string"}],"outputs":[],"type":"function"},
 {"constant": false,"name":"revokedCertificate","inputs":[{"name":"id","type":"string"}],"outputs":[],"type":"function"},
 {"anonymous":false,"inputs":[{"indexed":false,"name":"method_name","type":"string"},{"indexed":false,"name":"status","type":"uint32"},{"indexed":false,"name":"reason","type":"string"}],"name":"peerEvent","type":"event"}
 ]`
@@ -37,28 +38,30 @@ func (sys *System) NewPeerCertificate() *PeerCertificate {
 }
 
 /*
-RegisterCertificate: 为节点颁发可信证书可信
-
-Params:
-	- from: [20]byte，交易发送方地址
+  RegisterCertificate:
+   	EN -
+	CN - 为节点颁发可信证书可信
+  Params:
+  	- signTxParams *SysTxParams 系统合约构造所需参数
 	- registerCertificate:  *dto.RegisterCertificateInfo，包含可信证书的信息
 		Id          string //节点证书的bid,，必须和public_key相同
-		PublicKey   string //53个字符的公钥
-		NodeName    string //节点名称，不含敏感词的字符串
-		MessageSha3 string //消息sha3后的16进制字符串
-		Signature   string //对上一个字段消息的签名，16进制字符串
-		NodeType    uint64 //节点类型，0企业，1个人
-		Period      uint64 //证书有效期，以年为单位的整型
+		Apply       string
+		PublicKey   string // 53个字符的公钥
+		NodeName    string // 节点名称，不含敏感词的字符串
+		MessageSha3 string // 消息sha3后的16进制字符串
+		Signature   string // 对上一个字段消息的签名，16进制字符串
+		NodeType    uint64 // 节点类型，0企业，1个人
+		Period      uint64 // 证书有效期，以年为单位的整型
 		IP          string // ip
 		Port        uint64 // port
-		CompanyName string //公司名（如果是个人，则是个人姓名）
-		CompanyCode string //公司代码
+		CompanyName string // 公司名（如果是个人，则是个人姓名）
+		CompanyCode string // 公司代码
 
-Returns:
-	- string, 交易哈希(transactionHash)，如果交易尚不可用，则为零哈希。
+  Returns:
+  	- string, 交易哈希(transactionHash)，如果交易尚不可用，则为零哈希。
 	- error
 
-Call permissions: 只有监管节点地址可以调用
+  Call permissions: 只有监管节点地址可以调用
 */
 func (peerCer *PeerCertificate) RegisterCertificate(signTxParams *SysTxParams, registerCertificate *dto.RegisterCertificateInfo) (string, error) {
 	// encoding
@@ -72,7 +75,7 @@ func (peerCer *PeerCertificate) RegisterCertificate(signTxParams *SysTxParams, r
 	}
 
 	signedTx, err := peerCer.super.prePareSignTransaction(signTxParams, inputEncode, utils.StringToAddress(PeerCertificateContractAddr))
-	if err != nil{
+	if err != nil {
 		return "", err
 	}
 
@@ -80,17 +83,18 @@ func (peerCer *PeerCertificate) RegisterCertificate(signTxParams *SysTxParams, r
 }
 
 /*
-RevokedCertificate: 吊销节点的可信证书可信
-
-Params:
-	- from: [20]byte，交易发送方地址
+  RevokedCertificate:
+   	EN -
+	CN - 吊销节点的可信证书可信
+  Params:
+  	- signTxParams *SysTxParams 系统合约构造所需参数
 	- id: string，节点证书的bid
 
-Returns:
-	- string, 交易哈希(transactionHash)，如果交易尚不可用，则为零哈希。
+  Returns:
+  	- string, 交易哈希(transactionHash)，如果交易尚不可用，则为零哈希。
 	- error
 
-Call permissions: 只有监管节点地址可以调用
+  Call permissions: 只有监管节点地址可以调用
 */
 func (peerCer *PeerCertificate) RevokedCertificate(signTxParams *SysTxParams, id string) (string, error) {
 	// encoding
@@ -100,7 +104,7 @@ func (peerCer *PeerCertificate) RevokedCertificate(signTxParams *SysTxParams, id
 	}
 
 	signedTx, err := peerCer.super.prePareSignTransaction(signTxParams, inputEncode, utils.StringToAddress(PeerCertificateContractAddr))
-	if err != nil{
+	if err != nil {
 		return "", err
 	}
 
@@ -108,16 +112,17 @@ func (peerCer *PeerCertificate) RevokedCertificate(signTxParams *SysTxParams, id
 }
 
 /*
-GetPeriod: 查看证书有效期
+  GetPeriod:
+   	EN -
+	CN - 查看证书有效期
+  Params:
+  	- id: string，节点证书的bid
 
-Params:
-	- id: string，节点证书的bid
-
-Returns:
-	- uint64，返回证书有效期，如果证书被吊销，则有效期是0
+  Returns:
+  	- uint64，返回证书有效期，如果证书被吊销，则有效期是0
 	- error
 
-Call permissions: Anyone
+  Call permissions: Anyone
 */
 func (peerCer *PeerCertificate) GetPeriod(id string) (uint64, error) {
 	params := make([]string, 1)
@@ -134,16 +139,17 @@ func (peerCer *PeerCertificate) GetPeriod(id string) (uint64, error) {
 }
 
 /*
-GetActive: 查看证书是否有效
+  GetActive:
+   	EN -
+	CN - 查看证书是否有效
+  Params:
+  	- id: string，节点证书的bid
 
-Params:
-	- id: string，节点证书的bid
-
-Returns:
-	- bool，true可用，false不可用
+  Returns:
+  	- bool，true可用，false不可用
 	- error
 
-Call permissions: Anyone
+  Call permissions: Anyone
 */
 func (peerCer *PeerCertificate) GetActive(id string) (bool, error) {
 	params := make([]string, 1)
@@ -160,13 +166,14 @@ func (peerCer *PeerCertificate) GetActive(id string) (bool, error) {
 }
 
 /*
-GetPeerCertificate: 查看证书的信息
+  GetPeerCertificate:
+   	EN -
+	CN - 查看证书的信息
+  Params:
+  	- id: string，节点证书的bid
 
-Params:
-	- id: string，节点证书的bid
-
-Returns:
-	- *dto.PeerCertificate
+  Returns:
+  	- *dto.PeerCertificate
 		Id          string   `json:"id"`          //唯一索引
 		Issuer      string   `json:"issuer"`      //颁发者地址
 		Apply       string   `json:"apply"`       // 申请人bid
@@ -181,7 +188,7 @@ Returns:
 		IsEnable    bool     `json:"isEnable"`    //true 凭证有效，false 凭证已撤销
 	- error
 
-Call permissions: Anyone
+  Call permissions: Anyone
 */
 func (peerCer *PeerCertificate) GetPeerCertificate(id string) (*dto.PeerCertificate, error) {
 	params := make([]string, 1)
@@ -197,7 +204,7 @@ func (peerCer *PeerCertificate) GetPeerCertificate(id string) (*dto.PeerCertific
 	return pointer.ToPeerCertificate()
 }
 
- /*
+/*
   GetPeerCertificateIdList:
    	EN - Get applied certificates by bid
  	CN - 根据节点可信证书申请人的bid获取申请的证书列表
@@ -209,7 +216,7 @@ func (peerCer *PeerCertificate) GetPeerCertificate(id string) (*dto.PeerCertific
  	- error
 
   Call permissions: Anyone
-  */
+*/
 func (peerCer *PeerCertificate) GetPeerCertificateIdList(id string) ([]string, error) {
 	params := make([]string, 1)
 	params[0] = id

@@ -1,9 +1,7 @@
 package account
 
 import (
-	"bytes"
 	"crypto/ecdsa"
-	"errors"
 	"fmt"
 	"github.com/bif/bif-sdk-go/crypto"
 	"github.com/bif/bif-sdk-go/utils"
@@ -13,7 +11,17 @@ import (
 	"math/big"
 )
 
-type TxData struct {
+type SignTxParams struct {
+	To       string
+	Nonce    uint64
+	Gas      uint64
+	GasPrice *big.Int
+	Value    *big.Int
+	Data     []byte
+	ChainId  *big.Int
+}
+
+type txData struct {
 	AccountNonce uint64         `json:"nonce"    gencodec:"required"`
 	Price        *big.Int       `json:"gasPrice" gencodec:"required"`
 	GasLimit     uint64         `json:"gas"      gencodec:"required"`
@@ -39,7 +47,7 @@ type TxData struct {
 
 type SignTransactionResult struct {
 	Raw hexutil.Bytes `json:"raw"`
-	Tx  *TxData       `json:"tx"`
+	Tx  *txData       `json:"tx"`
 }
 
 func rlpHash(x interface{}) (h utils.Hash) {
@@ -55,7 +63,7 @@ type BIFSigner struct {
 
 // Hash returns the hash to be signed by the sender.
 // It does not uniquely identify the transaction.
-func (bfs BIFSigner) Hash(tx *TxData) utils.Hash {
+func (bfs BIFSigner) Hash(tx *txData) utils.Hash {
 	return rlpHash([]interface{}{
 		tx.AccountNonce,
 		tx.Price,
@@ -97,7 +105,7 @@ func (bfs BIFSigner) SignatureValues(sig []byte) (R, S, V *big.Int, err error) {
 
 // WithSignature returns a new transaction with the given signature.
 // This signature needs to be in the [R || S || V] format where V is 0 or 1.
-func (tx *TxData) WithSignature(signer BIFSigner, sig []byte) (*TxData, error) {
+func (tx *txData) WithSignature(signer BIFSigner, sig []byte) (*txData, error) {
 	r, s, v, err := signer.SignatureValues(sig)
 	if err != nil {
 		return nil, err
@@ -108,7 +116,7 @@ func (tx *TxData) WithSignature(signer BIFSigner, sig []byte) (*TxData, error) {
 }
 
 // SignTx signs the transaction using the given signer and private key
-func SignTx(tx *TxData, s BIFSigner, prv *ecdsa.PrivateKey) (*TxData, error) {
+func SignTx(tx *txData, s BIFSigner, prv *ecdsa.PrivateKey) (*txData, error) {
 	h := s.Hash(tx)
 	var sig []byte
 	var err error
@@ -128,41 +136,4 @@ func SignTx(tx *TxData, s BIFSigner, prv *ecdsa.PrivateKey) (*TxData, error) {
 	// fmt.Println("sig is ", sig)
 	// fmt.Println("sig len is ", len(sig))
 	return tx.WithSignature(s, sig)
-}
-
-func (tx *TxData) PreCheck(privateKey string) (bool, error) {
-	if tx.Sender == nil {
-		return false, errors.New("sender not specified")
-	}
-	// 判断地址格式的有效性
-	if !(bytes.HasPrefix(tx.Sender.Bytes(), []byte("did:bid:"))) {
-		return false, errors.New("not invalid sender address")
-	}
-
-	var cryptoType uint
-	// 判断私钥地址与公钥是否对应
-	if tx.Sender[8] == 115 {
-		cryptoType = 0
-	} else {
-		cryptoType = 1
-	}
-
-	publicAddr, err := GetAddressFromPrivate(privateKey, cryptoType)
-	if err != nil {
-		return false, errors.New("not invalid privateKey")
-	}
-
-	if *tx.Sender != utils.StringToAddress(publicAddr) {
-		return false, errors.New("the sender does not match privateKey")
-	}
-
-	if tx.Price == nil {
-		return false, errors.New("gasPrice not specified")
-	}
-
-	if tx.GasLimit == 0 {
-		return false, errors.New("gasLimit not specified")
-	}
-
-	return true, nil
 }

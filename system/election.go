@@ -55,7 +55,7 @@ const ElectionAbiJSON = `[
 {"constant": false,"name":"unStake","inputs":[],"outputs":[],"type":"function"},
 {"constant": false,"name":"extractOwnBounty","inputs":[],"outputs":[],"type":"function"},
 {"anonymous":false,"inputs":[{"indexed":false,"name":"methodName","type":"string"},{"indexed":false,"name":"status","type":"uint32"},{"indexed":false,"name":"reason","type":"string"},{"indexed":false,"name":"time","type":"uint256"}],"name":"electEvent","type":"event"},
-{"constant": false,"name":"issueAdditionalBounty","inputs":[],"outputs":[],"type":"function"}
+{"constant": false,"name":"issueAddtitionalBounty","inputs":[],"outputs":[],"type":"function"}
 ]`
 
 // Election - The Election Module
@@ -75,20 +75,21 @@ func (sys *System) NewElection() *Election {
 }
 
 /*
-RegisterWitness: 注册成为见证人
-
-Params:
-	- from: [20]byte，交易发送方地址
+  RegisterWitness:
+   	EN -
+	CN - 注册成为候选
+  Params:
+  	- signTxParams *SysTxParams 系统合约构造所需参数
 	- witness: *dto.RegisterWitness，注册的见证人信息
 		NodeUrl string
 		Website string
 		Name    string
 
-Returns:
-	- string, 交易哈希(transactionHash)，如果交易尚不可用，则为零哈希。
+  Returns:
+  	- string, 交易哈希(transactionHash)，如果交易尚不可用，则为零哈希。
 	- error
 
-Call permissions: ？？？
+  Call permissions: ？？？
 */
 func (e *Election) RegisterWitness(signTxParams *SysTxParams, witness *dto.RegisterWitness) (string, error) {
 	// encode
@@ -102,7 +103,7 @@ func (e *Election) RegisterWitness(signTxParams *SysTxParams, witness *dto.Regis
 	}
 
 	signedTx, err := e.super.prePareSignTransaction(signTxParams, inputEncode, utils.StringToAddress(ElectionContractAddr))
-	if err != nil{
+	if err != nil {
 		return "", err
 	}
 
@@ -110,23 +111,24 @@ func (e *Election) RegisterWitness(signTxParams *SysTxParams, witness *dto.Regis
 }
 
 /*
-UnRegisterWitness: 取消成为见证人
+  UnRegisterWitness:
+   	EN -
+	CN -  取消成为候选
+  Params:
+  	- signTxParams *SysTxParams 系统合约构造所需参数
 
-Params:
-	- from: [20]byte，交易发送方地址
-
-Returns:
-	- string, 交易哈希(transactionHash)，如果交易尚不可用，则为零哈希。
+  Returns:
+  	- string, 交易哈希(transactionHash)，如果交易尚不可用，则为零哈希。
 	- error
 
-Call permissions: 只能自己取消自己
+  Call permissions: 只能自己取消自己
 */
 func (e *Election) UnRegisterWitness(signTxParams *SysTxParams) (string, error) {
 	// encoding
 	inputEncode, _ := e.abi.Pack("unregisterWitness")
 
 	signedTx, err := e.super.prePareSignTransaction(signTxParams, inputEncode, utils.StringToAddress(ElectionContractAddr))
-	if err != nil{
+	if err != nil {
 		return "", err
 	}
 
@@ -134,13 +136,14 @@ func (e *Election) UnRegisterWitness(signTxParams *SysTxParams) (string, error) 
 }
 
 /*
-GetCandidate: 查询候选人
+  GetCandidate:
+   	EN -
+	CN -  查询候选人
+  Params:
+  	- candidateAddress: string，候选人的地址
 
-Params:
-	- candidateAddress: string，候选人的地址
-
-Returns:
-	- *dto.Candidate
+  Returns:
+  	- *dto.Candidate
 		Owner           string       `json:"owner"`           // 候选人地址
 		Name            string       `json:"name"`            // 候选人名称
 		Active          bool         `json:"active"`          // 当前是否是候选人
@@ -152,7 +155,7 @@ Returns:
 		Website         string       `json:"website"`         // 见证人网站
 	- error
 
-Call permissions: Anyone
+  Call permissions: Anyone
 */
 func (e *Election) GetCandidate(candidateAddress string) (*dto.Candidate, error) {
 	params := make([]string, 1)
@@ -169,16 +172,17 @@ func (e *Election) GetCandidate(candidateAddress string) (*dto.Candidate, error)
 }
 
 /*
-GetAllCandidates: 查询所有候选人
+  GetAllCandidates:
+   	EN -
+	CN - 查询所有候选人
+  Params:
+  	- None
 
-Params:
-	- None
-
-Returns:
-	- []dto.Candidate，列表内为候选人信息，参考GetCandidate的候选人信息
+  Returns:
+  	- []dto.Candidate，列表内为候选人信息，参考GetCandidate的候选人信息
 	- error
 
-Call permissions: Anyone
+  Call permissions: Anyone
 */
 func (e *Election) GetAllCandidates() ([]*dto.Candidate, error) {
 	pointer := &dto.SystemRequestResult{}
@@ -192,17 +196,18 @@ func (e *Election) GetAllCandidates() ([]*dto.Candidate, error) {
 }
 
 /*
-VoteWitnesses: 给见证人投票
-
-Params:
-	- from: [20]byte，交易发送方地址
+  VoteWitnesses:
+   	EN -
+	CN - 给见证人投票
+  Params:
+  	- signTxParams *SysTxParams 系统合约构造所需参数
 	- candidate: string，候选人的地址
 
-Returns:
-	- string, 交易哈希(transactionHash)，如果交易尚不可用，则为零哈希。
+  Returns:
+  	- string, 交易哈希(transactionHash)，如果交易尚不可用，则为零哈希。
 	- error
 
-Call permissions: ？？？
+  Call permissions: ？？？
 */
 func (e *Election) VoteWitnesses(signTxParams *SysTxParams, candidate string) (string, error) {
 	// encoding
@@ -212,7 +217,7 @@ func (e *Election) VoteWitnesses(signTxParams *SysTxParams, candidate string) (s
 	}
 
 	signedTx, err := e.super.prePareSignTransaction(signTxParams, inputEncode, utils.StringToAddress(ElectionContractAddr))
-	if err != nil{
+	if err != nil {
 		return "", err
 	}
 
@@ -220,23 +225,24 @@ func (e *Election) VoteWitnesses(signTxParams *SysTxParams, candidate string) (s
 }
 
 /*
-CancelVote: 撤销投票？？还是说是投反对票？？
+  CancelVote:
+   	EN -
+	CN - 撤销投票
+  Params:
+  	- signTxParams *SysTxParams 系统合约构造所需参数
 
-Params:
-	- from: [20]byte，交易发送方地址
-
-Returns:
-	- string, 交易哈希(transactionHash)，如果交易尚不可用，则为零哈希。
+  Returns:
+  	- string, 交易哈希(transactionHash)，如果交易尚不可用，则为零哈希。
 	- error
 
-Call permissions: ？？？
+  Call permissions: ？？？
 */
 func (e *Election) CancelVote(signTxParams *SysTxParams) (string, error) {
 	// encoding
 	inputEncode, _ := e.abi.Pack("cancelVote")
 
 	signedTx, err := e.super.prePareSignTransaction(signTxParams, inputEncode, utils.StringToAddress(ElectionContractAddr))
-	if err != nil{
+	if err != nil {
 		return "", err
 	}
 
@@ -244,23 +250,24 @@ func (e *Election) CancelVote(signTxParams *SysTxParams) (string, error) {
 }
 
 /*
-StartProxy: 开启代理
+  StartProxy:
+   	EN -
+	CN - 开启代理
+  Params:
+  	- signTxParams *SysTxParams 系统合约构造所需参数
 
-Params:
-	- from: [20]byte，交易发送方地址
-
-Returns:
-	- string, 交易哈希(transactionHash)，如果交易尚不可用，则为零哈希。
+  Returns:
+  	- string, 交易哈希(transactionHash)，如果交易尚不可用，则为零哈希。
 	- error
 
-Call permissions: ？？？
+  Call permissions: ？？？
 */
 func (e *Election) StartProxy(signTxParams *SysTxParams) (string, error) {
 	// encoding
 	inputEncode, _ := e.abi.Pack("startProxy")
 
 	signedTx, err := e.super.prePareSignTransaction(signTxParams, inputEncode, utils.StringToAddress(ElectionContractAddr))
-	if err != nil{
+	if err != nil {
 		return "", err
 	}
 
@@ -268,23 +275,24 @@ func (e *Election) StartProxy(signTxParams *SysTxParams) (string, error) {
 }
 
 /*
-StopProxy: 关闭代理
+  StopProxy:
+   	EN -
+	CN - 关闭代理
+  Params:
+  	- signTxParams *SysTxParams 系统合约构造所需参数
 
-Params:
-	- from: [20]byte，交易发送方地址
-
-Returns:
-	- string, 交易哈希(transactionHash)，如果交易尚不可用，则为零哈希。
+  Returns:
+  	- string, 交易哈希(transactionHash)，如果交易尚不可用，则为零哈希。
 	- error
 
-Call permissions: ？？？
+  Call permissions: ？？？
 */
 func (e *Election) StopProxy(signTxParams *SysTxParams) (string, error) {
 	// encoding
 	inputEncode, _ := e.abi.Pack("stopProxy")
 
 	signedTx, err := e.super.prePareSignTransaction(signTxParams, inputEncode, utils.StringToAddress(ElectionContractAddr))
-	if err != nil{
+	if err != nil {
 		return "", err
 	}
 
@@ -292,23 +300,24 @@ func (e *Election) StopProxy(signTxParams *SysTxParams) (string, error) {
 }
 
 /*
-CancelProxy: 取消代理
+  CancelProxy:
+   	EN -
+	CN - 取消代理
+  Params:
+  	- signTxParams *SysTxParams 系统合约构造所需参数
 
-Params:
-	- from: [20]byte，交易发送方地址
-
-Returns:
-	- string, 交易哈希(transactionHash)，如果交易尚不可用，则为零哈希。
+  Returns:
+  	- string, 交易哈希(transactionHash)，如果交易尚不可用，则为零哈希。
 	- error
 
-Call permissions: ？？？
+  Call permissions: ？？？
 */
 func (e *Election) CancelProxy(signTxParams *SysTxParams) (string, error) {
 	// encoding
 	inputEncode, _ := e.abi.Pack("cancelProxy")
 
 	signedTx, err := e.super.prePareSignTransaction(signTxParams, inputEncode, utils.StringToAddress(ElectionContractAddr))
-	if err != nil{
+	if err != nil {
 		return "", err
 	}
 
@@ -316,17 +325,18 @@ func (e *Election) CancelProxy(signTxParams *SysTxParams) (string, error) {
 }
 
 /*
-SetProxy: 设置代理
-
-Params:
-	- from: [20]byte，交易发送方地址
+  SetProxy:
+   	EN -
+	CN - 设置代理
+  Params:
+  	- signTxParams *SysTxParams 系统合约构造所需参数
 	- proxy: string，???
 
-Returns:
-	- string, 交易哈希(transactionHash)，如果交易尚不可用，则为零哈希。
+  Returns:
+  	- string, 交易哈希(transactionHash)，如果交易尚不可用，则为零哈希。
 	- error
 
-Call permissions: ？？？
+  Call permissions: ？？？
 */
 func (e *Election) SetProxy(signTxParams *SysTxParams, proxy string) (string, error) {
 	// encoding
@@ -336,7 +346,7 @@ func (e *Election) SetProxy(signTxParams *SysTxParams, proxy string) (string, er
 	}
 
 	signedTx, err := e.super.prePareSignTransaction(signTxParams, inputEncode, utils.StringToAddress(ElectionContractAddr))
-	if err != nil{
+	if err != nil {
 		return "", err
 	}
 
@@ -344,17 +354,18 @@ func (e *Election) SetProxy(signTxParams *SysTxParams, proxy string) (string, er
 }
 
 /*
-Stake: 权益抵押
-
-Params:
-	- from: [20]byte，交易发送方地址
+  Stake:
+   	EN -
+	CN - 权益抵押
+  Params:
+  	- signTxParams *SysTxParams 系统合约构造所需参数
 	- stakeCount: *big.Int，抵押的权益数量
 
-Returns:
-	- string, 交易哈希(transactionHash)，如果交易尚不可用，则为零哈希。
+  Returns:
+  	- string, 交易哈希(transactionHash)，如果交易尚不可用，则为零哈希。
 	- error
 
-Call permissions: ？？？
+  Call permissions: ？？？
 */
 func (e *Election) Stake(signTxParams *SysTxParams, stakeCount *big.Int) (string, error) {
 	// encoding
@@ -364,7 +375,7 @@ func (e *Election) Stake(signTxParams *SysTxParams, stakeCount *big.Int) (string
 	}
 
 	signedTx, err := e.super.prePareSignTransaction(signTxParams, inputEncode, utils.StringToAddress(ElectionContractAddr))
-	if err != nil{
+	if err != nil {
 		return "", err
 	}
 
@@ -372,23 +383,24 @@ func (e *Election) Stake(signTxParams *SysTxParams, stakeCount *big.Int) (string
 }
 
 /*
-UnStake: 撤销权益抵押
+  UnStake:
+   	EN -
+	CN - 撤销权益抵押
+  Params:
+  	- signTxParams *SysTxParams 系统合约构造所需参数
 
-Params:
-	- from: [20]byte，交易发送方地址
-
-Returns:
-	- string, 交易哈希(transactionHash)，如果交易尚不可用，则为零哈希。
+  Returns:
+  	- string, 交易哈希(transactionHash)，如果交易尚不可用，则为零哈希。
 	- error
 
-Call permissions: ？？？
+  Call permissions: ？？？
 */
 func (e *Election) UnStake(signTxParams *SysTxParams) (string, error) {
 	// encoding
 	inputEncode, _ := e.abi.Pack("unStake")
 
 	signedTx, err := e.super.prePareSignTransaction(signTxParams, inputEncode, utils.StringToAddress(ElectionContractAddr))
-	if err != nil{
+	if err != nil {
 		return "", err
 	}
 
@@ -396,19 +408,20 @@ func (e *Election) UnStake(signTxParams *SysTxParams) (string, error) {
 }
 
 /*
-GetStake: 查询抵押权益
+  GetStake:
+   	EN -
+	CN - 查询抵押权益
+  Params:
+  	- voterAddress: string，投票者的地址
 
-Params:
-	- voterAddress: string，投票者的地址
-
-Returns:
-	- *dto.Stake
+  Returns:
+  	- *dto.Stake
 		Owner              common.Address `json:"owner"`              // 抵押代币的所有人
 		StakeCount         *big.Int       `json:"stakeCount"`         // 抵押的代币数量
 		LastStakeTimeStamp *big.Int       `json:"lastStakeTimeStamp"` // 上次抵押时间戳
 	- error
 
-Call permissions: Anyone
+  Call permissions: Anyone
 */
 func (e *Election) GetStake(voterAddress string) (*dto.Stake, error) {
 	params := make([]string, 1)
@@ -425,16 +438,17 @@ func (e *Election) GetStake(voterAddress string) (*dto.Stake, error) {
 }
 
 /*
-GetRestBIFBounty: 查询剩余的Bif总激励
+  GetRestBIFBounty:
+   	EN -
+	CN - 查询剩余的Bif总激励
+  Params:
+  	- None
 
-Params:
-	- None
-
-Returns:
-	- *big.Int
+  Returns:
+  	- *big.Int
 	- error
 
-Call permissions: Anyone
+  Call permissions: Anyone
 */
 func (e *Election) GetRestBIFBounty() (*big.Int, error) {
 	pointer := &dto.SystemRequestResult{}
@@ -449,23 +463,24 @@ func (e *Election) GetRestBIFBounty() (*big.Int, error) {
 }
 
 /*
-ExtractOwnBounty: 取出自身的赏金
+  ExtractOwnBounty:
+   	EN -
+	CN - 取出自身的赏金
+  Params:
+  	- signTxParams *SysTxParams 系统合约构造所需参数
 
-Params:
-	- from: [20]byte，交易发送方地址
-
-Returns:
-	- string, 交易哈希(transactionHash)，如果交易尚不可用，则为零哈希。
+  Returns:
+  	- string, 交易哈希(transactionHash)，如果交易尚不可用，则为零哈希。
 	- error
 
-Call permissions: ？？
+  Call permissions: ？？
 */
 func (e *Election) ExtractOwnBounty(signTxParams *SysTxParams) (string, error) {
 	// encoding
 	inputEncode, _ := e.abi.Pack("extractOwnBounty")
 
 	signedTx, err := e.super.prePareSignTransaction(signTxParams, inputEncode, utils.StringToAddress(ElectionContractAddr))
-	if err != nil{
+	if err != nil {
 		return "", err
 	}
 
@@ -473,23 +488,24 @@ func (e *Election) ExtractOwnBounty(signTxParams *SysTxParams) (string, error) {
 }
 
 /*
-IssueAdditionalBounty: ？？？？？？？？
+  IssueAdditionalBounty:
+   	EN -
+	CN - ??
+  Params:
+  	- signTxParams *SysTxParams 系统合约构造所需参数
 
-Params:
-	- from: [20]byte，交易发送方地址
-
-Returns:
-	- string, 交易哈希(transactionHash)，如果交易尚不可用，则为零哈希。
+  Returns:
+  	- string, 交易哈希(transactionHash)，如果交易尚不可用，则为零哈希。
 	- error
 
-Call permissions: ？？
+  Call permissions: ？？
 */
 func (e *Election) IssueAdditionalBounty(signTxParams *SysTxParams) (string, error) {
 	// encoding
-	inputEncode, _ := e.abi.Pack("issueAdditionalBounty")
+	inputEncode, _ := e.abi.Pack("issueAddtitionalBounty")
 
 	signedTx, err := e.super.prePareSignTransaction(signTxParams, inputEncode, utils.StringToAddress(ElectionContractAddr))
-	if err != nil{
+	if err != nil {
 		return "", err
 	}
 
@@ -497,13 +513,14 @@ func (e *Election) IssueAdditionalBounty(signTxParams *SysTxParams) (string, err
 }
 
 /*
-GetVoter: 查询投票人信息
+  GetVoter:
+   	EN -
+	CN - 查询投票人信息
+  Params:
+  	- voterAddress: string，投票者的地址
 
-Params:
-	- voterAddress: string，投票者的地址
-
-Returns:
-	- *dto.Voter
+  Returns:
+  	- *dto.Voter
 		Owner             common.Address   `json:"owner"`             // 投票人的地址
 		IsProxy           bool             `json:"isProxy"`           // 是否是代理人
 		ProxyVoteCount    *big.Int         `json:"proxyVoteCount"`    // 收到的代理的票数
@@ -513,7 +530,7 @@ Returns:
 		VoteCandidates    []common.Address `json:"voteCandidates"`    // 投了哪些人
 	- error
 
-Call permissions: Anyone
+  Call permissions: Anyone
 */
 func (e *Election) GetVoter(voterAddress string) (*dto.Voter, error) {
 	params := make([]string, 1)
@@ -530,16 +547,17 @@ func (e *Election) GetVoter(voterAddress string) (*dto.Voter, error) {
 }
 
 /*
-GetVoterList: 查询所有投票人信息
+  GetVoterList:
+   	EN -
+	CN - 查询所有投票人信息
+  Params:
+  	- voterAddress: string，投票者的地址
 
-Params:
-	- voterAddress: string，投票者的地址
-
-Returns:
-	- []dto.Voter，投票人的详细信息，参考GetVoter
+  Returns:
+  	- []dto.Voter，投票人的详细信息，参考GetVoter
 	- error
 
-Call permissions: Anyone
+  Call permissions: Anyone
 */
 func (e *Election) GetVoterList(voterAddress string) ([]*dto.Voter, error) {
 	params := make([]string, 1)

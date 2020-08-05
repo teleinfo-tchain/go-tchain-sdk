@@ -16,6 +16,7 @@
 package bif
 
 import (
+	"github.com/bif/bif-sdk-go/account"
 	"github.com/bif/bif-sdk-go/core"
 	"github.com/bif/bif-sdk-go/debug"
 	"github.com/bif/bif-sdk-go/dto"
@@ -34,6 +35,7 @@ import (
 type Bif struct {
 	Provider providers.ProviderInterface
 	Core     *core.Core
+	Account  *account.Account
 	Net      *net.Net
 	Utils    *utils.Utils
 	System   *system.System
@@ -50,6 +52,7 @@ func NewBif(provider providers.ProviderInterface) *Bif {
 	bif := new(Bif)
 	bif.Provider = provider
 	bif.Core = core.NewCore(provider)
+	bif.Account = account.NewAccount(provider)
 	bif.Net = net.NewNet(provider)
 	bif.Utils = utils.NewUtils()
 	bif.System = system.NewSystem(provider)

@@ -5,13 +5,11 @@ import (
 	"encoding/hex"
 	"errors"
 	"github.com/bif/bif-sdk-go/abi"
-	"github.com/bif/bif-sdk-go/account"
 	"github.com/bif/bif-sdk-go/account/keystore"
 	"github.com/bif/bif-sdk-go/crypto"
 	"github.com/bif/bif-sdk-go/dto"
 	"github.com/bif/bif-sdk-go/providers"
 	"github.com/bif/bif-sdk-go/utils"
-	"github.com/bif/bif-sdk-go/utils/hexutil"
 	"math/big"
 	"reflect"
 	"strings"
@@ -34,7 +32,6 @@ type SysTxParams struct {
 	From        utils.Address // 系统合约发起方账户地址
 	Password    string        // 解密私钥的密码
 	KeyFileData []byte        // keystore文件内容
-	PrivateKey  string        // 发起方账户对应的私钥
 	GasPrice    *big.Int      // 交易的gas价格，默认是网络gas价格的平均值
 	Gas         uint64        // 交易可使用的gas，未使用的gas会退回
 	Nonce       uint64        // 从该账户发起交易的Nonce值
@@ -74,38 +71,36 @@ func getPrivateKeyFromFile(addrParse utils.Address, keyJson []byte, password str
 	prePareSignTransaction - 构造交易
 */
 func (sys *System) prePareSignTransaction(signTxParams *SysTxParams, payLoad []byte, contractAddr utils.Address) (string, error) {
-	if signTxParams.PrivateKey == "" {
-		privateKey, err := getPrivateKeyFromFile(signTxParams.From, signTxParams.KeyFileData, signTxParams.Password)
-		if err != nil {
-			return "", err
-		}
-		signTxParams.PrivateKey = privateKey
-	}
-
-	signTx := &account.TxData{
-		AccountNonce: signTxParams.Nonce,
-		Price:        signTxParams.GasPrice,
-		GasLimit:     signTxParams.Gas,
-		Sender:       &signTxParams.From,
-		Recipient:    &contractAddr,
-		Amount:       new(big.Int),
-		Payload:      payLoad,
-		V:            new(big.Int),
-		R:            new(big.Int),
-		S:            new(big.Int),
-		T:            big.NewInt(0),
-		// NT:           new(big.Int),
-		// NV:           new(big.Int),
-		// NR:           new(big.Int),
-		// NS:           new(big.Int),
-	}
-	acc := account.NewAccount()
-	signResult, err := acc.SignTransaction(signTx, signTxParams.PrivateKey, signTxParams.ChainId)
-	if err != nil {
-		return "", err
-	}
-
-	return hexutil.Encode(signResult.Raw), nil
+	// privateKey, err := getPrivateKeyFromFile(signTxParams.From, signTxParams.KeyFileData, signTxParams.Password)
+	// if err != nil {
+	// 	return "", err
+	// }
+	//
+	// signTx := &account.TxData{
+	// 	AccountNonce: signTxParams.Nonce,
+	// 	Price:        signTxParams.GasPrice,
+	// 	GasLimit:     signTxParams.Gas,
+	// 	Sender:       &signTxParams.From,
+	// 	Recipient:    &contractAddr,
+	// 	Amount:       new(big.Int),
+	// 	Payload:      payLoad,
+	// 	V:            new(big.Int),
+	// 	R:            new(big.Int),
+	// 	S:            new(big.Int),
+	// 	T:            big.NewInt(0),
+	// 	// NT:           new(big.Int),
+	// 	// NV:           new(big.Int),
+	// 	// NR:           new(big.Int),
+	// 	// NS:           new(big.Int),
+	// }
+	// acc := account.NewAccount()
+	// signResult, err := acc.SignTransaction(signTx, privateKey, signTxParams.ChainId)
+	// if err != nil {
+	// 	return "", err
+	// }
+	//
+	// return hexutil.Encode(signResult.Raw), nil
+	return "", nil
 }
 
 // structToInterface - 将结构体转换为[]interface{}

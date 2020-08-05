@@ -8,6 +8,7 @@ import (
 	"github.com/bif/bif-sdk-go/system"
 	"github.com/bif/bif-sdk-go/test/resources"
 	"github.com/bif/bif-sdk-go/utils"
+	"io/ioutil"
 	"math/big"
 	"strconv"
 	"testing"
@@ -38,9 +39,16 @@ func TestPeerRegisterCertificate(t *testing.T) {
 		t.FailNow()
 	}
 
+	keyJson, err := ioutil.ReadFile("../resources/superNodeKeyStore/UTC--172.17.6.53--did-bid-c935bd29a90fbeea87badf3e")
+	if err != nil{
+		t.Log(err)
+		t.FailNow()
+	}
+
 	sysTxParams := new(system.SysTxParams)
 	sysTxParams.From = utils.StringToAddress(coinBase)
-	sysTxParams.PrivateKey = resources.CoinBasePriKey
+	sysTxParams.Password = "teleinfo"
+	sysTxParams.KeyFileData = keyJson
 	sysTxParams.Gas = 2000000
 	sysTxParams.GasPrice = big.NewInt(35)
 	sysTxParams.Nonce = nonce.Uint64()
@@ -49,6 +57,8 @@ func TestPeerRegisterCertificate(t *testing.T) {
 	peerCer := connection.System.NewPeerCertificate()
 
 	registerCertificateInfo := new(dto.RegisterCertificateInfo)
+	registerCertificateInfo.Id = ""
+	registerCertificateInfo.Apply = ""
 	registerCertificateInfo.PublicKey = publicKeyTest
 	registerCertificateInfo.NodeName = "testTELE"
 	registerCertificateInfo.MessageSha3 = "testTELE"
@@ -90,9 +100,16 @@ func TestPeerRevokedCertificate(t *testing.T) {
 		t.FailNow()
 	}
 
+	keyJson, err := ioutil.ReadFile("../resources/superNodeKeyStore/UTC--172.17.6.53--did-bid-c935bd29a90fbeea87badf3e")
+	if err != nil{
+		t.Log(err)
+		t.FailNow()
+	}
+
 	sysTxParams := new(system.SysTxParams)
 	sysTxParams.From = utils.StringToAddress(coinBase)
-	sysTxParams.PrivateKey = resources.CoinBasePriKey
+	sysTxParams.Password = "teleinfo"
+	sysTxParams.KeyFileData = keyJson
 	sysTxParams.Gas = 2000000
 	sysTxParams.GasPrice = big.NewInt(35)
 	sysTxParams.Nonce = nonce.Uint64()
