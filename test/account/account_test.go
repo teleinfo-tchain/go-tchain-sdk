@@ -133,6 +133,7 @@ func TestSignTransaction(t *testing.T) {
 		// 	Data:     nil,
 		// 	ChainId:  big.NewInt(0).SetUint64(chainId),
 		// }
+		t.Log("nonce is ", nonce, " chainId is ", chainId)
 		tx := &account.SignTxParams{
 			To:       test.to,
 			Nonce:    0,

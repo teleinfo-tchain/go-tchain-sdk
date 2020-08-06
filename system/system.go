@@ -62,7 +62,7 @@ func (sys *System) prePareSignTransaction(signTxParams *SysTxParams, payLoad []b
 		Gas:      signTxParams.Gas,
 		GasPrice: signTxParams.GasPrice,
 		Value:    nil,
-		Data:     nil,
+		Data:     payLoad,
 		ChainId:  signTxParams.ChainId,
 	}
 	signResult, err := sys.acc.SignTransaction(signTx, privateKey, signTxParams.IsSM2)
