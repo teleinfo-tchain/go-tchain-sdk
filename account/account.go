@@ -52,6 +52,107 @@ func publicKeyStrToAddress(pubBytes []byte, isSM2 bool) (string, error) {
 	return utils.BytesToAddress(addr).String(), nil
 }
 
+func (account *Account) getChainId() (*big.Int, error) {
+	pointer := &dto.CoreRequestResult{}
+
+	err := account.provider.SendRequest(pointer, "core_chainId", nil)
+
+	if err != nil {
+		return nil, err
+	}
+
+	return pointer.ToBigInt()
+}
+
+func (account *Account) getGasPrice() (*big.Int, error) {
+	pointer := &dto.CoreRequestResult{}
+
+	err := account.provider.SendRequest(pointer, "core_gasPrice", nil)
+
+	if err != nil {
+		return nil, err
+	}
+
+	return pointer.ToBigInt()
+}
+
+func (account *Account) getTransactionCount(publicAddr string) (uint64, error) {
+	pointer := &dto.CoreRequestResult{}
+	err := account.provider.SendRequest(pointer, "core_getTransactionCount", []string{publicAddr, "latest"})
+
+	if err != nil {
+		return 0, err
+	}
+
+	return pointer.ToUint64()
+}
+
+func (account *Account) preCheckTx(signData *SignTxParams, privateKey string, isSM2 bool) (*txData, error) {
+	if signData.Gas == 0 {
+		return nil, errors.New("gas should be greater than 0")
+	}
+
+	var cryptoType uint
+
+	if isSM2 {
+		cryptoType = 0
+	} else {
+		cryptoType = 1
+	}
+
+	publicAddr, err := GetAddressFromPrivate(privateKey, cryptoType)
+	if err != nil {
+		return nil, errors.New("not invalid privateKey")
+	}
+
+	var recipient utils.Address
+
+	if signData.To != "" {
+		recipient = utils.StringToAddress(signData.To)
+	}
+
+	if signData.Nonce == 0 {
+		signData.Nonce, err = account.getTransactionCount(publicAddr)
+		if err != nil {
+			return nil, err
+		}
+	}
+
+	if signData.GasPrice == nil {
+		signData.GasPrice, err = account.getGasPrice()
+		if err != nil {
+			return nil, err
+		}
+	}
+
+	if signData.ChainId == nil {
+		signData.ChainId, err = account.getChainId()
+		if err != nil {
+			return nil, err
+		}
+	}
+
+	sender := utils.StringToAddress(publicAddr)
+	tx := &txData{
+		AccountNonce: signData.Nonce,
+		Price:        signData.GasPrice,
+		GasLimit:     signData.Gas,
+		Sender:       &sender,
+		Recipient:    &recipient,
+		Amount:       signData.Value,
+		Payload:      signData.Data,
+		V:            new(big.Int),
+		R:            new(big.Int),
+		S:            new(big.Int),
+		T:            new(big.Int),
+		// NT:           new(big.Int),
+		// NV:           new(big.Int),
+		// NR:           new(big.Int),
+		// NS:           new(big.Int),
+	}
+	return tx, nil
+}
+
 /*
   Create:
    	EN - Generate public and private key pair
@@ -166,103 +267,6 @@ func (account *Account) Decrypt(keystoreJson []byte, isSM2 bool, password string
 	return key.Address.String(), hex.EncodeToString(key.PrivateKey.D.Bytes()), nil
 }
 
-// - To        string    （可选）交易的接收方，如果是部署合约，则为空
-// - Nonce     uint64    （可选）整数，可以允许你覆盖你自己的相同nonce的，待pending中的交易；默认是Core.GetTransactionCount()
-// - Gas       uint64     交易可使用的gas，未使用的gas会退回。
-// - GasPrice  *big.Int  （可选）默认是自动确定，交易的gas价格，默认是 Core.GetGasPrice()
-// - Value     *big.Int  （可选）交易转移的bifer，以wei为单位
-// - Data      []byte    （可选）合约函数交互中调用的数据的ABI字节字符串或者合约创建时初始的字节码
-// - ChainId   *big.Int   签署此交易时要使用的链ID，默认是Core.GetChainId
-
-func (account *Account) preCheckTx(signData *SignTxParams, privateKey string, isSM2 bool) (*txData, error) {
-	if signData.Gas == 0 {
-		return nil, errors.New("gas should be greater than 0")
-	}
-
-	var cryptoType uint
-
-	if isSM2 {
-		cryptoType = 0
-	} else {
-		cryptoType = 1
-	}
-
-	publicAddr, err := GetAddressFromPrivate(privateKey, cryptoType)
-	if err != nil {
-		return nil, errors.New("not invalid privateKey")
-	}
-
-	var recipient utils.Address
-
-	if signData.To != "" {
-		recipient = utils.StringToAddress(signData.To)
-	}
-
-	if signData.Nonce == 0 {
-		pointer := &dto.CoreRequestResult{}
-		err := account.provider.SendRequest(pointer, "core_getTransactionCount", []string{publicAddr, "latest"})
-
-		if err != nil {
-			return nil, err
-		}
-
-		signData.Nonce, err = pointer.ToUint64()
-		if err != nil {
-			return nil, err
-		}
-	}
-
-	if signData.GasPrice == nil {
-		pointer := &dto.CoreRequestResult{}
-
-		err := account.provider.SendRequest(pointer, "core_gasPrice", nil)
-
-		if err != nil {
-			return nil, err
-		}
-
-		signData.GasPrice, err = pointer.ToBigInt()
-		if err != nil {
-			return nil, err
-		}
-	}
-
-	if signData.ChainId == nil {
-		pointer := &dto.CoreRequestResult{}
-
-		err := account.provider.SendRequest(pointer, "core_chainId", nil)
-
-		if err != nil {
-			return nil, err
-		}
-
-		signData.ChainId, err = pointer.ToBigInt()
-		if err != nil {
-			return nil, err
-		}
-	}
-
-	sender := utils.StringToAddress(publicAddr)
-	tx := &txData{
-		AccountNonce: signData.Nonce,
-		Price:        signData.GasPrice,
-		GasLimit:     signData.Gas,
-		Sender:       &sender,
-		Recipient:    &recipient,
-		Amount:       signData.Value,
-		Payload:      signData.Data,
-		V:            new(big.Int),
-		R:            new(big.Int),
-		S:            new(big.Int),
-		T:            new(big.Int),
-		// NT:           new(big.Int),
-		// NV:           new(big.Int),
-		// NR:           new(big.Int),
-		// NS:           new(big.Int),
-	}
-	return tx, nil
-}
-
 /*
   SignTransaction:
    	EN -
@@ -289,7 +293,7 @@ func (account *Account) preCheckTx(signData *SignTxParams, privateKey string, is
 func (account *Account) SignTransaction(signData *SignTxParams, privateKey string, isSM2 bool) (*SignTransactionResult, error) {
 	// 1 check input
 	tx, err := account.preCheckTx(signData, privateKey, isSM2)
-	if err!=nil {
+	if err != nil {
 		return nil, err
 	}
 
@@ -366,10 +370,14 @@ func (account *Account) RecoverTransaction(rawTxString string, isSM2 bool) (stri
 	rlp.DecodeBytes(rawTx, &tx)
 
 	// fmt.Printf("%v \n ", tx)
-	// deprecated: 应该可以从txSign中拿到或者其他的方法
+	chainId, err := account.getChainId()
+	if err != nil {
+		return "", err
+	}
+
 	signer := &BIFSigner{
-		chainId:    big.NewInt(333),
-		chainIdMul: new(big.Int).Mul(big.NewInt(333), big.NewInt(2)),
+		chainId:    chainId,
+		chainIdMul: new(big.Int).Mul(chainId, big.NewInt(2)),
 	}
 	sigHash := signer.Hash(&tx)
 
@@ -524,10 +532,14 @@ func (account *Account) Recover(rawTxString string, isSM2 bool) (string, error) 
 	rlp.DecodeBytes(rawTx, &tx)
 
 	// fmt.Printf("%v \n ", tx)
-	// deprecated: 应该可以从txSign中拿到或者其他的方法
+	chainId, err := account.getChainId()
+	if err != nil {
+		return "", err
+	}
+
 	signer := &BIFSigner{
-		chainId:    big.NewInt(333),
-		chainIdMul: new(big.Int).Mul(big.NewInt(333), big.NewInt(2)),
+		chainId:    chainId,
+		chainIdMul: new(big.Int).Mul(chainId, big.NewInt(2)),
 	}
 	sigHash := signer.Hash(&tx)
 
