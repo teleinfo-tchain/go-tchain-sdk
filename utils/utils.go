@@ -11,6 +11,7 @@ import (
 	"math/big"
 	"regexp"
 	"strings"
+	"sync"
 )
 
 // define some const
@@ -29,10 +30,10 @@ var (
 
 // Errors
 var (
-	ErrInvalidSha3  = errors.New("invalid input, input is null")
-	ErrInvalidSm3   = errors.New("invalid input, input is null")
-	ErrBigInt       = errors.New("big int not in -2*255——2*255-1")
-	ErrUintNoExist  = errors.New("uint not exist")
+	ErrInvalidSha3 = errors.New("invalid input, input is null")
+	ErrInvalidSm3  = errors.New("invalid input, input is null")
+	ErrBigInt      = errors.New("big int not in -2*255——2*255-1")
+	ErrUintNoExist = errors.New("uint not exist")
 )
 
 // Utils - The Utils Module
@@ -40,10 +41,16 @@ type Utils struct {
 	BiferUint map[string]string
 }
 
+var utils *Utils
+var once sync.Once
+
 // NewUtils - Utils Module constructor to set the default provider
 func NewUtils() *Utils {
-	utils := new(Utils)
-	utils.BiferUint = biferUint
+	once.Do(func() {
+		utils = new(Utils)
+		utils.BiferUint = biferUint
+
+	})
 	return utils
 }
 
@@ -120,10 +127,10 @@ func (util *Utils) ToWei(balance string, uint ...string) (*big.Int, error) {
 	}
 
 	if len(balSplit) > 1 {
-		if len(balSplit[1]) > len(number)-1{
+		if len(balSplit[1]) > len(number)-1 {
 			return nil, errors.New(fmt.Sprintf("while converting number %s to wei,  too many decimal points not met", balance))
 		}
-		for len(balSplit[1]) < len(number)-1{
+		for len(balSplit[1]) < len(number)-1 {
 			balSplit[1] += "0"
 		}
 		fraction, ok := new(big.Int).SetString(balSplit[1], 10)
@@ -131,12 +138,12 @@ func (util *Utils) ToWei(balance string, uint ...string) (*big.Int, error) {
 			return nil, errors.New("trans fail")
 		}
 		whole.Add(whole.Mul(whole, value), fraction)
-		if isNeg{
+		if isNeg {
 			return whole.Neg(whole), nil
 		}
 		return whole, nil
 	} else {
-		if isNeg{
+		if isNeg {
 			whole.Mul(whole, value)
 			return whole.Neg(whole), nil
 		}
