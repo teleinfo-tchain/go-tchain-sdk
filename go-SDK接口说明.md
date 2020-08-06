@@ -1411,7 +1411,177 @@ RegisterCertificate:
 	- error
 ```
 
+## 7. 敏感词合约
+### 1) AddWord(signTxParams *SysTxParams, word string) (string, error)
+```
+  AddWord:
+   	EN -
+	CN - 向合约中添加敏感词
+  Params:
+  	- signTxParams *SysTxParams 系统合约构造所需参数
+	- word: string，敏感词
+
+  Returns:
+  	- string, 交易哈希(transactionHash)，如果交易尚不可用，则为零哈希。
+	- error
+
+  Call permissions: 只有监管节点地址可以操作
+```
 
 
+### 2) AddWords(signTxParams *SysTxParams, wordsLi []string) (string, error)
+```
+  AddWords:
+   	EN -
+	CN - 批量向合约中添加敏感词
+  Params:
+  	- signTxParams *SysTxParams 系统合约构造所需参数
+	- wordsLi: []string，敏感词列表
 
+  Returns:
+  	- string, 交易哈希(transactionHash)，如果交易尚不可用，则为零哈希。
+	- error
 
+  Call permissions: 只有监管节点地址可以操作
+```
+
+### 3) DelWord(signTxParams *SysTxParams, word string) (string, error)
+```
+  DelWord:
+   	EN -
+	CN - 删除合约中的字符串，只能一个一个地删除
+  Params:
+  	- signTxParams *SysTxParams 系统合约构造所需参数
+	- word: string，敏感词
+
+  Returns:
+  	- string, 交易哈希(transactionHash)，如果交易尚不可用，则为零哈希。
+	- error
+
+  Call permissions: 只有监管节点地址可以操作
+```
+
+### 4) GetAllWords() ([]string, error)
+```
+  GetAllWords:
+   	EN -
+	CN - 返回合约中保存的所有敏感词
+  Params:
+  	- None
+
+  Returns:
+  	- []string，返回敏感词列表
+	- error
+
+  Call permissions: Anyone
+```
+
+### 5) IsContainWord(word string) (bool, error)
+```
+  IsContainWord:
+   	EN -
+	CN - 查询词语是否包含敏感词
+  Params:
+  	- word: string，敏感词
+
+  Returns:
+  	- bool，true包含，false不包含
+	- error
+
+  Call permissions: Anyone
+```
+
+## 8. 超级管理合约
+### 1) Disable(signTxParams *SysTxParams, contractAddress string) (string, error)
+```
+  Disable:
+   	EN -
+	CN - 禁用合约，合约被禁用后，不能再向合约中发送send交易，但是可以发送call交易（RPC查询）
+  Params:
+  	- signTxParams *SysTxParams 系统合约构造所需参数
+	- contractAddress: string，合约地址
+
+  Returns:
+  	- string, 交易哈希(transactionHash)，如果交易尚不可用，则为零哈希。
+	- error
+
+  Call permissions: 监管节点地址，权限包含2的地址
+```
+
+### 2) Enable(signTxParams *SysTxParams, contractAddress string) (string, error)
+```
+  Enable:
+   	EN -
+	CN - 启用合约
+  Params:
+  	- signTxParams *SysTxParams 系统合约构造所需参数
+	- contractAddress: string，合约地址
+
+  Returns:
+  	- string, 交易哈希(transactionHash)，如果交易尚不可用，则为零哈希。
+	- error
+
+  Call permissions: 监管节点地址，权限包含1的地址
+```
+
+### 3) GetAllContracts() ([]*dto.AllContract, error)
+```
+  GetAllContracts:
+   	EN -
+	CN - 返回该合约管理的所有合约及合约是否启用
+  Params:
+  	- None
+
+  Returns:
+  	- []*dto.AllContract
+	- error
+
+  Call permissions: Anyone
+```
+
+### 4) GetPower(userAddress string) (uint64, error)
+```
+  GetPower:
+   	EN -
+	CN - 查询用户的权限
+  Params:
+  	- userAddress string 用户地址
+
+  Returns:
+  	- uint64，1启用合约，2禁用合约，4授权  // 3=1+2启用禁用, 5=1+4启用授权, 6=2+4禁用授权, 7=1+2+4启用禁用授权 类linux权限管理
+	- error
+
+  Call permissions: Anyone
+```
+
+### 5) IsEnable(contractAddress string) (bool, error)
+```
+  IsEnable:
+   	EN -
+	CN - 合约是否启用，未被该合约管理的合约，是启用状态
+  Params:
+  	- contractAddress string 合约地址
+
+  Returns:
+  	- bool，true启用，false禁用
+	- error
+
+  Call permissions: Anyone
+```
+
+### 6) SetPower(signTxParams *SysTxParams, userAddress string, power uint64) (string, error)
+```
+  SetPower:
+   	EN -
+	CN - 为用户授权限，使用户可以代替监管节点地址操作该合约
+  Params:
+  	- signTxParams *SysTxParams 系统合约构造所需参数
+	- userAddress: string，用户地址
+	- power: uint64，权限（1是启用，2禁用，4授权。权限和权限可以累加，类linux权限，比如3就是启用禁用权限）
+
+  Returns:
+  	- string, 交易哈希(transactionHash)，如果交易尚不可用，则为零哈希。
+	- error
+
+  Call permissions: 监管节点地址，权限包含4的地址
+```

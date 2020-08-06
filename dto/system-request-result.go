@@ -26,6 +26,11 @@ type Stake struct {
 	LastStakeTimeStamp *big.Int      `json:"lastStakeTimeStamp"` // 上次抵押时间戳
 }
 
+type AllContract struct {
+	ContractName string `json:"contractName"` // 用户地址
+	IsEnable     bool   `json:"isEnable"`     // 用户权限,1启用合约，2禁用合约，4授权  // 3=1+2, 5=1+4, 6=2+4, 7=1+2+4 类linux权限管理
+}
+
 func (pointer *SystemRequestResult) ToPeerCertificate() (*PeerCertificate, error) {
 
 	if err := pointer.checkResponse(); err != nil {
@@ -410,4 +415,42 @@ func (pointer *SystemRequestResult) ToBacklogs() (map[string][]*Message, error) 
 	err = json.Unmarshal(marshal, &backlogs)
 
 	return backlogs, err
+}
+
+func (pointer *SystemRequestResult) ToAllContract() ([]*AllContract, error) {
+
+	if err := pointer.checkResponse(); err != nil {
+		return nil, err
+	}
+
+	resultContracts := (pointer).Result.([]interface{})
+
+	contracts := make([]*AllContract, len(resultContracts))
+
+	for i, v := range resultContracts {
+
+		result := v.(map[string]interface{})
+
+		if len(result) == 0 {
+			return nil, EMPTYRESPONSE
+		}
+
+		info := &AllContract{}
+
+		marshal, err := json.Marshal(result)
+
+		if err != nil {
+			return nil, UNPARSEABLEINTERFACE
+		}
+
+		err = json.Unmarshal(marshal, info)
+		if err != nil {
+			return nil, UNPARSEABLEINTERFACE
+		}
+
+		contracts[i] = info
+
+	}
+
+	return contracts, nil
 }
