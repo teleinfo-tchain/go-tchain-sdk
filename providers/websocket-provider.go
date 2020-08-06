@@ -34,7 +34,7 @@ func NewWebSocketProvider(address string) *WebSocketProvider {
 
 func (provider WebSocketProvider) SendRequest(v interface{}, method string, params interface{}) error {
 
-	bodyString := util.JSONRPCObject{Version: "2.0", Method: method, Params: params, ID: rand.Intn(100)}
+	bodyString := util.JSONRPCObject{Version: util.Version, Method: method, Params: params, ID: rand.Intn(100)}
 
 	if provider.ws == nil {
 		ws, err := websocket.Dial(provider.address, "", provider.address)

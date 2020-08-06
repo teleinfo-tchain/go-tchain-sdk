@@ -35,3 +35,9 @@ func (jrpc *JSONRPCObject) AsJsonString() string {
 	}
 	return string(resultBytes)
 }
+
+var Version string
+
+func init() {
+	Version = "2.0"
+}

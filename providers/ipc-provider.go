@@ -37,7 +37,7 @@ func NewIPCProvider(endpoint string) *IPCProvider {
 
 func (provider IPCProvider) SendRequest(v interface{}, method string, params interface{}) error {
 
-	bodyString := util.JSONRPCObject{Version: "2.0", Method: method, Params: params, ID: rand.Intn(100)}
+	bodyString := util.JSONRPCObject{Version: util.Version, Method: method, Params: params, ID: rand.Intn(100)}
 
 	client, err := net.DialUnix("unix", nil, &net.UnixAddr{Name: provider.endpoint, Net: "unix"})
 
