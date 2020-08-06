@@ -71,15 +71,15 @@ func TestRevokedCertificate(t *testing.T) {
 		t.Log(err)
 		t.FailNow()
 	}
-
+	t.Logf("nonce is %d , chainId is %d ", nonce, chainId)
 	sysTxParams := new(system.SysTxParams)
 	sysTxParams.IsSM2 = isSM2
 	sysTxParams.Password = password
 	sysTxParams.KeyFileData = keyFileData
-	sysTxParams.GasPrice = big.NewInt(35)
+	sysTxParams.GasPrice = nil
 	sysTxParams.Gas = 2000000
-	sysTxParams.Nonce = nonce.Uint64()
-	sysTxParams.ChainId = big.NewInt(0).SetUint64(chainId)
+	sysTxParams.Nonce = 0
+	sysTxParams.ChainId = nil
 
 	cer := connection.System.NewCertificate()
 

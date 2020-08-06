@@ -2,7 +2,6 @@ package system
 
 import (
 	"errors"
-	"fmt"
 	"github.com/bif/bif-sdk-go/abi"
 	"github.com/bif/bif-sdk-go/account"
 	"github.com/bif/bif-sdk-go/dto"
@@ -17,7 +16,7 @@ import (
 // System - The System Module
 type System struct {
 	provider providers.ProviderInterface
-	acc      account.Account
+	acc      *account.Account
 }
 
 type LogData struct {
@@ -42,6 +41,7 @@ type SysTxParams struct {
 func NewSystem(provider providers.ProviderInterface) *System {
 	system := new(System)
 	system.provider = provider
+	system.acc = account.NewAccount(provider)
 	return system
 }
 
@@ -150,7 +150,6 @@ func (sys *System) SystemLogDecode(transactionHash string) (*LogData, error) {
 	}
 
 	if len(receipt.Logs) == 0 {
-		fmt.Printf("receipt %#v \n", receipt)
 		return nil, errors.New("method log error")
 	}
 	return decodeTxHash(receipt.Logs[0].Data)
