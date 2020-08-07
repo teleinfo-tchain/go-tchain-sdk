@@ -18,7 +18,7 @@ import (
 const bifer string = "bifer"
 const Sha3Null = "0xc5d2460186f7233c927e7db2dcc703c0e500b653ca82273b7bfad8045d85a470"
 
-// ÏÖÔÚµÄ²âÊÔ²»ÄÜÈ·±£ÕıÈ·£¬ÒòÎªÃ»ÓĞÒ»¸ö100%È·¶¨ÕıÈ·µÄ×ö¶ÔÕÕ
+// ç°åœ¨çš„æµ‹è¯•ä¸èƒ½ç¡®ä¿æ­£ç¡®ï¼Œå› ä¸ºæ²¡æœ‰ä¸€ä¸ª100%ç¡®å®šæ­£ç¡®çš„åšå¯¹ç…§
 const Sm3Null = "0x1ab21d8355cfa17f8e61194831e81a8f22bec8c728fefb747ed035eb5082aa2b"
 
 // Various big integer limit values.
@@ -32,7 +32,7 @@ var (
 var (
 	ErrInvalidSha3 = errors.New("invalid input, input is null")
 	ErrInvalidSm3  = errors.New("invalid input, input is null")
-	ErrBigInt      = errors.New("big int not in -2*255¡ª¡ª2*255-1")
+	ErrBigInt      = errors.New("big int not in -2*255â€”â€”2*255-1")
 	ErrUintNoExist = errors.New("uint not exist")
 )
 
@@ -85,13 +85,13 @@ var biferUint = map[string]string{
 /*
   ToWei:
    	EN - Converts any bif value value into wei
- 	CN - ½«ÈÎºÎbifÖµ×ª»»Îªwei
+ 	CN - å°†ä»»ä½•bifå€¼è½¬æ¢ä¸ºwei
   Params:
-  	- balance,string Òª×ª»»µÄbif½ğ¶î
-  	- uint£¨¿ÉÑ¡£©,  string  ×ª»»µÄµ¥Î»£¬Ä¬ÈÏÎªbifer
+  	- balance,string è¦è½¬æ¢çš„bifé‡‘é¢
+  	- uintï¼ˆå¯é€‰ï¼‰,  string  è½¬æ¢çš„å•ä½ï¼Œé»˜è®¤ä¸ºbifer
 
   Returns:
-   	- *big.Int£¬×ª»»ÎªÒÔweiÎªµ¥Î»µÄbifÓà¶î
+   	- *big.Intï¼Œè½¬æ¢ä¸ºä»¥weiä¸ºå•ä½çš„bifä½™é¢
    	- error
 
   Call permissions: Anyone
@@ -109,7 +109,7 @@ func (util *Utils) ToWei(balance string, uint ...string) (*big.Int, error) {
 	}
 	value, _ := new(big.Int).SetString(number, 10)
 
-	// ÅĞ¶ÏÊäÈëµÄÕı¸º
+	// åˆ¤æ–­è¾“å…¥çš„æ­£è´Ÿ
 	var isNeg = false
 	if balance[0] == '-' {
 		isNeg = true
@@ -166,13 +166,13 @@ func (util *Utils) ToWei(balance string, uint ...string) (*big.Int, error) {
 /*
   FromWei:
    	EN - Converts any wei value into a bif value
- 	CN - ½«ÈÎºÎÒÔweiÎªµ¥Î»µÄÊıÖµ×ª»»ÎªÆäËûµ¥Î»µÄÊıÖµ
+ 	CN - å°†ä»»ä½•ä»¥weiä¸ºå•ä½çš„æ•°å€¼è½¬æ¢ä¸ºå…¶ä»–å•ä½çš„æ•°å€¼
   Params:
-  	- balance, *big.Int Òª×ª»»µÄbifÖµ
-  	- uint£¨¿ÉÑ¡£©,  string  ×ª»»µÄµ¥Î»£¬Ä¬ÈÏÎªbifer
+  	- balance, *big.Int è¦è½¬æ¢çš„bifå€¼
+  	- uintï¼ˆå¯é€‰ï¼‰,  string  è½¬æ¢çš„å•ä½ï¼Œé»˜è®¤ä¸ºbifer
 
   Returns:
-   	- string£¬×ª»»ÎªÒÔweiÎªµ¥Î»µÄbifÓà¶î
+   	- stringï¼Œè½¬æ¢ä¸ºä»¥weiä¸ºå•ä½çš„bifä½™é¢
    	- error
 
   Call permissions: Anyone
@@ -189,7 +189,7 @@ func (util *Utils) FromWei(balance *big.Int, uint ...string) (string, error) {
 		number = biferUint[bifer]
 	}
 	value, _ := new(big.Int).SetString(number, 10)
-	// ÅĞ¶ÏÊäÈëµÄÕı¸º
+	// åˆ¤æ–­è¾“å…¥çš„æ­£è´Ÿ
 	sign := balance.Sign()
 	if sign == -1 {
 		balance = balance.Neg(balance)
@@ -202,7 +202,7 @@ func (util *Utils) FromWei(balance *big.Int, uint ...string) (string, error) {
 		whole = whole.Neg(whole)
 	}
 
-	// ¸ù¾İÄ£ÊÇ·ñÎª0ÅĞ¶ÏÊÇ·ñ»¹ĞèÆ´½Ó
+	// æ ¹æ®æ¨¡æ˜¯å¦ä¸º0åˆ¤æ–­æ˜¯å¦è¿˜éœ€æ‹¼æ¥
 	if fraction.Cmp(big.NewInt(0)) == 0 {
 		return whole.String(), nil
 	} else {
@@ -272,7 +272,7 @@ func keccak256Btc(data ...[]byte) []byte {
 /*
   Sha3:
    	EN - calculate the sha3 of the input (if input is invalid, it will return error)
-	CN - ¼ÆËãÊäÈëµÄsha3£¨Èç¹ûÊäÈëÎª¿Õ£¬Ôò½«·µ»Ø´íÎó£©
+	CN - è®¡ç®—è¾“å…¥çš„sha3ï¼ˆå¦‚æœè¾“å…¥ä¸ºç©ºï¼Œåˆ™å°†è¿”å›é”™è¯¯ï¼‰
   Params:
   	- input string
 
@@ -300,7 +300,7 @@ func (util *Utils) Sha3(input string) (string, error) {
 /*
   Sha3Raw:
    	EN - calculate the sha3 of the input(if input is invalid, it will return Sha3Null)
-	CN - ¼ÆËãÊäÈëµÄsha3£¨Èç¹ûÊäÈëÎª¿Õ£¬Ôò½«·µ»ØSha3Null£©
+	CN - è®¡ç®—è¾“å…¥çš„sha3ï¼ˆå¦‚æœè¾“å…¥ä¸ºç©ºï¼Œåˆ™å°†è¿”å›Sha3Nullï¼‰
   Params:
   	- input string
 
@@ -323,12 +323,12 @@ func (util *Utils) Sha3Raw(str string) string {
 /*
   CheckBidChecksum:
    	EN - bid string with "0x", Checks the checksum of a given Bid
-	CN - bid×Ö·û´®(±ØĞë´øÓĞ0xÇ°×º£¬·ñÔòÒ»Ö±·µ»Øfalse)£¬¼ì²é¸ø¶¨bidµÄĞ£ÑéºÍ
+	CN - bidå­—ç¬¦ä¸²(å¿…é¡»å¸¦æœ‰0xå‰ç¼€ï¼Œå¦åˆ™ä¸€ç›´è¿”å›false)ï¼Œæ£€æŸ¥ç»™å®šbidçš„æ ¡éªŒå’Œ
   Params:
   	- bid string
 
   Returns:
-  	- bool,Èç¹ûµØÖ·µÄĞ£ÑéºÍÓĞĞ§ÔòÎªtrue£¬·ñÔòÎªfalse
+  	- bool,å¦‚æœåœ°å€çš„æ ¡éªŒå’Œæœ‰æ•ˆåˆ™ä¸ºtrueï¼Œå¦åˆ™ä¸ºfalse
 
   Call permissions: Anyone
 */
@@ -340,12 +340,12 @@ func (util *Utils) CheckBidChecksum(bid string) bool {
 /*
   IsBid:
    	EN - Checks if a given string is a valid Bif bid. It will also check the checksum, if the bid has upper and lowercase letters.
-	CN - ¼ì²é¸ø¶¨µÄ×Ö·û´®ÊÇ·ñÎªÓĞĞ§µÄBid¡£ Èç¹ûBid°üº¬´óĞ¡Ğ´×ÖÄ¸£¬Ëü»¹½«¼ì²éĞ£ÑéºÍ¡£(Èç¹ûÈ«ÊÇhex±íÊ¾£¬Ôò±ØĞë´øÓĞ0xÇ°×º)
+	CN - æ£€æŸ¥ç»™å®šçš„å­—ç¬¦ä¸²æ˜¯å¦ä¸ºæœ‰æ•ˆçš„Bidã€‚ å¦‚æœBidåŒ…å«å¤§å°å†™å­—æ¯ï¼Œå®ƒè¿˜å°†æ£€æŸ¥æ ¡éªŒå’Œã€‚(å¦‚æœå…¨æ˜¯hexè¡¨ç¤ºï¼Œåˆ™å¿…é¡»å¸¦æœ‰0xå‰ç¼€)
   Params:
   	- bid string
 
   Returns:
-  	- bool,Èç¹ûÎªÓĞĞ§µÄbidÔò·µ»Øtrue£¬·ñÔòÎªfalse
+  	- bool,å¦‚æœä¸ºæœ‰æ•ˆçš„bidåˆ™è¿”å›trueï¼Œå¦åˆ™ä¸ºfalse
 
   Call permissions: Anyone
 */
@@ -390,12 +390,12 @@ func shortBidCheck(bid string) bool {
 /*
   ToChecksumBid:
    	EN - convert bid to a checksum bid
-	CN - ½«bid×ª»»ÎªĞ£ÑéºÍbid
+	CN - å°†bidè½¬æ¢ä¸ºæ ¡éªŒå’Œbid
   Params:
   	- bid string
 
   Returns:
-  	- string Ğ£ÑéºÍbid
+  	- string æ ¡éªŒå’Œbid
 
   Call permissions: Anyone
 */
@@ -406,12 +406,12 @@ func (util *Utils) ToChecksumBid(bid string) string {
 /*
   ByteToHex:
    	EN - Convert bytes to hexadecimal string
-	CN - ½«×Ö½ÚÊı×é×ª»»ÎªÊ®Áù½øÖÆ×Ö·û´®
+	CN - å°†å­—èŠ‚æ•°ç»„è½¬æ¢ä¸ºåå…­è¿›åˆ¶å­—ç¬¦ä¸²
   Params:
-  	- byteArr []byte ×Ö½ÚÊı×é
+  	- byteArr []byte å­—èŠ‚æ•°ç»„
 
   Returns:
-  	- string hex ×Ö·û´®
+  	- string hex å­—ç¬¦ä¸²
 	- error
 
   Call permissions: Anyone
@@ -423,13 +423,13 @@ func (util *Utils) ByteToHex(byteArr []byte) string {
 /*
   LeftPadBytes:
    	EN - zero-pads slice to the left up to length l.
-	CN - ÔÚ×Ö½ÚÊı×éµÄ×ó²àÌî³ä0ÖÁ³¤¶Èl
+	CN - åœ¨å­—èŠ‚æ•°ç»„çš„å·¦ä¾§å¡«å……0è‡³é•¿åº¦l
   Params:
-  	- slice []byte ÒªÌî³äµÄ×Ö½ÚÊı×é
-  	- l int Ìî³äµÄ³¤¶È£¨Èç¹û³¤¶ÈĞ¡ÓÚ×Ö½ÚÊı×é£¬Ôò·µ»ØÔ­×Ö½ÚÊı×é£©
+  	- slice []byte è¦å¡«å……çš„å­—èŠ‚æ•°ç»„
+  	- l int å¡«å……çš„é•¿åº¦ï¼ˆå¦‚æœé•¿åº¦å°äºå­—èŠ‚æ•°ç»„ï¼Œåˆ™è¿”å›åŸå­—èŠ‚æ•°ç»„ï¼‰
 
   Returns:
-  	- []byte Ìî³äµÄ×Ö½ÚÊı×é
+  	- []byte å¡«å……çš„å­—èŠ‚æ•°ç»„
 
   Call permissions: Anyone
 */
@@ -440,13 +440,13 @@ func (util *Utils) LeftPadBytes(slice []byte, l int) []byte {
 /*
   RightPadBytes:
    	EN - zero-pads slice to the right up to length l.
-	CN - ÔÚ×Ö½ÚÊı×éµÄÓÒ²àÌî³ä0ÖÁ³¤¶Èl
+	CN - åœ¨å­—èŠ‚æ•°ç»„çš„å³ä¾§å¡«å……0è‡³é•¿åº¦l
   Params:
-  	- slice []byte ÒªÌî³äµÄ×Ö½ÚÊı×é
-  	- l int Ìî³äµÄ³¤¶È£¨Èç¹û³¤¶ÈĞ¡ÓÚ×Ö½ÚÊı×é£¬Ôò·µ»ØÔ­×Ö½ÚÊı×é£©
+  	- slice []byte è¦å¡«å……çš„å­—èŠ‚æ•°ç»„
+  	- l int å¡«å……çš„é•¿åº¦ï¼ˆå¦‚æœé•¿åº¦å°äºå­—èŠ‚æ•°ç»„ï¼Œåˆ™è¿”å›åŸå­—èŠ‚æ•°ç»„ï¼‰
 
   Returns:
-  	- []byte Ìî³äµÄ×Ö½ÚÊı×é
+  	- []byte å¡«å……çš„å­—èŠ‚æ•°ç»„
 
   Call permissions: Anyone
 */
@@ -457,7 +457,7 @@ func (util *Utils) RightPadBytes(slice []byte, l int) []byte {
 /*
   ToTwosComplement:
    	EN -
-	CN - ²»Ö§³ÖĞ¡Êı£¬²»Ö§³Ö³¬¹ı256Î»±íÊ¾µÄint²¹Âë×ª»»£¨¼´´Ó-2*255µ½2*255-1£©
+	CN - ä¸æ”¯æŒå°æ•°ï¼Œä¸æ”¯æŒè¶…è¿‡256ä½è¡¨ç¤ºçš„intè¡¥ç è½¬æ¢ï¼ˆå³ä»-2*255åˆ°2*255-1ï¼‰
   Params:
   	-
   	-
@@ -474,7 +474,7 @@ func (util *Utils) ToTwosComplement(input *big.Int) (string, error) {
 	}
 	if input.Sign() == 1 {
 		nStr := fmt.Sprintf("%064x", input)
-		// Èç¹û³¬¹ı64Î»µÄ»°, ½Ø¶Ï
+		// å¦‚æœè¶…è¿‡64ä½çš„è¯, æˆªæ–­
 		return "0x" + nStr, nil
 	} else if input.Sign() == -1 {
 		return "0x" + fmt.Sprintf("%x", math.U256(input)), nil

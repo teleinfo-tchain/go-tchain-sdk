@@ -84,7 +84,7 @@ func TestGetBlockTransactionCountByHash(t *testing.T) {
 		t.FailNow()
 	}
 
-	//  ×¢ÒâÈç¹ûÓĞÆäËûÓÃ»§·¢ËÍ½»Ò×£¬¿ÉÄÜ»á´óÓÚ1£¬¸Ã²âÊÔ¿ÉÄÜ»áÊ§°Ü
+	//  æ³¨æ„å¦‚æœæœ‰å…¶ä»–ç”¨æˆ·å‘é€äº¤æ˜“ï¼Œå¯èƒ½ä¼šå¤§äº1ï¼Œè¯¥æµ‹è¯•å¯èƒ½ä¼šå¤±è´¥
 	if txCount != 1 {
 		t.Error("invalid block transaction count")
 		t.FailNow()

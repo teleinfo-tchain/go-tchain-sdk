@@ -33,7 +33,7 @@ func NewTxPool(provider providers.ProviderInterface) *TxPool {
 /*
   GetStatus:
    	EN - Returns the number of pending and queued transaction in the pool
- 	CN - ·µ»Ø½»Ò×³ØÖĞÔİ¹ÒºÍÅÅ¶ÓµÄ½»Ò×Êı
+ 	CN - è¿”å›äº¤æ˜“æ± ä¸­æš‚æŒ‚å’Œæ’é˜Ÿçš„äº¤æ˜“æ•°
   Params:
   	- None
 
@@ -57,7 +57,7 @@ func (txPool *TxPool) GetStatus() (map[string]hexutil.Uint, error) {
 /*
   Inspect:
    	EN - Retrieves the content of the transaction pool and flattens it into an easily inspectable list
- 	CN - ¼ìË÷½»Ò×³ØµÄÄÚÈİ²¢½«Æä×ª»¯ÎªÒ×ÓÚ¼ì²éµÄÁĞ±í
+ 	CN - æ£€ç´¢äº¤æ˜“æ± çš„å†…å®¹å¹¶å°†å…¶è½¬åŒ–ä¸ºæ˜“äºæ£€æŸ¥çš„åˆ—è¡¨
   Params:
   	- None
 
@@ -81,7 +81,7 @@ func (txPool *TxPool) Inspect() (map[string]map[string]map[string]string, error)
 /*
   Content:
    	EN - Returns the transactions contained within the transaction pool
- 	CN - ·µ»Ø½»Ò×³ØÖĞ°üº¬µÄ½»Ò×
+ 	CN - è¿”å›äº¤æ˜“æ± ä¸­åŒ…å«çš„äº¤æ˜“
   Params:
   	-
 
