@@ -21,6 +21,7 @@ import (
 	"github.com/bif/bif-sdk-go/providers"
 	"github.com/bif/bif-sdk-go/test/resources"
 	"github.com/bif/bif-sdk-go/utils"
+	"github.com/bif/bif-sdk-go/utils/hexutil"
 	"math/big"
 	"testing"
 )
@@ -43,11 +44,9 @@ func TestCoreSignTransaction(t *testing.T) {
 		t.Error(err)
 		t.FailNow()
 	}
-	fmt.Println(txID.Raw)
 
-	util := utils.NewUtils()
-	hexStr, _ := util.ToHex(resources.AddressTwo[:8])
-	addressTwoHex := hexStr + resources.AddressTwo[8:]
+	t.Log(txID.Raw)
+	addressTwoHex := hexutil.Encode(utils.FromHex(resources.AddressTwo))
 
 	if txID.Transaction.To != addressTwoHex {
 		t.Errorf(fmt.Sprintf("Expected %s | Got: %s", addressTwoHex, txID.Transaction.To))

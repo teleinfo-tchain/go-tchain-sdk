@@ -15,6 +15,7 @@
 package test
 
 import (
+	"github.com/bif/bif-sdk-go/test/resources"
 	"testing"
 
 	bif "github.com/bif/bif-sdk-go"
@@ -23,9 +24,9 @@ import (
 
 func Test_WebSocketProvider(t *testing.T) {
 
-	var ethClient = bif.NewBif(providers.NewWebSocketProvider("ws://127.0.0.1:8546"))
+	var ethClient = bif.NewBif(providers.NewWebSocketProvider("ws://"+resources.IP+":"+resources.Port))
 
-	for index := 0; index < 100; index++ {
+	for index := 0; index < 2; index++ {
 
 		var _, err = ethClient.ClientVersion()
 

@@ -36,7 +36,7 @@ func TestCoreEstimateGas(t *testing.T) {
 	}
 
 	transaction := new(dto.TransactionParameters)
-	//	transaction.Data = "test"
+	transaction.Data = "test"
 	transaction.From = coinBase
 	transaction.To = coinBase
 	transaction.Value = big.NewInt(10)
@@ -48,6 +48,7 @@ func TestCoreEstimateGas(t *testing.T) {
 		t.Error(err)
 		t.FailNow()
 	}
+
 	t.Log(gas)
 
 }

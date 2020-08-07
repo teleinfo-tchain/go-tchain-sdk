@@ -15,7 +15,6 @@
 package test
 
 import (
-	"fmt"
 	"github.com/bif/bif-sdk-go/test/resources"
 	"testing"
 
@@ -29,8 +28,6 @@ func TestCoreBlockNumber(t *testing.T) {
 
 	blockNumber, err := connection.Core.GetBlockNumber()
 
-	fmt.Println(blockNumber)
-
 	if err != nil {
 		t.Error(err)
 		t.Fail()
@@ -40,4 +37,6 @@ func TestCoreBlockNumber(t *testing.T) {
 		t.Errorf("Invalid Block Number")
 		t.Fail()
 	}
+
+	t.Log(blockNumber)
 }

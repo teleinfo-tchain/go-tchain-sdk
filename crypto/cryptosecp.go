@@ -22,8 +22,8 @@ import (
 	"crypto/rand"
 	"errors"
 	"fmt"
-	"github.com/bif/bif-sdk-go/common"
-	"github.com/bif/bif-sdk-go/common/math"
+	"github.com/bif/bif-sdk-go/utils"
+	"github.com/bif/bif-sdk-go/utils/math"
 	"golang.org/x/crypto/sha3"
 	"math/big"
 )
@@ -46,7 +46,7 @@ func Keccak256Btc(data ...[]byte) []byte {
 
 // Keccak256Hash calculates and returns the Keccak256 hash of the input data,
 // converting it to an internal Hash data structure.
-func Keccak256HashBtc(data ...[]byte) (h common.Hash) {
+func Keccak256HashBtc(data ...[]byte) (h utils.Hash) {
 	d := sha3.NewLegacyKeccak256()
 	for _, b := range data {
 		d.Write(b)
@@ -62,7 +62,7 @@ func toECDSABtc(d []byte, strict bool) (*ecdsa.PrivateKey, error) {
 	priv := new(ecdsa.PrivateKey)
 	priv.PublicKey.Curve = S256Btc()
 	if strict && 8*len(d) != priv.Params().BitSize {
-		return nil, fmt.Errorf("invalid length, need %d bits", priv.Params().BitSize)
+		return nil, fmt.Errorf("invalid privateKey length, need %d bits", priv.Params().BitSize)
 	}
 	priv.D = new(big.Int).SetBytes(d)
 
@@ -111,13 +111,13 @@ func GenerateKeyBtc() (*ecdsa.PrivateKey, error) {
 	return ecdsa.GenerateKey(S256Btc(), rand.Reader)
 }
 
-func PubkeyToAddressBtc(p ecdsa.PublicKey) common.Address {
+func PubkeyToAddressBtc(p ecdsa.PublicKey) utils.Address {
 	pubBytes := FromECDSAPub(&p)
 	addr := Keccak256(SECP256K1, pubBytes[1:])[12:]
 	if addr[8] == 115 {
 		addr[8] = 103
 	}
-	return common.BytesToAddress(addr)
+	return utils.BytesToAddress(addr)
 }
 
 func zeroBytes(bytes []byte) {

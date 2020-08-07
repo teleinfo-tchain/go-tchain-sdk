@@ -2,7 +2,7 @@ package system
 
 import (
 	"github.com/bif/bif-sdk-go/dto"
-	"github.com/bif/bif-sdk-go/utils"
+	"github.com/bif/bif-sdk-go/utils/hexutil"
 	"math/big"
 )
 
@@ -29,14 +29,12 @@ Returns:
 	- error
 
 Call permissions: Anyone
-
-BUG(agl): rpc接收的类型为*rpc.BlockNumber？？？
 */
 func (dp *DPoS) GetValidators(blockNumber *big.Int) ([]string, error) {
 	params := make([]interface{}, 1)
-	params[0] = utils.IntToHex(blockNumber)
+	params[0] = hexutil.EncodeBig(blockNumber)
 
-	pointer := &dto.RequestResult{}
+	pointer := &dto.SystemRequestResult{}
 
 	err := dp.super.provider.SendRequest(pointer, "dpos_getValidators", params)
 
@@ -63,7 +61,7 @@ func (dp *DPoS) GetValidatorsAtHash(hash string) ([]string, error) {
 	params := make([]interface{}, 1)
 	params[0] = hash
 
-	pointer := &dto.RequestResult{}
+	pointer := &dto.SystemRequestResult{}
 
 	err := dp.super.provider.SendRequest(pointer, "dpos_getValidatorsAtHash", params)
 
@@ -94,7 +92,7 @@ Returns:
 Call permissions: Anyone
 */
 func (dp *DPoS) RoundStateInfo() (*dto.RoundStateInfo, error) {
-	pointer := &dto.RequestResult{}
+	pointer := &dto.SystemRequestResult{}
 
 	err := dp.super.provider.SendRequest(pointer, "dpos_roundStateInfo", nil)
 
@@ -120,7 +118,7 @@ Returns:
 Call permissions: Anyone
 */
 func (dp *DPoS) RoundChangeSetInfo() (*dto.RoundChangeSetInfo, error) {
-	pointer := &dto.RequestResult{}
+	pointer := &dto.SystemRequestResult{}
 
 	err := dp.super.provider.SendRequest(pointer, "dpos_roundChangeSetInfo", nil)
 
@@ -144,7 +142,7 @@ Returns:
 Call permissions: Anyone
 */
 func (dp *DPoS) Backlogs() (map[string][]*dto.Message, error) {
-	pointer := &dto.RequestResult{}
+	pointer := &dto.SystemRequestResult{}
 
 	err := dp.super.provider.SendRequest(pointer, "dpos_backlogs", nil)
 

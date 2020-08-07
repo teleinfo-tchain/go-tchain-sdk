@@ -2,28 +2,36 @@ package dto
 
 import (
 	"encoding/json"
-	"github.com/bif/bif-sdk-go/common"
-	customerror "github.com/bif/bif-sdk-go/constants"
+	"github.com/bif/bif-sdk-go/utils"
 	"math/big"
 )
 
+type SystemRequestResult struct {
+	RequestResult
+}
+
 type Voter struct {
-	Owner             common.Address   `json:"owner"`             // 投票人的地址
-	IsProxy           bool             `json:"isProxy"`           // 是否是代理人
-	ProxyVoteCount    *big.Int         `json:"proxyVoteCount"`    // 收到的代理的票数
-	Proxy             common.Address   `json:"proxy"`             // 该节点设置的代理人
-	LastVoteCount     *big.Int         `json:"lastVoteCount"`     // 上次投的票数
-	LastVoteTimeStamp *big.Int         `json:"lastVoteTimeStamp"` // 上次投票时间戳
-	VoteCandidates    []common.Address `json:"voteCandidates"`    // 投了哪些人
+	Owner             utils.Address   `json:"owner"`             // 投票人的地址
+	IsProxy           bool            `json:"isProxy"`           // 是否是代理人
+	ProxyVoteCount    *big.Int        `json:"proxyVoteCount"`    // 收到的代理的票数
+	Proxy             utils.Address   `json:"proxy"`             // 该节点设置的代理人
+	LastVoteCount     *big.Int        `json:"lastVoteCount"`     // 上次投的票数
+	LastVoteTimeStamp *big.Int        `json:"lastVoteTimeStamp"` // 上次投票时间戳
+	VoteCandidates    []utils.Address `json:"voteCandidates"`    // 投了哪些人
 }
 
 type Stake struct {
-	Owner              common.Address `json:"owner"`              // 抵押代币的所有人
-	StakeCount         *big.Int       `json:"stakeCount"`         // 抵押的代币数量
-	LastStakeTimeStamp *big.Int       `json:"lastStakeTimeStamp"` // 上次抵押时间戳
+	Owner              utils.Address `json:"owner"`              // 抵押代币的所有人
+	StakeCount         *big.Int      `json:"stakeCount"`         // 抵押的代币数量
+	LastStakeTimeStamp *big.Int      `json:"lastStakeTimeStamp"` // 上次抵押时间戳
 }
 
-func (pointer *RequestResult) ToPeerCertificate() (*PeerCertificate, error) {
+type AllContract struct {
+	ContractName string `json:"contractName"` // 用户地址
+	IsEnable     bool   `json:"isEnable"`     // 用户权限,1启用合约，2禁用合约，4授权  // 3=1+2, 5=1+4, 6=2+4, 7=1+2+4 类linux权限管理
+}
+
+func (pointer *SystemRequestResult) ToPeerCertificate() (*PeerCertificate, error) {
 
 	if err := pointer.checkResponse(); err != nil {
 		return nil, err
@@ -32,7 +40,7 @@ func (pointer *RequestResult) ToPeerCertificate() (*PeerCertificate, error) {
 	result := (pointer).Result.(map[string]interface{})
 
 	if len(result) == 0 {
-		return nil, customerror.EMPTYRESPONSE
+		return nil, EMPTYRESPONSE
 	}
 
 	peerCertificate := &PeerCertificate{}
@@ -40,7 +48,7 @@ func (pointer *RequestResult) ToPeerCertificate() (*PeerCertificate, error) {
 	marshal, err := json.Marshal(result)
 
 	if err != nil {
-		return nil, customerror.UNPARSEABLEINTERFACE
+		return nil, UNPARSEABLEINTERFACE
 	}
 
 	err = json.Unmarshal(marshal, peerCertificate)
@@ -48,7 +56,7 @@ func (pointer *RequestResult) ToPeerCertificate() (*PeerCertificate, error) {
 	return peerCertificate, err
 }
 
-func (pointer *RequestResult) ToTrustAnchor() (*TrustAnchor, error) {
+func (pointer *SystemRequestResult) ToTrustAnchor() (*TrustAnchor, error) {
 	if err := pointer.checkResponse(); err != nil {
 		return nil, err
 	}
@@ -56,7 +64,7 @@ func (pointer *RequestResult) ToTrustAnchor() (*TrustAnchor, error) {
 	result := (pointer).Result.(map[string]interface{})
 
 	if len(result) == 0 {
-		return nil, customerror.EMPTYRESPONSE
+		return nil, EMPTYRESPONSE
 	}
 
 	trustAnchor := &TrustAnchor{}
@@ -64,7 +72,7 @@ func (pointer *RequestResult) ToTrustAnchor() (*TrustAnchor, error) {
 	marshal, err := json.Marshal(result)
 
 	if err != nil {
-		return nil, customerror.UNPARSEABLEINTERFACE
+		return nil, UNPARSEABLEINTERFACE
 	}
 
 	err = json.Unmarshal(marshal, trustAnchor)
@@ -73,7 +81,7 @@ func (pointer *RequestResult) ToTrustAnchor() (*TrustAnchor, error) {
 }
 
 // 解析测试注意！！！
-func (pointer *RequestResult) ToTrustAnchorVoter() ([]*TrustAnchorVoter, error) {
+func (pointer *SystemRequestResult) ToTrustAnchorVoter() ([]*TrustAnchorVoter, error) {
 	if err := pointer.checkResponse(); err != nil {
 		return nil, err
 	}
@@ -86,7 +94,7 @@ func (pointer *RequestResult) ToTrustAnchorVoter() ([]*TrustAnchorVoter, error) 
 		result := v.(map[string]interface{})
 
 		if len(result) == 0 {
-			return nil, customerror.EMPTYRESPONSE
+			return nil, EMPTYRESPONSE
 		}
 
 		info := &TrustAnchorVoter{}
@@ -94,12 +102,12 @@ func (pointer *RequestResult) ToTrustAnchorVoter() ([]*TrustAnchorVoter, error) 
 		marshal, err := json.Marshal(result)
 
 		if err != nil {
-			return nil, customerror.UNPARSEABLEINTERFACE
+			return nil, UNPARSEABLEINTERFACE
 		}
 
-		err = json.Unmarshal([]byte(marshal), info)
+		err = json.Unmarshal(marshal, info)
 		if err != nil {
-			return nil, customerror.UNPARSEABLEINTERFACE
+			return nil, UNPARSEABLEINTERFACE
 		}
 
 		trustAnchorVoterLi[i] = info
@@ -108,7 +116,7 @@ func (pointer *RequestResult) ToTrustAnchorVoter() ([]*TrustAnchorVoter, error) 
 	return trustAnchorVoterLi, nil
 }
 
-func (pointer *RequestResult) ToCertificateInfo() (*CertificateInfo, error) {
+func (pointer *SystemRequestResult) ToCertificateInfo() (*CertificateInfo, error) {
 	if err := pointer.checkResponse(); err != nil {
 		return nil, err
 	}
@@ -116,7 +124,7 @@ func (pointer *RequestResult) ToCertificateInfo() (*CertificateInfo, error) {
 	result := (pointer).Result.(map[string]interface{})
 
 	if len(result) == 0 {
-		return nil, customerror.EMPTYRESPONSE
+		return nil, EMPTYRESPONSE
 	}
 
 	certificateInfo := &CertificateInfo{}
@@ -131,7 +139,7 @@ func (pointer *RequestResult) ToCertificateInfo() (*CertificateInfo, error) {
 	return certificateInfo, err
 }
 
-func (pointer *RequestResult) ToCertificateIssuerSignature() (*IssuerSignature, error) {
+func (pointer *SystemRequestResult) ToCertificateIssuerSignature() (*IssuerSignature, error) {
 	if err := pointer.checkResponse(); err != nil {
 		return nil, err
 	}
@@ -139,7 +147,7 @@ func (pointer *RequestResult) ToCertificateIssuerSignature() (*IssuerSignature, 
 	result := (pointer).Result.(map[string]interface{})
 
 	if len(result) == 0 {
-		return nil, customerror.EMPTYRESPONSE
+		return nil, EMPTYRESPONSE
 	}
 
 	issuerSignature := &IssuerSignature{}
@@ -154,7 +162,7 @@ func (pointer *RequestResult) ToCertificateIssuerSignature() (*IssuerSignature, 
 	return issuerSignature, err
 }
 
-func (pointer *RequestResult) ToCertificateSubjectSignature() (*SubjectSignature, error) {
+func (pointer *SystemRequestResult) ToCertificateSubjectSignature() (*SubjectSignature, error) {
 	if err := pointer.checkResponse(); err != nil {
 		return nil, err
 	}
@@ -162,7 +170,7 @@ func (pointer *RequestResult) ToCertificateSubjectSignature() (*SubjectSignature
 	result := (pointer).Result.(map[string]interface{})
 
 	if len(result) == 0 {
-		return nil, customerror.EMPTYRESPONSE
+		return nil, EMPTYRESPONSE
 	}
 
 	subjectSignature := &SubjectSignature{}
@@ -177,7 +185,7 @@ func (pointer *RequestResult) ToCertificateSubjectSignature() (*SubjectSignature
 	return subjectSignature, err
 }
 
-func (pointer *RequestResult) ToDocument() (*Document, error) {
+func (pointer *SystemRequestResult) ToDocument() (*Document, error) {
 	if err := pointer.checkResponse(); err != nil {
 		return nil, err
 	}
@@ -185,7 +193,7 @@ func (pointer *RequestResult) ToDocument() (*Document, error) {
 	result := (pointer).Result.(map[string]interface{})
 
 	if len(result) == 0 {
-		return nil, customerror.EMPTYRESPONSE
+		return nil, EMPTYRESPONSE
 	}
 
 	document := &Document{}
@@ -200,7 +208,7 @@ func (pointer *RequestResult) ToDocument() (*Document, error) {
 	return document, err
 }
 
-func (pointer *RequestResult) ToElectionCandidate() (*Candidate, error) {
+func (pointer *SystemRequestResult) ToElectionCandidate() (*Candidate, error) {
 	if err := pointer.checkResponse(); err != nil {
 		return nil, err
 	}
@@ -208,7 +216,7 @@ func (pointer *RequestResult) ToElectionCandidate() (*Candidate, error) {
 	result := (pointer).Result.(map[string]interface{})
 
 	if len(result) == 0 {
-		return nil, customerror.EMPTYRESPONSE
+		return nil, EMPTYRESPONSE
 	}
 
 	candidate := &Candidate{}
@@ -224,7 +232,7 @@ func (pointer *RequestResult) ToElectionCandidate() (*Candidate, error) {
 	return candidate, err
 }
 
-func (pointer *RequestResult) ToElectionCandidates() ([]*Candidate, error) {
+func (pointer *SystemRequestResult) ToElectionCandidates() ([]*Candidate, error) {
 
 	if err := pointer.checkResponse(); err != nil {
 		return nil, err
@@ -239,7 +247,7 @@ func (pointer *RequestResult) ToElectionCandidates() ([]*Candidate, error) {
 		result := v.(map[string]interface{})
 
 		if len(result) == 0 {
-			return nil, customerror.EMPTYRESPONSE
+			return nil, EMPTYRESPONSE
 		}
 
 		info := &Candidate{}
@@ -247,12 +255,12 @@ func (pointer *RequestResult) ToElectionCandidates() ([]*Candidate, error) {
 		marshal, err := json.Marshal(result)
 
 		if err != nil {
-			return nil, customerror.UNPARSEABLEINTERFACE
+			return nil, UNPARSEABLEINTERFACE
 		}
 
-		err = json.Unmarshal([]byte(marshal), info)
+		err = json.Unmarshal(marshal, info)
 		if err != nil {
-			return nil, customerror.UNPARSEABLEINTERFACE
+			return nil, UNPARSEABLEINTERFACE
 		}
 
 		candidates[i] = info
@@ -262,7 +270,7 @@ func (pointer *RequestResult) ToElectionCandidates() ([]*Candidate, error) {
 	return candidates, nil
 }
 
-func (pointer *RequestResult) ToElectionVoter() (*Voter, error) {
+func (pointer *SystemRequestResult) ToElectionVoter() (*Voter, error) {
 	if err := pointer.checkResponse(); err != nil {
 		return nil, err
 	}
@@ -270,7 +278,7 @@ func (pointer *RequestResult) ToElectionVoter() (*Voter, error) {
 	result := (pointer).Result.(map[string]interface{})
 
 	if len(result) == 0 {
-		return nil, customerror.EMPTYRESPONSE
+		return nil, EMPTYRESPONSE
 	}
 
 	voter := &Voter{}
@@ -285,7 +293,7 @@ func (pointer *RequestResult) ToElectionVoter() (*Voter, error) {
 	return voter, err
 }
 
-func (pointer *RequestResult) ToElectionVoterList() ([]*Voter, error) {
+func (pointer *SystemRequestResult) ToElectionVoterList() ([]*Voter, error) {
 
 	if err := pointer.checkResponse(); err != nil {
 		return nil, err
@@ -300,7 +308,7 @@ func (pointer *RequestResult) ToElectionVoterList() ([]*Voter, error) {
 		result := v.(map[string]interface{})
 
 		if len(result) == 0 {
-			return nil, customerror.EMPTYRESPONSE
+			return nil, EMPTYRESPONSE
 		}
 
 		info := &Voter{}
@@ -308,12 +316,12 @@ func (pointer *RequestResult) ToElectionVoterList() ([]*Voter, error) {
 		marshal, err := json.Marshal(result)
 
 		if err != nil {
-			return nil, customerror.UNPARSEABLEINTERFACE
+			return nil, UNPARSEABLEINTERFACE
 		}
 
-		err = json.Unmarshal([]byte(marshal), info)
+		err = json.Unmarshal(marshal, info)
 		if err != nil {
-			return nil, customerror.UNPARSEABLEINTERFACE
+			return nil, UNPARSEABLEINTERFACE
 		}
 
 		voters[i] = info
@@ -323,14 +331,14 @@ func (pointer *RequestResult) ToElectionVoterList() ([]*Voter, error) {
 	return voters, nil
 }
 
-func (pointer *RequestResult) ToElectionStake() (*Stake, error) {
+func (pointer *SystemRequestResult) ToElectionStake() (*Stake, error) {
 	if err := pointer.checkResponse(); err != nil {
 		return nil, err
 	}
 
 	result := (pointer).Result.(map[string]interface{})
 	if len(result) == 0 {
-		return nil, customerror.EMPTYRESPONSE
+		return nil, EMPTYRESPONSE
 	}
 
 	stake := &Stake{}
@@ -343,4 +351,106 @@ func (pointer *RequestResult) ToElectionStake() (*Stake, error) {
 	err = json.Unmarshal(marshal, stake)
 
 	return stake, err
+}
+
+func (pointer *SystemRequestResult) ToRoundStateInfo() (*RoundStateInfo, error) {
+	if err := pointer.checkResponse(); err != nil {
+		return nil, err
+	}
+
+	result := (pointer).Result.(map[string]interface{})
+
+	if len(result) == 0 {
+		return nil, EMPTYRESPONSE
+	}
+
+	roundStateInfo := &RoundStateInfo{}
+
+	marshal, err := json.Marshal(result)
+
+	err = json.Unmarshal(marshal, roundStateInfo)
+
+	return roundStateInfo, err
+}
+
+func (pointer *SystemRequestResult) ToRoundChangeSetInfo() (*RoundChangeSetInfo, error) {
+	if err := pointer.checkResponse(); err != nil {
+		return nil, err
+	}
+
+	result := (pointer).Result.(map[string]interface{})
+
+	if len(result) == 0 {
+		return nil, EMPTYRESPONSE
+	}
+
+	roundChangeSetInfo := &RoundChangeSetInfo{}
+
+	marshal, err := json.Marshal(result)
+
+	err = json.Unmarshal(marshal, roundChangeSetInfo)
+
+	return roundChangeSetInfo, err
+}
+
+func (pointer *SystemRequestResult) ToBacklogs() (map[string][]*Message, error) {
+	if err := pointer.checkResponse(); err != nil {
+		return nil, err
+	}
+
+	result := (pointer).Result.(map[string]interface{})
+
+	if len(result) == 0 {
+		return nil, EMPTYRESPONSE
+	}
+
+	backlogs := make(map[string][]*Message, len(result))
+
+	marshal, err := json.Marshal(result)
+
+	if err != nil {
+		return nil, UNPARSEABLEINTERFACE
+	}
+
+	err = json.Unmarshal(marshal, &backlogs)
+
+	return backlogs, err
+}
+
+func (pointer *SystemRequestResult) ToAllContract() ([]*AllContract, error) {
+
+	if err := pointer.checkResponse(); err != nil {
+		return nil, err
+	}
+
+	resultContracts := (pointer).Result.([]interface{})
+
+	contracts := make([]*AllContract, len(resultContracts))
+
+	for i, v := range resultContracts {
+
+		result := v.(map[string]interface{})
+
+		if len(result) == 0 {
+			return nil, EMPTYRESPONSE
+		}
+
+		info := &AllContract{}
+
+		marshal, err := json.Marshal(result)
+
+		if err != nil {
+			return nil, UNPARSEABLEINTERFACE
+		}
+
+		err = json.Unmarshal(marshal, info)
+		if err != nil {
+			return nil, UNPARSEABLEINTERFACE
+		}
+
+		contracts[i] = info
+
+	}
+
+	return contracts, nil
 }

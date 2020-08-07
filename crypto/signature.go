@@ -22,7 +22,7 @@ import (
 	"crypto/elliptic"
 	"errors"
 	"fmt"
-	"github.com/bif/bif-sdk-go/common"
+	"github.com/bif/bif-sdk-go/utils"
 	"time"
 )
 
@@ -38,19 +38,19 @@ func Ecrecover(hash, sig []byte) ([]byte, error) {
 		start := time.Now()
 		sig = sig[:len(sig)-1]
 		bytes, err := EcrecoverSm2(hash, sig)
-		fmt.Println("Ecrecover SM2", "nanoseconds", common.PrettyDuration(time.Since(start)))
+		fmt.Println("Ecrecover SM2", "nanoseconds", utils.PrettyDuration(time.Since(start)))
 		return bytes, err
 	case 1:
 		start := time.Now()
 		sig = sig[:len(sig)-1]
 		bytes, err := EcrecoverBtc(hash, sig)
-		fmt.Println("Ecrecover SECP256K1", "nanoseconds", common.PrettyDuration(time.Since(start)))
+		fmt.Println("Ecrecover SECP256K1", "nanoseconds", utils.PrettyDuration(time.Since(start)))
 		return bytes, err
 	default:
 		start := time.Now()
 		sig = sig[:len(sig)-1]
 		bytes, err := EcrecoverBtc(hash, sig)
-		fmt.Println("Ecrecover SECP256K1", "nanoseconds", common.PrettyDuration(time.Since(start)))
+		fmt.Println("Ecrecover SECP256K1", "nanoseconds", utils.PrettyDuration(time.Since(start)))
 		return bytes, err
 	}
 }
@@ -67,19 +67,19 @@ func SigToPub(hash, sig []byte) (*ecdsa.PublicKey, error) {
 		start := time.Now()
 		sig = sig[:len(sig)-1]
 		bytes, err := SigToPubSm2(hash, sig)
-		fmt.Println("SigToPub SM2", "nanoseconds", common.PrettyDuration(time.Since(start)))
+		fmt.Println("SigToPub SM2", "nanoseconds", utils.PrettyDuration(time.Since(start)))
 		return bytes, err
 	case 1:
 		start := time.Now()
 		sig = sig[:len(sig)-1]
 		bytes, err := SigToPubBtc(hash, sig)
-		fmt.Println("SigToPub SECP256K1", "nanoseconds", common.PrettyDuration(time.Since(start)))
+		fmt.Println("SigToPub SECP256K1", "nanoseconds", utils.PrettyDuration(time.Since(start)))
 		return bytes, err
 	default:
 		start := time.Now()
 		sig = sig[:len(sig)-1]
 		bytes, err := SigToPubBtc(hash, sig)
-		fmt.Println("SigToPub SECP256K1", "nanoseconds", common.PrettyDuration(time.Since(start)))
+		fmt.Println("SigToPub SECP256K1", "nanoseconds", utils.PrettyDuration(time.Since(start)))
 		return bytes, err
 	}
 }
@@ -98,15 +98,15 @@ func Sign(hash []byte, prv *ecdsa.PrivateKey, cryptoType CryptoType) (sig []byte
 	case SM2:
 		start := time.Now()
 		sig, err = SignSm2(hash, prv)
-		fmt.Println("Sign SM2", "nanoseconds", common.PrettyDuration(time.Since(start)))
+		fmt.Println("Sign SM2", "nanoseconds", utils.PrettyDuration(time.Since(start)))
 	case SECP256K1:
 		start := time.Now()
 		sig, err = SignBtc(hash, prv)
-		fmt.Println("Sign SECP256K1", "nanoseconds", common.PrettyDuration(time.Since(start)))
+		fmt.Println("Sign SECP256K1", "nanoseconds", utils.PrettyDuration(time.Since(start)))
 	default:
 		start := time.Now()
 		sig, err = SignBtc(hash, prv)
-		fmt.Println("Sign SECP256K1", "nanoseconds", common.PrettyDuration(time.Since(start)))
+		fmt.Println("Sign SECP256K1", "nanoseconds", utils.PrettyDuration(time.Since(start)))
 	}
 
 	if bytes.Count(sig[:32], []byte{0}) == 32 {

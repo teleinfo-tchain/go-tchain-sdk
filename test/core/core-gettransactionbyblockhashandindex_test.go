@@ -15,6 +15,7 @@
 package test
 
 import (
+	"fmt"
 	"github.com/bif/bif-sdk-go"
 	"github.com/bif/bif-sdk-go/dto"
 	"github.com/bif/bif-sdk-go/providers"
@@ -24,7 +25,7 @@ import (
 	"time"
 )
 
-func TestCoreTransactionByBlockHashAndIndex(t *testing.T) {
+func TestGetTransactionByBlockHashAndIndex(t *testing.T) {
 
 	var connection = bif.NewBif(providers.NewHTTPProvider(resources.IP+":"+resources.Port, 10, false))
 
@@ -40,7 +41,7 @@ func TestCoreTransactionByBlockHashAndIndex(t *testing.T) {
 	transaction := new(dto.TransactionParameters)
 	transaction.From = coinBase
 	transaction.To = coinBase
-	//transaction.Value = big.NewInt(0).Mul(big.NewInt(500), big.NewInt(1E18))
+	transaction.Value = big.NewInt(0).Mul(big.NewInt(500), big.NewInt(1E18))
 	transaction.Value = txVal
 	transaction.Gas = big.NewInt(40000)
 
@@ -53,13 +54,13 @@ func TestCoreTransactionByBlockHashAndIndex(t *testing.T) {
 		t.FailNow()
 	}
 
-	time.Sleep(time.Second)
-
-	txFromHash, err := connection.Core.GetTransactionByHash(txID)
-
-	if err != nil {
-		t.Error(err)
-		t.FailNow()
+	var txFromHash *dto.TransactionResponse
+	for {
+		time.Sleep(time.Second*2)
+		txFromHash, err = connection.Core.GetTransactionByHash(txID)
+		if txFromHash!=nil && fmt.Sprintf("%d", txFromHash.BlockNumber) != "0"{
+			break
+		}
 	}
 
 	tx, err := connection.Core.GetTransactionByBlockHashAndIndex(txFromHash.BlockHash, txFromHash.TransactionIndex)

@@ -32,12 +32,12 @@ type BlockDetails struct {
 	GasUsed          *big.Int              `json:"gasUsed"`
 	Nonce            *big.Int              `json:"nonce"`
 	Timestamp        *big.Int              `json:"timestamp"`
-	ExtraData        string                `json:extraData`
-	LogsBloom        string                `json:logsBloom`
-	MixHash          string                `json:mixHash`
-	ReceiptsRoot     string                `json:receiptsRoot`
-	StateRoot        string                `json:stateRoot`
-	TransactionsRoot string                `json:transactionsRoot`
+	ExtraData        string                `json:"extraData"`
+	LogsBloom        string                `json:"logsBloom"`
+	MixHash          string                `json:"mixHash"`
+	ReceiptsRoot     string                `json:"receiptsRoot"`
+	StateRoot        string                `json:"stateRoot"`
+	TransactionsRoot string                `json:"transactionsRoot"`
 	Transactions     []TransactionResponse `json:"transactions"`
 }
 
@@ -52,12 +52,12 @@ type BlockNoDetails struct {
 	GasUsed          *big.Int `json:"gasUsed"`
 	Nonce            *big.Int `json:"nonce"`
 	Timestamp        *big.Int `json:"timestamp"`
-	ExtraData        string   `json:extraData`
-	LogsBloom        string   `json:logsBloom`
-	MixHash          string   `json:mixHash`
-	ReceiptsRoot     string   `json:receiptsRoot`
-	StateRoot        string   `json:stateRoot`
-	TransactionsRoot string   `json:transactionsRoot`
+	ExtraData        string   `json:"extraData"`
+	LogsBloom        string   `json:"logsBloom"`
+	MixHash          string   `json:"mixHash"`
+	ReceiptsRoot     string   `json:"receiptsRoot"`
+	StateRoot        string   `json:"stateRoot"`
+	TransactionsRoot string   `json:"transactionsRoot"`
 	Transactions     []string `json:"transactions"`
 }
 

@@ -38,12 +38,13 @@ func TestNodePeers(t *testing.T) {
 		fmt.Printf("%+v\n", peers[i])
 	}
 
-	fmt.Println(len(peers))
+	t.Log(len(peers))
 }
 
+// 如何添加和移除需要确定
 func TestAddPeer(t *testing.T) {
 
-	url := "enode://fc83863fcd8bce46b4a722894c4c70bc5ca74cd12fa32974a84163d002a7c12b7ad28479e414c25ec355857221af4ae8f5d28a0fa8d752308a7ecf4e8eb720bd@192.168.150.20:51260"
+	url := "/ip4/169.254.248.29/tcp/44051/p2p/16Uiu2HAm4TSmKV3QAVzbd1V8mMpgqA3xvTEiLF71WbdojVvf3vt1"
 
 	var connection = net.NewNet(providers.NewHTTPProvider(resources.IP+":"+resources.Port, 10, false))
 
@@ -54,12 +55,12 @@ func TestAddPeer(t *testing.T) {
 		t.FailNow()
 	}
 
-	fmt.Println(r)
+	t.Log(r)
 }
 
 func TestRemovePeer(t *testing.T) {
 
-	url := "enode://fc83863fcd8bce46b4a722894c4c70bc5ca74cd12fa32974a84163d002a7c12b7ad28479e414c25ec355857221af4ae8f5d28a0fa8d752308a7ecf4e8eb720bd@192.168.150.20:51260"
+	url := "/ip4/169.254.248.29/tcp/44051/p2p/16Uiu2HAm4TSmKV3QAVzbd1V8mMpgqA3xvTEiLF71WbdojVvf3vt1"
 
 	var connection = net.NewNet(providers.NewHTTPProvider(resources.IP+":"+resources.Port, 10, false))
 
@@ -70,5 +71,5 @@ func TestRemovePeer(t *testing.T) {
 		t.FailNow()
 	}
 
-	fmt.Println(r)
+	t.Log(r)
 }

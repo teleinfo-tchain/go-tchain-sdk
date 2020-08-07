@@ -15,43 +15,34 @@
 package test
 
 import (
-	"encoding/json"
-	web3 "github.com/bif/bif-sdk-go"
+	"github.com/bif/bif-sdk-go"
 	"github.com/bif/bif-sdk-go/dto"
 	"github.com/bif/bif-sdk-go/providers"
 	"github.com/bif/bif-sdk-go/test/resources"
-	"io/ioutil"
 	"math/big"
 	"testing"
+	"time"
 )
 
 func TestCoreGetTransactionReceipt(t *testing.T) {
 
-	content, err := ioutil.ReadFile("../resources/simple-token.json")
-
-	type TruffleContract struct {
-		Abi      string `json:"abi"`
-		ByteCode string `json:"byteCode"`
-	}
-
-	var unmarshalResponse TruffleContract
-
-	err = json.Unmarshal(content, &unmarshalResponse)
+	var connection = bif.NewBif(providers.NewHTTPProvider(resources.IP+":"+resources.Port, 10, false))
+	coinBase, err := connection.Core.GetCoinBase()
 	if err != nil {
 		t.Error(err)
 		t.FailNow()
 	}
 
-	var connection = web3.NewBif(providers.NewHTTPProvider(resources.IP+":"+resources.Port, 10, false))
-	byteCode := unmarshalResponse.ByteCode
-	contract, err := connection.Core.NewContract(unmarshalResponse.Abi)
+	toAddress := resources.AddressTwo
 
 	transaction := new(dto.TransactionParameters)
-	coinBase, err := connection.Core.GetCoinBase()
 	transaction.From = coinBase
-	transaction.Gas = big.NewInt(4000000)
+	transaction.To = toAddress
+	transaction.Value = big.NewInt(0).Mul(big.NewInt(1), big.NewInt(1e17))
+	transaction.Gas = big.NewInt(40000)
+	transaction.Data = "Transfer test"
 
-	hash, err := contract.Deploy(transaction, byteCode, nil)
+	txID, err := connection.Core.SendTransaction(transaction)
 
 	if err != nil {
 		t.Error(err)
@@ -59,19 +50,13 @@ func TestCoreGetTransactionReceipt(t *testing.T) {
 	}
 
 	var receipt *dto.TransactionReceipt
-
 	for receipt == nil {
-		receipt, err = connection.Core.GetTransactionReceipt(hash)
-	}
-
-	if err != nil {
-		t.Error(err)
-		t.FailNow()
+		time.Sleep(time.Second)
+		receipt, err = connection.Core.GetTransactionReceipt(txID)
 	}
 
 	if len(receipt.ContractAddress) == 0 {
-		t.Error("No contract address")
-		t.FailNow()
+		t.Log("No contract address")
 	}
 
 	if len(receipt.TransactionHash) == 0 {
@@ -95,8 +80,7 @@ func TestCoreGetTransactionReceipt(t *testing.T) {
 	}
 
 	if receipt.Logs == nil || len(receipt.Logs) == 0 {
-		t.Error("No logs")
-		t.FailNow()
+		t.Log("No logs")
 	}
 
 	if !receipt.Status {

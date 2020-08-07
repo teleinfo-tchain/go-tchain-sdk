@@ -1,26 +1,24 @@
-// Copyright 2016 The go-ethereum Authors
-// This file is part of the go-ethereum library.
-//
-// The go-ethereum library is free software: you can redistribute it and/or modify
-// it under the terms of the GNU Lesser General Public License as published by
-// the Free Software Foundation, either version 3 of the License, or
-// (at your option) any later version.
-//
-// The go-ethereum library is distributed in the hope that it will be useful,
-// but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-// GNU Lesser General Public License for more details.
-//
-// You should have received a copy of the GNU Lesser General Public License
-// along with the go-ethereum library. If not, see <http://www.gnu.org/licenses/>.
+/********************************************************************************
+   This file is part of go-bif.
+   go-bif is free software: you can redistribute it and/or modify
+   it under the terms of the GNU Lesser General Public License as published by
+   the Free Software Foundation, either version 3 of the License, or
+   (at your option) any later version.
+   go-bif is distributed in the hope that it will be useful,
+   but WITHOUT ANY WARRANTY; without even the implied warranty of
+   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+   GNU Lesser General Public License for more details.
+   You should have received a copy of the GNU Lesser General Public License
+   along with go-bif.  If not, see <http://www.gnu.org/licenses/>.
+*********************************************************************************/
 
 package abi
 
 import (
 	"fmt"
+	"github.com/bif/bif-sdk-go/utils"
 	"strings"
 
-	"github.com/bif/bif-sdk-go/common"
 	"github.com/bif/bif-sdk-go/crypto"
 )
 
@@ -49,7 +47,7 @@ type Event struct {
 	Sig string
 	// ID returns the canonical representation of the event's signature used by the
 	// abi definition to identify event names and types.
-	ID common.Hash
+	ID utils.Hash
 }
 
 // NewEvent creates a new Event.
@@ -82,7 +80,7 @@ func NewEvent(name, rawName string, anonymous bool, inputs Arguments) Event {
 
 	str := fmt.Sprintf("event %v(%v)", rawName, strings.Join(names, ", "))
 	sig := fmt.Sprintf("%v(%v)", rawName, strings.Join(types, ","))
-	id := common.BytesToHash(crypto.Keccak256(crypto.SECP256K1, []byte(sig)))
+	id := utils.BytesToHash(crypto.Keccak256(crypto.SECP256K1, []byte(sig)))
 
 	return Event{
 		Name:      name,

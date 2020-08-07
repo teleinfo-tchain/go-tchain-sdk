@@ -1,25 +1,22 @@
-// Copyright 2020 The go-ethereum Authors
-// This file is part of the go-ethereum library.
-//
-// The go-ethereum library is free software: you can redistribute it and/or modify
-// it under the terms of the GNU Lesser General Public License as published by
-// the Free Software Foundation, either version 3 of the License, or
-// (at your option) any later version.
-//
-// The go-ethereum library is distributed in the hope that it will be useful,
-// but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-// GNU Lesser General Public License for more details.
-//
-// You should have received a copy of the GNU Lesser General Public License
-// along with the go-ethereum library. If not, see <http://www.gnu.org/licenses/>.
+/********************************************************************************
+   This file is part of go-bif.
+   go-bif is free software: you can redistribute it and/or modify
+   it under the terms of the GNU Lesser General Public License as published by
+   the Free Software Foundation, either version 3 of the License, or
+   (at your option) any later version.
+   go-bif is distributed in the hope that it will be useful,
+   but WITHOUT ANY WARRANTY; without even the implied warranty of
+   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+   GNU Lesser General Public License for more details.
+   You should have received a copy of the GNU Lesser General Public License
+   along with go-bif.  If not, see <http://www.gnu.org/licenses/>.
+*********************************************************************************/
 
 package abi
 
 import (
+	"github.com/bif/bif-sdk-go/utils"
 	"math/big"
-
-	"github.com/bif/bif-sdk-go/common"
 )
 
 type packUnpackTest struct {
@@ -195,11 +192,11 @@ var packUnpackTests = []packUnpackTest{
 	{
 		def:      `[{"type": "address"}]`,
 		packed:   "0000000000000000000000006469643a6269643a000000000000000000000000",
-		unpacked: common.Address{100, 105, 100, 58, 98, 105, 100, 58, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+		unpacked: utils.Address{100, 105, 100, 58, 98, 105, 100, 58, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
 	},
 	{
 		def:      `[{"type": "address[]"}]`,
-		unpacked: []common.Address{{100, 105, 100, 58, 98, 105, 100, 58, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1}, {100, 105, 100, 58, 98, 105, 100, 58, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2}},
+		unpacked: []utils.Address{{100, 105, 100, 58, 98, 105, 100, 58, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1}, {100, 105, 100, 58, 98, 105, 100, 58, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2}},
 		packed: "0000000000000000000000000000000000000000000000000000000000000020" +
 			"0000000000000000000000000000000000000000000000000000000000000002" +
 			"0000000000000000000000006469643a6269643a000000000000000000000001" +
@@ -376,7 +373,7 @@ var packUnpackTests = []packUnpackTest{
 		packed: "0000000000000000000000000000000000000000000000000000000000000020" +
 			"0000000000000000000000000000000000000000000000000000000000000020" +
 			"0100000000000000000000000000000000000000000000000000000000000000",
-		unpacked: common.Hex2Bytes("0100000000000000000000000000000000000000000000000000000000000000"),
+		unpacked: utils.Hex2Bytes("0100000000000000000000000000000000000000000000000000000000000000"),
 	},
 	{
 		def:      `[{"type": "bytes32"}]`,
@@ -620,7 +617,7 @@ var packUnpackTests = []packUnpackTest{
 
 	{
 		def:      `[{"type": "bytes32[]"}]`,
-		unpacked: []common.Hash{{1}, {2}},
+		unpacked: []utils.Hash{{1}, {2}},
 		packed: "0000000000000000000000000000000000000000000000000000000000000020" +
 			"0000000000000000000000000000000000000000000000000000000000000002" +
 			"0100000000000000000000000000000000000000000000000000000000000000" +
@@ -867,8 +864,8 @@ var packUnpackTests = []packUnpackTest{
 			C      []byte
 			D      []string
 			E      []*big.Int
-			F      []common.Address
-		}{"foobar", 1, []byte{1}, []string{"foo", "bar"}, []*big.Int{big.NewInt(1), big.NewInt(-1)}, []common.Address{{100, 105, 100, 58, 98, 105, 100, 58, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1}, {100, 105, 100, 58, 98, 105, 100, 58, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2}}},
+			F      []utils.Address
+		}{"foobar", 1, []byte{1}, []string{"foo", "bar"}, []*big.Int{big.NewInt(1), big.NewInt(-1)}, []utils.Address{{100, 105, 100, 58, 98, 105, 100, 58, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1}, {100, 105, 100, 58, 98, 105, 100, 58, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2}}},
 		packed: "00000000000000000000000000000000000000000000000000000000000000c0" + // struct[a] offset
 			"0000000000000000000000000000000000000000000000000000000000000001" + // struct[b]
 			"0000000000000000000000000000000000000000000000000000000000000100" + // struct[c] offset

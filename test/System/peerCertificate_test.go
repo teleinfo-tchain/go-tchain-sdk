@@ -1,14 +1,13 @@
 package System
 
 import (
-	"fmt"
 	"github.com/bif/bif-sdk-go"
-	"github.com/bif/bif-sdk-go/common"
-	"github.com/bif/bif-sdk-go/common/hexutil"
+	"github.com/bif/bif-sdk-go/core/block"
 	"github.com/bif/bif-sdk-go/dto"
 	"github.com/bif/bif-sdk-go/providers"
 	"github.com/bif/bif-sdk-go/system"
 	"github.com/bif/bif-sdk-go/test/resources"
+	"math/big"
 	"strconv"
 	"testing"
 )
@@ -16,18 +15,35 @@ import (
 // 53位的字符
 const publicKeyTest = ""
 
-// 经过超级节点投票，已经将基础信任锚did:bid:c935bd29a90fbeea87badf3e 激活
 //	MessageSha3   什么消息的sha3？？？   Signature 怎么拿到？？？  Id的53个字符，怎么生成的？？？
 func TestPeerRegisterCertificate(t *testing.T) {
 	var connection = bif.NewBif(providers.NewHTTPProvider(resources.IP+":"+resources.Port, 10, false))
-	coinBase, err := connection.Core.GetCoinBase()
+	chainId, err := connection.Core.GetChainId()
 	if err != nil {
 		t.Log(err)
 		t.FailNow()
 	}
+
+	nonce, err := connection.Core.GetTransactionCount(testAddress, block.LATEST)
+	if err != nil {
+		t.Log(err)
+		t.FailNow()
+	}
+
+	sysTxParams := new(system.SysTxParams)
+	sysTxParams.IsSM2 = isSM2
+	sysTxParams.Password = password
+	sysTxParams.KeyFileData = keyFileData
+	sysTxParams.GasPrice = big.NewInt(35)
+	sysTxParams.Gas = 2000000
+	sysTxParams.Nonce = nonce.Uint64()
+	sysTxParams.ChainId = big.NewInt(0).SetUint64(chainId)
+
 	peerCer := connection.System.NewPeerCertificate()
 
 	registerCertificateInfo := new(dto.RegisterCertificateInfo)
+	registerCertificateInfo.Id = ""
+	registerCertificateInfo.Apply = ""
 	registerCertificateInfo.PublicKey = publicKeyTest
 	registerCertificateInfo.NodeName = "testTELE"
 	registerCertificateInfo.MessageSha3 = "testTELE"
@@ -39,25 +55,42 @@ func TestPeerRegisterCertificate(t *testing.T) {
 	registerCertificateInfo.Port = port
 	registerCertificateInfo.CompanyName = "tele info"
 	registerCertificateInfo.CompanyCode = "341004600017214"
-	fmt.Println(hexutil.Encode(common.FromHex(coinBase)))
-	//registerCertificateInfo
-	peerRegisterCertificateHash, err := peerCer.RegisterCertificate(common.StringToAddress(coinBase), registerCertificateInfo)
+
+	// registerCertificateInfo
+	peerRegisterCertificateHash, err := peerCer.RegisterCertificate(sysTxParams, registerCertificateInfo)
 	if err != nil {
 		t.Error(err)
 		t.FailNow()
 	}
+
 	t.Log(peerRegisterCertificateHash, err)
 }
 
 func TestPeerRevokedCertificate(t *testing.T) {
 	var connection = bif.NewBif(providers.NewHTTPProvider(resources.IP+":"+resources.Port, 10, false))
-	coinBase, err := connection.Core.GetCoinBase()
+	chainId, err := connection.Core.GetChainId()
 	if err != nil {
 		t.Log(err)
 		t.FailNow()
 	}
+
+	nonce, err := connection.Core.GetTransactionCount(testAddress, block.LATEST)
+	if err != nil {
+		t.Log(err)
+		t.FailNow()
+	}
+
+	sysTxParams := new(system.SysTxParams)
+	sysTxParams.IsSM2 = isSM2
+	sysTxParams.Password = password
+	sysTxParams.KeyFileData = keyFileData
+	sysTxParams.GasPrice = big.NewInt(35)
+	sysTxParams.Gas = 2000000
+	sysTxParams.Nonce = nonce.Uint64()
+	sysTxParams.ChainId = big.NewInt(0).SetUint64(chainId)
+
 	peerCer := connection.System.NewPeerCertificate()
-	transactionHash, err := peerCer.RevokedCertificate(common.StringToAddress(coinBase), publicKeyTest)
+	transactionHash, err := peerCer.RevokedCertificate(sysTxParams, publicKeyTest)
 	if err != nil {
 		t.Error(err)
 		t.FailNow()
@@ -119,4 +152,23 @@ func TestGetPeerCertificate(t *testing.T) {
 	}
 
 	t.Log(peerCertificate)
+}
+
+func TestGetPeerCertificateIdList(t *testing.T) {
+	var connection = bif.NewBif(providers.NewHTTPProvider(resources.IP+":"+resources.Port, 10, false))
+	_, err := connection.Core.GetCoinBase()
+
+	if err != nil {
+		t.Error(err)
+		t.FailNow()
+	}
+
+	peerCer := connection.System.NewPeerCertificate()
+	peerCertificateIdList, err := peerCer.GetPeerCertificateIdList(publicKeyTest)
+	if err != nil {
+		t.Error(err)
+		t.FailNow()
+	}
+
+	t.Log(peerCertificateIdList)
 }

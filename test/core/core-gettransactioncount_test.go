@@ -15,15 +15,11 @@
 package test
 
 import (
-	"fmt"
 	"github.com/bif/bif-sdk-go"
 	"github.com/bif/bif-sdk-go/core/block"
-	"github.com/bif/bif-sdk-go/dto"
 	"github.com/bif/bif-sdk-go/providers"
 	"github.com/bif/bif-sdk-go/test/resources"
-	"math/big"
 	"testing"
-	"time"
 )
 
 func TestCoreGetTransactionCount(t *testing.T) {
@@ -51,37 +47,4 @@ func TestCoreGetTransactionCount(t *testing.T) {
 		t.Errorf("Count incorrect, changed between calls")
 		t.FailNow()
 	}
-	// send a transaction and the count should increase
-
-	t.Log("Starting Count:", count)
-	transaction := new(dto.TransactionParameters)
-	transaction.From = coinBase
-	transaction.To = coinBase
-	transaction.Value = big.NewInt(0).Mul(big.NewInt(500), big.NewInt(1e18))
-	transaction.Gas = big.NewInt(40000)
-	transaction.Data = "p2p transaction"
-
-	_, err = connection.Core.SendTransaction(transaction)
-
-	if err != nil {
-		t.Errorf("Failed to send tx")
-		t.FailNow()
-	}
-
-	time.Sleep(time.Second)
-
-	newCount, err := connection.Core.GetTransactionCount(coinBase, block.LATEST)
-
-	// if it fails, it may be that the time is too short and the transaction has not been executed
-	if err != nil {
-		t.Error(err)
-		t.FailNow()
-	}
-
-	if newCount.Int64() != (countTwo.Int64() + 1) {
-		t.Errorf(fmt.Sprintf("Incorrect count retrieved; [Expected %d | Got %d]", countTwo.Int64()+1, newCount))
-		t.FailNow()
-	}
-
-	t.Log("Final Count: ", newCount)
 }

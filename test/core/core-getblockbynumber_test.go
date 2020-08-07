@@ -18,7 +18,7 @@ import (
 	"fmt"
 	"github.com/bif/bif-sdk-go/dto"
 	"github.com/bif/bif-sdk-go/test/resources"
-	"math/big"
+	"github.com/bif/bif-sdk-go/utils/hexutil"
 	"testing"
 
 	"github.com/bif/bif-sdk-go"
@@ -29,16 +29,21 @@ func TestCoreGetBlockByNumber(t *testing.T) {
 
 	var connection = bif.NewBif(providers.NewHTTPProvider(resources.IP+":"+resources.Port, 10, false))
 
-	//blockNumber, err := connection.Core.GetBlockNumber()
-	blockNumber := big.NewInt(7603)
 	const transactionDetails = true
 
-	block, err := connection.Core.GetBlockByNumber(blockNumber, transactionDetails)
+	blockNumber, err := connection.Core.GetBlockNumber()
+	if err != nil {
+		t.Error(err)
+		t.FailNow()
+	}
+
+	block, err := connection.Core.GetBlockByNumber(hexutil.EncodeBig(blockNumber), transactionDetails)
 
 	if err != nil {
 		t.Error(err)
 		t.FailNow()
 	}
+
 	if block == nil {
 		t.Error("Block returned is nil")
 		t.FailNow()
@@ -70,3 +75,4 @@ func TestCoreGetBlockByNumber(t *testing.T) {
 		fmt.Println("TransactionsRoot:", block.(*dto.BlockNoDetails).TransactionsRoot)
 	}
 }
+

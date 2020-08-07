@@ -18,7 +18,7 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"github.com/bif/bif-sdk-go/complex/types"
+	"github.com/bif/bif-sdk-go/utils/types"
 	"math/big"
 )
 
@@ -27,6 +27,15 @@ type TransactionParameters struct {
 	From     string
 	To       string
 	Nonce    *big.Int
+	Gas      *big.Int
+	GasPrice *big.Int
+	Value    *big.Int
+	Data     types.ComplexString
+}
+
+type TransactionCallParameters struct {
+	From     string
+	To       string
 	Gas      *big.Int
 	GasPrice *big.Int
 	Value    *big.Int
@@ -119,7 +128,6 @@ type TransactionReceipt struct {
 	ContractAddress   string            `json:"contractAddress"`
 	Logs              []TransactionLogs `json:"logs"`
 	LogsBloom         string            `json:"logsBloom"`
-	Root              string            `json:"string"`
 	Status            bool              `json:"status"`
 }
 

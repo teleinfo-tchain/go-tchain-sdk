@@ -3,9 +3,6 @@ package system
 import (
 	"errors"
 	"github.com/bif/bif-sdk-go/abi"
-	"github.com/bif/bif-sdk-go/common"
-	"github.com/bif/bif-sdk-go/common/hexutil"
-	"github.com/bif/bif-sdk-go/complex/types"
 	"github.com/bif/bif-sdk-go/dto"
 	"strings"
 )
@@ -46,10 +43,11 @@ func (sys *System) NewCertificate() *Certificate {
 }
 
 /*
-RegisterCertificate: 信任锚颁发证书，如果是根信任锚颁发的证书，则证书接收者可以进行部署合约和大额转账操作
-
-Params:
-	- from: [20]byte，交易发送方地址
+  RegisterCertificate:
+   	EN -
+	CN - 信任锚颁发证书，如果是根信任锚颁发的证书，则证书接收者可以进行部署合约和大额转账操作
+  Params:
+  	- signTxParams *SysTxParams 系统合约构造所需参数
 	- registerCertificate:  The registerCertificate object(*dto.RegisterCertificate)
 		Id               string //个人可信证书bid
 		Context          string //证书上下文环境，随便一个字符串，不验证
@@ -61,15 +59,13 @@ Params:
 		SubjectAlgorithm string //接收者签名算法，字符串
 		SubjectSignature string //接收者签名值，16进制字符串
 
-Returns:
-	- string, 交易哈希(transactionHash)，如果交易尚不可用，则为零哈希。
+  Returns:
+  	- string, 交易哈希(transactionHash)，如果交易尚不可用，则为零哈希。
 	- error
 
-Call permissions: 只有信任锚地址可以调用
-
-BUG(rpc):颁发证书时的Period是否必须以年为单位？？
+  Call permissions: 只有信任锚地址可以调用
 */
-func (cer *Certificate) RegisterCertificate(from common.Address, registerCertificate *dto.RegisterCertificate) (string, error) {
+func (cer *Certificate) RegisterCertificate(signTxParams *SysTxParams, registerCertificate *dto.RegisterCertificate) (string, error) {
 	// encoding
 	// registerCertificate is a struct we need to use the components.
 	var values []interface{}
@@ -78,81 +74,87 @@ func (cer *Certificate) RegisterCertificate(from common.Address, registerCertifi
 	if err != nil {
 		return "", err
 	}
-	transaction := new(dto.TransactionParameters)
-	transaction.From = from.String()
-	transaction.To = CertificateContractAddr
-	transaction.Data = types.ComplexString(hexutil.Encode(inputEncode))
-	return cer.super.sendTransaction(transaction)
+
+	signedTx, err := cer.super.prePareSignTransaction(signTxParams, inputEncode, CertificateContractAddr)
+	if err != nil {
+		return "", err
+	}
+
+	return cer.super.sendRawTransaction(signedTx)
 }
 
 /*
-RevokedCertificate: 信任锚吊销个人证书
-
-Params:
-	- from: [20]byte，交易发送方地址
+  RevokedCertificate:
+   	EN -
+	CN - 信任锚吊销个人证书
+  Params:
+  	- signTxParams *SysTxParams 系统合约构造所需参数
 	- id:  string，个人可信证书bid
 
-Returns:
-	- string, 交易哈希(transactionHash)，如果交易尚不可用，则为零哈希。
+  Returns:
+  	- string, 交易哈希(transactionHash)，如果交易尚不可用，则为零哈希。
 	- error
 
-Call permissions: 只有证书颁发者可以调用
+  Call permissions: 只有证书颁发者可以调用
 */
-func (cer *Certificate) RevokedCertificate(from common.Address, id string) (string, error) {
+func (cer *Certificate) RevokedCertificate(signTxParams *SysTxParams, id string) (string, error) {
 	// encoding
 	inputEncode, err := cer.abi.Pack("revokedCertificate", id)
 	if err != nil {
 		return "", err
 	}
-	transaction := new(dto.TransactionParameters)
-	transaction.From = from.String()
-	transaction.To = CertificateContractAddr
-	transaction.Data = types.ComplexString(hexutil.Encode(inputEncode))
-	return cer.super.sendTransaction(transaction)
-}
 
-/*
-RevokedCertificates: 信任锚批量吊销个人证书，把自己颁发的证书全部吊销
-
-Params:
-	- from: [20]byte，交易发送方地址
-
-Returns:
-	- string, 交易哈希(transactionHash)，如果交易尚不可用，则为零哈希。
-	- error
-
-Call permissions: 只有证书颁发者可以调用
-*/
-func (cer *Certificate) RevokedCertificates(from common.Address) (string, error) {
-	// encoding
-	inputEncode, err := cer.abi.Pack("revokedCertificates")
+	signedTx, err := cer.super.prePareSignTransaction(signTxParams, inputEncode, CertificateContractAddr)
 	if err != nil {
 		return "", err
 	}
-	transaction := new(dto.TransactionParameters)
-	transaction.From = from.String()
-	transaction.To = CertificateContractAddr
-	transaction.Data = types.ComplexString(hexutil.Encode(inputEncode))
-	return cer.super.sendTransaction(transaction)
+
+	return cer.super.sendRawTransaction(signedTx)
 }
 
 /*
-GetPeriod: 查询个人证书的有效期
+  RevokedCertificates:
+   	EN -
+	CN - 信任锚批量吊销个人证书，把自己颁发的证书全部吊销
+  Params:
+  	- signTxParams *SysTxParams 系统合约构造所需参数
 
-Params:
-	- id: string,个人可信证书bid
-
-Returns:
-	- uint64，证书有效期，如果证书被吊销，则有效期是0
+  Returns:
+  	- string, 交易哈希(transactionHash)，如果交易尚不可用，则为零哈希。
 	- error
 
-Call permissions: Anyone
+  Call permissions: 只有证书颁发者可以调用
+*/
+func (cer *Certificate) RevokedCertificates(signTxParams *SysTxParams) (string, error) {
+	// encoding
+	inputEncode, _ := cer.abi.Pack("revokedCertificates")
+
+	signedTx, err := cer.super.prePareSignTransaction(signTxParams, inputEncode, CertificateContractAddr)
+	if err != nil {
+		return "", err
+	}
+
+	return cer.super.sendRawTransaction(signedTx)
+}
+
+/*
+  GetPeriod:
+   	EN -
+	CN -  查询个人证书的有效期
+  Params:
+  	- id: string,个人可信证书bid
+
+  Returns:
+  	- uint64，证书有效期，如果证书被吊销，则有效期是0
+	- error
+
+  Call permissions: Anyone
 */
 func (cer *Certificate) GetPeriod(id string) (uint64, error) {
 	params := make([]string, 1)
 	params[0] = id
 
-	pointer := &dto.RequestResult{}
+	pointer := &dto.SystemRequestResult{}
 
 	err := cer.super.provider.SendRequest(pointer, "certificate_period", params)
 	if err != nil {
@@ -163,22 +165,23 @@ func (cer *Certificate) GetPeriod(id string) (uint64, error) {
 }
 
 /*
-GetActive: 查询证书是否可用,如果证书过期，则不可用；如果信任锚注销，则不可用
+  GetActive:
+   	EN -
+	CN -  查询证书是否可用,如果证书过期，则不可用；如果信任锚注销，则不可用
+  Params:
+  	- id: string,个人可信证书bid
 
-Params:
-	- id: string,个人可信证书bid
-
-Returns:
-	- bool，true可用，false不可用
+  Returns:
+  	- bool，true可用，false不可用
 	- error
 
-Call permissions: Anyone
+  Call permissions: Anyone
 */
 func (cer *Certificate) GetActive(id string) (bool, error) {
 	params := make([]string, 1)
 	params[0] = id
 
-	pointer := &dto.RequestResult{}
+	pointer := &dto.SystemRequestResult{}
 
 	err := cer.super.provider.SendRequest(pointer, "certificate_active", params)
 	if err != nil {
@@ -189,13 +192,14 @@ func (cer *Certificate) GetActive(id string) (bool, error) {
 }
 
 /*
-GetCertificate: 查询证书的信息，period和active没有进行逻辑判断
+  GetCertificate:
+   	EN -
+	CN -  查询证书的信息，period和active没有进行逻辑判断
+  Params:
+  	- id: string,个人可信证书bid
 
-Params:
-	- id: string,个人可信证书bid
-
-Returns:
-	- *dto.CertificateInfo
+  Returns:
+  	- *dto.CertificateInfo
 		Id             string   //凭证的hash
 		Context        string   //证书所属上下文环境
 		Issuer         string   //信任锚的bid
@@ -206,13 +210,13 @@ Returns:
 		RevocationTime *big.Int //吊销时间
 	- error
 
-Call permissions: Anyone
+  Call permissions:
 */
 func (cer *Certificate) GetCertificate(id string) (*dto.CertificateInfo, error) {
 	params := make([]string, 1)
 	params[0] = id
 
-	pointer := &dto.RequestResult{}
+	pointer := &dto.SystemRequestResult{}
 
 	err := cer.super.provider.SendRequest(pointer, "certificate_certificate", params)
 	if err != nil {
@@ -223,26 +227,27 @@ func (cer *Certificate) GetCertificate(id string) (*dto.CertificateInfo, error) 
 }
 
 /*
-GetIssuer: 查询信任锚信息，证书颁发者的信息
+  GetIssuer:
+   	EN -
+	CN - 查询信任锚信息，证书颁发者的信息
+  Params:
+  	- id: string,个人可信证书bid
 
-Params:
-	- id: string,个人可信证书bid
-
-Returns:
-	- *dto.IssuerSignature
+  Returns:
+  	- *dto.IssuerSignature
 		Id        string //凭证ID
 		PublicKey string // 签名公钥
 		Algorithm string //签名算法
 		Signature string //签名内容
 	- error
 
-Call permissions: Anyone
+  Call permissions: Anyone
 */
 func (cer *Certificate) GetIssuer(id string) (*dto.IssuerSignature, error) {
 	params := make([]string, 1)
 	params[0] = id
 
-	pointer := &dto.RequestResult{}
+	pointer := &dto.SystemRequestResult{}
 
 	err := cer.super.provider.SendRequest(pointer, "certificate_issuer", params)
 	if err != nil {
@@ -253,26 +258,27 @@ func (cer *Certificate) GetIssuer(id string) (*dto.IssuerSignature, error) {
 }
 
 /*
-GetSubject: 查询个人(证书注册的接收者)信息，证书接收者的信息
+  GetSubject:
+   	EN -
+	CN - 查询个人(证书注册的接收者)信息，证书接收者的信息
+  Params:
+  	- id: string,个人可信证书bid
 
-Params:
-	- id: string,个人可信证书bid
-
-Returns:
-	- *dto.SubjectSignature
+  Returns:
+  	- *dto.SubjectSignature
 		Id        string //凭证ID
 		PublicKey string // 签名公钥
 		Algorithm string //签名算法
 		Signature string //签名内容
 	- error
 
-Call permissions: Anyone
+  Call permissions: Anyone
 */
 func (cer *Certificate) GetSubject(id string) (*dto.SubjectSignature, error) {
 	params := make([]string, 1)
 	params[0] = id
 
-	pointer := &dto.RequestResult{}
+	pointer := &dto.SystemRequestResult{}
 
 	err := cer.super.provider.SendRequest(pointer, "certificate_subject", params)
 	if err != nil {

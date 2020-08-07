@@ -1,27 +1,25 @@
-// Copyright 2016 The go-ethereum Authors
-// This file is part of the go-ethereum library.
-//
-// The go-ethereum library is free software: you can redistribute it and/or modify
-// it under the terms of the GNU Lesser General Public License as published by
-// the Free Software Foundation, either version 3 of the License, or
-// (at your option) any later version.
-//
-// The go-ethereum library is distributed in the hope that it will be useful,
-// but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-// GNU Lesser General Public License for more details.
-//
-// You should have received a copy of the GNU Lesser General Public License
-// along with the go-ethereum library. If not, see <http://www.gnu.org/licenses/>.
+/********************************************************************************
+   This file is part of go-bif.
+   go-bif is free software: you can redistribute it and/or modify
+   it under the terms of the GNU Lesser General Public License as published by
+   the Free Software Foundation, either version 3 of the License, or
+   (at your option) any later version.
+   go-bif is distributed in the hope that it will be useful,
+   but WITHOUT ANY WARRANTY; without even the implied warranty of
+   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+   GNU Lesser General Public License for more details.
+   You should have received a copy of the GNU Lesser General Public License
+   along with go-bif.  If not, see <http://www.gnu.org/licenses/>.
+*********************************************************************************/
 
 package abi
 
 import (
+	"github.com/bif/bif-sdk-go/utils"
 	"math/big"
 	"reflect"
 	"testing"
 
-	"github.com/bif/bif-sdk-go/common"
 	"github.com/davecgh/go-spew/spew"
 )
 
@@ -211,10 +209,10 @@ func TestTypeCheck(t *testing.T) {
 		{"uint16[3]", nil, [4]uint16{1, 2, 3}, "abi: cannot use [4]uint16 as type [3]uint16 as argument"},
 		{"uint16[3]", nil, []uint16{1, 2, 3}, ""},
 		{"uint16[3]", nil, []uint16{1, 2, 3, 4}, "abi: cannot use [4]uint16 as type [3]uint16 as argument"},
-		{"address[]", nil, []common.Address{{1}}, ""},
-		{"address[1]", nil, []common.Address{{1}}, ""},
-		{"address[1]", nil, [1]common.Address{{1}}, ""},
-		{"address[2]", nil, [1]common.Address{{1}}, "abi: cannot use [1]array as type [2]array as argument"},
+		{"address[]", nil, []utils.Address{{1}}, ""},
+		{"address[1]", nil, []utils.Address{{1}}, ""},
+		{"address[1]", nil, [1]utils.Address{{1}}, ""},
+		{"address[2]", nil, [1]utils.Address{{1}}, "abi: cannot use [1]array as type [2]array as argument"},
 		{"bytes32", nil, [32]byte{}, ""},
 		{"bytes31", nil, [31]byte{}, ""},
 		{"bytes30", nil, [30]byte{}, ""},
@@ -248,20 +246,20 @@ func TestTypeCheck(t *testing.T) {
 		{"bytes2", nil, [2]byte{}, ""},
 		{"bytes1", nil, [1]byte{}, ""},
 		{"bytes32", nil, [33]byte{}, "abi: cannot use [33]uint8 as type [32]uint8 as argument"},
-		{"bytes32", nil, common.Hash{1}, ""},
-		{"bytes31", nil, common.Hash{1}, "abi: cannot use common.Hash as type [31]uint8 as argument"},
+		{"bytes32", nil, utils.Hash{1}, ""},
+		{"bytes31", nil, utils.Hash{1}, "abi: cannot use common.Hash as type [31]uint8 as argument"},
 		{"bytes31", nil, [32]byte{}, "abi: cannot use [32]uint8 as type [31]uint8 as argument"},
 		{"bytes", nil, []byte{0, 1}, ""},
 		{"bytes", nil, [2]byte{0, 1}, "abi: cannot use array as type slice as argument"},
-		{"bytes", nil, common.Hash{1}, "abi: cannot use array as type slice as argument"},
+		{"bytes", nil, utils.Hash{1}, "abi: cannot use array as type slice as argument"},
 		{"string", nil, "hello world", ""},
 		{"string", nil, string(""), ""},
 		{"string", nil, []byte{}, "abi: cannot use slice as type string as argument"},
 		{"bytes32[]", nil, [][32]byte{{}}, ""},
 		{"function", nil, [24]byte{}, ""},
-		{"bytes20", nil, common.Address{}, ""},
+		{"bytes20", nil, utils.Address{}, ""},
 		{"address", nil, [20]byte{}, ""},
-		{"address", nil, common.Address{}, ""},
+		{"address", nil, utils.Address{}, ""},
 		{"bytes32[]]", nil, "", "invalid arg type in abi"},
 		{"invalidType", nil, "", "unsupported arg type: invalidType"},
 		{"invalidSlice[]", nil, "", "unsupported arg type: invalidSlice"},

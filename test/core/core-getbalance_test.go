@@ -29,7 +29,7 @@ func TestCoreGetBalance(t *testing.T) {
 
 	coinBase, _ := connection.Core.GetCoinBase()
 
-	bal, err := connection.Core.GetBalance(coinBase, block.LATEST)
+	bal, err := connection.Core.GetBalance(coinBase, block.PENDING)
 
 	if err != nil {
 		t.Error(err)

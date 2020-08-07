@@ -1,18 +1,16 @@
-// Copyright 2015 The go-ethereum Authors
-// This file is part of the go-ethereum library.
-//
-// The go-ethereum library is free software: you can redistribute it and/or modify
-// it under the terms of the GNU Lesser General Public License as published by
-// the Free Software Foundation, either version 3 of the License, or
-// (at your option) any later version.
-//
-// The go-ethereum library is distributed in the hope that it will be useful,
-// but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-// GNU Lesser General Public License for more details.
-//
-// You should have received a copy of the GNU Lesser General Public License
-// along with the go-ethereum library. If not, see <http://www.gnu.org/licenses/>.
+/********************************************************************************
+   This file is part of go-bif.
+   go-bif is free software: you can redistribute it and/or modify
+   it under the terms of the GNU Lesser General Public License as published by
+   the Free Software Foundation, either version 3 of the License, or
+   (at your option) any later version.
+   go-bif is distributed in the hope that it will be useful,
+   but WITHOUT ANY WARRANTY; without even the implied warranty of
+   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+   GNU Lesser General Public License for more details.
+   You should have received a copy of the GNU Lesser General Public License
+   along with go-bif.  If not, see <http://www.gnu.org/licenses/>.
+*********************************************************************************/
 
 package abi
 
@@ -21,9 +19,9 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"github.com/bif/bif-sdk-go/utils"
 	"io"
 
-	"github.com/bif/bif-sdk-go/common"
 	"github.com/bif/bif-sdk-go/crypto"
 )
 
@@ -217,7 +215,7 @@ func (abi *ABI) MethodById(sigdata []byte) (*Method, error) {
 
 // EventByID looks an event up by its topic hash in the
 // ABI and returns nil if none found.
-func (abi *ABI) EventByID(topic common.Hash) (*Event, error) {
+func (abi *ABI) EventByID(topic utils.Hash) (*Event, error) {
 	for _, event := range abi.Events {
 		if bytes.Equal(event.ID.Bytes(), topic.Bytes()) {
 			return &event, nil

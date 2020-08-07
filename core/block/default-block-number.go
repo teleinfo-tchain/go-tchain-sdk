@@ -15,14 +15,14 @@
 package block
 
 import (
-	"github.com/bif/bif-sdk-go/utils"
+	"github.com/bif/bif-sdk-go/utils/hexutil"
 	"math/big"
 )
 
 // NUMBER - An integer block number
 // Reference: https://github.com/ethereum/wiki/wiki/JSON-RPC#the-default-block-parameter
 func NUMBER(blocknumber *big.Int) string {
-	return utils.IntToHex(blocknumber)
+	return hexutil.EncodeBig(blocknumber)
 }
 
 const (

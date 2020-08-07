@@ -33,7 +33,7 @@ func TestCoreHashRate(t *testing.T) {
 		t.FailNow()
 	}
 
-	if rate.Int64() < int64(0) {
+	if rate.Uint64() < 0 {
 		t.Errorf("Less than 0 hash rate")
 		t.FailNow()
 	}

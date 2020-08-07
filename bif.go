@@ -12,52 +12,67 @@
    along with go-bif.  If not, see <http://www.gnu.org/licenses/>.
 *********************************************************************************/
 
-// bif 主文件
+// bif ???
 package bif
 
 import (
+	"github.com/bif/bif-sdk-go/account"
 	"github.com/bif/bif-sdk-go/core"
+	"github.com/bif/bif-sdk-go/debug"
 	"github.com/bif/bif-sdk-go/dto"
 	"github.com/bif/bif-sdk-go/net"
-	"github.com/bif/bif-sdk-go/personal"
 	"github.com/bif/bif-sdk-go/providers"
 	"github.com/bif/bif-sdk-go/system"
+	"github.com/bif/bif-sdk-go/txpool"
 	"github.com/bif/bif-sdk-go/utils"
 )
 
-// Web3 - The Web3 Module
-// Web3 - Web3模块
+/*
+	Bif - The Bif Module
+
+	Bif - Bif??
+*/
 type Bif struct {
 	Provider providers.ProviderInterface
 	Core     *core.Core
+	Account  *account.Account
 	Net      *net.Net
-	Personal *personal.Personal
 	Utils    *utils.Utils
 	System   *system.System
+	Debug    *debug.Debug
+	TxPool   *txpool.TxPool
 }
 
 /*
 	NewBif - Web3 Module constructor to set the default provider, Core, Net and Personal
 
-	NewBif - Web3模块构造函数，用于设置默认Provider、Core、Net和Personal
+	NewBif - Web3??????,??????Provider?Core?Net?Personal
 */
 func NewBif(provider providers.ProviderInterface) *Bif {
 	bif := new(Bif)
 	bif.Provider = provider
-	bif.Core = core.NewEth(provider)
+	bif.Core = core.NewCore(provider)
+	bif.Account = account.NewAccount(provider)
 	bif.Net = net.NewNet(provider)
-	bif.Personal = personal.NewPersonal(provider)
 	bif.Utils = utils.NewUtils()
 	bif.System = system.NewSystem(provider)
+	bif.TxPool = txpool.NewTxPool(provider)
+	bif.Debug = debug.NewDebug(provider)
 	return bif
 }
 
-// ClientVersion - Returns the current client version.
-//
-// ClientVersion - 返回当前客户端版本.
-//
-// Returns
-//	- String - The current client version
+/*
+  ClientVersion:
+	EN - Returns the current client version.
+	CN - ?????????
+  Params:
+  	- None
+  Returns:
+  	- string - ???????
+    - error
+
+  Call permissions: Anyone
+*/
 func (bif Bif) ClientVersion() (string, error) {
 
 	pointer := &dto.RequestResult{}

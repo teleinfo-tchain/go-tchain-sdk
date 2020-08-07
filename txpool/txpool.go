@@ -15,49 +15,90 @@
 package txpool
 
 import (
-	"github.com/bif/bif-sdk-go/common/hexutil"
 	"github.com/bif/bif-sdk-go/dto"
 	"github.com/bif/bif-sdk-go/providers"
+	"github.com/bif/bif-sdk-go/utils/hexutil"
 )
 
-type Txpool struct {
+type TxPool struct {
 	provider providers.ProviderInterface
 }
 
-func NewTxpool(provider providers.ProviderInterface) *Txpool {
-	txpool := new(Txpool)
-	txpool.provider = provider
-	return txpool
+func NewTxPool(provider providers.ProviderInterface) *TxPool {
+	txPool := new(TxPool)
+	txPool.provider = provider
+	return txPool
 }
 
-func (txpool *Txpool) Status() (map[string]hexutil.Uint, error) {
+/*
+  GetStatus:
+   	EN - Returns the number of pending and queued transaction in the pool
+ 	CN - 返回交易池中暂挂和排队的交易数
+  Params:
+  	- None
 
-	pointer := &dto.RequestResult{}
+  Returns:
+  	- map[string]hexutil.Uint
+ 	- error
 
-	if err := txpool.provider.SendRequest(pointer, "txpool_status", nil); err != nil {
+  Call permissions: Anyone
+*/
+func (txPool *TxPool) GetStatus() (map[string]hexutil.Uint, error) {
+
+	pointer := &dto.TxPoolRequestResult{}
+
+	if err := txPool.provider.SendRequest(pointer, "txpool_status", nil); err != nil {
 		return nil, err
 	}
 
-	result, err := pointer.ToTxpoolStatus()
-	if err != nil {
-		return nil, err
-	}
-
-	return result, nil
+	return pointer.ToTxPoolStatus()
 }
 
-func (txpool *Txpool) Inspect() (map[string]map[string]map[string]string, error) {
+/*
+  Inspect:
+   	EN - Retrieves the content of the transaction pool and flattens it into an easily inspectable list
+ 	CN - 检索交易池的内容并将其转化为易于检查的列表
+  Params:
+  	- None
 
-	pointer := &dto.RequestResult{}
+  Returns:
+  	- map[string]map[string]map[string]string
+ 	- error
 
-	if err := txpool.provider.SendRequest(pointer, "txpool_inspect", nil); err != nil {
+  Call permissions: Anyone
+*/
+func (txPool *TxPool) Inspect() (map[string]map[string]map[string]string, error) {
+
+	pointer := &dto.TxPoolRequestResult{}
+
+	if err := txPool.provider.SendRequest(pointer, "txpool_inspect", nil); err != nil {
 		return nil, err
 	}
 
-	result, err := pointer.ToTxpoolInspect()
-	if err != nil {
+	return pointer.ToTxPoolInspect()
+}
+
+/*
+  Content:
+   	EN - Returns the transactions contained within the transaction pool
+ 	CN - 返回交易池中包含的交易
+  Params:
+  	-
+
+  Returns:
+  	- None
+ 	- error
+
+  Call permissions: Anyone
+*/
+func (txPool *TxPool) Content() (map[string]map[string]map[string]*dto.RPCTransaction, error) {
+
+	pointer := &dto.TxPoolRequestResult{}
+
+	if err := txPool.provider.SendRequest(pointer, "txpool_content", nil); err != nil {
 		return nil, err
 	}
 
-	return result, nil
+	return pointer.ToTxPoolContent()
+
 }

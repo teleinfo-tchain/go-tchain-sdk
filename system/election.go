@@ -2,9 +2,6 @@ package system
 
 import (
 	"github.com/bif/bif-sdk-go/abi"
-	"github.com/bif/bif-sdk-go/common"
-	"github.com/bif/bif-sdk-go/common/hexutil"
-	"github.com/bif/bif-sdk-go/complex/types"
 	"github.com/bif/bif-sdk-go/dto"
 	"math/big"
 	"strings"
@@ -57,7 +54,7 @@ const ElectionAbiJSON = `[
 {"constant": false,"name":"unStake","inputs":[],"outputs":[],"type":"function"},
 {"constant": false,"name":"extractOwnBounty","inputs":[],"outputs":[],"type":"function"},
 {"anonymous":false,"inputs":[{"indexed":false,"name":"methodName","type":"string"},{"indexed":false,"name":"status","type":"uint32"},{"indexed":false,"name":"reason","type":"string"},{"indexed":false,"name":"time","type":"uint256"}],"name":"electEvent","type":"event"},
-{"constant": false,"name":"issueAdditionalBounty","inputs":[],"outputs":[],"type":"function"},
+{"constant": false,"name":"issueAddtitionalBounty","inputs":[],"outputs":[],"type":"function"}
 ]`
 
 // Election - The Election Module
@@ -77,63 +74,75 @@ func (sys *System) NewElection() *Election {
 }
 
 /*
-RegisterWitness: 注册成为见证人
-
-Params:
-	- from: [20]byte，交易发送方地址
+  RegisterWitness:
+   	EN -
+	CN - 注册成为候选
+  Params:
+  	- signTxParams *SysTxParams 系统合约构造所需参数
 	- witness: *dto.RegisterWitness，注册的见证人信息
 		NodeUrl string
 		Website string
 		Name    string
 
-Returns:
-	- string, 交易哈希(transactionHash)，如果交易尚不可用，则为零哈希。
+  Returns:
+  	- string, 交易哈希(transactionHash)，如果交易尚不可用，则为零哈希。
 	- error
 
-Call permissions: ？？？
+  Call permissions: ？？？
 */
-func (e *Election) RegisterWitness(from common.Address, witness *dto.RegisterWitness) (string, error) {
+func (e *Election) RegisterWitness(signTxParams *SysTxParams, witness *dto.RegisterWitness) (string, error) {
 	// encode
 	// witness is a struct we need to use the components.
 	var values []interface{}
 	values = e.super.structToInterface(*witness, values)
 	inputEncode, err := e.abi.Pack("registerWitness", values...)
+
 	if err != nil {
 		return "", err
 	}
 
-	transaction := e.super.prePareTransaction(from, ElectionContractAddr, types.ComplexString(hexutil.Encode(inputEncode)))
-	return e.super.sendTransaction(transaction)
+	signedTx, err := e.super.prePareSignTransaction(signTxParams, inputEncode, ElectionContractAddr)
+	if err != nil {
+		return "", err
+	}
+
+	return e.super.sendRawTransaction(signedTx)
 }
 
 /*
-UnRegisterWitness: 取消成为见证人
+  UnRegisterWitness:
+   	EN -
+	CN -  取消成为候选
+  Params:
+  	- signTxParams *SysTxParams 系统合约构造所需参数
 
-Params:
-	- from: [20]byte，交易发送方地址
-
-Returns:
-	- string, 交易哈希(transactionHash)，如果交易尚不可用，则为零哈希。
+  Returns:
+  	- string, 交易哈希(transactionHash)，如果交易尚不可用，则为零哈希。
 	- error
 
-Call permissions: 只能自己取消自己
+  Call permissions: 只能自己取消自己
 */
-func (e *Election) UnRegisterWitness(from common.Address) (string, error) {
+func (e *Election) UnRegisterWitness(signTxParams *SysTxParams) (string, error) {
 	// encoding
 	inputEncode, _ := e.abi.Pack("unregisterWitness")
 
-	transaction := e.super.prePareTransaction(from, ElectionContractAddr, types.ComplexString(hexutil.Encode(inputEncode)))
-	return e.super.sendTransaction(transaction)
+	signedTx, err := e.super.prePareSignTransaction(signTxParams, inputEncode, ElectionContractAddr)
+	if err != nil {
+		return "", err
+	}
+
+	return e.super.sendRawTransaction(signedTx)
 }
 
 /*
-GetCandidate: 查询候选人
+  GetCandidate:
+   	EN -
+	CN -  查询候选人
+  Params:
+  	- candidateAddress: string，候选人的地址
 
-Params:
-	- candidateAddress: string，候选人的地址
-
-Returns:
-	- *dto.Candidate
+  Returns:
+  	- *dto.Candidate
 		Owner           string       `json:"owner"`           // 候选人地址
 		Name            string       `json:"name"`            // 候选人名称
 		Active          bool         `json:"active"`          // 当前是否是候选人
@@ -145,13 +154,13 @@ Returns:
 		Website         string       `json:"website"`         // 见证人网站
 	- error
 
-Call permissions: Anyone
+  Call permissions: Anyone
 */
 func (e *Election) GetCandidate(candidateAddress string) (*dto.Candidate, error) {
 	params := make([]string, 1)
 	params[0] = candidateAddress
 
-	pointer := &dto.RequestResult{}
+	pointer := &dto.SystemRequestResult{}
 
 	err := e.super.provider.SendRequest(pointer, "election_candidate", params)
 	if err != nil {
@@ -162,19 +171,20 @@ func (e *Election) GetCandidate(candidateAddress string) (*dto.Candidate, error)
 }
 
 /*
-GetAllCandidates: 查询所有候选人
+  GetAllCandidates:
+   	EN -
+	CN - 查询所有候选人
+  Params:
+  	- None
 
-Params:
-	- None
-
-Returns:
-	- []dto.Candidate，列表内为候选人信息，参考GetCandidate的候选人信息
+  Returns:
+  	- []dto.Candidate，列表内为候选人信息，参考GetCandidate的候选人信息
 	- error
 
-Call permissions: Anyone
+  Call permissions: Anyone
 */
 func (e *Election) GetAllCandidates() ([]*dto.Candidate, error) {
-	pointer := &dto.RequestResult{}
+	pointer := &dto.SystemRequestResult{}
 
 	err := e.super.provider.SendRequest(pointer, "election_allCandidates", nil)
 	if err != nil {
@@ -185,202 +195,238 @@ func (e *Election) GetAllCandidates() ([]*dto.Candidate, error) {
 }
 
 /*
-VoteWitnesses: 给见证人投票
-
-Params:
-	- from: [20]byte，交易发送方地址
+  VoteWitnesses:
+   	EN -
+	CN - 给见证人投票
+  Params:
+  	- signTxParams *SysTxParams 系统合约构造所需参数
 	- candidate: string，候选人的地址
 
-Returns:
-	- string, 交易哈希(transactionHash)，如果交易尚不可用，则为零哈希。
+  Returns:
+  	- string, 交易哈希(transactionHash)，如果交易尚不可用，则为零哈希。
 	- error
 
-Call permissions: ？？？
+  Call permissions: ？？？
 */
-func (e *Election) VoteWitnesses(from common.Address, candidate string) (string, error) {
+func (e *Election) VoteWitnesses(signTxParams *SysTxParams, candidate string) (string, error) {
 	// encoding
-	inputEncode, _ := e.abi.Pack("voteWitnesses", candidate)
+	inputEncode, err := e.abi.Pack("voteWitnesses", candidate)
+	if err != nil {
+		return "", err
+	}
 
-	transaction := e.super.prePareTransaction(from, ElectionContractAddr, types.ComplexString(hexutil.Encode(inputEncode)))
+	signedTx, err := e.super.prePareSignTransaction(signTxParams, inputEncode, ElectionContractAddr)
+	if err != nil {
+		return "", err
+	}
 
-	return e.super.sendTransaction(transaction)
+	return e.super.sendRawTransaction(signedTx)
 }
 
 /*
-CancelVote: 撤销投票？？还是说是投反对票？？
+  CancelVote:
+   	EN -
+	CN - 撤销投票
+  Params:
+  	- signTxParams *SysTxParams 系统合约构造所需参数
 
-Params:
-	- from: [20]byte，交易发送方地址
-
-Returns:
-	- string, 交易哈希(transactionHash)，如果交易尚不可用，则为零哈希。
+  Returns:
+  	- string, 交易哈希(transactionHash)，如果交易尚不可用，则为零哈希。
 	- error
 
-Call permissions: ？？？
+  Call permissions: ？？？
 */
-func (e *Election) CancelVote(from common.Address) (string, error) {
+func (e *Election) CancelVote(signTxParams *SysTxParams) (string, error) {
 	// encoding
 	inputEncode, _ := e.abi.Pack("cancelVote")
 
-	transaction := e.super.prePareTransaction(from, ElectionContractAddr, types.ComplexString(hexutil.Encode(inputEncode)))
+	signedTx, err := e.super.prePareSignTransaction(signTxParams, inputEncode, ElectionContractAddr)
+	if err != nil {
+		return "", err
+	}
 
-	return e.super.sendTransaction(transaction)
+	return e.super.sendRawTransaction(signedTx)
 }
 
 /*
-StartProxy: 开启代理
+  StartProxy:
+   	EN -
+	CN - 开启代理
+  Params:
+  	- signTxParams *SysTxParams 系统合约构造所需参数
 
-Params:
-	- from: [20]byte，交易发送方地址
-
-Returns:
-	- string, 交易哈希(transactionHash)，如果交易尚不可用，则为零哈希。
+  Returns:
+  	- string, 交易哈希(transactionHash)，如果交易尚不可用，则为零哈希。
 	- error
 
-Call permissions: ？？？
+  Call permissions: ？？？
 */
-func (e *Election) StartProxy(from common.Address) (string, error) {
+func (e *Election) StartProxy(signTxParams *SysTxParams) (string, error) {
 	// encoding
 	inputEncode, _ := e.abi.Pack("startProxy")
 
-	transaction := e.super.prePareTransaction(from, ElectionContractAddr, types.ComplexString(hexutil.Encode(inputEncode)))
+	signedTx, err := e.super.prePareSignTransaction(signTxParams, inputEncode, ElectionContractAddr)
+	if err != nil {
+		return "", err
+	}
 
-	return e.super.sendTransaction(transaction)
+	return e.super.sendRawTransaction(signedTx)
 }
 
 /*
-StopProxy: 关闭代理
+  StopProxy:
+   	EN -
+	CN - 关闭代理
+  Params:
+  	- signTxParams *SysTxParams 系统合约构造所需参数
 
-Params:
-	- from: [20]byte，交易发送方地址
-
-Returns:
-	- string, 交易哈希(transactionHash)，如果交易尚不可用，则为零哈希。
+  Returns:
+  	- string, 交易哈希(transactionHash)，如果交易尚不可用，则为零哈希。
 	- error
 
-Call permissions: ？？？
+  Call permissions: ？？？
 */
-func (e *Election) StopProxy(from common.Address) (string, error) {
+func (e *Election) StopProxy(signTxParams *SysTxParams) (string, error) {
 	// encoding
 	inputEncode, _ := e.abi.Pack("stopProxy")
 
-	transaction := e.super.prePareTransaction(from, ElectionContractAddr, types.ComplexString(hexutil.Encode(inputEncode)))
+	signedTx, err := e.super.prePareSignTransaction(signTxParams, inputEncode, ElectionContractAddr)
+	if err != nil {
+		return "", err
+	}
 
-	return e.super.sendTransaction(transaction)
+	return e.super.sendRawTransaction(signedTx)
 }
 
 /*
-CancelProxy: 取消代理
+  CancelProxy:
+   	EN -
+	CN - 取消代理
+  Params:
+  	- signTxParams *SysTxParams 系统合约构造所需参数
 
-Params:
-	- from: [20]byte，交易发送方地址
-
-Returns:
-	- string, 交易哈希(transactionHash)，如果交易尚不可用，则为零哈希。
+  Returns:
+  	- string, 交易哈希(transactionHash)，如果交易尚不可用，则为零哈希。
 	- error
 
-Call permissions: ？？？
+  Call permissions: ？？？
 */
-func (e *Election) CancelProxy(from common.Address) (string, error) {
+func (e *Election) CancelProxy(signTxParams *SysTxParams) (string, error) {
 	// encoding
 	inputEncode, _ := e.abi.Pack("cancelProxy")
 
-	transaction := e.super.prePareTransaction(from, ElectionContractAddr, types.ComplexString(hexutil.Encode(inputEncode)))
+	signedTx, err := e.super.prePareSignTransaction(signTxParams, inputEncode, ElectionContractAddr)
+	if err != nil {
+		return "", err
+	}
 
-	return e.super.sendTransaction(transaction)
+	return e.super.sendRawTransaction(signedTx)
 }
 
 /*
-SetProxy: 设置代理
-
-Params:
-	- from: [20]byte，交易发送方地址
+  SetProxy:
+   	EN -
+	CN - 设置代理
+  Params:
+  	- signTxParams *SysTxParams 系统合约构造所需参数
 	- proxy: string，???
 
-Returns:
-	- string, 交易哈希(transactionHash)，如果交易尚不可用，则为零哈希。
+  Returns:
+  	- string, 交易哈希(transactionHash)，如果交易尚不可用，则为零哈希。
 	- error
 
-Call permissions: ？？？
+  Call permissions: ？？？
 */
-func (e *Election) SetProxy(from common.Address, proxy string) (string, error) {
+func (e *Election) SetProxy(signTxParams *SysTxParams, proxy string) (string, error) {
 	// encoding
 	inputEncode, err := e.abi.Pack("setProxy", proxy)
 	if err != nil {
 		return "", err
 	}
 
-	transaction := e.super.prePareTransaction(from, ElectionContractAddr, types.ComplexString(hexutil.Encode(inputEncode)))
+	signedTx, err := e.super.prePareSignTransaction(signTxParams, inputEncode, ElectionContractAddr)
+	if err != nil {
+		return "", err
+	}
 
-	return e.super.sendTransaction(transaction)
+	return e.super.sendRawTransaction(signedTx)
 }
 
 /*
-Stake: 权益抵押
-
-Params:
-	- from: [20]byte，交易发送方地址
+  Stake:
+   	EN -
+	CN - 权益抵押
+  Params:
+  	- signTxParams *SysTxParams 系统合约构造所需参数
 	- stakeCount: *big.Int，抵押的权益数量
 
-Returns:
-	- string, 交易哈希(transactionHash)，如果交易尚不可用，则为零哈希。
+  Returns:
+  	- string, 交易哈希(transactionHash)，如果交易尚不可用，则为零哈希。
 	- error
 
-Call permissions: ？？？
+  Call permissions: ？？？
 */
-func (e *Election) Stake(from common.Address, stakeCount *big.Int) (string, error) {
+func (e *Election) Stake(signTxParams *SysTxParams, stakeCount *big.Int) (string, error) {
 	// encoding
 	inputEncode, err := e.abi.Pack("stake", stakeCount)
 	if err != nil {
 		return "", err
 	}
 
-	transaction := e.super.prePareTransaction(from, ElectionContractAddr, types.ComplexString(hexutil.Encode(inputEncode)))
+	signedTx, err := e.super.prePareSignTransaction(signTxParams, inputEncode, ElectionContractAddr)
+	if err != nil {
+		return "", err
+	}
 
-	return e.super.sendTransaction(transaction)
+	return e.super.sendRawTransaction(signedTx)
 }
 
 /*
-UnStake: 撤销权益抵押
+  UnStake:
+   	EN -
+	CN - 撤销权益抵押
+  Params:
+  	- signTxParams *SysTxParams 系统合约构造所需参数
 
-Params:
-	- from: [20]byte，交易发送方地址
-
-Returns:
-	- string, 交易哈希(transactionHash)，如果交易尚不可用，则为零哈希。
+  Returns:
+  	- string, 交易哈希(transactionHash)，如果交易尚不可用，则为零哈希。
 	- error
 
-Call permissions: ？？？
+  Call permissions: ？？？
 */
-func (e *Election) UnStake(from common.Address) (string, error) {
+func (e *Election) UnStake(signTxParams *SysTxParams) (string, error) {
 	// encoding
 	inputEncode, _ := e.abi.Pack("unStake")
 
-	transaction := e.super.prePareTransaction(from, ElectionContractAddr, types.ComplexString(hexutil.Encode(inputEncode)))
+	signedTx, err := e.super.prePareSignTransaction(signTxParams, inputEncode, ElectionContractAddr)
+	if err != nil {
+		return "", err
+	}
 
-	return e.super.sendTransaction(transaction)
+	return e.super.sendRawTransaction(signedTx)
 }
 
 /*
-GetStake: 查询抵押权益
+  GetStake:
+   	EN -
+	CN - 查询抵押权益
+  Params:
+  	- voterAddress: string，投票者的地址
 
-Params:
-	- voterAddress: string，投票者的地址
-
-Returns:
-	- *dto.Stake
+  Returns:
+  	- *dto.Stake
 		Owner              common.Address `json:"owner"`              // 抵押代币的所有人
 		StakeCount         *big.Int       `json:"stakeCount"`         // 抵押的代币数量
 		LastStakeTimeStamp *big.Int       `json:"lastStakeTimeStamp"` // 上次抵押时间戳
 	- error
 
-Call permissions: Anyone
+  Call permissions: Anyone
 */
 func (e *Election) GetStake(voterAddress string) (*dto.Stake, error) {
 	params := make([]string, 1)
 	params[0] = voterAddress
 
-	pointer := &dto.RequestResult{}
+	pointer := &dto.SystemRequestResult{}
 
 	err := e.super.provider.SendRequest(pointer, "election_stake", params)
 	if err != nil {
@@ -391,19 +437,20 @@ func (e *Election) GetStake(voterAddress string) (*dto.Stake, error) {
 }
 
 /*
-GetRestBIFBounty: 查询剩余的Bif总激励
+  GetRestBIFBounty:
+   	EN -
+	CN - 查询剩余的Bif总激励
+  Params:
+  	- None
 
-Params:
-	- None
-
-Returns:
-	- *big.Int
+  Returns:
+  	- *big.Int
 	- error
 
-Call permissions: Anyone
+  Call permissions: Anyone
 */
 func (e *Election) GetRestBIFBounty() (*big.Int, error) {
-	pointer := &dto.RequestResult{}
+	pointer := &dto.SystemRequestResult{}
 
 	err := e.super.provider.SendRequest(pointer, "election_restBIFBounty", nil)
 
@@ -415,55 +462,64 @@ func (e *Election) GetRestBIFBounty() (*big.Int, error) {
 }
 
 /*
-ExtractOwnBounty: 取出自身的赏金
+  ExtractOwnBounty:
+   	EN -
+	CN - 取出自身的赏金
+  Params:
+  	- signTxParams *SysTxParams 系统合约构造所需参数
 
-Params:
-	- from: [20]byte，交易发送方地址
-
-Returns:
-	- string, 交易哈希(transactionHash)，如果交易尚不可用，则为零哈希。
+  Returns:
+  	- string, 交易哈希(transactionHash)，如果交易尚不可用，则为零哈希。
 	- error
 
-Call permissions: ？？
+  Call permissions: ？？
 */
-func (e *Election) ExtractOwnBounty(from common.Address) (string, error) {
+func (e *Election) ExtractOwnBounty(signTxParams *SysTxParams) (string, error) {
 	// encoding
 	inputEncode, _ := e.abi.Pack("extractOwnBounty")
 
-	transaction := e.super.prePareTransaction(from, ElectionContractAddr, types.ComplexString(hexutil.Encode(inputEncode)))
+	signedTx, err := e.super.prePareSignTransaction(signTxParams, inputEncode, ElectionContractAddr)
+	if err != nil {
+		return "", err
+	}
 
-	return e.super.sendTransaction(transaction)
+	return e.super.sendRawTransaction(signedTx)
 }
 
 /*
-IssueAdditionalBounty: ？？？？？？？？
+  IssueAdditionalBounty:
+   	EN -
+	CN - ??
+  Params:
+  	- signTxParams *SysTxParams 系统合约构造所需参数
 
-Params:
-	- from: [20]byte，交易发送方地址
-
-Returns:
-	- string, 交易哈希(transactionHash)，如果交易尚不可用，则为零哈希。
+  Returns:
+  	- string, 交易哈希(transactionHash)，如果交易尚不可用，则为零哈希。
 	- error
 
-Call permissions: ？？
+  Call permissions: ？？
 */
-func (e *Election) IssueAdditionalBounty(from common.Address) (string, error) {
+func (e *Election) IssueAdditionalBounty(signTxParams *SysTxParams) (string, error) {
 	// encoding
-	inputEncode, _ := e.abi.Pack("issueAdditionalBounty")
+	inputEncode, _ := e.abi.Pack("issueAddtitionalBounty")
 
-	transaction := e.super.prePareTransaction(from, ElectionContractAddr, types.ComplexString(hexutil.Encode(inputEncode)))
+	signedTx, err := e.super.prePareSignTransaction(signTxParams, inputEncode, ElectionContractAddr)
+	if err != nil {
+		return "", err
+	}
 
-	return e.super.sendTransaction(transaction)
+	return e.super.sendRawTransaction(signedTx)
 }
 
 /*
-GetVoter: 查询投票人信息
+  GetVoter:
+   	EN -
+	CN - 查询投票人信息
+  Params:
+  	- voterAddress: string，投票者的地址
 
-Params:
-	- voterAddress: string，投票者的地址
-
-Returns:
-	- *dto.Voter
+  Returns:
+  	- *dto.Voter
 		Owner             common.Address   `json:"owner"`             // 投票人的地址
 		IsProxy           bool             `json:"isProxy"`           // 是否是代理人
 		ProxyVoteCount    *big.Int         `json:"proxyVoteCount"`    // 收到的代理的票数
@@ -473,13 +529,13 @@ Returns:
 		VoteCandidates    []common.Address `json:"voteCandidates"`    // 投了哪些人
 	- error
 
-Call permissions: Anyone
+  Call permissions: Anyone
 */
 func (e *Election) GetVoter(voterAddress string) (*dto.Voter, error) {
 	params := make([]string, 1)
 	params[0] = voterAddress
 
-	pointer := &dto.RequestResult{}
+	pointer := &dto.SystemRequestResult{}
 
 	err := e.super.provider.SendRequest(pointer, "election_voter", params)
 	if err != nil {
@@ -490,22 +546,23 @@ func (e *Election) GetVoter(voterAddress string) (*dto.Voter, error) {
 }
 
 /*
-GetVoterList: 查询所有投票人信息
+  GetVoterList:
+   	EN -
+	CN - 查询所有投票人信息
+  Params:
+  	- voterAddress: string，投票者的地址
 
-Params:
-	- voterAddress: string，投票者的地址
-
-Returns:
-	- []dto.Voter，投票人的详细信息，参考GetVoter
+  Returns:
+  	- []dto.Voter，投票人的详细信息，参考GetVoter
 	- error
 
-Call permissions: Anyone
+  Call permissions: Anyone
 */
 func (e *Election) GetVoterList(voterAddress string) ([]*dto.Voter, error) {
 	params := make([]string, 1)
 	params[0] = voterAddress
 
-	pointer := &dto.RequestResult{}
+	pointer := &dto.SystemRequestResult{}
 
 	err := e.super.provider.SendRequest(pointer, "election_voterList", params)
 	if err != nil {

@@ -16,6 +16,7 @@ package test
 
 import (
 	"github.com/bif/bif-sdk-go/test/resources"
+	"github.com/bif/bif-sdk-go/utils/hexutil"
 	"math/big"
 	"testing"
 	"time"
@@ -51,8 +52,6 @@ func TestGetBlockTransactionCountByNumber(t *testing.T) {
 		t.FailNow()
 	}
 
-	time.Sleep(time.Second)
-
 	tx, err := connection.Core.GetTransactionByHash(txID)
 
 	if err != nil {
@@ -60,7 +59,12 @@ func TestGetBlockTransactionCountByNumber(t *testing.T) {
 		t.FailNow()
 	}
 
-	blockNumber := block.NUMBER(tx.BlockNumber)
+	for tx.BlockNumber.Uint64() == 0 {
+		time.Sleep(time.Second*2)
+		tx, _ = connection.Core.GetTransactionByHash(txID)
+	}
+
+	blockNumber := hexutil.EncodeBig(tx.BlockNumber)
 
 	txCount, err := connection.Core.GetBlockTransactionCountByNumber(blockNumber)
 
@@ -69,7 +73,7 @@ func TestGetBlockTransactionCountByNumber(t *testing.T) {
 		t.FailNow()
 	}
 
-	if txCount.Int64() != 1 {
+	if txCount != 1 {
 		t.Error("invalid block transaction count")
 		t.FailNow()
 	}
@@ -81,7 +85,7 @@ func TestGetBlockTransactionCountByNumber(t *testing.T) {
 		t.FailNow()
 	}
 
-	if txCount.Int64() != 1 {
+	if txCount != 1 {
 		t.Error("invalid block transaction count")
 		t.FailNow()
 	}

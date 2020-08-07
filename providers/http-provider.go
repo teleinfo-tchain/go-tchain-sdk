@@ -51,7 +51,7 @@ func NewHTTPProviderWithClient(address string, timeout int32, secure bool, clien
 
 func (provider HTTPProvider) SendRequest(v interface{}, method string, params interface{}) error {
 
-	bodyString := util.JSONRPCObject{Version: "2.0", Method: method, Params: params, ID: rand.Intn(100)}
+	bodyString := util.JSONRPCObject{Version: util.Version, Method: method, Params: params, ID: rand.Intn(100)}
 
 	prefix := "http://"
 	if provider.secure {

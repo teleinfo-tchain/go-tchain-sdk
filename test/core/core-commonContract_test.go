@@ -21,9 +21,11 @@ import (
 	"github.com/bif/bif-sdk-go/dto"
 	"github.com/bif/bif-sdk-go/providers"
 	"github.com/bif/bif-sdk-go/test/resources"
+	"github.com/bif/bif-sdk-go/utils"
 	"io/ioutil"
 	"math/big"
 	"testing"
+	"time"
 )
 
 func TestCoreContract(t *testing.T) {
@@ -46,22 +48,33 @@ func TestCoreContract(t *testing.T) {
 	var connection = bif.NewBif(providers.NewHTTPProvider(resources.IP+":"+resources.Port, 10, false))
 	byteCode := unmarshalResponse.ByteCode
 	contract, err := connection.Core.NewContract(unmarshalResponse.Abi)
-
-	transaction := new(dto.TransactionParameters)
-	coinBase, err := connection.Core.GetCoinBase()
-	transaction.From = coinBase
-	transaction.Gas = big.NewInt(4000000)
-
-	hash, err := contract.Deploy(transaction, byteCode, nil)
-
 	if err != nil {
 		t.Error(err)
 		t.FailNow()
 	}
 
+	transaction := new(dto.TransactionParameters)
+	coinBase, err := connection.Core.GetCoinBase()
+	if err != nil {
+		t.Error(err)
+		t.FailNow()
+	}
+
+	transaction.From = coinBase
+	transaction.Gas = big.NewInt(4000000)
+
+	hash, err := contract.Deploy(transaction, byteCode)
+
+	if err != nil {
+		t.Error(err)
+		t.FailNow()
+	}
+	t.Log("hash is ", hash)
+
 	var receipt *dto.TransactionReceipt
 
 	for receipt == nil {
+		time.Sleep(time.Second)
 		receipt, err = connection.Core.GetTransactionReceipt(hash)
 	}
 
@@ -83,7 +96,7 @@ func TestCoreContract(t *testing.T) {
 
 	if result != nil {
 		name, _ := result.ToComplexString()
-		if name.ToString() != "SimpleToken" {
+		if name.ToString() != "Simple ERC20 Token" {
 			t.Errorf(fmt.Sprintf("Name not expected; [Expected %s | Got %s]", "SimpleToken", name.ToString()))
 			t.FailNow()
 		}
@@ -92,7 +105,7 @@ func TestCoreContract(t *testing.T) {
 	result, err = contract.Call(transaction, "symbol")
 	if result != nil && err == nil {
 		symbol, _ := result.ToComplexString()
-		if symbol.ToString() != "SIM" {
+		if symbol.ToString() != "SET" {
 			t.Errorf("Symbol not expected")
 			t.FailNow()
 		}
@@ -107,7 +120,7 @@ func TestCoreContract(t *testing.T) {
 		}
 	}
 
-	bigInt, _ := new(big.Int).SetString("00000000000000000000000000000000000000000000021e19e0c9bab2400000", 16)
+	bigInt, _ := new(big.Int).SetString("000000000000000000000000000000000000000000000d3c21bcecceda1000000", 16)
 
 	result, err = contract.Call(transaction, "totalSupply")
 	if result != nil && err == nil {
@@ -127,19 +140,26 @@ func TestCoreContract(t *testing.T) {
 		}
 	}
 
-	hash, err = contract.Send(transaction, "approve", coinBase, big.NewInt(10))
+	hash, err = contract.Send(transaction, "approve", utils.StringToAddress(coinBase), big.NewInt(10))
 	if err != nil {
+		t.Log(err)
 		t.Errorf("Can't send approve transaction")
 		t.FailNow()
 	}
 
 	t.Log(hash)
 
-	reallyBigInt, _ := big.NewInt(0).SetString("20000000000000000000000000000000000000000000000000000000000000000", 16)
-	_, err = contract.Send(transaction, "approve", coinBase, reallyBigInt)
-	if err == nil {
+	receipt = nil
+	for receipt == nil {
+		time.Sleep(time.Second)
+		receipt, err = connection.Core.GetTransactionReceipt(hash)
+	}
+	t.Log(receipt.Logs[0].Data)
+
+	reallyBigInt, _ := big.NewInt(0).SetString("20", 16)
+	_, err = contract.Send(transaction, "approve", utils.StringToAddress(coinBase), reallyBigInt)
+	if err != nil {
 		t.Errorf("Can't send approve transaction")
 		t.FailNow()
 	}
-
 }

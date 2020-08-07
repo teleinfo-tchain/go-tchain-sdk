@@ -15,13 +15,15 @@
 package test
 
 import (
-	"github.com/bif/bif-sdk-go/test/resources"
-	"testing"
-
+	"fmt"
 	"github.com/bif/bif-sdk-go"
 	"github.com/bif/bif-sdk-go/dto"
 	"github.com/bif/bif-sdk-go/providers"
+	"github.com/bif/bif-sdk-go/test/resources"
+	"github.com/bif/bif-sdk-go/utils/hexutil"
 	"math/big"
+	"testing"
+	"time"
 )
 
 func TestGetTransactionByBlockNumberAndIndex(t *testing.T) {
@@ -35,33 +37,43 @@ func TestGetTransactionByBlockNumberAndIndex(t *testing.T) {
 		t.FailNow()
 	}
 
+	txVal := big.NewInt(2000000)
+
 	transaction := new(dto.TransactionParameters)
 	transaction.From = coinBase
 	transaction.To = coinBase
-	transaction.Value = big.NewInt(0).Mul(big.NewInt(500), big.NewInt(1e18))
+	transaction.Value = big.NewInt(0).Mul(big.NewInt(500), big.NewInt(1E18))
+	transaction.Value = txVal
 	transaction.Gas = big.NewInt(40000)
-	transaction.Data = "p2p transaction"
 
-	//txID, err := connection.Core.SendTransaction(transaction)
+	txID, err := connection.Core.SendTransaction(transaction)
 
-	//t.Log(txID)
-
-	blockNumber, err := connection.Core.GetBlockNumber()
-
-	if err != nil {
-		t.Error(err)
-		t.Fail()
-	}
-
-	tx, err := connection.Core.GetTransactionByBlockNumberAndIndex(blockNumber, big.NewInt(0))
+	t.Log("Tx Submitted: ", txID)
 
 	if err != nil {
 		t.Error(err)
 		t.FailNow()
 	}
 
-	t.Log(tx.Hash)
-	t.Log(tx.BlockHash)
-	t.Log(tx.BlockNumber)
-	t.Log(tx.TransactionIndex)
+	//  如果交易没有执行，则用已有的交易hash测试
+	// txID := "0x1abaf67025a43fd5d3ecc19d3b67003ee1caf863aa642fca5248c153ca7ea5fc"
+	var txFromHash *dto.TransactionResponse
+	for {
+		time.Sleep(time.Second*2)
+		txFromHash, err = connection.Core.GetTransactionByHash(txID)
+		if txFromHash!=nil && fmt.Sprintf("%d", txFromHash.BlockNumber) != "0"{
+			break
+		}
+	}
+	tx, err := connection.Core.GetTransactionByBlockNumberAndIndex(hexutil.EncodeBig(txFromHash.BlockNumber), txFromHash.TransactionIndex)
+
+	if err != nil {
+		t.Error(err)
+		t.FailNow()
+	}
+
+	if tx.From != coinBase || tx.To != coinBase || tx.Value.Cmp(txVal) != 0 || tx.Hash != txID {
+		t.Errorf("Incorrect transaction from hash and index")
+		t.FailNow()
+	}
 }

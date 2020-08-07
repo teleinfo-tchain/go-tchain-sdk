@@ -1,18 +1,16 @@
-// Copyright 2017 The go-ethereum Authors
-// This file is part of the go-ethereum library.
-//
-// The go-ethereum library is free software: you can redistribute it and/or modify
-// it under the terms of the GNU Lesser General Public License as published by
-// the Free Software Foundation, either version 3 of the License, or
-// (at your option) any later version.
-//
-// The go-ethereum library is distributed in the hope that it will be useful,
-// but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-// GNU Lesser General Public License for more details.
-//
-// You should have received a copy of the GNU Lesser General Public License
-// along with the go-ethereum library. If not, see <http://www.gnu.org/licenses/>.
+/********************************************************************************
+   This file is part of go-bif.
+   go-bif is free software: you can redistribute it and/or modify
+   it under the terms of the GNU Lesser General Public License as published by
+   the Free Software Foundation, either version 3 of the License, or
+   (at your option) any later version.
+   go-bif is distributed in the hope that it will be useful,
+   but WITHOUT ANY WARRANTY; without even the implied warranty of
+   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+   GNU Lesser General Public License for more details.
+   You should have received a copy of the GNU Lesser General Public License
+   along with go-bif.  If not, see <http://www.gnu.org/licenses/>.
+*********************************************************************************/
 
 package abi
 
@@ -20,13 +18,13 @@ import (
 	"bytes"
 	"encoding/hex"
 	"fmt"
+	"github.com/bif/bif-sdk-go/utils"
 	"math/big"
 	"reflect"
 	"strconv"
 	"strings"
 	"testing"
 
-	"github.com/bif/bif-sdk-go/common"
 	"github.com/stretchr/testify/require"
 )
 
@@ -241,8 +239,8 @@ func TestUnpackSetDynamicArrayOutput(t *testing.T) {
 	}
 
 	var (
-		marshalledReturn32 = common.Hex2Bytes("0000000000000000000000000000000000000000000000000000000000000020000000000000000000000000000000000000000000000000000000000000000230783132333435363738393000000000000000000000000000000000000000003078303938373635343332310000000000000000000000000000000000000000")
-		marshalledReturn15 = common.Hex2Bytes("0000000000000000000000000000000000000000000000000000000000000020000000000000000000000000000000000000000000000000000000000000000230783031323334350000000000000000000000000000000000000000000000003078393837363534000000000000000000000000000000000000000000000000")
+		marshalledReturn32 = utils.Hex2Bytes("0000000000000000000000000000000000000000000000000000000000000020000000000000000000000000000000000000000000000000000000000000000230783132333435363738393000000000000000000000000000000000000000003078303938373635343332310000000000000000000000000000000000000000")
+		marshalledReturn15 = utils.Hex2Bytes("0000000000000000000000000000000000000000000000000000000000000020000000000000000000000000000000000000000000000000000000000000000230783031323334350000000000000000000000000000000000000000000000003078393837363534000000000000000000000000000000000000000000000000")
 
 		out32 [][32]byte
 		out15 [][15]byte
@@ -256,11 +254,11 @@ func TestUnpackSetDynamicArrayOutput(t *testing.T) {
 	if len(out32) != 2 {
 		t.Fatalf("expected array with 2 values, got %d", len(out32))
 	}
-	expected := common.Hex2Bytes("3078313233343536373839300000000000000000000000000000000000000000")
+	expected := utils.Hex2Bytes("3078313233343536373839300000000000000000000000000000000000000000")
 	if !bytes.Equal(out32[0][:], expected) {
 		t.Errorf("expected %x, got %x\n", expected, out32[0])
 	}
-	expected = common.Hex2Bytes("3078303938373635343332310000000000000000000000000000000000000000")
+	expected = utils.Hex2Bytes("3078303938373635343332310000000000000000000000000000000000000000")
 	if !bytes.Equal(out32[1][:], expected) {
 		t.Errorf("expected %x, got %x\n", expected, out32[1])
 	}
@@ -273,11 +271,11 @@ func TestUnpackSetDynamicArrayOutput(t *testing.T) {
 	if len(out15) != 2 {
 		t.Fatalf("expected array with 2 values, got %d", len(out15))
 	}
-	expected = common.Hex2Bytes("307830313233343500000000000000")
+	expected = utils.Hex2Bytes("307830313233343500000000000000")
 	if !bytes.Equal(out15[0][:], expected) {
 		t.Errorf("expected %x, got %x\n", expected, out15[0])
 	}
-	expected = common.Hex2Bytes("307839383736353400000000000000")
+	expected = utils.Hex2Bytes("307839383736353400000000000000")
 	if !bytes.Equal(out15[1][:], expected) {
 		t.Errorf("expected %x, got %x\n", expected, out15[1])
 	}
@@ -297,10 +295,10 @@ func methodMultiReturn(require *require.Assertions) (ABI, []byte, methodMultiOut
 	require.NoError(err)
 	// using buff to make the code readable
 	buff := new(bytes.Buffer)
-	buff.Write(common.Hex2Bytes("0000000000000000000000000000000000000000000000000000000000000001"))
-	buff.Write(common.Hex2Bytes("0000000000000000000000000000000000000000000000000000000000000040"))
-	buff.Write(common.Hex2Bytes("0000000000000000000000000000000000000000000000000000000000000005"))
-	buff.Write(common.RightPadBytes([]byte(expected.String), 32))
+	buff.Write(utils.Hex2Bytes("0000000000000000000000000000000000000000000000000000000000000001"))
+	buff.Write(utils.Hex2Bytes("0000000000000000000000000000000000000000000000000000000000000040"))
+	buff.Write(utils.Hex2Bytes("0000000000000000000000000000000000000000000000000000000000000005"))
+	buff.Write(utils.RightPadBytes([]byte(expected.String), 32))
 	return abi, buff.Bytes(), expected
 }
 
@@ -385,8 +383,8 @@ func TestMultiReturnWithArray(t *testing.T) {
 		t.Fatal(err)
 	}
 	buff := new(bytes.Buffer)
-	buff.Write(common.Hex2Bytes("000000000000000000000000000000000000000000000000000000000000000900000000000000000000000000000000000000000000000000000000000000090000000000000000000000000000000000000000000000000000000000000009"))
-	buff.Write(common.Hex2Bytes("0000000000000000000000000000000000000000000000000000000000000008"))
+	buff.Write(utils.Hex2Bytes("000000000000000000000000000000000000000000000000000000000000000900000000000000000000000000000000000000000000000000000000000000090000000000000000000000000000000000000000000000000000000000000009"))
+	buff.Write(utils.Hex2Bytes("0000000000000000000000000000000000000000000000000000000000000008"))
 
 	ret1, ret1Exp := new([3]uint64), [3]uint64{9, 9, 9}
 	ret2, ret2Exp := new(uint64), uint64(8)
@@ -408,10 +406,10 @@ func TestMultiReturnWithStringArray(t *testing.T) {
 		t.Fatal(err)
 	}
 	buff := new(bytes.Buffer)
-	buff.Write(common.Hex2Bytes("000000000000000000000000000000000000000000000000000000005c1b78ea0000000000000000000000000000000000000000000000000000000000000006000000000000000000000000000000000000000000000001a055690d9db80000000000000000000000000000ab1257528b3782fb40d7ed5f72e624b744dffb2f00000000000000000000000000000000000000000000000000000000000000c00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000004000000000000000000000000000000000000000000000000000000000000000800000000000000000000000000000000000000000000000000000000000000008457468657265756d000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000001048656c6c6f2c20457468657265756d2100000000000000000000000000000000"))
+	buff.Write(utils.Hex2Bytes("000000000000000000000000000000000000000000000000000000005c1b78ea0000000000000000000000000000000000000000000000000000000000000006000000000000000000000000000000000000000000000001a055690d9db80000000000000000000000000000ab1257528b3782fb40d7ed5f72e624b744dffb2f00000000000000000000000000000000000000000000000000000000000000c00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000004000000000000000000000000000000000000000000000000000000000000000800000000000000000000000000000000000000000000000000000000000000008457468657265756d000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000001048656c6c6f2c20457468657265756d2100000000000000000000000000000000"))
 	temp, _ := big.NewInt(0).SetString("30000000000000000000", 10)
 	ret1, ret1Exp := new([3]*big.Int), [3]*big.Int{big.NewInt(1545304298), big.NewInt(6), temp}
-	ret2, ret2Exp := new(common.Address), common.HexToAddress("ab1257528b3782fb40d7ed5f72e624b744dffb2f")
+	ret2, ret2Exp := new(utils.Address), utils.HexToAddress("ab1257528b3782fb40d7ed5f72e624b744dffb2f")
 	ret3, ret3Exp := new([2]string), [2]string{"Ethereum", "Hello, Ethereum!"}
 	ret4, ret4Exp := new(bool), false
 	if err := abi.Unpack(&[]interface{}{ret1, ret2, ret3, ret4}, "multi", buff.Bytes()); err != nil {
@@ -438,18 +436,18 @@ func TestMultiReturnWithStringSlice(t *testing.T) {
 		t.Fatal(err)
 	}
 	buff := new(bytes.Buffer)
-	buff.Write(common.Hex2Bytes("0000000000000000000000000000000000000000000000000000000000000040")) // output[0] offset
-	buff.Write(common.Hex2Bytes("0000000000000000000000000000000000000000000000000000000000000120")) // output[1] offset
-	buff.Write(common.Hex2Bytes("0000000000000000000000000000000000000000000000000000000000000002")) // output[0] length
-	buff.Write(common.Hex2Bytes("0000000000000000000000000000000000000000000000000000000000000040")) // output[0][0] offset
-	buff.Write(common.Hex2Bytes("0000000000000000000000000000000000000000000000000000000000000080")) // output[0][1] offset
-	buff.Write(common.Hex2Bytes("0000000000000000000000000000000000000000000000000000000000000008")) // output[0][0] length
-	buff.Write(common.Hex2Bytes("657468657265756d000000000000000000000000000000000000000000000000")) // output[0][0] value
-	buff.Write(common.Hex2Bytes("000000000000000000000000000000000000000000000000000000000000000b")) // output[0][1] length
-	buff.Write(common.Hex2Bytes("676f2d657468657265756d000000000000000000000000000000000000000000")) // output[0][1] value
-	buff.Write(common.Hex2Bytes("0000000000000000000000000000000000000000000000000000000000000002")) // output[1] length
-	buff.Write(common.Hex2Bytes("0000000000000000000000000000000000000000000000000000000000000064")) // output[1][0] value
-	buff.Write(common.Hex2Bytes("0000000000000000000000000000000000000000000000000000000000000065")) // output[1][1] value
+	buff.Write(utils.Hex2Bytes("0000000000000000000000000000000000000000000000000000000000000040")) // output[0] offset
+	buff.Write(utils.Hex2Bytes("0000000000000000000000000000000000000000000000000000000000000120")) // output[1] offset
+	buff.Write(utils.Hex2Bytes("0000000000000000000000000000000000000000000000000000000000000002")) // output[0] length
+	buff.Write(utils.Hex2Bytes("0000000000000000000000000000000000000000000000000000000000000040")) // output[0][0] offset
+	buff.Write(utils.Hex2Bytes("0000000000000000000000000000000000000000000000000000000000000080")) // output[0][1] offset
+	buff.Write(utils.Hex2Bytes("0000000000000000000000000000000000000000000000000000000000000008")) // output[0][0] length
+	buff.Write(utils.Hex2Bytes("657468657265756d000000000000000000000000000000000000000000000000")) // output[0][0] value
+	buff.Write(utils.Hex2Bytes("000000000000000000000000000000000000000000000000000000000000000b")) // output[0][1] length
+	buff.Write(utils.Hex2Bytes("676f2d657468657265756d000000000000000000000000000000000000000000")) // output[0][1] value
+	buff.Write(utils.Hex2Bytes("0000000000000000000000000000000000000000000000000000000000000002")) // output[1] length
+	buff.Write(utils.Hex2Bytes("0000000000000000000000000000000000000000000000000000000000000064")) // output[1][0] value
+	buff.Write(utils.Hex2Bytes("0000000000000000000000000000000000000000000000000000000000000065")) // output[1][1] value
 	ret1, ret1Exp := new([]string), []string{"ethereum", "go-ethereum"}
 	ret2, ret2Exp := new([]*big.Int), []*big.Int{big.NewInt(100), big.NewInt(101)}
 	if err := abi.Unpack(&[]interface{}{ret1, ret2}, "multi", buff.Bytes()); err != nil {
@@ -476,14 +474,14 @@ func TestMultiReturnWithDeeplyNestedArray(t *testing.T) {
 	buff := new(bytes.Buffer)
 	// construct the test array, each 3 char element is joined with 61 '0' chars,
 	// to from the ((3 + 61) * 0.5) = 32 byte elements in the array.
-	buff.Write(common.Hex2Bytes(strings.Join([]string{
+	buff.Write(utils.Hex2Bytes(strings.Join([]string{
 		"", //empty, to apply the 61-char separator to the first element as well.
 		"111", "112", "113", "121", "122", "123",
 		"211", "212", "213", "221", "222", "223",
 		"311", "312", "313", "321", "322", "323",
 		"411", "412", "413", "421", "422", "423",
 	}, "0000000000000000000000000000000000000000000000000000000000000")))
-	buff.Write(common.Hex2Bytes("0000000000000000000000000000000000000000000000000000000000009876"))
+	buff.Write(utils.Hex2Bytes("0000000000000000000000000000000000000000000000000000000000009876"))
 
 	ret1, ret1Exp := new([4][2][3]uint64), [4][2][3]uint64{
 		{{0x111, 0x112, 0x113}, {0x121, 0x122, 0x123}},
@@ -523,11 +521,11 @@ func TestUnmarshal(t *testing.T) {
 
 	// marshal address slice
 	buff.Reset()
-	buff.Write(common.Hex2Bytes("0000000000000000000000000000000000000000000000000000000000000020")) // offset
-	buff.Write(common.Hex2Bytes("0000000000000000000000000000000000000000000000000000000000000001")) // size
-	buff.Write(common.Hex2Bytes("0000000000000000000000006469643a6269643a000000000000000000000001"))
+	buff.Write(utils.Hex2Bytes("0000000000000000000000000000000000000000000000000000000000000020")) // offset
+	buff.Write(utils.Hex2Bytes("0000000000000000000000000000000000000000000000000000000000000001")) // size
+	buff.Write(utils.Hex2Bytes("0000000000000000000000006469643a6269643a000000000000000000000001"))
 
-	var outAddr []common.Address
+	var outAddr []utils.Address
 	err = abi.Unpack(&outAddr, "addressSliceSingle", buff.Bytes())
 	if err != nil {
 		t.Fatal("didn't expect error:", err)
@@ -537,24 +535,24 @@ func TestUnmarshal(t *testing.T) {
 		t.Fatal("expected 1 item, got", len(outAddr))
 	}
 
-	if outAddr[0] != (common.Address{100, 105, 100, 58, 98, 105, 100, 58, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1}) {
+	if outAddr[0] != (utils.Address{100, 105, 100, 58, 98, 105, 100, 58, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1}) {
 		fmt.Println("outAddr ", outAddr)
-		t.Errorf("expected %x, got %x", common.Address{1}, outAddr[0])
+		t.Errorf("expected %x, got %x", utils.Address{1}, outAddr[0])
 	}
 
 	// marshal multiple address slice
 	buff.Reset()
-	buff.Write(common.Hex2Bytes("0000000000000000000000000000000000000000000000000000000000000040")) // offset
-	buff.Write(common.Hex2Bytes("0000000000000000000000000000000000000000000000000000000000000080")) // offset
-	buff.Write(common.Hex2Bytes("0000000000000000000000000000000000000000000000000000000000000001")) // size
-	buff.Write(common.Hex2Bytes("0000000000000000000000006469643a6269643a000000000000000000000001"))
-	buff.Write(common.Hex2Bytes("0000000000000000000000000000000000000000000000000000000000000002")) // size
-	buff.Write(common.Hex2Bytes("0000000000000000000000006469643a6269643a000000000000000000000002"))
-	buff.Write(common.Hex2Bytes("0000000000000000000000006469643a6269643a000000000000000000000003"))
+	buff.Write(utils.Hex2Bytes("0000000000000000000000000000000000000000000000000000000000000040")) // offset
+	buff.Write(utils.Hex2Bytes("0000000000000000000000000000000000000000000000000000000000000080")) // offset
+	buff.Write(utils.Hex2Bytes("0000000000000000000000000000000000000000000000000000000000000001")) // size
+	buff.Write(utils.Hex2Bytes("0000000000000000000000006469643a6269643a000000000000000000000001"))
+	buff.Write(utils.Hex2Bytes("0000000000000000000000000000000000000000000000000000000000000002")) // size
+	buff.Write(utils.Hex2Bytes("0000000000000000000000006469643a6269643a000000000000000000000002"))
+	buff.Write(utils.Hex2Bytes("0000000000000000000000006469643a6269643a000000000000000000000003"))
 
 	var outAddrStruct struct {
-		A []common.Address
-		B []common.Address
+		A []utils.Address
+		B []utils.Address
 	}
 	err = abi.Unpack(&outAddrStruct, "addressSliceDouble", buff.Bytes())
 	if err != nil {
@@ -565,24 +563,24 @@ func TestUnmarshal(t *testing.T) {
 		t.Fatal("expected 1 item, got", len(outAddrStruct.A))
 	}
 
-	if outAddrStruct.A[0] != (common.Address{100, 105, 100, 58, 98, 105, 100, 58, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1}) {
-		t.Errorf("expected %x, got %x", common.Address{1}, outAddrStruct.A[0])
+	if outAddrStruct.A[0] != (utils.Address{100, 105, 100, 58, 98, 105, 100, 58, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1}) {
+		t.Errorf("expected %x, got %x", utils.Address{1}, outAddrStruct.A[0])
 	}
 
 	if len(outAddrStruct.B) != 2 {
 		t.Fatal("expected 1 item, got", len(outAddrStruct.B))
 	}
 
-	if outAddrStruct.B[0] != (common.Address{100, 105, 100, 58, 98, 105, 100, 58, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2}) {
-		t.Errorf("expected %x, got %x", common.Address{2}, outAddrStruct.B[0])
+	if outAddrStruct.B[0] != (utils.Address{100, 105, 100, 58, 98, 105, 100, 58, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2}) {
+		t.Errorf("expected %x, got %x", utils.Address{2}, outAddrStruct.B[0])
 	}
-	if outAddrStruct.B[1] != (common.Address{100, 105, 100, 58, 98, 105, 100, 58, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 3}) {
-		t.Errorf("expected %x, got %x", common.Address{3}, outAddrStruct.B[1])
+	if outAddrStruct.B[1] != (utils.Address{100, 105, 100, 58, 98, 105, 100, 58, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 3}) {
+		t.Errorf("expected %x, got %x", utils.Address{3}, outAddrStruct.B[1])
 	}
 
 	// marshal invalid address slice
 	buff.Reset()
-	buff.Write(common.Hex2Bytes("0000000000000000000000000000000000000000000000000000000000000100"))
+	buff.Write(utils.Hex2Bytes("0000000000000000000000000000000000000000000000000000000000000100"))
 
 	err = abi.Unpack(&outAddr, "addressSliceSingle", buff.Bytes())
 	if err == nil {
@@ -598,8 +596,8 @@ func TestUnpackTuple(t *testing.T) {
 	}
 	buff := new(bytes.Buffer)
 
-	buff.Write(common.Hex2Bytes("0000000000000000000000000000000000000000000000000000000000000001")) // ret[a] = 1
-	buff.Write(common.Hex2Bytes("ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff")) // ret[b] = -1
+	buff.Write(utils.Hex2Bytes("0000000000000000000000000000000000000000000000000000000000000001")) // ret[a] = 1
+	buff.Write(utils.Hex2Bytes("ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff")) // ret[b] = -1
 
 	// If the result is single tuple, use struct as return value container directly.
 	v := struct {
@@ -631,21 +629,21 @@ func TestUnpackTuple(t *testing.T) {
 		t.Fatal(err)
 	}
 	buff.Reset()
-	buff.Write(common.Hex2Bytes("0000000000000000000000000000000000000000000000000000000000000080")) // s offset
-	buff.Write(common.Hex2Bytes("0000000000000000000000000000000000000000000000000000000000000000")) // t.X = 0
-	buff.Write(common.Hex2Bytes("0000000000000000000000000000000000000000000000000000000000000001")) // t.Y = 1
-	buff.Write(common.Hex2Bytes("0000000000000000000000000000000000000000000000000000000000000001")) // a = 1
-	buff.Write(common.Hex2Bytes("0000000000000000000000000000000000000000000000000000000000000001")) // s.A = 1
-	buff.Write(common.Hex2Bytes("0000000000000000000000000000000000000000000000000000000000000060")) // s.B offset
-	buff.Write(common.Hex2Bytes("00000000000000000000000000000000000000000000000000000000000000c0")) // s.C offset
-	buff.Write(common.Hex2Bytes("0000000000000000000000000000000000000000000000000000000000000002")) // s.B length
-	buff.Write(common.Hex2Bytes("0000000000000000000000000000000000000000000000000000000000000001")) // s.B[0] = 1
-	buff.Write(common.Hex2Bytes("0000000000000000000000000000000000000000000000000000000000000002")) // s.B[0] = 2
-	buff.Write(common.Hex2Bytes("0000000000000000000000000000000000000000000000000000000000000002")) // s.C length
-	buff.Write(common.Hex2Bytes("0000000000000000000000000000000000000000000000000000000000000001")) // s.C[0].X
-	buff.Write(common.Hex2Bytes("0000000000000000000000000000000000000000000000000000000000000002")) // s.C[0].Y
-	buff.Write(common.Hex2Bytes("0000000000000000000000000000000000000000000000000000000000000002")) // s.C[1].X
-	buff.Write(common.Hex2Bytes("0000000000000000000000000000000000000000000000000000000000000001")) // s.C[1].Y
+	buff.Write(utils.Hex2Bytes("0000000000000000000000000000000000000000000000000000000000000080")) // s offset
+	buff.Write(utils.Hex2Bytes("0000000000000000000000000000000000000000000000000000000000000000")) // t.X = 0
+	buff.Write(utils.Hex2Bytes("0000000000000000000000000000000000000000000000000000000000000001")) // t.Y = 1
+	buff.Write(utils.Hex2Bytes("0000000000000000000000000000000000000000000000000000000000000001")) // a = 1
+	buff.Write(utils.Hex2Bytes("0000000000000000000000000000000000000000000000000000000000000001")) // s.A = 1
+	buff.Write(utils.Hex2Bytes("0000000000000000000000000000000000000000000000000000000000000060")) // s.B offset
+	buff.Write(utils.Hex2Bytes("00000000000000000000000000000000000000000000000000000000000000c0")) // s.C offset
+	buff.Write(utils.Hex2Bytes("0000000000000000000000000000000000000000000000000000000000000002")) // s.B length
+	buff.Write(utils.Hex2Bytes("0000000000000000000000000000000000000000000000000000000000000001")) // s.B[0] = 1
+	buff.Write(utils.Hex2Bytes("0000000000000000000000000000000000000000000000000000000000000002")) // s.B[0] = 2
+	buff.Write(utils.Hex2Bytes("0000000000000000000000000000000000000000000000000000000000000002")) // s.C length
+	buff.Write(utils.Hex2Bytes("0000000000000000000000000000000000000000000000000000000000000001")) // s.C[0].X
+	buff.Write(utils.Hex2Bytes("0000000000000000000000000000000000000000000000000000000000000002")) // s.C[0].Y
+	buff.Write(utils.Hex2Bytes("0000000000000000000000000000000000000000000000000000000000000002")) // s.C[1].X
+	buff.Write(utils.Hex2Bytes("0000000000000000000000000000000000000000000000000000000000000001")) // s.C[1].Y
 
 	type T struct {
 		X *big.Int `abi:"x"`
