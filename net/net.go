@@ -21,13 +21,13 @@ import (
 )
 
 // Net - The Net Module
-// Net - ÍøÂçÄ£¿é
+// Net - ç½‘ç»œæ¨¡å—
 type Net struct {
 	provider providers.ProviderInterface
 }
 
 // NewNet - Net Module constructor to set the default provider
-// NewNet - Net Module ¹¹Ôìº¯ÊıÀ´³õÊ¼»¯
+// NewNet - Net Module æ„é€ å‡½æ•°æ¥åˆå§‹åŒ–
 func NewNet(provider providers.ProviderInterface) *Net {
 	net := new(Net)
 	net.provider = provider
@@ -37,12 +37,12 @@ func NewNet(provider providers.ProviderInterface) *Net {
 /*
   IsListening:
  	EN - Returns true if client is actively listening for network connections.
-  	CN - ÅĞ¶Ï¿Í»§¶ËÊÇ·ñÕı³£¼àÌıÍøÂçÁ¬½Ó
+  	CN - åˆ¤æ–­å®¢æˆ·ç«¯æ˜¯å¦æ­£å¸¸ç›‘å¬ç½‘ç»œè¿æ¥
   Params:
 	- None
 
   Returns:
-	- bool, trueÊÇÕı³££¬falseÊÇ²»Õı³£
+	- bool, trueæ˜¯æ­£å¸¸ï¼Œfalseæ˜¯ä¸æ­£å¸¸
 	- error
   Call permissions: Anyone
 */
@@ -63,12 +63,12 @@ func (net *Net) IsListening() (bool, error) {
 /*
   GetPeerCount:
   	EN - Returns number of peers currently connected to the client.
-   	CN - ·µ»Øµ±Ç°Á¬½Óµ½¿Í»§¶ËµÄ¶ÔµÈ½ÚµãµÄÊıÁ¿¡£
+   	CN - è¿”å›å½“å‰è¿æ¥åˆ°å®¢æˆ·ç«¯çš„å¯¹ç­‰èŠ‚ç‚¹çš„æ•°é‡ã€‚
   Params:
   	- None
 
   Returns:
-  	- *big.Int, Á¬½ÓµÄ¶ÔµÈ½ÚµãµÄÊıÁ¿
+  	- *big.Int, è¿æ¥çš„å¯¹ç­‰èŠ‚ç‚¹çš„æ•°é‡
 	- error
 
   Call permissions: Anyone
@@ -90,12 +90,12 @@ func (net *Net) GetPeerCount() (*big.Int, error) {
 /*
   GetVersion:
    	EN - Returns the current network id.
-	CN - ·µ»Øµ±Ç°µÄÍøÂçID
+	CN - è¿”å›å½“å‰çš„ç½‘ç»œID
   Params:
   	- None
 
   Returns:
-  	- string,µ±Ç°µÄÍøÂçID
+  	- string,å½“å‰çš„ç½‘ç»œID
  	- error
 
   Call permissions: Anyone
@@ -117,12 +117,12 @@ func (net *Net) GetVersion() (string, error) {
 /*
   GetPeers:
    	EN - Get all peer nodes info
- 	CN - »ñÈ¡ËùÓĞÁ¬½ÓµÄ¶ÔµÈ½ÚµãµÄÏêÏ¸ĞÅÏ¢
+ 	CN - è·å–æ‰€æœ‰è¿æ¥çš„å¯¹ç­‰èŠ‚ç‚¹çš„è¯¦ç»†ä¿¡æ¯
   Params:
   	- None
 
   Returns:
-  	- []*common.PeerInfo, ½ÚµãĞÅÏ¢ÁĞ±í
+  	- []*common.PeerInfo, èŠ‚ç‚¹ä¿¡æ¯åˆ—è¡¨
  		Enode   string   `json:"enode"` // Node URL
 		ID      string   `json:"id"`    // Unique node identifier
 		Name    string   `json:"name"`  // Name of the node, including client type, version, OS, custom data
@@ -155,12 +155,12 @@ func (net *Net) GetPeers() ([]*dto.PeerInfo, error) {
 /*
   AddPeer:
    	EN - Add peer
-	CN - Á¬½ÓĞÂµÄ½Úµã
+	CN - è¿æ¥æ–°çš„èŠ‚ç‚¹
   Params:
-  	- url, string, ½ÚµãµÄurl
+  	- url, string, èŠ‚ç‚¹çš„url
 
   Returns:
-  	- bool£¬trueÁ¬½Ó³É¹¦£¬falseÁ¬½ÓÊ§°Ü
+  	- boolï¼Œtrueè¿æ¥æˆåŠŸï¼Œfalseè¿æ¥å¤±è´¥
 	- error
 
   Call permissions: Anyone
@@ -184,12 +184,12 @@ func (net *Net) AddPeer(url string) (bool, error) {
 /*
   RemovePeer:
    	EN - Remove peer
-	CN - ÒÆ³ıÁ¬½ÓµÄ½Úµã
+	CN - ç§»é™¤è¿æ¥çš„èŠ‚ç‚¹
   Params:
-  	- url, string, ½ÚµãµÄurl
+  	- url, string, èŠ‚ç‚¹çš„url
 
   Returns:
-   	- bool£¬trueÒÆ³ı³É¹¦£¬falseÒÆ³ıÊ§°Ü
+   	- boolï¼Œtrueç§»é™¤æˆåŠŸï¼Œfalseç§»é™¤å¤±è´¥
  	- error
 
   Call permissions: Anyone
@@ -210,10 +210,10 @@ func (net *Net) RemovePeer(url string) (bool, error) {
 	return pointer.ToBoolean()
 }
 
- /*
+/*
   GetNodeInfo:
    	EN - The host node info
- 	CN - Ö÷»ú½ÚµãµÄĞÅÏ¢
+ 	CN - ä¸»æœºèŠ‚ç‚¹çš„ä¿¡æ¯
   Params:
   	- None
 
@@ -232,7 +232,7 @@ func (net *Net) RemovePeer(url string) (bool, error) {
  	- error
 
   Call permissions: Anyone
-  */
+*/
 func (net *Net) GetNodeInfo() (*dto.NodeInfo, error) {
 
 	pointer := &dto.NetRequestResult{}
@@ -246,10 +246,10 @@ func (net *Net) GetNodeInfo() (*dto.NodeInfo, error) {
 	return pointer.ToNodeInfo()
 }
 
- /*
+/*
   GetDataDir:
    	EN - retrieves the current data directory the node is using
- 	CN - ¼ìË÷½ÚµãÕıÔÚÊ¹ÓÃµÄµ±Ç°Êı¾İÄ¿Â¼
+ 	CN - æ£€ç´¢èŠ‚ç‚¹æ­£åœ¨ä½¿ç”¨çš„å½“å‰æ•°æ®ç›®å½•
   Params:
   	- None
 
@@ -258,7 +258,7 @@ func (net *Net) GetNodeInfo() (*dto.NodeInfo, error) {
  	- error
 
   Call permissions: Anyone
-  */
+*/
 func (net *Net) GetDataDir() (string, error) {
 
 	pointer := &dto.NetRequestResult{}

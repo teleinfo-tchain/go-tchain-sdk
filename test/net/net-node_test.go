@@ -41,7 +41,7 @@ func TestNodePeers(t *testing.T) {
 	t.Log(len(peers))
 }
 
-// ÈçºÎÌí¼ÓºÍÒÆ³ıĞèÒªÈ·¶¨
+// å¦‚ä½•æ·»åŠ å’Œç§»é™¤éœ€è¦ç¡®å®š
 func TestAddPeer(t *testing.T) {
 
 	url := "/ip4/169.254.248.29/tcp/44051/p2p/16Uiu2HAm4TSmKV3QAVzbd1V8mMpgqA3xvTEiLF71WbdojVvf3vt1"

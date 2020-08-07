@@ -55,7 +55,7 @@ func TestGetTransactionByBlockNumberAndIndex(t *testing.T) {
 		t.FailNow()
 	}
 
-	//  如果交易没有执行，则用已有的交易hash测试
+	//  濡傛灉浜ゆ槗娌℃湁鎵ц锛屽垯鐢ㄥ凡鏈夌殑浜ゆ槗hash娴嬭瘯
 	// txID := "0x1abaf67025a43fd5d3ecc19d3b67003ee1caf863aa642fca5248c153ca7ea5fc"
 	var txFromHash *dto.TransactionResponse
 	for {

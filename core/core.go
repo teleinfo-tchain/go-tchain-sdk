@@ -25,13 +25,13 @@ import (
 )
 
 // Core - The Core Module
-// Core - Core Ä£¿é
+// Core - Core æ¨¡å—
 type Core struct {
 	provider providers.ProviderInterface
 }
 
 // NewCore - Core Module constructor to set the default provider
-// NewCore - Core Module ¹¹Ôìº¯ÊıÀ´³õÊ¼»¯
+// NewCore - Core Module æ„é€ å‡½æ•°æ¥åˆå§‹åŒ–
 func NewCore(provider providers.ProviderInterface) *Core {
 	core := new(Core)
 	core.provider = provider
@@ -45,12 +45,12 @@ func (core *Core) Contract(jsonInterface string) (*Contract, error) {
 /*
   GetProtocolVersion:
    	EN - Returns the current bif protocol version.
- 	CN - ·µ»Øµ±Ç°µÄBifĞ­Òé°æ±¾¡£
+ 	CN - è¿”å›å½“å‰çš„Bifåè®®ç‰ˆæœ¬ã€‚
   Params:
   	- None
 
   Returns:
-  	- string, µ±Ç°µÄBifĞ­Òé°æ±¾
+  	- string, å½“å‰çš„Bifåè®®ç‰ˆæœ¬
  	- error
 
   Call permissions: Anyone
@@ -72,15 +72,15 @@ func (core *Core) GetProtocolVersion() (uint64, error) {
 /*
   IsSyncing:
    	EN - Returns an object with data about the sync status or false.
- 	CN - ·µ»ØÍ¬²½×´Ì¬µÄÊı¾İ¶ÔÏó¡£
+ 	CN - è¿”å›åŒæ­¥çŠ¶æ€çš„æ•°æ®å¯¹è±¡ã€‚
   Params:
   	- None
 
   Returns:
-  	- *dto.SyncingResponse, Èç¹ûÃ»ÓĞÍ¬²½£¬Ôò·µ»Ø&{<nil> <nil> <nil>};Èç¹ûÕıÔÚÍ¬²½Ôò·µ»Ø£º
- 		StartingBlock *big.Int - Í¬²½Ê±£¬µ¼ÈëµÄÆğÊ¼Çø¿é
-		CurrentBlock  *big.Int - µ±Ç°Çø¿é£¬ÓëGetBlockNumberĞ§¹ûÏàÍ¬
-		HighestBlock  *big.Int - µ±Ç°¹À¼ÆµÄ×î¸ßÇø¿é
+  	- *dto.SyncingResponse, å¦‚æœæ²¡æœ‰åŒæ­¥ï¼Œåˆ™è¿”å›&{<nil> <nil> <nil>};å¦‚æœæ­£åœ¨åŒæ­¥åˆ™è¿”å›ï¼š
+ 		StartingBlock *big.Int - åŒæ­¥æ—¶ï¼Œå¯¼å…¥çš„èµ·å§‹åŒºå—
+		CurrentBlock  *big.Int - å½“å‰åŒºå—ï¼Œä¸GetBlockNumberæ•ˆæœç›¸åŒ
+		HighestBlock  *big.Int - å½“å‰ä¼°è®¡çš„æœ€é«˜åŒºå—
  	- error
 
   Call permissions: Anyone
@@ -102,12 +102,12 @@ func (core *Core) IsSyncing() (*dto.SyncingResponse, error) {
 /*
   GetCoinBase:
    	EN - Returns the client coinbase address
- 	CN - ·µ»Ø¿Í»§¶ËµÄ³ö¿é½±ÀøµØÖ·
+ 	CN - è¿”å›å®¢æˆ·ç«¯çš„å‡ºå—å¥–åŠ±åœ°å€
   Params:
   	- None
 
   Returns:
-  	- string, 20 bytesµÄ×Ö·û´®, ³ö¿é½±ÀøµØÖ·
+  	- string, 20 bytesçš„å­—ç¬¦ä¸², å‡ºå—å¥–åŠ±åœ°å€
  	- error
 
   Call permissions: Anyone
@@ -129,12 +129,12 @@ func (core *Core) GetCoinBase() (string, error) {
 /*
   Generating:
    	EN - Returns true if client is actively generating new blocks.
- 	CN - Èç¹û¿Í»§¶ËÕıÔÚ»ı¼«ÍÚ¾òĞÂ¿é£¬Ôò·µ»Øtrue
+ 	CN - å¦‚æœå®¢æˆ·ç«¯æ­£åœ¨ç§¯ææŒ–æ˜æ–°å—ï¼Œåˆ™è¿”å›true
   Params:
   	- None
 
   Returns:
-  	- bool, true ÕıÔÚ³ö¿é£»false ³ö¿éÍ£Ö¹
+  	- bool, true æ­£åœ¨å‡ºå—ï¼›false å‡ºå—åœæ­¢
  	- error
 
   Call permissions: Anyone
@@ -156,12 +156,12 @@ func (core *Core) Generating() (bool, error) {
 /*
   GetHashRate:
    	EN - Returns the number of hashes per second that the node is mining with.
- 	CN - ·µ»Ø½ÚµãÃ¿ÃëÍÚ¾òµÄ¹şÏ£Êı
+ 	CN - è¿”å›èŠ‚ç‚¹æ¯ç§’æŒ–æ˜çš„å“ˆå¸Œæ•°
   Params:
   	- None
 
   Returns:
-  	- *big.Int, Ã¿Ãë¹şÏ£Êı
+  	- *big.Int, æ¯ç§’å“ˆå¸Œæ•°
  	- error
 
   Call permissions: Anyone
@@ -183,12 +183,12 @@ func (core *Core) GetHashRate() (*big.Int, error) {
 /*
   GetGasPrice:
    	EN - Returns the current price per gas in bif
- 	CN - ·µ»ØÒÔbifÎªµ¥Î»µÄµ±Ç°GasPrice
+ 	CN - è¿”å›ä»¥bifä¸ºå•ä½çš„å½“å‰GasPrice
   Params:
   	- None
 
   Returns:
-  	- *big.Int, ÒÔbifÎªµ¥Î»µÄµ±Ç°gasPrice
+  	- *big.Int, ä»¥bifä¸ºå•ä½çš„å½“å‰gasPrice
  	- error
 
   Call permissions: Anyone
@@ -209,12 +209,12 @@ func (core *Core) GetGasPrice() (*big.Int, error) {
 /*
   GetAccounts:
    	EN - Returns a list of addresses owned by client.
- 	CN - ·µ»Øµ±Ç°¿Í»§¶ËËùÓĞµÄÕË»§µØÖ·ÁĞ±í¡£
+ 	CN - è¿”å›å½“å‰å®¢æˆ·ç«¯æ‰€æœ‰çš„è´¦æˆ·åœ°å€åˆ—è¡¨ã€‚
   Params:
   	- None
 
   Returns:
-  	- []string, µ±Ç°¿Í»§¶ËÓµÓĞµÄÕË»§µØÖ·ÁĞ±í
+  	- []string, å½“å‰å®¢æˆ·ç«¯æ‹¥æœ‰çš„è´¦æˆ·åœ°å€åˆ—è¡¨
  	- error
 
   Call permissions: Anyone
@@ -236,12 +236,12 @@ func (core *Core) GetAccounts() ([]string, error) {
 /*
   GetBlockNumber:
    	EN - Returns the number of most recent block.
- 	CN - ·µ»Øµ±Ç°Çø¿éÁ´µÄÇø¿éÊı
+ 	CN - è¿”å›å½“å‰åŒºå—é“¾çš„åŒºå—æ•°
   Params:
   	- None
 
   Returns:
-  	- *big.Int, µ±Ç°Çø¿éÁ´µÄÇø¿éÊı
+  	- *big.Int, å½“å‰åŒºå—é“¾çš„åŒºå—æ•°
  	- error
 
   Call permissions: Anyone
@@ -262,7 +262,7 @@ func (core *Core) GetBlockNumber() (*big.Int, error) {
 /*
   GetBalance:
    	EN - Returns the balance of the account of given address.
- 	CN - ·µ»Ø¸ø¶¨µØÖ·µÄÕÊ»§Óà¶î¡£
+ 	CN - è¿”å›ç»™å®šåœ°å€çš„å¸æˆ·ä½™é¢ã€‚
   Params:
   	- address, string, 20 bytes
 	- blockNumber, string, options are:
@@ -271,7 +271,7 @@ func (core *Core) GetBlockNumber() (*big.Int, error) {
 	 (3) String "pending" - for the pending state/transactions
 
   Returns:
-  	- *big.Int£¬ ¸ø¶¨µØÖ·µÄÓà¶î
+  	- *big.Intï¼Œ ç»™å®šåœ°å€çš„ä½™é¢
  	- error
 
   Call permissions: Anyone
@@ -296,7 +296,7 @@ func (core *Core) GetBalance(address string, blockNumber string) (*big.Int, erro
 /*
   GetTransactionCount:
    	EN - Returns the number of transactions the given address has sent for the given block number
- 	CN - ·µ»ØÔÚÖ¸¶¨Çø¿éºÅÏÂ£¬¸ø¶¨µØÖ·ÒÑ·¢ËÍµÄ½»Ò×ÊıÁ¿
+ 	CN - è¿”å›åœ¨æŒ‡å®šåŒºå—å·ä¸‹ï¼Œç»™å®šåœ°å€å·²å‘é€çš„äº¤æ˜“æ•°é‡
   Params:
 	- address, string, 20 bytes
 	- blockNumber, string, options are:
@@ -305,7 +305,7 @@ func (core *Core) GetBalance(address string, blockNumber string) (*big.Int, erro
 	 (3) String "pending" - for the pending state/transactions
 
   Returns:
-  	- *big.Int, Ö¸¶¨Çø¿éºÅÏÂ£¬¸ø¶¨µØÖ·ÒÑ·¢ËÍµÄ½»Ò×ÊıÁ¿
+  	- *big.Int, æŒ‡å®šåŒºå—å·ä¸‹ï¼Œç»™å®šåœ°å€å·²å‘é€çš„äº¤æ˜“æ•°é‡
  	- error
 
   Call permissions: Anyone
@@ -330,13 +330,13 @@ func (core *Core) GetTransactionCount(address string, blockNumber string) (*big.
 /*
   EstimateGas:
    	EN - Returns an estimate of the amount of gas needed to execute the given transaction, which won't be added to the blockchain and returns the used gas
- 	CN - ·µ»ØÖ´ĞĞ¸Ã½»Ò×ËùĞèÏûºÄgasµÄ¹ÀËãÖµ£¬¸Ã½»Ò×²»»á±»Ìí¼Óµ½Çø¿éÁ´ÖĞ
+ 	CN - è¿”å›æ‰§è¡Œè¯¥äº¤æ˜“æ‰€éœ€æ¶ˆè€—gasçš„ä¼°ç®—å€¼ï¼Œè¯¥äº¤æ˜“ä¸ä¼šè¢«æ·»åŠ åˆ°åŒºå—é“¾ä¸­
   Params:
-  	- transaction, *dto.TransactionParameters, ÏêÏ¸²ÎÔÄCallÖĞ²ÎÊı£¬¶şÕßÒ»ÖÂ¡£
-		Èç¹ûÎ´Ö¸¶¨gas£¬Ôò½«Ê¹ÓÃpendingÇø¿éÖĞµÄgasÖµ£»Èç¹ûÖ´ĞĞ½»Ò×ËùĞèµÄgas³¬¹ıÏŞÖÆ£¬Ôò·µ»ØµÄgasÆÀ¹ÀÖµ¿ÉÄÜ²»×ãÒÔÖ´ĞĞ½»Ò×
+  	- transaction, *dto.TransactionParameters, è¯¦ç»†å‚é˜…Callä¸­å‚æ•°ï¼ŒäºŒè€…ä¸€è‡´ã€‚
+		å¦‚æœæœªæŒ‡å®šgasï¼Œåˆ™å°†ä½¿ç”¨pendingåŒºå—ä¸­çš„gaså€¼ï¼›å¦‚æœæ‰§è¡Œäº¤æ˜“æ‰€éœ€çš„gasè¶…è¿‡é™åˆ¶ï¼Œåˆ™è¿”å›çš„gasè¯„ä¼°å€¼å¯èƒ½ä¸è¶³ä»¥æ‰§è¡Œäº¤æ˜“
 
   Returns:
-  	- *big.Int, gasÏûºÄµÄÁ¿
+  	- *big.Int, gasæ¶ˆè€—çš„é‡
  	- error
 
   Call permissions: Anyone
@@ -361,19 +361,19 @@ func (core *Core) EstimateGas(transaction *dto.TransactionParameters) (*big.Int,
 /*
   SendTransaction:
 	EN - Creates a transaction for the given argument, sign it and submit it to the transaction pool,return transaction hash
- 	CN - ¶Ô¸ø¶¨²ÎÊı´´½¨½»Ò×£¬¶ÔÆä½øĞĞÇ©Ãû²¢½«ÆäÌá½»µ½½»Ò×³Ø£¬·µ»Ø½»Ò×¹şÏ£
+ 	CN - å¯¹ç»™å®šå‚æ•°åˆ›å»ºäº¤æ˜“ï¼Œå¯¹å…¶è¿›è¡Œç­¾åå¹¶å°†å…¶æäº¤åˆ°äº¤æ˜“æ± ï¼Œè¿”å›äº¤æ˜“å“ˆå¸Œ
   Params:
-  	- transaction: Òª·¢ËÍµÄ½»Ò×¶ÔÏó(*dto.TransactionParameters)
-		from: string£¬20 Bytes - Ö¸¶¨µÄ·¢ËÍÕßµÄµØÖ·¡£
-		to: string£¬20 Bytes - £¨¿ÉÑ¡£©½»Ò×ÏûÏ¢µÄÄ¿±êµØÖ·£¬Èç¹ûÊÇºÏÔ¼´´½¨£¬Ôò²»Ìî.
-		gas: *big.Int - £¨¿ÉÑ¡£©Ä¬ÈÏÊÇ×Ô¶¯£¬½»Ò×¿ÉÊ¹ÓÃµÄgas£¬Î´Ê¹ÓÃµÄgas»áÍË»Ø¡£
-		gasPrice: *big.Int - £¨¿ÉÑ¡£©Ä¬ÈÏÊÇ×Ô¶¯È·¶¨£¬½»Ò×µÄgas¼Û¸ñ£¬Ä¬ÈÏÊÇÍøÂçgas¼Û¸ñµÄÆ½¾ùÖµ ¡£
-		data: string - £¨¿ÉÑ¡£©»òÕß°üº¬Ïà¹ØÊı¾İµÄ×Ö½Ú×Ö·û´®£¬Èç¹ûÊÇºÏÔ¼´´½¨£¬ÔòÊÇ³õÊ¼»¯ÒªÓÃµ½µÄ´úÂë¡£
-		value: *big.Int - £¨¿ÉÑ¡£©½»Ò×Ğ¯´øµÄ»õ±ÒÁ¿£¬ÒÔbiferÎªµ¥Î»¡£Èç¹ûºÏÔ¼´´½¨½»Ò×£¬ÔòÎª³õÊ¼µÄ»ù½ğ
-		nonce: *big.Int - £¨¿ÉÑ¡£©ÕûÊı£¬Ê¹ÓÃ´ËÖµ£¬¿ÉÒÔÔÊĞíÄã¸²¸ÇÄã×Ô¼ºµÄÏàÍ¬nonceµÄ£¬´ıpendingÖĞµÄ½»Ò×
+  	- transaction: è¦å‘é€çš„äº¤æ˜“å¯¹è±¡(*dto.TransactionParameters)
+		from: stringï¼Œ20 Bytes - æŒ‡å®šçš„å‘é€è€…çš„åœ°å€ã€‚
+		to: stringï¼Œ20 Bytes - ï¼ˆå¯é€‰ï¼‰äº¤æ˜“æ¶ˆæ¯çš„ç›®æ ‡åœ°å€ï¼Œå¦‚æœæ˜¯åˆçº¦åˆ›å»ºï¼Œåˆ™ä¸å¡«.
+		gas: *big.Int - ï¼ˆå¯é€‰ï¼‰é»˜è®¤æ˜¯è‡ªåŠ¨ï¼Œäº¤æ˜“å¯ä½¿ç”¨çš„gasï¼Œæœªä½¿ç”¨çš„gasä¼šé€€å›ã€‚
+		gasPrice: *big.Int - ï¼ˆå¯é€‰ï¼‰é»˜è®¤æ˜¯è‡ªåŠ¨ç¡®å®šï¼Œäº¤æ˜“çš„gasä»·æ ¼ï¼Œé»˜è®¤æ˜¯ç½‘ç»œgasä»·æ ¼çš„å¹³å‡å€¼ ã€‚
+		data: string - ï¼ˆå¯é€‰ï¼‰æˆ–è€…åŒ…å«ç›¸å…³æ•°æ®çš„å­—èŠ‚å­—ç¬¦ä¸²ï¼Œå¦‚æœæ˜¯åˆçº¦åˆ›å»ºï¼Œåˆ™æ˜¯åˆå§‹åŒ–è¦ç”¨åˆ°çš„ä»£ç ã€‚
+		value: *big.Int - ï¼ˆå¯é€‰ï¼‰äº¤æ˜“æºå¸¦çš„è´§å¸é‡ï¼Œä»¥biferä¸ºå•ä½ã€‚å¦‚æœåˆçº¦åˆ›å»ºäº¤æ˜“ï¼Œåˆ™ä¸ºåˆå§‹çš„åŸºé‡‘
+		nonce: *big.Int - ï¼ˆå¯é€‰ï¼‰æ•´æ•°ï¼Œä½¿ç”¨æ­¤å€¼ï¼Œå¯ä»¥å…è®¸ä½ è¦†ç›–ä½ è‡ªå·±çš„ç›¸åŒnonceçš„ï¼Œå¾…pendingä¸­çš„äº¤æ˜“
 
   Returns:
-  	- string, transactionHash£¬32 Bytes£¬½»Ò×¹şÏ££¬Èç¹û½»Ò×ÉĞ²»¿ÉÓÃ£¬ÔòÎªÁã¹şÏ£
+  	- string, transactionHashï¼Œ32 Bytesï¼Œäº¤æ˜“å“ˆå¸Œï¼Œå¦‚æœäº¤æ˜“å°šä¸å¯ç”¨ï¼Œåˆ™ä¸ºé›¶å“ˆå¸Œ
  	- error
 
   Call permissions: Anyone
@@ -398,12 +398,12 @@ func (core *Core) SendTransaction(transaction *dto.TransactionParameters) (strin
 /*
   SendRawTransaction:
    	EN - Add the signed transaction to the transaction pool.The sender is responsible for signing the transaction and using the correct nonce
- 	CN - ½«ÒÑÇ©ÃûµÄ½»Ò×Ìí¼Óµ½½»Ò×³ØÖĞ¡£½»Ò×·¢ËÍ·½¸ºÔğÇ©Êğ½»Ò×²¢Ê¹ÓÃÕıÈ·µÄËæ»úÊı£¨Nonce£©
+ 	CN - å°†å·²ç­¾åçš„äº¤æ˜“æ·»åŠ åˆ°äº¤æ˜“æ± ä¸­ã€‚äº¤æ˜“å‘é€æ–¹è´Ÿè´£ç­¾ç½²äº¤æ˜“å¹¶ä½¿ç”¨æ­£ç¡®çš„éšæœºæ•°ï¼ˆNonceï¼‰
   Params:
-  	- encodedTx: string, ÒÑÇ©ÃûµÄ½»Ò×Êı¾İ
+  	- encodedTx: string, å·²ç­¾åçš„äº¤æ˜“æ•°æ®
 
   Returns:
-  	- string, transactionHash£¬32 Bytes£¬½»Ò×¹şÏ££¬Èç¹û½»Ò×ÉĞ²»¿ÉÓÃ£¬ÔòÎªÁã¹şÏ£
+  	- string, transactionHashï¼Œ32 Bytesï¼Œäº¤æ˜“å“ˆå¸Œï¼Œå¦‚æœäº¤æ˜“å°šä¸å¯ç”¨ï¼Œåˆ™ä¸ºé›¶å“ˆå¸Œ
  	- error
 
   Call permissions: Anyone
@@ -428,34 +428,34 @@ func (core *Core) SendRawTransaction(encodedTx string) (string, error) {
 /*
   SignTransaction:
    	EN - sign the given transaction with the from account.
- 	CN - Ê¹ÓÃ½»Ò×·¢Æğ·½µÄÕÊ»§£¨µØÖ·£©Ç©Êğ¸ø¶¨µÄ½»Ò×
+ 	CN - ä½¿ç”¨äº¤æ˜“å‘èµ·æ–¹çš„å¸æˆ·ï¼ˆåœ°å€ï¼‰ç­¾ç½²ç»™å®šçš„äº¤æ˜“
   Params:
-  	- transaction£¬*dto.TransactionParameters£¬½»Ò×¹¹ÔìµÄ¶ÔÏó
-	  - From     string                    ½»Ò×µÄ·¢Æğ·½
-	  - To       string                    ½»Ò×µÄ½ÓÊÕ·½
-	  - Nonce    *big.Int                  £¨¿ÉÑ¡£©ÕûÊı£¬Ê¹ÓÃ´ËÖµ£¬¿ÉÒÔÔÊĞíÄã¸²¸ÇÄã×Ô¼ºµÄÏàÍ¬nonceµÄ£¬´ıpendingÖĞµÄ½»Ò×
-	  - Gas      *big.Int                  £¨¿ÉÑ¡£©Ä¬ÈÏÊÇ×Ô¶¯£¬½»Ò×¿ÉÊ¹ÓÃµÄgas£¬Î´Ê¹ÓÃµÄgas»áÍË»Ø¡£
-	  - GasPrice *big.Int                  £¨¿ÉÑ¡£©Ä¬ÈÏÊÇ×Ô¶¯È·¶¨£¬½»Ò×µÄgas¼Û¸ñ£¬Ä¬ÈÏÊÇÍøÂçgas¼Û¸ñµÄÆ½¾ùÖµ ¡£
-	  - Value    *big.Int                  £¨¿ÉÑ¡£©½»Ò×Ğ¯´øµÄ»õ±ÒÁ¿£¬ÒÔbiferÎªµ¥Î»¡£Èç¹ûºÏÔ¼´´½¨½»Ò×£¬ÔòÎª³õÊ¼µÄ»ù½ğ
-	  - Data     types.ComplexString       £¨¿ÉÑ¡£©»òÕß°üº¬Ïà¹ØÊı¾İµÄ×Ö½Ú×Ö·û´®£¬Èç¹ûÊÇºÏÔ¼´´½¨£¬ÔòÊÇ³õÊ¼»¯ÒªÓÃµ½µÄ´úÂë¡£
+  	- transactionï¼Œ*dto.TransactionParametersï¼Œäº¤æ˜“æ„é€ çš„å¯¹è±¡
+	  - From     string                    äº¤æ˜“çš„å‘èµ·æ–¹
+	  - To       string                    äº¤æ˜“çš„æ¥æ”¶æ–¹
+	  - Nonce    *big.Int                  ï¼ˆå¯é€‰ï¼‰æ•´æ•°ï¼Œä½¿ç”¨æ­¤å€¼ï¼Œå¯ä»¥å…è®¸ä½ è¦†ç›–ä½ è‡ªå·±çš„ç›¸åŒnonceçš„ï¼Œå¾…pendingä¸­çš„äº¤æ˜“
+	  - Gas      *big.Int                  ï¼ˆå¯é€‰ï¼‰é»˜è®¤æ˜¯è‡ªåŠ¨ï¼Œäº¤æ˜“å¯ä½¿ç”¨çš„gasï¼Œæœªä½¿ç”¨çš„gasä¼šé€€å›ã€‚
+	  - GasPrice *big.Int                  ï¼ˆå¯é€‰ï¼‰é»˜è®¤æ˜¯è‡ªåŠ¨ç¡®å®šï¼Œäº¤æ˜“çš„gasä»·æ ¼ï¼Œé»˜è®¤æ˜¯ç½‘ç»œgasä»·æ ¼çš„å¹³å‡å€¼ ã€‚
+	  - Value    *big.Int                  ï¼ˆå¯é€‰ï¼‰äº¤æ˜“æºå¸¦çš„è´§å¸é‡ï¼Œä»¥biferä¸ºå•ä½ã€‚å¦‚æœåˆçº¦åˆ›å»ºäº¤æ˜“ï¼Œåˆ™ä¸ºåˆå§‹çš„åŸºé‡‘
+	  - Data     types.ComplexString       ï¼ˆå¯é€‰ï¼‰æˆ–è€…åŒ…å«ç›¸å…³æ•°æ®çš„å­—èŠ‚å­—ç¬¦ä¸²ï¼Œå¦‚æœæ˜¯åˆçº¦åˆ›å»ºï¼Œåˆ™æ˜¯åˆå§‹åŒ–è¦ç”¨åˆ°çš„ä»£ç ã€‚
 
   Returns:
-  	- *dto.SignTransactionResponse£¬
-		Raw         string                   ÒÑÇ©ÃûµÄRLP±àÂëµÄ½»Ò×
+  	- *dto.SignTransactionResponseï¼Œ
+		Raw         string                   å·²ç­¾åçš„RLPç¼–ç çš„äº¤æ˜“
 		Transaction SignedTransactionParams  transaction object
-		  - Gas      *big.Int                ½»Ò×·¢Æğ·½Ô¼¶¨µÄgas
-		  - GasPrice *big.Int                ½»Ò×·¢Æğ·½Ô¼¶¨µÄgasPrice
-		  - Hash     string  			     ½»Ò×¹şÏ£
-		  - Input    string   				 Ëæ½»Ò×·¢ËÍµÄÊı¾İ
-		  - Nonce    *big.Int                ½»Ò×·¢ÆğÕßÖ®Ç°·¢Æğ½»Ò×µÄ´ÎÊı
-		  - S        string                  £¿£¿£¿
-		  - R        string                  £¿£¿£¿
-		  - V        *big.Int                £¿£¿£¿
-		  - To       string                  ½»Ò×µÄ½ÓÊÕ·½£¬Èç¹ûÊÇºÏÔ¼´´½¨ÔòÎª¿Õ
-		  - Value    *big.Int                ×ªÒÆµÄbifÊıÁ¿
+		  - Gas      *big.Int                äº¤æ˜“å‘èµ·æ–¹çº¦å®šçš„gas
+		  - GasPrice *big.Int                äº¤æ˜“å‘èµ·æ–¹çº¦å®šçš„gasPrice
+		  - Hash     string  			     äº¤æ˜“å“ˆå¸Œ
+		  - Input    string   				 éšäº¤æ˜“å‘é€çš„æ•°æ®
+		  - Nonce    *big.Int                äº¤æ˜“å‘èµ·è€…ä¹‹å‰å‘èµ·äº¤æ˜“çš„æ¬¡æ•°
+		  - S        string                  ï¼Ÿï¼Ÿï¼Ÿ
+		  - R        string                  ï¼Ÿï¼Ÿï¼Ÿ
+		  - V        *big.Int                ï¼Ÿï¼Ÿï¼Ÿ
+		  - To       string                  äº¤æ˜“çš„æ¥æ”¶æ–¹ï¼Œå¦‚æœæ˜¯åˆçº¦åˆ›å»ºåˆ™ä¸ºç©º
+		  - Value    *big.Int                è½¬ç§»çš„bifæ•°é‡
  	- error
 
-  Call permissions: ½»Ò×µÄ·¢Æğ·½µÄÕË»§´¦ÓÚ½âËø×´Ì¬
+  Call permissions: äº¤æ˜“çš„å‘èµ·æ–¹çš„è´¦æˆ·å¤„äºè§£é”çŠ¶æ€
 
 */
 func (core *Core) SignTransaction(transaction *dto.TransactionParameters) (*dto.SignTransactionResponse, error) {
@@ -476,23 +476,23 @@ func (core *Core) SignTransaction(transaction *dto.TransactionParameters) (*dto.
 /*
   Call:
    	EN - Executes a new message call immediately without creating a transaction on the block chain.
- 	CN - Ö´ĞĞĞÂµÄÏûÏ¢µ÷ÓÃ£¬¶øÎŞĞèÔÚÇø¿éÁ´ÉÏ´´½¨½»Ò×£¬Ëü²»»á¸Ä±äÇø¿éÁ´µÄ×´Ì¬£¬Ò»°ãÓÃÓÚ¼ìË÷¡£
+ 	CN - æ‰§è¡Œæ–°çš„æ¶ˆæ¯è°ƒç”¨ï¼Œè€Œæ— éœ€åœ¨åŒºå—é“¾ä¸Šåˆ›å»ºäº¤æ˜“ï¼Œå®ƒä¸ä¼šæ”¹å˜åŒºå—é“¾çš„çŠ¶æ€ï¼Œä¸€èˆ¬ç”¨äºæ£€ç´¢ã€‚
   Params:
-	- transaction£¬*dto.TransactionParameters£¬½»Ò×CallµÄ¶ÔÏó
- 	  - From     string                    ½»Ò×µÄ·¢Æğ·½
- 	  - To       string                    ½»Ò×µÄ½ÓÊÕ·½
- 	  - Nonce    *big.Int                  £¨¿ÉÑ¡£©ÕûÊı£¬Ê¹ÓÃ´ËÖµ£¬¿ÉÒÔÔÊĞíÄã¸²¸ÇÄã×Ô¼ºµÄÏàÍ¬nonceµÄ£¬´ıpendingÖĞµÄ½»Ò×
- 	  - Gas      *big.Int                  £¨¿ÉÑ¡£©Ä¬ÈÏÊÇ×Ô¶¯£¬½»Ò×¿ÉÊ¹ÓÃµÄgas£¬Î´Ê¹ÓÃµÄgas»áÍË»Ø¡£
- 	  - GasPrice *big.Int                  £¨¿ÉÑ¡£©Ä¬ÈÏÊÇ×Ô¶¯È·¶¨£¬½»Ò×µÄgas¼Û¸ñ£¬Ä¬ÈÏÊÇÍøÂçgas¼Û¸ñµÄÆ½¾ùÖµ ¡£
- 	  - Value    *big.Int                  £¨¿ÉÑ¡£©½»Ò×Ğ¯´øµÄ»õ±ÒÁ¿£¬ÒÔbiferÎªµ¥Î»¡£Èç¹ûºÏÔ¼´´½¨½»Ò×£¬ÔòÎª³õÊ¼µÄ»ù½ğ
- 	  - Data     types.ComplexString       £¨¿ÉÑ¡£©»òÕß°üº¬Ïà¹ØÊı¾İµÄ×Ö½Ú×Ö·û´®£¬Èç¹ûÊÇºÏÔ¼´´½¨£¬ÔòÊÇ³õÊ¼»¯ÒªÓÃµ½µÄ´úÂë¡£
+	- transactionï¼Œ*dto.TransactionParametersï¼Œäº¤æ˜“Callçš„å¯¹è±¡
+ 	  - From     string                    äº¤æ˜“çš„å‘èµ·æ–¹
+ 	  - To       string                    äº¤æ˜“çš„æ¥æ”¶æ–¹
+ 	  - Nonce    *big.Int                  ï¼ˆå¯é€‰ï¼‰æ•´æ•°ï¼Œä½¿ç”¨æ­¤å€¼ï¼Œå¯ä»¥å…è®¸ä½ è¦†ç›–ä½ è‡ªå·±çš„ç›¸åŒnonceçš„ï¼Œå¾…pendingä¸­çš„äº¤æ˜“
+ 	  - Gas      *big.Int                  ï¼ˆå¯é€‰ï¼‰é»˜è®¤æ˜¯è‡ªåŠ¨ï¼Œäº¤æ˜“å¯ä½¿ç”¨çš„gasï¼Œæœªä½¿ç”¨çš„gasä¼šé€€å›ã€‚
+ 	  - GasPrice *big.Int                  ï¼ˆå¯é€‰ï¼‰é»˜è®¤æ˜¯è‡ªåŠ¨ç¡®å®šï¼Œäº¤æ˜“çš„gasä»·æ ¼ï¼Œé»˜è®¤æ˜¯ç½‘ç»œgasä»·æ ¼çš„å¹³å‡å€¼ ã€‚
+ 	  - Value    *big.Int                  ï¼ˆå¯é€‰ï¼‰äº¤æ˜“æºå¸¦çš„è´§å¸é‡ï¼Œä»¥biferä¸ºå•ä½ã€‚å¦‚æœåˆçº¦åˆ›å»ºäº¤æ˜“ï¼Œåˆ™ä¸ºåˆå§‹çš„åŸºé‡‘
+ 	  - Data     types.ComplexString       ï¼ˆå¯é€‰ï¼‰æˆ–è€…åŒ…å«ç›¸å…³æ•°æ®çš„å­—èŠ‚å­—ç¬¦ä¸²ï¼Œå¦‚æœæ˜¯åˆçº¦åˆ›å»ºï¼Œåˆ™æ˜¯åˆå§‹åŒ–è¦ç”¨åˆ°çš„ä»£ç ã€‚
 
   Returns:
-  	- ÒÑÖ´ĞĞºÏÔ¼µÄ·µ»ØÖµ
+  	- å·²æ‰§è¡Œåˆçº¦çš„è¿”å›å€¼
  	- error
 
   Call permissions: Anyone
-  Bug ´ı²âÊÔ£¬ĞèÒª±È¶ÔrpcÖĞµÄcallArgsºÍsendTxArgs£¡£¡£¡£¡£¡£¬Êı¾İ½á¹¹
+  Bug å¾…æµ‹è¯•ï¼Œéœ€è¦æ¯”å¯¹rpcä¸­çš„callArgså’ŒsendTxArgsï¼ï¼ï¼ï¼ï¼ï¼Œæ•°æ®ç»“æ„
 */
 func (core *Core) Call(transaction *dto.TransactionParameters) (*dto.RequestResult, error) {
 
@@ -515,24 +515,24 @@ func (core *Core) Call(transaction *dto.TransactionParameters) (*dto.RequestResu
 /*
   GetTransactionReceipt:
    	EN - Returns the transaction receipt for the given transaction hash
- 	CN - ·µ»Ø¸ø¶¨½»Ò×¹şÏ£µÄ½»Ò×ÊÕ¾İ
+ 	CN - è¿”å›ç»™å®šäº¤æ˜“å“ˆå¸Œçš„äº¤æ˜“æ”¶æ®
   Params:
-  	- hash,string 32 Bytes ½»Ò×¹şÏ£
+  	- hash,string 32 Bytes äº¤æ˜“å“ˆå¸Œ
 
   Returns:
-  	- *dto.TransactionReceipt ½»Ò×ÊÕ¾İ¶ÔÏó
-	  - TransactionHash   string            ½»Ò×¹şÏ£
-	  - TransactionIndex  *big.Int          ½»Ò×ÔÚÇø¿éÖĞµÄË÷Òı£¨Î»ÖÃ£©
-	  - BlockHash         string            Çø¿é¹şÏ£
-	  - BlockNumber       *big.Int          Çø¿é
-	  - From              string            ½»Ò×·¢Æğ·½
-	  - To                string            ½»Ò×½ÓÊÕ·½
-	  - CumulativeGasUsed *big.Int          ÔÚÇø¿éÖĞÖ´ĞĞ´Ë½»Ò×Ê±Ê¹ÓÃµÄgas×ÜÁ¿¡£
-	  - GasUsed           *big.Int          ½ö´ËÌØ¶¨½»Ò×Ê¹ÓÃµÄgasÁ¿¡£
-	  - ContractAddress   string            Èç¹û½»Ò×ÊÇºÏÔ¼´´½¨£¬ÔòÎª´´½¨µÄºÏÔ¼µØÖ·£¬·ñÔòÎª¿Õ
-	  - Logs              []TransactionLogs ½»Ò×Éú³ÉµÄÈÕÖ¾¶ÔÏóÊı×é
-	  - LogsBloom         string            £¿£¿£¿
-	  - Status            bool              £¿£¿£¿
+  	- *dto.TransactionReceipt äº¤æ˜“æ”¶æ®å¯¹è±¡
+	  - TransactionHash   string            äº¤æ˜“å“ˆå¸Œ
+	  - TransactionIndex  *big.Int          äº¤æ˜“åœ¨åŒºå—ä¸­çš„ç´¢å¼•ï¼ˆä½ç½®ï¼‰
+	  - BlockHash         string            åŒºå—å“ˆå¸Œ
+	  - BlockNumber       *big.Int          åŒºå—
+	  - From              string            äº¤æ˜“å‘èµ·æ–¹
+	  - To                string            äº¤æ˜“æ¥æ”¶æ–¹
+	  - CumulativeGasUsed *big.Int          åœ¨åŒºå—ä¸­æ‰§è¡Œæ­¤äº¤æ˜“æ—¶ä½¿ç”¨çš„gasæ€»é‡ã€‚
+	  - GasUsed           *big.Int          ä»…æ­¤ç‰¹å®šäº¤æ˜“ä½¿ç”¨çš„gasé‡ã€‚
+	  - ContractAddress   string            å¦‚æœäº¤æ˜“æ˜¯åˆçº¦åˆ›å»ºï¼Œåˆ™ä¸ºåˆ›å»ºçš„åˆçº¦åœ°å€ï¼Œå¦åˆ™ä¸ºç©º
+	  - Logs              []TransactionLogs äº¤æ˜“ç”Ÿæˆçš„æ—¥å¿—å¯¹è±¡æ•°ç»„
+	  - LogsBloom         string            ï¼Ÿï¼Ÿï¼Ÿ
+	  - Status            bool              ï¼Ÿï¼Ÿï¼Ÿ
  	- error
 
   Call permissions: Anyone
@@ -557,12 +557,12 @@ func (core *Core) GetTransactionReceipt(hash string) (*dto.TransactionReceipt, e
 /*
   GetBlockTransactionCountByHash:
    	EN - Returns the number of transactions in the block with the given hash
- 	CN - ¸ù¾İÇø¿é¹şÏ£»ñÈ¡¸ÃÇø¿éÄÚ°üº¬µÄ½»Ò×Êı
+ 	CN - æ ¹æ®åŒºå—å“ˆå¸Œè·å–è¯¥åŒºå—å†…åŒ…å«çš„äº¤æ˜“æ•°
   Params:
-  	- hash£¬32 bytes - block hash
+  	- hashï¼Œ32 bytes - block hash
 
   Returns:
-  	- uint64, Çø¿é°üº¬µÄ½»Ò×Êı
+  	- uint64, åŒºå—åŒ…å«çš„äº¤æ˜“æ•°
  	- error
 
   Call permissions: Anyone
@@ -594,7 +594,7 @@ func (core *Core) GetBlockTransactionCountByHash(hash string) (uint64, error) {
 /*
   GetBlockTransactionCountByNumber:
    	EN - Returns the number of transactions in a block matching the given block number
- 	CN - ·µ»ØÓë¸ø¶¨Çø¿é±àºÅÆ¥ÅäµÄÇø¿éÖĞµÄ½»Ò×ÊıÁ¿
+ 	CN - è¿”å›ä¸ç»™å®šåŒºå—ç¼–å·åŒ¹é…çš„åŒºå—ä¸­çš„äº¤æ˜“æ•°é‡
   Params:
   	- blockNumber, string, options are:
 	 (1) HEX String - an integer block number
@@ -602,7 +602,7 @@ func (core *Core) GetBlockTransactionCountByHash(hash string) (uint64, error) {
 	 (3) String "pending" - for the pending state/transactions
 
   Returns:
-  	- uint64, Çø¿é°üº¬µÄ½»Ò×Êı
+  	- uint64, åŒºå—åŒ…å«çš„äº¤æ˜“æ•°
  	- error
 
   Call permissions: Anyone
@@ -626,16 +626,16 @@ func (core *Core) GetBlockTransactionCountByNumber(blockNumber string) (uint64, 
 /*
   GetBlockByNumber:
    	EN - Returns the information about a block requested by blockNumber
- 	CN - ¸ù¾İÇø¿éºÅ·µ»ØÇø¿éµÄĞÅÏ¢
+ 	CN - æ ¹æ®åŒºå—å·è¿”å›åŒºå—çš„ä¿¡æ¯
   Params:
 	- blockNumber, string, options are:
 	 (1) HEX String - an integer block number
 	 (2) String "latest" - for the latest mined block
 	 (3) String "pending" - for the pending state/transactions
-  	- transactionDetails,bool, Èç¹ûÎªTrue£¬·µ»ØÇø¿éÄÚÏêÏ¸µÄ½»Ò×ĞÅÏ¢ºÍÆäËûĞÅÏ¢£»Èç¹ûÎªfalseÔò½ö·µ»ØÇø¿éÄÚ½»Ò×hashºÍÆäËûĞÅÏ¢
+  	- transactionDetails,bool, å¦‚æœä¸ºTrueï¼Œè¿”å›åŒºå—å†…è¯¦ç»†çš„äº¤æ˜“ä¿¡æ¯å’Œå…¶ä»–ä¿¡æ¯ï¼›å¦‚æœä¸ºfalseåˆ™ä»…è¿”å›åŒºå—å†…äº¤æ˜“hashå’Œå…¶ä»–ä¿¡æ¯
 
   Returns:
-  	- interface{}, Èç¹ûtransactionDetailsÎªtrue£¬ÔòÊÇ*dto.BlockDetails£»Èç¹ûÎªfalse£¬ÔòÊÇ*dto.BlockNoDetails
+  	- interface{}, å¦‚æœtransactionDetailsä¸ºtrueï¼Œåˆ™æ˜¯*dto.BlockDetailsï¼›å¦‚æœä¸ºfalseï¼Œåˆ™æ˜¯*dto.BlockNoDetails
  	- error
 
   Call permissions: Anyone
@@ -660,13 +660,13 @@ func (core *Core) GetBlockByNumber(blockNumber string, transactionDetails bool) 
 /*
   GetBlockByHash:
    	EN - Returns the information about a block requested by block hash
- 	CN - ¸ù¾İÇø¿é¹şÏ£·µ»ØÇø¿éµÄĞÅÏ¢
+ 	CN - æ ¹æ®åŒºå—å“ˆå¸Œè¿”å›åŒºå—çš„ä¿¡æ¯
   Params:
 	- blockHash, string32 bytes - Hash of a block
-  	- transactionDetails,bool, Èç¹ûÎªTrue£¬·µ»ØÇø¿éÄÚÏêÏ¸µÄ½»Ò×ĞÅÏ¢ºÍÆäËûĞÅÏ¢£»Èç¹ûÎªfalseÔò½ö·µ»ØÇø¿éÄÚ½»Ò×hashºÍÆäËûĞÅÏ¢
+  	- transactionDetails,bool, å¦‚æœä¸ºTrueï¼Œè¿”å›åŒºå—å†…è¯¦ç»†çš„äº¤æ˜“ä¿¡æ¯å’Œå…¶ä»–ä¿¡æ¯ï¼›å¦‚æœä¸ºfalseåˆ™ä»…è¿”å›åŒºå—å†…äº¤æ˜“hashå’Œå…¶ä»–ä¿¡æ¯
 
   Returns:
-  	- interface{}, Èç¹ûtransactionDetailsÎªtrue£¬ÔòÊÇ*dto.BlockDetails£»Èç¹ûÎªfalse£¬ÔòÊÇ*dto.BlockNoDetails
+  	- interface{}, å¦‚æœtransactionDetailsä¸ºtrueï¼Œåˆ™æ˜¯*dto.BlockDetailsï¼›å¦‚æœä¸ºfalseï¼Œåˆ™æ˜¯*dto.BlockNoDetails
  	- error
 
   Call permissions: Anyone
@@ -702,16 +702,16 @@ func (core *Core) GetBlockByHash(blockHash string, transactionDetails bool) (int
 /*
   GetCode:
    	EN - Returns the code stored at the given address in the state for the given block number.
- 	CN - ·µ»ØÒÔ¸ø¶¨¿éºÅ´æ´¢ÔÚ¸ø¶¨µØÖ·µÄ´úÂë¡££¿£¿
+ 	CN - è¿”å›ä»¥ç»™å®šå—å·å­˜å‚¨åœ¨ç»™å®šåœ°å€çš„ä»£ç ã€‚ï¼Ÿï¼Ÿ
   Params:
-  	- address,string 20 Bytes ÕË»§µØÖ·
+  	- address,string 20 Bytes è´¦æˆ·åœ°å€
   	- blockNumber, string, options are:
 	 (1) HEX String - an integer block number
 	 (2) String "latest" - for the latest mined block
 	 (3) String "pending" - for the pending state/transactions
 
   Returns:
-  	- string£¬the code
+  	- stringï¼Œthe code
  	- error
 
   Call permissions: Anyone
@@ -736,12 +736,12 @@ func (core *Core) GetCode(address string, blockNumber string) (string, error) {
 /*
   GetTrustNumber:
    	EN - Check the numbers of trusted certificates at given address
- 	CN - ¼ì²éÕË»§ÓĞ¶àÉÙ¿ÉĞÅÖ¤Êé
+ 	CN - æ£€æŸ¥è´¦æˆ·æœ‰å¤šå°‘å¯ä¿¡è¯ä¹¦
   Params:
-  	- address, string ÕË»§µØÖ·
+  	- address, string è´¦æˆ·åœ°å€
 
   Returns:
-  	- uint64, ¿ÉĞÅÖ¤ÊéÊıÁ¿
+  	- uint64, å¯ä¿¡è¯ä¹¦æ•°é‡
  	- error
 
   Call permissions: Anyone
@@ -766,7 +766,7 @@ func (core *Core) GetTrustNumber(address string) (uint64, error) {
 /*
   GetChainId:
    	EN - Returns the chain ID of the current connected node
- 	CN - ·µ»Øµ±Ç°Á¬½Ó½ÚµãµÄÁ´ID
+ 	CN - è¿”å›å½“å‰è¿æ¥èŠ‚ç‚¹çš„é“¾ID
   Params:
   	- None
 
@@ -789,12 +789,12 @@ func (core *Core) GetChainId() (uint64, error) {
 }
 
 /*
-  ÃèÊö:
+  æè¿°:
    	EN - Returns the Merkle-proof for a given account and optionally some storage keys.
- 	CN - ·µ»Ø¸ø¶¨ÕÊ»§µÄMerkleÖ¤Ã÷  ????
+ 	CN - è¿”å›ç»™å®šå¸æˆ·çš„Merkleè¯æ˜  ????
   Params:
   	- address, string, 20 bytes
-	- storageKeys,  []string, Ò»×éstorageKeys£¬Ó¦¶ÔÆä½øĞĞĞ£Ñé²¢°üÀ¨ÔÚÄÚ
+	- storageKeys,  []string, ä¸€ç»„storageKeysï¼Œåº”å¯¹å…¶è¿›è¡Œæ ¡éªŒå¹¶åŒ…æ‹¬åœ¨å†…
 	- blockNumber, string, options are:
 	 (1) HEX String - an integer block number
 	 (2) String "latest" - for the latest mined block
@@ -826,10 +826,10 @@ func (core *Core) GetProof(address string, storageKeys []string, blockNumber str
 /*
   GetStorageAt:
    	EN - Returns the value from a storage at the given address, key and block number
- 	CN - ´Ó¸ø¶¨µØÖ·¡¢Î»ÖÃºÍÇø¿éºÅµÄ×´Ì¬·µ»Ø´æ´¢Öµ???(ÊÇÊ²Ã´´æ´¢Öµ)
+ 	CN - ä»ç»™å®šåœ°å€ã€ä½ç½®å’ŒåŒºå—å·çš„çŠ¶æ€è¿”å›å­˜å‚¨å€¼???(æ˜¯ä»€ä¹ˆå­˜å‚¨å€¼)
   Params:
 	- address, string, 20 bytes
-	- key,  *big.Int, Ö¸¶¨µÄÎ»ÖÃ
+	- key,  *big.Int, æŒ‡å®šçš„ä½ç½®
 	- blockNumber, string, options are:
 	 (1) HEX String - an integer block number
 	 (2) String "latest" - for the latest mined block
@@ -862,7 +862,7 @@ func (core *Core) GetStorageAt(address string, key *big.Int, blockNumber string)
 /*
   GetPendingTransactions:
    	EN - Returns a list of pending transactions
- 	CN - ·µ»ØÎ´Ö´ĞĞ½»Ò×µÄÁĞ±í(½»Ò×»¹Î´±»´ò°ü)
+ 	CN - è¿”å›æœªæ‰§è¡Œäº¤æ˜“çš„åˆ—è¡¨(äº¤æ˜“è¿˜æœªè¢«æ‰“åŒ…)
   Params:
 	- None
 
@@ -889,24 +889,24 @@ func (core *Core) GetPendingTransactions() ([]*dto.TransactionResponse, error) {
 /*
   GetTransactionByHash:
    	EN - Returns the information about a transaction requested by transaction hash.
- 	CN - ¸ù¾İ½»Ò×hash·µ»Ø½»Ò×µÄÏêÏ¸ĞÅÏ¢
+ 	CN - æ ¹æ®äº¤æ˜“hashè¿”å›äº¤æ˜“çš„è¯¦ç»†ä¿¡æ¯
   Params:
   	- hash,string,32 Bytes,hash of a transaction
 
   Returns:
   	- *dto.TransactionResponse
-		Hash             string              ½»Ò×¹şÏ£
-		Nonce            *big.Int            ½»Ò×·¢ËÍ·½´Ó¸Ã½Úµã·¢ËÍµÄ½»Ò×Êı
-		BlockHash        string              ½»Ò×ËùÔÚµÄÇø¿éµÄ¹şÏ££¬Èç¹û½»Ò×´ı´¦Àí£¬ÔòÎª0x0000000000000000000000000000000000000000000000000000000000000000
-		BlockNumber      *big.Int            ½»Ò×ËùÔÚµÄÇø¿é£¬Èç¹û½»Ò×´ı´¦Àí£¬ÔòÎª0
-		TransactionIndex *big.Int            ½»Ò×ÔÚÇø¿éÖĞµÄÎ»ÖÃ£¨Ë÷Òı£©£¬Èç¹û½»Ò×´ı´¦Àí£¬ÔòÎª0
-		From             string              ½»Ò×·¢ËÍ·½
-		To               string              ½»Ò×½ÓÊÕ·½£¬Èç¹ûÎªºÏÔ¼´´½¨ÔòÎª¿Õ
-		Input            string              Ëæ½»Ò×·¢ËÍµÄÊı¾İ
-		Value            *big.Int            ½»Ò××ªÒÆµÄbifÊıÁ¿£¬µ¥Î»Îªbif
-		GasPrice         *big.Int            ·¢ËÍ·½Ìá¹©µÄGasPrice£¬µ¥Î»Îªbif
-		Gas              *big.Int            ·¢ËÍ·½Ìá¹©µÄGas
-		Data             types.ComplexString £¿£¿£¿£¿
+		Hash             string              äº¤æ˜“å“ˆå¸Œ
+		Nonce            *big.Int            äº¤æ˜“å‘é€æ–¹ä»è¯¥èŠ‚ç‚¹å‘é€çš„äº¤æ˜“æ•°
+		BlockHash        string              äº¤æ˜“æ‰€åœ¨çš„åŒºå—çš„å“ˆå¸Œï¼Œå¦‚æœäº¤æ˜“å¾…å¤„ç†ï¼Œåˆ™ä¸º0x0000000000000000000000000000000000000000000000000000000000000000
+		BlockNumber      *big.Int            äº¤æ˜“æ‰€åœ¨çš„åŒºå—ï¼Œå¦‚æœäº¤æ˜“å¾…å¤„ç†ï¼Œåˆ™ä¸º0
+		TransactionIndex *big.Int            äº¤æ˜“åœ¨åŒºå—ä¸­çš„ä½ç½®ï¼ˆç´¢å¼•ï¼‰ï¼Œå¦‚æœäº¤æ˜“å¾…å¤„ç†ï¼Œåˆ™ä¸º0
+		From             string              äº¤æ˜“å‘é€æ–¹
+		To               string              äº¤æ˜“æ¥æ”¶æ–¹ï¼Œå¦‚æœä¸ºåˆçº¦åˆ›å»ºåˆ™ä¸ºç©º
+		Input            string              éšäº¤æ˜“å‘é€çš„æ•°æ®
+		Value            *big.Int            äº¤æ˜“è½¬ç§»çš„bifæ•°é‡ï¼Œå•ä½ä¸ºbif
+		GasPrice         *big.Int            å‘é€æ–¹æä¾›çš„GasPriceï¼Œå•ä½ä¸ºbif
+		Gas              *big.Int            å‘é€æ–¹æä¾›çš„Gas
+		Data             types.ComplexString ï¼Ÿï¼Ÿï¼Ÿï¼Ÿ
  	- error
 
   Call permissions: Anyone
@@ -931,7 +931,7 @@ func (core *Core) GetTransactionByHash(hash string) (*dto.TransactionResponse, e
 /*
   GetRawTransactionByHash:
    	EN - Returns the bytes of the transaction for the given hash
- 	CN - ¸ù¾İ½»Ò×hash·µ»Ø½»Ò×ĞÅÏ¢
+ 	CN - æ ¹æ®äº¤æ˜“hashè¿”å›äº¤æ˜“ä¿¡æ¯
   Params:
   	- hash,string,32 Bytes,hash of a transaction
 
@@ -961,13 +961,13 @@ func (core *Core) GetRawTransactionByHash(hash string) (string, error) {
 /*
   GetTransactionByBlockHashAndIndex:
    	EN - Returns the transaction for the given block hash and index
- 	CN - ¸ù¾İÇø¿é¹şÏ£ºÍ½»Ò×Ë÷Òı£¬·µ»Ø½»Ò×ĞÅÏ¢
+ 	CN - æ ¹æ®åŒºå—å“ˆå¸Œå’Œäº¤æ˜“ç´¢å¼•ï¼Œè¿”å›äº¤æ˜“ä¿¡æ¯
   Params:
-  	- hash,string,32 Bytes,Çø¿é¹şÏ£
-  	- index, *big.Int, ½»Ò×ÔÚÇø¿éÖĞµÄË÷Òı
+  	- hash,string,32 Bytes,åŒºå—å“ˆå¸Œ
+  	- index, *big.Int, äº¤æ˜“åœ¨åŒºå—ä¸­çš„ç´¢å¼•
 
   Returns:
-  	- *dto.TransactionResponse, ²ÎÕÕGetTransactionByHashµÄ·µ»ØÖµ£¬¶şÕßÒ»ÖÂ
+  	- *dto.TransactionResponse, å‚ç…§GetTransactionByHashçš„è¿”å›å€¼ï¼ŒäºŒè€…ä¸€è‡´
  	- error
 
   Call permissions: Anyone
@@ -1005,10 +1005,10 @@ func (core *Core) GetTransactionByBlockHashAndIndex(hash string, index *big.Int)
 /*
   GetRawTransactionByBlockHashAndIndex:
    	EN - Returns the bytes of the transaction for the given block hash and index
- 	CN - ¸ù¾İÇø¿é¹şÏ£ºÍ½»Ò×Ë÷Òı£¬·µ»Ø½»Ò×ĞÅÏ¢
+ 	CN - æ ¹æ®åŒºå—å“ˆå¸Œå’Œäº¤æ˜“ç´¢å¼•ï¼Œè¿”å›äº¤æ˜“ä¿¡æ¯
   Params:
-  	- hash,string,32 Bytes,Çø¿é¹şÏ£
-  	- index, *big.Int, ½»Ò×ÔÚÇø¿éÖĞµÄË÷Òı
+  	- hash,string,32 Bytes,åŒºå—å“ˆå¸Œ
+  	- index, *big.Int, äº¤æ˜“åœ¨åŒºå—ä¸­çš„ç´¢å¼•
 
   Returns:
   	- string
@@ -1049,16 +1049,16 @@ func (core *Core) GetRawTransactionByBlockHashAndIndex(hash string, index *big.I
 /*
   GetTransactionByBlockNumberAndIndex:
    	EN - Returns the transaction for the given block number and transaction index
- 	CN - ·µ»Ø¸ø¶¨Çø¿éºÅºÍË÷ÒıµÄ½»Ò×
+ 	CN - è¿”å›ç»™å®šåŒºå—å·å’Œç´¢å¼•çš„äº¤æ˜“
   Params:
   	- blockNumber, string, options are:
 	 (1) HEX String - an integer block number
 	 (2) String "latest" - for the latest mined block
 	 (3) String "pending" - for the pending state/transactions
-  	- index, *big.Int, ½»Ò×ÔÚÇø¿éÖĞµÄË÷Òı
+  	- index, *big.Int, äº¤æ˜“åœ¨åŒºå—ä¸­çš„ç´¢å¼•
 
   Returns:
-  	- *dto.TransactionResponse, ²ÎÕÕGetTransactionByHashµÄ·µ»ØÖµ£¬¶şÕßÒ»ÖÂ
+  	- *dto.TransactionResponse, å‚ç…§GetTransactionByHashçš„è¿”å›å€¼ï¼ŒäºŒè€…ä¸€è‡´
  	- error
 
   Call permissions: Anyone
@@ -1084,13 +1084,13 @@ func (core *Core) GetTransactionByBlockNumberAndIndex(blockNumber string, index 
 /*
   GetRawTransactionByBlockNumberAndIndex:
    	EN - Returns the bytes of the transaction for the given block number and index
- 	CN - ·µ»Ø¸ø¶¨Çø¿éºÅºÍË÷ÒıµÄ½»Ò×
+ 	CN - è¿”å›ç»™å®šåŒºå—å·å’Œç´¢å¼•çš„äº¤æ˜“
   Params:
   	- blockNumber, string, options are:
 	 (1) HEX String - an integer block number
 	 (2) String "latest" - for the latest mined block
 	 (3) String "pending" - for the pending state/transactions
-  	- index, *big.Int, ½»Ò×ÔÚÇø¿éÖĞµÄË÷Òı
+  	- index, *big.Int, äº¤æ˜“åœ¨åŒºå—ä¸­çš„ç´¢å¼•
 
   Returns:
   	- string

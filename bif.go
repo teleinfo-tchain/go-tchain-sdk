@@ -12,7 +12,7 @@
    along with go-bif.  If not, see <http://www.gnu.org/licenses/>.
 *********************************************************************************/
 
-// bif ???
+// bif 主文件
 package bif
 
 import (
@@ -30,7 +30,7 @@ import (
 /*
 	Bif - The Bif Module
 
-	Bif - Bif??
+	Bif - Bif模块
 */
 type Bif struct {
 	Provider providers.ProviderInterface
@@ -46,7 +46,7 @@ type Bif struct {
 /*
 	NewBif - Web3 Module constructor to set the default provider, Core, Net and Personal
 
-	NewBif - Web3??????,??????Provider?Core?Net?Personal
+	NewBif - Web3模块构造函数，用于设置默认Provider、Core、Net和Personal
 */
 func NewBif(provider providers.ProviderInterface) *Bif {
 	bif := new(Bif)
@@ -64,11 +64,11 @@ func NewBif(provider providers.ProviderInterface) *Bif {
 /*
   ClientVersion:
 	EN - Returns the current client version.
-	CN - ?????????
+	CN - 返回当前客户端版本
   Params:
   	- None
   Returns:
-  	- string - ???????
+  	- string - 当前客户端版本
     - error
 
   Call permissions: Anyone

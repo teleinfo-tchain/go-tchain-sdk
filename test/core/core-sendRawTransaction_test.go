@@ -11,7 +11,7 @@ import (
 	"testing"
 )
 
-// ²âÊÔ·¢ËÍRawTransaction
+// æµ‹è¯•å‘é€RawTransaction
 func TestCoreSendRawTransaction(t *testing.T) {
 	var connection = bif.NewBif(providers.NewHTTPProvider(resources.IP+":"+resources.Port, 10, false))
 

@@ -12,7 +12,7 @@
    along with go-bif.  If not, see <http://www.gnu.org/licenses/>.
 *********************************************************************************/
 
-// Package abi ÊµÏÖBif ABI£¨Application Binary Interface£©¡£
+// Package abi å®žçŽ°Bif ABIï¼ˆApplication Binary Interfaceï¼‰ã€‚
 //
 // The BIF ABI is strongly typed, known at compile time
 // and static. This ABI will handle basic type casting; unsigned
