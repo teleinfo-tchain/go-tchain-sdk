@@ -10,23 +10,29 @@ import (
 	"testing"
 )
 
+const (
+	isSM2Manager       = false
+	passwordManager    = "teleinfo"
+	testAddressManager = "did:bid:6cc796b8d6e2fbebc9b3cf9e"
+)
+
 func TestContractEnable(t *testing.T) {
-	var connection = bif.NewBif(providers.NewHTTPProvider(resources.IP+":"+resources.Port, 10, false))
+	var connection = bif.NewBif(providers.NewHTTPProvider(resources.IP55+":"+resources.Port, 10, false))
 	chainId, err := connection.Core.GetChainId()
 	if err != nil {
 		t.Log(err)
 		t.FailNow()
 	}
 
-	nonce, err := connection.Core.GetTransactionCount(testAddress, block.LATEST)
+	nonce, err := connection.Core.GetTransactionCount(testAddressManager, block.LATEST)
 	if err != nil {
 		t.Log(err)
 		t.FailNow()
 	}
 
 	sysTxParams := new(system.SysTxParams)
-	sysTxParams.IsSM2 = isSM2
-	sysTxParams.Password = password
+	sysTxParams.IsSM2 = isSM2Manager
+	sysTxParams.Password = passwordManager
 	sysTxParams.KeyFileData = keyFileData
 	sysTxParams.GasPrice = big.NewInt(35)
 	sysTxParams.Gas = 2000000
@@ -46,22 +52,22 @@ func TestContractEnable(t *testing.T) {
 }
 
 func TestContractDisable(t *testing.T) {
-	var connection = bif.NewBif(providers.NewHTTPProvider(resources.IP+":"+resources.Port, 10, false))
+	var connection = bif.NewBif(providers.NewHTTPProvider(resources.IP55+":"+resources.Port, 10, false))
 	chainId, err := connection.Core.GetChainId()
 	if err != nil {
 		t.Log(err)
 		t.FailNow()
 	}
 
-	nonce, err := connection.Core.GetTransactionCount(testAddress, block.LATEST)
+	nonce, err := connection.Core.GetTransactionCount(testAddressManager, block.LATEST)
 	if err != nil {
 		t.Log(err)
 		t.FailNow()
 	}
 
 	sysTxParams := new(system.SysTxParams)
-	sysTxParams.IsSM2 = isSM2
-	sysTxParams.Password = password
+	sysTxParams.IsSM2 = isSM2Manager
+	sysTxParams.Password = passwordManager
 	sysTxParams.KeyFileData = keyFileData
 	sysTxParams.GasPrice = big.NewInt(35)
 	sysTxParams.Gas = 2000000
@@ -81,22 +87,22 @@ func TestContractDisable(t *testing.T) {
 }
 
 func TestSetPower(t *testing.T) {
-	var connection = bif.NewBif(providers.NewHTTPProvider(resources.IP+":"+resources.Port, 10, false))
+	var connection = bif.NewBif(providers.NewHTTPProvider(resources.IP55+":"+resources.Port, 10, false))
 	chainId, err := connection.Core.GetChainId()
 	if err != nil {
 		t.Log(err)
 		t.FailNow()
 	}
 
-	nonce, err := connection.Core.GetTransactionCount(testAddress, block.LATEST)
+	nonce, err := connection.Core.GetTransactionCount(testAddressManager, block.LATEST)
 	if err != nil {
 		t.Log(err)
 		t.FailNow()
 	}
 
 	sysTxParams := new(system.SysTxParams)
-	sysTxParams.IsSM2 = isSM2
-	sysTxParams.Password = password
+	sysTxParams.IsSM2 = isSM2Manager
+	sysTxParams.Password = passwordManager
 	sysTxParams.KeyFileData = keyFileData
 	sysTxParams.GasPrice = big.NewInt(35)
 	sysTxParams.Gas = 2000000
@@ -117,7 +123,7 @@ func TestSetPower(t *testing.T) {
 }
 
 func TestAllContracts(t *testing.T) {
-	var connection = bif.NewBif(providers.NewHTTPProvider(resources.IP+":"+resources.Port, 10, false))
+	var connection = bif.NewBif(providers.NewHTTPProvider(resources.IP55+":"+resources.Port, 10, false))
 	_, err := connection.Core.GetCoinBase()
 
 	if err != nil {
@@ -132,11 +138,15 @@ func TestAllContracts(t *testing.T) {
 		t.FailNow()
 	}
 
-	t.Log(contracts)
+	t.Logf("%#v \n", contracts)
+
+	if len(contracts) != 0{
+		t.Logf("%#v \n", contracts[0])
+	}
 }
 
 func TestContractIsEnable(t *testing.T) {
-	var connection = bif.NewBif(providers.NewHTTPProvider(resources.IP+":"+resources.Port, 10, false))
+	var connection = bif.NewBif(providers.NewHTTPProvider(resources.IP55+":"+resources.Port, 10, false))
 	_, err := connection.Core.GetCoinBase()
 
 	if err != nil {
@@ -156,7 +166,7 @@ func TestContractIsEnable(t *testing.T) {
 }
 
 func TestGetPower(t *testing.T) {
-	var connection = bif.NewBif(providers.NewHTTPProvider(resources.IP+":"+resources.Port, 10, false))
+	var connection = bif.NewBif(providers.NewHTTPProvider(resources.IP55+":"+resources.Port, 10, false))
 	_, err := connection.Core.GetCoinBase()
 
 	if err != nil {

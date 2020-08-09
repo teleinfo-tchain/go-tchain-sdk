@@ -11,24 +11,30 @@ import (
 	"testing"
 )
 
+const (
+	isSM2Elect = false
+	passwordElect = "teleinfo"
+	testAddressElect = "did:bid:6cc796b8d6e2fbebc9b3cf9e"
+)
+
 // 注册成为候选者节点
 func TestRegisterWitness(t *testing.T) {
-	var connection = bif.NewBif(providers.NewHTTPProvider(resources.IP+":"+resources.Port, 10, false))
+	var connection = bif.NewBif(providers.NewHTTPProvider(resources.IP55+":"+resources.Port, 10, false))
 	chainId, err := connection.Core.GetChainId()
 	if err != nil {
 		t.Log(err)
 		t.FailNow()
 	}
 
-	nonce, err := connection.Core.GetTransactionCount(testAddress, block.LATEST)
+	nonce, err := connection.Core.GetTransactionCount(testAddressElect, block.LATEST)
 	if err != nil {
 		t.Log(err)
 		t.FailNow()
 	}
 
 	sysTxParams := new(system.SysTxParams)
-	sysTxParams.IsSM2 = isSM2
-	sysTxParams.Password = password
+	sysTxParams.IsSM2 = isSM2Elect
+	sysTxParams.Password = passwordElect
 	sysTxParams.KeyFileData = keyFileData
 	sysTxParams.GasPrice = big.NewInt(35)
 	sysTxParams.Gas = 2000000
@@ -53,22 +59,22 @@ func TestRegisterWitness(t *testing.T) {
 
 // 取消成为候选者节点
 func TestUnRegisterWitness(t *testing.T) {
-	var connection = bif.NewBif(providers.NewHTTPProvider(resources.IP+":"+resources.Port, 10, false))
+	var connection = bif.NewBif(providers.NewHTTPProvider(resources.IP55+":"+resources.Port, 10, false))
 	chainId, err := connection.Core.GetChainId()
 	if err != nil {
 		t.Log(err)
 		t.FailNow()
 	}
 
-	nonce, err := connection.Core.GetTransactionCount(testAddress, block.LATEST)
+	nonce, err := connection.Core.GetTransactionCount(testAddressElect, block.LATEST)
 	if err != nil {
 		t.Log(err)
 		t.FailNow()
 	}
 
 	sysTxParams := new(system.SysTxParams)
-	sysTxParams.IsSM2 = isSM2
-	sysTxParams.Password = password
+	sysTxParams.IsSM2 = isSM2Elect
+	sysTxParams.Password = passwordElect
 	sysTxParams.KeyFileData = keyFileData
 	sysTxParams.GasPrice = big.NewInt(35)
 	sysTxParams.Gas = 2000000
@@ -87,8 +93,8 @@ func TestUnRegisterWitness(t *testing.T) {
 
 // 获取候选节点基本信息
 func TestGetCandidate(t *testing.T) {
-	var connection = bif.NewBif(providers.NewHTTPProvider(resources.IP52+":"+resources.Port, 10, false))
-	coinBase, err := connection.Core.GetCoinBase()
+	var connection = bif.NewBif(providers.NewHTTPProvider(resources.IP55+":"+resources.Port, 10, false))
+	_, err := connection.Core.GetCoinBase()
 	if err != nil {
 		t.Error(err)
 		t.FailNow()
@@ -96,7 +102,7 @@ func TestGetCandidate(t *testing.T) {
 
 	elect := connection.System.NewElection()
 
-	candidate, err := elect.GetCandidate(coinBase)
+	candidate, err := elect.GetCandidate(testAddressElect)
 
 	if err != nil {
 		t.Error(err)
@@ -107,7 +113,7 @@ func TestGetCandidate(t *testing.T) {
 
 // 获取所有的见证候选节点
 func TestGetAllCandidates(t *testing.T) {
-	var connection = bif.NewBif(providers.NewHTTPProvider(resources.IP+":"+resources.Port, 10, false))
+	var connection = bif.NewBif(providers.NewHTTPProvider(resources.IP55+":"+resources.Port, 10, false))
 	_, err := connection.Core.GetCoinBase()
 	if err != nil {
 		t.Error(err)
@@ -142,22 +148,22 @@ func TestGetAllCandidates(t *testing.T) {
 }
 
 func TestVoteWitnesses(t *testing.T) {
-	var connection = bif.NewBif(providers.NewHTTPProvider(resources.IP+":"+resources.Port, 10, false))
+	var connection = bif.NewBif(providers.NewHTTPProvider(resources.IP55+":"+resources.Port, 10, false))
 	chainId, err := connection.Core.GetChainId()
 	if err != nil {
 		t.Log(err)
 		t.FailNow()
 	}
 
-	nonce, err := connection.Core.GetTransactionCount(testAddress, block.LATEST)
+	nonce, err := connection.Core.GetTransactionCount(testAddressElect, block.LATEST)
 	if err != nil {
 		t.Log(err)
 		t.FailNow()
 	}
 
 	sysTxParams := new(system.SysTxParams)
-	sysTxParams.IsSM2 = isSM2
-	sysTxParams.Password = password
+	sysTxParams.IsSM2 = isSM2Elect
+	sysTxParams.Password = passwordElect
 	sysTxParams.KeyFileData = keyFileData
 	sysTxParams.GasPrice = big.NewInt(35)
 	sysTxParams.Gas = 2000000
@@ -179,22 +185,22 @@ func TestVoteWitnesses(t *testing.T) {
 }
 
 func TestElectCancelVote(t *testing.T) {
-	var connection = bif.NewBif(providers.NewHTTPProvider(resources.IP+":"+resources.Port, 10, false))
+	var connection = bif.NewBif(providers.NewHTTPProvider(resources.IP55+":"+resources.Port, 10, false))
 	chainId, err := connection.Core.GetChainId()
 	if err != nil {
 		t.Log(err)
 		t.FailNow()
 	}
 
-	nonce, err := connection.Core.GetTransactionCount(testAddress, block.LATEST)
+	nonce, err := connection.Core.GetTransactionCount(testAddressElect, block.LATEST)
 	if err != nil {
 		t.Log(err)
 		t.FailNow()
 	}
 
 	sysTxParams := new(system.SysTxParams)
-	sysTxParams.IsSM2 = isSM2
-	sysTxParams.Password = password
+	sysTxParams.IsSM2 = isSM2Elect
+	sysTxParams.Password = passwordElect
 	sysTxParams.KeyFileData = keyFileData
 	sysTxParams.GasPrice = big.NewInt(35)
 	sysTxParams.Gas = 2000000
@@ -214,22 +220,22 @@ func TestElectCancelVote(t *testing.T) {
 }
 
 func TestStartProxy(t *testing.T) {
-	var connection = bif.NewBif(providers.NewHTTPProvider(resources.IP+":"+resources.Port, 10, false))
+	var connection = bif.NewBif(providers.NewHTTPProvider(resources.IP55+":"+resources.Port, 10, false))
 	chainId, err := connection.Core.GetChainId()
 	if err != nil {
 		t.Log(err)
 		t.FailNow()
 	}
 
-	nonce, err := connection.Core.GetTransactionCount(testAddress, block.LATEST)
+	nonce, err := connection.Core.GetTransactionCount(testAddressElect, block.LATEST)
 	if err != nil {
 		t.Log(err)
 		t.FailNow()
 	}
 
 	sysTxParams := new(system.SysTxParams)
-	sysTxParams.IsSM2 = isSM2
-	sysTxParams.Password = password
+	sysTxParams.IsSM2 = isSM2Elect
+	sysTxParams.Password = passwordElect
 	sysTxParams.KeyFileData = keyFileData
 	sysTxParams.GasPrice = big.NewInt(35)
 	sysTxParams.Gas = 2000000
@@ -249,22 +255,22 @@ func TestStartProxy(t *testing.T) {
 }
 
 func TestStopProxy(t *testing.T) {
-	var connection = bif.NewBif(providers.NewHTTPProvider(resources.IP+":"+resources.Port, 10, false))
+	var connection = bif.NewBif(providers.NewHTTPProvider(resources.IP55+":"+resources.Port, 10, false))
 	chainId, err := connection.Core.GetChainId()
 	if err != nil {
 		t.Log(err)
 		t.FailNow()
 	}
 
-	nonce, err := connection.Core.GetTransactionCount(testAddress, block.LATEST)
+	nonce, err := connection.Core.GetTransactionCount(testAddressElect, block.LATEST)
 	if err != nil {
 		t.Log(err)
 		t.FailNow()
 	}
 
 	sysTxParams := new(system.SysTxParams)
-	sysTxParams.IsSM2 = isSM2
-	sysTxParams.Password = password
+	sysTxParams.IsSM2 = isSM2Elect
+	sysTxParams.Password = passwordElect
 	sysTxParams.KeyFileData = keyFileData
 	sysTxParams.GasPrice = big.NewInt(35)
 	sysTxParams.Gas = 2000000
@@ -285,22 +291,22 @@ func TestStopProxy(t *testing.T) {
 
 // not set proxy
 func TestCancelProxy(t *testing.T) {
-	var connection = bif.NewBif(providers.NewHTTPProvider(resources.IP+":"+resources.Port, 10, false))
+	var connection = bif.NewBif(providers.NewHTTPProvider(resources.IP55+":"+resources.Port, 10, false))
 	chainId, err := connection.Core.GetChainId()
 	if err != nil {
 		t.Log(err)
 		t.FailNow()
 	}
 
-	nonce, err := connection.Core.GetTransactionCount(testAddress, block.LATEST)
+	nonce, err := connection.Core.GetTransactionCount(testAddressElect, block.LATEST)
 	if err != nil {
 		t.Log(err)
 		t.FailNow()
 	}
 
 	sysTxParams := new(system.SysTxParams)
-	sysTxParams.IsSM2 = isSM2
-	sysTxParams.Password = password
+	sysTxParams.IsSM2 = isSM2Elect
+	sysTxParams.Password = passwordElect
 	sysTxParams.KeyFileData = keyFileData
 	sysTxParams.GasPrice = big.NewInt(35)
 	sysTxParams.Gas = 2000000
@@ -321,22 +327,22 @@ func TestCancelProxy(t *testing.T) {
 
 // account registered as a proxy is not allowed to use a proxy??
 func TestSetProxy(t *testing.T) {
-	var connection = bif.NewBif(providers.NewHTTPProvider(resources.IP+":"+resources.Port, 10, false))
+	var connection = bif.NewBif(providers.NewHTTPProvider(resources.IP55+":"+resources.Port, 10, false))
 	chainId, err := connection.Core.GetChainId()
 	if err != nil {
 		t.Log(err)
 		t.FailNow()
 	}
 
-	nonce, err := connection.Core.GetTransactionCount(testAddress, block.LATEST)
+	nonce, err := connection.Core.GetTransactionCount(testAddressElect, block.LATEST)
 	if err != nil {
 		t.Log(err)
 		t.FailNow()
 	}
 
 	sysTxParams := new(system.SysTxParams)
-	sysTxParams.IsSM2 = isSM2
-	sysTxParams.Password = password
+	sysTxParams.IsSM2 = isSM2Elect
+	sysTxParams.Password = passwordElect
 	sysTxParams.KeyFileData = keyFileData
 	sysTxParams.GasPrice = big.NewInt(35)
 	sysTxParams.Gas = 2000000
@@ -358,22 +364,22 @@ func TestSetProxy(t *testing.T) {
 
 // 权益抵押
 func TestStake(t *testing.T) {
-	var connection = bif.NewBif(providers.NewHTTPProvider(resources.IP+":"+resources.Port, 10, false))
+	var connection = bif.NewBif(providers.NewHTTPProvider(resources.IP55+":"+resources.Port, 10, false))
 	chainId, err := connection.Core.GetChainId()
 	if err != nil {
 		t.Log(err)
 		t.FailNow()
 	}
 
-	nonce, err := connection.Core.GetTransactionCount(testAddress, block.LATEST)
+	nonce, err := connection.Core.GetTransactionCount(testAddressElect, block.LATEST)
 	if err != nil {
 		t.Log(err)
 		t.FailNow()
 	}
 
 	sysTxParams := new(system.SysTxParams)
-	sysTxParams.IsSM2 = isSM2
-	sysTxParams.Password = password
+	sysTxParams.IsSM2 = isSM2Elect
+	sysTxParams.Password = passwordElect
 	sysTxParams.KeyFileData = keyFileData
 	sysTxParams.GasPrice = big.NewInt(35)
 	sysTxParams.Gas = 2000000
@@ -394,22 +400,22 @@ func TestStake(t *testing.T) {
 
 // 权益抵押撤销
 func TestUnStake(t *testing.T) {
-	var connection = bif.NewBif(providers.NewHTTPProvider(resources.IP+":"+resources.Port, 10, false))
+	var connection = bif.NewBif(providers.NewHTTPProvider(resources.IP55+":"+resources.Port, 10, false))
 	chainId, err := connection.Core.GetChainId()
 	if err != nil {
 		t.Log(err)
 		t.FailNow()
 	}
 
-	nonce, err := connection.Core.GetTransactionCount(testAddress, block.LATEST)
+	nonce, err := connection.Core.GetTransactionCount(testAddressElect, block.LATEST)
 	if err != nil {
 		t.Log(err)
 		t.FailNow()
 	}
 
 	sysTxParams := new(system.SysTxParams)
-	sysTxParams.IsSM2 = isSM2
-	sysTxParams.Password = password
+	sysTxParams.IsSM2 = isSM2Elect
+	sysTxParams.Password = passwordElect
 	sysTxParams.KeyFileData = keyFileData
 	sysTxParams.GasPrice = big.NewInt(35)
 	sysTxParams.Gas = 2000000
@@ -430,8 +436,8 @@ func TestUnStake(t *testing.T) {
 
 // 获取某个地址的权益抵押信息
 func TestGetStake(t *testing.T) {
-	var connection = bif.NewBif(providers.NewHTTPProvider(resources.IP51+":"+resources.Port, 10, false))
-	coinBase, err := connection.Core.GetCoinBase()
+	var connection = bif.NewBif(providers.NewHTTPProvider(resources.IP55+":"+resources.Port, 10, false))
+	_, err := connection.Core.GetCoinBase()
 	if err != nil {
 		t.Error(err)
 		t.FailNow()
@@ -439,7 +445,7 @@ func TestGetStake(t *testing.T) {
 
 	elect := connection.System.NewElection()
 
-	stake, err := elect.GetStake(coinBase)
+	stake, err := elect.GetStake(testAddressElect)
 
 	if err != nil {
 		t.Error(err)
@@ -455,7 +461,7 @@ func TestGetStake(t *testing.T) {
 }
 
 func TestGetRestBIFBounty(t *testing.T) {
-	var connection = bif.NewBif(providers.NewHTTPProvider(resources.IP52+":"+resources.Port, 10, false))
+	var connection = bif.NewBif(providers.NewHTTPProvider(resources.IP55+":"+resources.Port, 10, false))
 	_, err := connection.Core.GetCoinBase()
 	if err != nil {
 		t.Error(err)
@@ -475,22 +481,22 @@ func TestGetRestBIFBounty(t *testing.T) {
 }
 
 func TestElectionExtractOwnBounty(t *testing.T) {
-	var connection = bif.NewBif(providers.NewHTTPProvider(resources.IP+":"+resources.Port, 10, false))
+	var connection = bif.NewBif(providers.NewHTTPProvider(resources.IP55+":"+resources.Port, 10, false))
 	chainId, err := connection.Core.GetChainId()
 	if err != nil {
 		t.Log(err)
 		t.FailNow()
 	}
 
-	nonce, err := connection.Core.GetTransactionCount(testAddress, block.LATEST)
+	nonce, err := connection.Core.GetTransactionCount(testAddressElect, block.LATEST)
 	if err != nil {
 		t.Log(err)
 		t.FailNow()
 	}
 
 	sysTxParams := new(system.SysTxParams)
-	sysTxParams.IsSM2 = isSM2
-	sysTxParams.Password = password
+	sysTxParams.IsSM2 = isSM2Elect
+	sysTxParams.Password = passwordElect
 	sysTxParams.KeyFileData = keyFileData
 	sysTxParams.GasPrice = big.NewInt(35)
 	sysTxParams.Gas = 2000000
@@ -511,22 +517,22 @@ func TestElectionExtractOwnBounty(t *testing.T) {
 
 // ？？？？？？？？？？？这个没有输出日志吗？？？？？
 func TestIssueAdditionalBounty(t *testing.T) {
-	var connection = bif.NewBif(providers.NewHTTPProvider(resources.IP+":"+resources.Port, 10, false))
+	var connection = bif.NewBif(providers.NewHTTPProvider(resources.IP55+":"+resources.Port, 10, false))
 	chainId, err := connection.Core.GetChainId()
 	if err != nil {
 		t.Log(err)
 		t.FailNow()
 	}
 
-	nonce, err := connection.Core.GetTransactionCount(testAddress, block.LATEST)
+	nonce, err := connection.Core.GetTransactionCount(testAddressElect, block.LATEST)
 	if err != nil {
 		t.Log(err)
 		t.FailNow()
 	}
 
 	sysTxParams := new(system.SysTxParams)
-	sysTxParams.IsSM2 = isSM2
-	sysTxParams.Password = password
+	sysTxParams.IsSM2 = isSM2Elect
+	sysTxParams.Password = passwordElect
 	sysTxParams.KeyFileData = keyFileData
 	sysTxParams.GasPrice = big.NewInt(35)
 	sysTxParams.Gas = 2000000
@@ -547,7 +553,7 @@ func TestIssueAdditionalBounty(t *testing.T) {
 
 // 获取指定候选者的基本信息
 func TestElectGetVoter(t *testing.T) {
-	var connection = bif.NewBif(providers.NewHTTPProvider(resources.IP+":"+resources.Port, 10, false))
+	var connection = bif.NewBif(providers.NewHTTPProvider(resources.IP55+":"+resources.Port, 10, false))
 	coinBase, err := connection.Core.GetCoinBase()
 	if err != nil {
 		t.Error(err)
@@ -574,7 +580,7 @@ func TestElectGetVoter(t *testing.T) {
 
 // 获取指定的候选者的投票列表
 func TestGetVoterList(t *testing.T) {
-	var connection = bif.NewBif(providers.NewHTTPProvider(resources.IP+":"+resources.Port, 10, false))
+	var connection = bif.NewBif(providers.NewHTTPProvider(resources.IP55+":"+resources.Port, 10, false))
 	_, err := connection.Core.GetCoinBase()
 	if err != nil {
 		t.Error(err)

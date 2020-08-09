@@ -1,8 +1,12 @@
 package system
 
 import (
+	"errors"
+	"fmt"
 	"github.com/bif/bif-sdk-go/abi"
+	"github.com/bif/bif-sdk-go/crypto"
 	"github.com/bif/bif-sdk-go/dto"
+	"github.com/bif/bif-sdk-go/utils"
 	"strings"
 )
 
@@ -36,6 +40,31 @@ func (sys *System) NewPeerCertificate() *PeerCertificate {
 	return peerCertificate
 }
 
+func (peerCer *PeerCertificate) messageSignature(message, password string, keyFileData []byte, isSM2 bool) (string, string, error) {
+	messageSha3 := utils.NewUtils().Sha3Raw(message)
+
+	_, privateKey, err := peerCer.super.acc.Decrypt(keyFileData, isSM2, password)
+	privKey, err := crypto.HexToECDSA(privateKey, crypto.SECP256K1)
+	if err != nil {
+		return "", "", err
+	}
+
+	var cryptoType crypto.CryptoType
+	if isSM2 {
+		cryptoType = crypto.SM2
+	} else {
+		cryptoType = crypto.SECP256K1
+	}
+
+	messageSha3Bytes := utils.Hex2Bytes(messageSha3[2:])
+	sig, err := crypto.Sign(messageSha3Bytes, privKey, cryptoType)
+	if err != nil {
+		return "", "", err
+	}
+
+	return messageSha3, utils.Bytes2Hex(sig), err
+}
+
 /*
   RegisterCertificate:
    	EN -
@@ -63,9 +92,22 @@ func (sys *System) NewPeerCertificate() *PeerCertificate {
   Call permissions: 只有监管节点地址可以调用
 */
 func (peerCer *PeerCertificate) RegisterCertificate(signTxParams *SysTxParams, registerCertificate *dto.RegisterCertificateInfo) (string, error) {
+	// 查验参数是否输入合法
+	if !isValidHexAddress(registerCertificate.Id){
+		return "", errors.New("registerCertificate id is not valid bid")
+	}
+	if len(registerCertificate.PublicKey) != 53{
+		return "", errors.New("registerCertificate publicKey's len should be 53")
+	}
+
 	// encoding
 	// registerCertificate is a struct we need to use the components.
-	registerCertificate.Id = registerCertificate.PublicKey
+	messageSha3, signature, err :=peerCer.messageSignature("test", signTxParams.Password, signTxParams.KeyFileData,signTxParams.IsSM2)
+	if err != nil{
+		return "", err
+	}
+	fmt.Printf("messageSha3 %s, signature  %s \n", messageSha3, signature)
+
 	var values []interface{}
 	values = peerCer.super.structToInterface(*registerCertificate, values)
 	inputEncode, err := peerCer.abi.Pack("registerCertificate", values...)
@@ -78,7 +120,9 @@ func (peerCer *PeerCertificate) RegisterCertificate(signTxParams *SysTxParams, r
 		return "", err
 	}
 
-	return peerCer.super.sendRawTransaction(signedTx)
+	fmt.Println("signedTx is ", signedTx)
+	// return peerCer.super.sendRawTransaction(signedTx)
+	return "", err
 }
 
 /*
@@ -96,6 +140,10 @@ func (peerCer *PeerCertificate) RegisterCertificate(signTxParams *SysTxParams, r
   Call permissions: 只有监管节点地址可以调用
 */
 func (peerCer *PeerCertificate) RevokedCertificate(signTxParams *SysTxParams, id string) (string, error) {
+	if !isValidHexAddress(id){
+		return "", errors.New("id is not valid bid address")
+	}
+
 	// encoding
 	inputEncode, err := peerCer.abi.Pack("revokedCertificate", id)
 	if err != nil {
@@ -124,6 +172,10 @@ func (peerCer *PeerCertificate) RevokedCertificate(signTxParams *SysTxParams, id
   Call permissions: Anyone
 */
 func (peerCer *PeerCertificate) GetPeriod(id string) (uint64, error) {
+	if !isValidHexAddress(id){
+		return 0, errors.New("id is not valid bid address")
+	}
+
 	params := make([]string, 1)
 	params[0] = id
 
@@ -151,6 +203,10 @@ func (peerCer *PeerCertificate) GetPeriod(id string) (uint64, error) {
   Call permissions: Anyone
 */
 func (peerCer *PeerCertificate) GetActive(id string) (bool, error) {
+	if !isValidHexAddress(id){
+		return false, errors.New("id is not valid bid address")
+	}
+
 	params := make([]string, 1)
 	params[0] = id
 
@@ -190,6 +246,10 @@ func (peerCer *PeerCertificate) GetActive(id string) (bool, error) {
   Call permissions: Anyone
 */
 func (peerCer *PeerCertificate) GetPeerCertificate(id string) (*dto.PeerCertificate, error) {
+	if !isValidHexAddress(id){
+		return nil, errors.New("id is not valid bid address")
+	}
+
 	params := make([]string, 1)
 	params[0] = id
 
@@ -217,6 +277,10 @@ func (peerCer *PeerCertificate) GetPeerCertificate(id string) (*dto.PeerCertific
   Call permissions: Anyone
 */
 func (peerCer *PeerCertificate) GetPeerCertificateIdList(id string) ([]string, error) {
+	if !isValidHexAddress(id){
+		return nil, errors.New("id is not valid bid address")
+	}
+
 	params := make([]string, 1)
 	params[0] = id
 

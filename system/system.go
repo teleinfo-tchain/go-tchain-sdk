@@ -10,6 +10,7 @@ import (
 	"github.com/bif/bif-sdk-go/utils/hexutil"
 	"math/big"
 	"reflect"
+	"regexp"
 	"strings"
 )
 
@@ -153,4 +154,17 @@ func (sys *System) SystemLogDecode(transactionHash string) (*LogData, error) {
 		return nil, errors.New("method log error")
 	}
 	return decodeTxHash(receipt.Logs[0].Data)
+}
+
+func isValidHexAddress(address string) bool {
+	return utils.IsHexAddress(address)
+}
+
+// email verify
+func verifyEmailFormat(email string) bool {
+	// pattern := `\w+([-+.]\w+)*@\w+([-.]\w+)*\.\w+([-.]\w+)*` //匹配电子邮箱
+	pattern := `^[0-9a-z][_.0-9a-z-]{0,31}@([0-9a-z][0-9a-z-]{0,30}[0-9a-z]\.){1,4}[a-z]{2,4}$`
+
+	reg := regexp.MustCompile(pattern)
+	return reg.MatchString(email)
 }

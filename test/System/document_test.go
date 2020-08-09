@@ -10,27 +10,26 @@ import (
 	"testing"
 )
 
+const (
+	isSM2Doc       = false
+	passwordDoc    = "teleinfo"
+	testAddressDoc = "did:bid:6cc796b8d6e2fbebc9b3cf9e"
+)
+
 func TestInit(t *testing.T) {
-	var connection = bif.NewBif(providers.NewHTTPProvider(resources.IP+":"+resources.Port, 10, false))
+	var connection = bif.NewBif(providers.NewHTTPProvider(resources.IP55+":"+resources.Port, 10, false))
 	chainId, err := connection.Core.GetChainId()
 	if err != nil {
 		t.Log(err)
 		t.FailNow()
 	}
 
-	nonce, err := connection.Core.GetTransactionCount(testAddress, block.LATEST)
-	if err != nil {
-		t.Log(err)
-		t.FailNow()
-	}
-
 	sysTxParams := new(system.SysTxParams)
-	sysTxParams.IsSM2 = isSM2
-	sysTxParams.Password = password
+	sysTxParams.IsSM2 = isSM2Doc
+	sysTxParams.Password = passwordDoc
 	sysTxParams.KeyFileData = keyFileData
 	sysTxParams.GasPrice = big.NewInt(35)
 	sysTxParams.Gas = 2000000
-	sysTxParams.Nonce = nonce.Uint64()
 	sysTxParams.ChainId = big.NewInt(0).SetUint64(chainId)
 
 	doc := connection.System.NewDoc()
@@ -45,24 +44,24 @@ func TestInit(t *testing.T) {
 }
 
 func TestSetBidName(t *testing.T) {
-	var connection = bif.NewBif(providers.NewHTTPProvider(resources.IP+":"+resources.Port, 10, false))
+	var connection = bif.NewBif(providers.NewHTTPProvider(resources.IP55+":"+resources.Port, 10, false))
 	chainId, err := connection.Core.GetChainId()
 	if err != nil {
 		t.Log(err)
 		t.FailNow()
 	}
 
-	nonce, err := connection.Core.GetTransactionCount(testAddress, block.LATEST)
+	nonce, err := connection.Core.GetTransactionCount(testAddressDoc, block.LATEST)
 	if err != nil {
 		t.Log(err)
 		t.FailNow()
 	}
 
 	sysTxParams := new(system.SysTxParams)
-	sysTxParams.IsSM2 = isSM2
-	sysTxParams.Password = password
+	sysTxParams.IsSM2 = isSM2Doc
+	sysTxParams.Password = passwordDoc
 	sysTxParams.KeyFileData = keyFileData
-	sysTxParams.GasPrice = big.NewInt(35)
+	sysTxParams.GasPrice = big.NewInt(55)
 	sysTxParams.Gas = 2000000
 	sysTxParams.Nonce = nonce.Uint64()
 	sysTxParams.ChainId = big.NewInt(0).SetUint64(chainId)
@@ -79,7 +78,7 @@ func TestSetBidName(t *testing.T) {
 }
 
 func TestGetDocument(t *testing.T) {
-	var connection = bif.NewBif(providers.NewHTTPProvider(resources.IP+":"+resources.Port, 10, false))
+	var connection = bif.NewBif(providers.NewHTTPProvider(resources.IP55+":"+resources.Port, 10, false))
 	_, err := connection.Core.GetCoinBase()
 	if err != nil {
 		t.Error(err)
@@ -88,7 +87,7 @@ func TestGetDocument(t *testing.T) {
 
 	doc := connection.System.NewDoc()
 
-	document, err := doc.GetDocument(true, "1")
+	document, err := doc.GetDocument(true, testAddressDoc)
 	if err != nil {
 		t.Error(err)
 		t.FailNow()
@@ -98,22 +97,22 @@ func TestGetDocument(t *testing.T) {
 }
 
 func TestAddPublic(t *testing.T) {
-	var connection = bif.NewBif(providers.NewHTTPProvider(resources.IP+":"+resources.Port, 10, false))
+	var connection = bif.NewBif(providers.NewHTTPProvider(resources.IP55+":"+resources.Port, 10, false))
 	chainId, err := connection.Core.GetChainId()
 	if err != nil {
 		t.Log(err)
 		t.FailNow()
 	}
 
-	nonce, err := connection.Core.GetTransactionCount(testAddress, block.LATEST)
+	nonce, err := connection.Core.GetTransactionCount(testAddressDoc, block.LATEST)
 	if err != nil {
 		t.Log(err)
 		t.FailNow()
 	}
 
 	sysTxParams := new(system.SysTxParams)
-	sysTxParams.IsSM2 = isSM2
-	sysTxParams.Password = password
+	sysTxParams.IsSM2 = isSM2Doc
+	sysTxParams.Password = passwordDoc
 	sysTxParams.KeyFileData = keyFileData
 	sysTxParams.GasPrice = big.NewInt(35)
 	sysTxParams.Gas = 2000000
@@ -132,22 +131,22 @@ func TestAddPublic(t *testing.T) {
 }
 
 func TestDelPublic(t *testing.T) {
-	var connection = bif.NewBif(providers.NewHTTPProvider(resources.IP+":"+resources.Port, 10, false))
+	var connection = bif.NewBif(providers.NewHTTPProvider(resources.IP55+":"+resources.Port, 10, false))
 	chainId, err := connection.Core.GetChainId()
 	if err != nil {
 		t.Log(err)
 		t.FailNow()
 	}
 
-	nonce, err := connection.Core.GetTransactionCount(testAddress, block.LATEST)
+	nonce, err := connection.Core.GetTransactionCount(testAddressDoc, block.LATEST)
 	if err != nil {
 		t.Log(err)
 		t.FailNow()
 	}
 
 	sysTxParams := new(system.SysTxParams)
-	sysTxParams.IsSM2 = isSM2
-	sysTxParams.Password = password
+	sysTxParams.IsSM2 = isSM2Doc
+	sysTxParams.Password = passwordDoc
 	sysTxParams.KeyFileData = keyFileData
 	sysTxParams.GasPrice = big.NewInt(35)
 	sysTxParams.Gas = 2000000
@@ -166,22 +165,22 @@ func TestDelPublic(t *testing.T) {
 }
 
 func TestAddAuth(t *testing.T) {
-	var connection = bif.NewBif(providers.NewHTTPProvider(resources.IP+":"+resources.Port, 10, false))
+	var connection = bif.NewBif(providers.NewHTTPProvider(resources.IP55+":"+resources.Port, 10, false))
 	chainId, err := connection.Core.GetChainId()
 	if err != nil {
 		t.Log(err)
 		t.FailNow()
 	}
 
-	nonce, err := connection.Core.GetTransactionCount(testAddress, block.LATEST)
+	nonce, err := connection.Core.GetTransactionCount(testAddressDoc, block.LATEST)
 	if err != nil {
 		t.Log(err)
 		t.FailNow()
 	}
 
 	sysTxParams := new(system.SysTxParams)
-	sysTxParams.IsSM2 = isSM2
-	sysTxParams.Password = password
+	sysTxParams.IsSM2 = isSM2Doc
+	sysTxParams.Password = passwordDoc
 	sysTxParams.KeyFileData = keyFileData
 	sysTxParams.GasPrice = big.NewInt(35)
 	sysTxParams.Gas = 2000000
@@ -200,22 +199,22 @@ func TestAddAuth(t *testing.T) {
 }
 
 func TestDelAuth(t *testing.T) {
-	var connection = bif.NewBif(providers.NewHTTPProvider(resources.IP+":"+resources.Port, 10, false))
+	var connection = bif.NewBif(providers.NewHTTPProvider(resources.IP55+":"+resources.Port, 10, false))
 	chainId, err := connection.Core.GetChainId()
 	if err != nil {
 		t.Log(err)
 		t.FailNow()
 	}
 
-	nonce, err := connection.Core.GetTransactionCount(testAddress, block.LATEST)
+	nonce, err := connection.Core.GetTransactionCount(testAddressDoc, block.LATEST)
 	if err != nil {
 		t.Log(err)
 		t.FailNow()
 	}
 
 	sysTxParams := new(system.SysTxParams)
-	sysTxParams.IsSM2 = isSM2
-	sysTxParams.Password = password
+	sysTxParams.IsSM2 = isSM2Doc
+	sysTxParams.Password = passwordDoc
 	sysTxParams.KeyFileData = keyFileData
 	sysTxParams.GasPrice = big.NewInt(35)
 	sysTxParams.Gas = 2000000
@@ -234,22 +233,22 @@ func TestDelAuth(t *testing.T) {
 }
 
 func TestAddService(t *testing.T) {
-	var connection = bif.NewBif(providers.NewHTTPProvider(resources.IP+":"+resources.Port, 10, false))
+	var connection = bif.NewBif(providers.NewHTTPProvider(resources.IP55+":"+resources.Port, 10, false))
 	chainId, err := connection.Core.GetChainId()
 	if err != nil {
 		t.Log(err)
 		t.FailNow()
 	}
 
-	nonce, err := connection.Core.GetTransactionCount(testAddress, block.LATEST)
+	nonce, err := connection.Core.GetTransactionCount(testAddressDoc, block.LATEST)
 	if err != nil {
 		t.Log(err)
 		t.FailNow()
 	}
 
 	sysTxParams := new(system.SysTxParams)
-	sysTxParams.IsSM2 = isSM2
-	sysTxParams.Password = password
+	sysTxParams.IsSM2 = isSM2Doc
+	sysTxParams.Password = passwordDoc
 	sysTxParams.KeyFileData = keyFileData
 	sysTxParams.GasPrice = big.NewInt(35)
 	sysTxParams.Gas = 2000000
@@ -268,22 +267,22 @@ func TestAddService(t *testing.T) {
 }
 
 func TestDelService(t *testing.T) {
-	var connection = bif.NewBif(providers.NewHTTPProvider(resources.IP+":"+resources.Port, 10, false))
+	var connection = bif.NewBif(providers.NewHTTPProvider(resources.IP55+":"+resources.Port, 10, false))
 	chainId, err := connection.Core.GetChainId()
 	if err != nil {
 		t.Log(err)
 		t.FailNow()
 	}
 
-	nonce, err := connection.Core.GetTransactionCount(testAddress, block.LATEST)
+	nonce, err := connection.Core.GetTransactionCount(testAddressDoc, block.LATEST)
 	if err != nil {
 		t.Log(err)
 		t.FailNow()
 	}
 
 	sysTxParams := new(system.SysTxParams)
-	sysTxParams.IsSM2 = isSM2
-	sysTxParams.Password = password
+	sysTxParams.IsSM2 = isSM2Doc
+	sysTxParams.Password = passwordDoc
 	sysTxParams.KeyFileData = keyFileData
 	sysTxParams.GasPrice = big.NewInt(35)
 	sysTxParams.Gas = 2000000
@@ -302,22 +301,22 @@ func TestDelService(t *testing.T) {
 }
 
 func TestAddProof(t *testing.T) {
-	var connection = bif.NewBif(providers.NewHTTPProvider(resources.IP+":"+resources.Port, 10, false))
+	var connection = bif.NewBif(providers.NewHTTPProvider(resources.IP55+":"+resources.Port, 10, false))
 	chainId, err := connection.Core.GetChainId()
 	if err != nil {
 		t.Log(err)
 		t.FailNow()
 	}
 
-	nonce, err := connection.Core.GetTransactionCount(testAddress, block.LATEST)
+	nonce, err := connection.Core.GetTransactionCount(testAddressDoc, block.LATEST)
 	if err != nil {
 		t.Log(err)
 		t.FailNow()
 	}
 
 	sysTxParams := new(system.SysTxParams)
-	sysTxParams.IsSM2 = isSM2
-	sysTxParams.Password = password
+	sysTxParams.IsSM2 = isSM2Doc
+	sysTxParams.Password = passwordDoc
 	sysTxParams.KeyFileData = keyFileData
 	sysTxParams.GasPrice = big.NewInt(35)
 	sysTxParams.Gas = 2000000
@@ -336,22 +335,22 @@ func TestAddProof(t *testing.T) {
 }
 
 func TestDelProof(t *testing.T) {
-	var connection = bif.NewBif(providers.NewHTTPProvider(resources.IP+":"+resources.Port, 10, false))
+	var connection = bif.NewBif(providers.NewHTTPProvider(resources.IP55+":"+resources.Port, 10, false))
 	chainId, err := connection.Core.GetChainId()
 	if err != nil {
 		t.Log(err)
 		t.FailNow()
 	}
 
-	nonce, err := connection.Core.GetTransactionCount(testAddress, block.LATEST)
+	nonce, err := connection.Core.GetTransactionCount(testAddressDoc, block.LATEST)
 	if err != nil {
 		t.Log(err)
 		t.FailNow()
 	}
 
 	sysTxParams := new(system.SysTxParams)
-	sysTxParams.IsSM2 = isSM2
-	sysTxParams.Password = password
+	sysTxParams.IsSM2 = isSM2Doc
+	sysTxParams.Password = passwordDoc
 	sysTxParams.KeyFileData = keyFileData
 	sysTxParams.GasPrice = big.NewInt(35)
 	sysTxParams.Gas = 2000000
@@ -370,22 +369,22 @@ func TestDelProof(t *testing.T) {
 }
 
 func TestAddExtra(t *testing.T) {
-	var connection = bif.NewBif(providers.NewHTTPProvider(resources.IP+":"+resources.Port, 10, false))
+	var connection = bif.NewBif(providers.NewHTTPProvider(resources.IP55+":"+resources.Port, 10, false))
 	chainId, err := connection.Core.GetChainId()
 	if err != nil {
 		t.Log(err)
 		t.FailNow()
 	}
 
-	nonce, err := connection.Core.GetTransactionCount(testAddress, block.LATEST)
+	nonce, err := connection.Core.GetTransactionCount(testAddressDoc, block.LATEST)
 	if err != nil {
 		t.Log(err)
 		t.FailNow()
 	}
 
 	sysTxParams := new(system.SysTxParams)
-	sysTxParams.IsSM2 = isSM2
-	sysTxParams.Password = password
+	sysTxParams.IsSM2 = isSM2Doc
+	sysTxParams.Password = passwordDoc
 	sysTxParams.KeyFileData = keyFileData
 	sysTxParams.GasPrice = big.NewInt(35)
 	sysTxParams.Gas = 2000000
@@ -404,22 +403,22 @@ func TestAddExtra(t *testing.T) {
 }
 
 func TestDelExtra(t *testing.T) {
-	var connection = bif.NewBif(providers.NewHTTPProvider(resources.IP+":"+resources.Port, 10, false))
+	var connection = bif.NewBif(providers.NewHTTPProvider(resources.IP55+":"+resources.Port, 10, false))
 	chainId, err := connection.Core.GetChainId()
 	if err != nil {
 		t.Log(err)
 		t.FailNow()
 	}
 
-	nonce, err := connection.Core.GetTransactionCount(testAddress, block.LATEST)
+	nonce, err := connection.Core.GetTransactionCount(testAddressDoc, block.LATEST)
 	if err != nil {
 		t.Log(err)
 		t.FailNow()
 	}
 
 	sysTxParams := new(system.SysTxParams)
-	sysTxParams.IsSM2 = isSM2
-	sysTxParams.Password = password
+	sysTxParams.IsSM2 = isSM2Doc
+	sysTxParams.Password = passwordDoc
 	sysTxParams.KeyFileData = keyFileData
 	sysTxParams.GasPrice = big.NewInt(35)
 	sysTxParams.Gas = 2000000
@@ -438,22 +437,22 @@ func TestDelExtra(t *testing.T) {
 }
 
 func TestEnable(t *testing.T) {
-	var connection = bif.NewBif(providers.NewHTTPProvider(resources.IP+":"+resources.Port, 10, false))
+	var connection = bif.NewBif(providers.NewHTTPProvider(resources.IP55+":"+resources.Port, 10, false))
 	chainId, err := connection.Core.GetChainId()
 	if err != nil {
 		t.Log(err)
 		t.FailNow()
 	}
 
-	nonce, err := connection.Core.GetTransactionCount(testAddress, block.LATEST)
+	nonce, err := connection.Core.GetTransactionCount(testAddressDoc, block.LATEST)
 	if err != nil {
 		t.Log(err)
 		t.FailNow()
 	}
 
 	sysTxParams := new(system.SysTxParams)
-	sysTxParams.IsSM2 = isSM2
-	sysTxParams.Password = password
+	sysTxParams.IsSM2 = isSM2Doc
+	sysTxParams.Password = passwordDoc
 	sysTxParams.KeyFileData = keyFileData
 	sysTxParams.GasPrice = big.NewInt(35)
 	sysTxParams.Gas = 2000000
@@ -472,22 +471,22 @@ func TestEnable(t *testing.T) {
 }
 
 func TestDisable(t *testing.T) {
-	var connection = bif.NewBif(providers.NewHTTPProvider(resources.IP+":"+resources.Port, 10, false))
+	var connection = bif.NewBif(providers.NewHTTPProvider(resources.IP55+":"+resources.Port, 10, false))
 	chainId, err := connection.Core.GetChainId()
 	if err != nil {
 		t.Log(err)
 		t.FailNow()
 	}
 
-	nonce, err := connection.Core.GetTransactionCount(testAddress, block.LATEST)
+	nonce, err := connection.Core.GetTransactionCount(testAddressDoc, block.LATEST)
 	if err != nil {
 		t.Log(err)
 		t.FailNow()
 	}
 
 	sysTxParams := new(system.SysTxParams)
-	sysTxParams.IsSM2 = isSM2
-	sysTxParams.Password = password
+	sysTxParams.IsSM2 = isSM2Doc
+	sysTxParams.Password = passwordDoc
 	sysTxParams.KeyFileData = keyFileData
 	sysTxParams.GasPrice = big.NewInt(35)
 	sysTxParams.Gas = 2000000
@@ -506,7 +505,7 @@ func TestDisable(t *testing.T) {
 }
 
 func TestIsEnable(t *testing.T) {
-	var connection = bif.NewBif(providers.NewHTTPProvider(resources.IP+":"+resources.Port, 10, false))
+	var connection = bif.NewBif(providers.NewHTTPProvider(resources.IP55+":"+resources.Port, 10, false))
 	_, err := connection.Core.GetCoinBase()
 	if err != nil {
 		t.Error(err)
@@ -515,7 +514,7 @@ func TestIsEnable(t *testing.T) {
 
 	doc := connection.System.NewDoc()
 
-	isEnable, err := doc.IsEnable(true, "1")
+	isEnable, err := doc.IsEnable(true, testAddressDoc)
 	if err != nil {
 		t.Error(err)
 		t.FailNow()

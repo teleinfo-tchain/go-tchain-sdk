@@ -4,6 +4,7 @@ import (
 	"errors"
 	"github.com/bif/bif-sdk-go/abi"
 	"github.com/bif/bif-sdk-go/dto"
+	"github.com/bif/bif-sdk-go/utils"
 	"strings"
 )
 
@@ -42,6 +43,42 @@ func (sys *System) NewCertificate() *Certificate {
 	return cer
 }
 
+// type RegisterCertificate struct {
+//	Id               string // 个人可信证书bid
+//	Context          string // 证书上下文环境，随便一个字符串，不验证
+//	Subject          string // 证书接收者的bid，证书是颁给谁的
+//	Period           uint64 // 证书有效期，以年为单位的整型
+//	IssuerAlgorithm  string // 颁发者签名算法，字符串
+//	IssuerSignature  string // 颁发者签名值，16进制字符串
+//	SubjectPublicKey string // 接收者公钥，16进制字符串
+//	SubjectAlgorithm string // 接收者签名算法，字符串
+//	SubjectSignature string // 接收者签名值，16进制字符串
+// }
+func registerCertificatePreCheck(registerCertificate *dto.RegisterCertificate) (bool, error) {
+	if !isValidHexAddress(registerCertificate.Id) {
+		return false, errors.New("registerCertificate Id is not valid bid")
+	}
+
+	if !isValidHexAddress(registerCertificate.Subject) {
+		return false, errors.New("registerCertificate Subject is not valid bid")
+	}
+
+	// Bug 这个需要修改，判断长度和是否是十六进制，现在暂时判断是否是hex string
+	var publicKey string
+	if utils.Has0xPrefix(registerCertificate.SubjectPublicKey) {
+		publicKey = registerCertificate.SubjectPublicKey
+	} else {
+		publicKey = registerCertificate.SubjectPublicKey
+	}
+	if utils.IsHex(publicKey) {
+		return false, errors.New("registerAnchor SubjectPublicKey is not valid publicKey")
+	}
+
+	// 其余IssuerAlgorithm  IssuerSignature SubjectAlgorithm  SubjectSignature 暂不检查
+
+	return true, nil
+}
+
 /*
   RegisterCertificate:
    	EN -
@@ -66,6 +103,11 @@ func (sys *System) NewCertificate() *Certificate {
   Call permissions: 只有信任锚地址可以调用
 */
 func (cer *Certificate) RegisterCertificate(signTxParams *SysTxParams, registerCertificate *dto.RegisterCertificate) (string, error) {
+	ok, err := registerCertificatePreCheck(registerCertificate)
+	if !ok {
+		return "", err
+	}
+
 	// encoding
 	// registerCertificate is a struct we need to use the components.
 	var values []interface{}
@@ -98,6 +140,10 @@ func (cer *Certificate) RegisterCertificate(signTxParams *SysTxParams, registerC
   Call permissions: 只有证书颁发者可以调用
 */
 func (cer *Certificate) RevokedCertificate(signTxParams *SysTxParams, id string) (string, error) {
+	if !isValidHexAddress(id) {
+		return "", errors.New("id is not valid bid")
+	}
+
 	// encoding
 	inputEncode, err := cer.abi.Pack("revokedCertificate", id)
 	if err != nil {
@@ -151,6 +197,10 @@ func (cer *Certificate) RevokedCertificates(signTxParams *SysTxParams) (string, 
   Call permissions: Anyone
 */
 func (cer *Certificate) GetPeriod(id string) (uint64, error) {
+	if !isValidHexAddress(id) {
+		return 0, errors.New("id is not valid bid")
+	}
+
 	params := make([]string, 1)
 	params[0] = id
 
@@ -178,6 +228,10 @@ func (cer *Certificate) GetPeriod(id string) (uint64, error) {
   Call permissions: Anyone
 */
 func (cer *Certificate) GetActive(id string) (bool, error) {
+	if !isValidHexAddress(id) {
+		return false, errors.New("id is not valid bid")
+	}
+
 	params := make([]string, 1)
 	params[0] = id
 
@@ -213,6 +267,10 @@ func (cer *Certificate) GetActive(id string) (bool, error) {
   Call permissions:
 */
 func (cer *Certificate) GetCertificate(id string) (*dto.CertificateInfo, error) {
+	if !isValidHexAddress(id) {
+		return nil, errors.New("id is not valid bid")
+	}
+
 	params := make([]string, 1)
 	params[0] = id
 
@@ -244,6 +302,10 @@ func (cer *Certificate) GetCertificate(id string) (*dto.CertificateInfo, error) 
   Call permissions: Anyone
 */
 func (cer *Certificate) GetIssuer(id string) (*dto.IssuerSignature, error) {
+	if !isValidHexAddress(id) {
+		return nil, errors.New("id is not valid bid")
+	}
+
 	params := make([]string, 1)
 	params[0] = id
 
@@ -275,6 +337,10 @@ func (cer *Certificate) GetIssuer(id string) (*dto.IssuerSignature, error) {
   Call permissions: Anyone
 */
 func (cer *Certificate) GetSubject(id string) (*dto.SubjectSignature, error) {
+	if !isValidHexAddress(id) {
+		return nil, errors.New("id is not valid bid")
+	}
+
 	params := make([]string, 1)
 	params[0] = id
 

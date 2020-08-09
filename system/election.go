@@ -1,6 +1,7 @@
 package system
 
 import (
+	"errors"
 	"github.com/bif/bif-sdk-go/abi"
 	"github.com/bif/bif-sdk-go/dto"
 	"math/big"
@@ -73,6 +74,22 @@ func (sys *System) NewElection() *Election {
 	return election
 }
 
+func registerWitnessPreCheck(witness *dto.RegisterWitness) (bool, error) {
+	if len(witness.NodeUrl) == 0 {
+		return false, errors.New("witness NodeUrl can't be empty")
+	}
+
+	if len(witness.Website) == 0 {
+		return false, errors.New("witness Website can't be empty")
+	}
+
+	if len(witness.Name) == 0 {
+		return false, errors.New("witness Name can't be empty")
+	}
+
+	return true, nil
+}
+
 /*
   RegisterWitness:
    	EN -
@@ -91,6 +108,11 @@ func (sys *System) NewElection() *Election {
   Call permissions: ？？？
 */
 func (e *Election) RegisterWitness(signTxParams *SysTxParams, witness *dto.RegisterWitness) (string, error) {
+	ok, err := registerWitnessPreCheck(witness)
+	if !ok {
+		return "", err
+	}
+
 	// encode
 	// witness is a struct we need to use the components.
 	var values []interface{}
@@ -157,6 +179,10 @@ func (e *Election) UnRegisterWitness(signTxParams *SysTxParams) (string, error) 
   Call permissions: Anyone
 */
 func (e *Election) GetCandidate(candidateAddress string) (*dto.Candidate, error) {
+	if !isValidHexAddress(candidateAddress) {
+		return nil, errors.New("candidateAddress is not valid bid")
+	}
+
 	params := make([]string, 1)
 	params[0] = candidateAddress
 
@@ -209,6 +235,10 @@ func (e *Election) GetAllCandidates() ([]*dto.Candidate, error) {
   Call permissions: ？？？
 */
 func (e *Election) VoteWitnesses(signTxParams *SysTxParams, candidate string) (string, error) {
+	if !isValidHexAddress(candidate) {
+		return "", errors.New("candidate is not valid bid")
+	}
+
 	// encoding
 	inputEncode, err := e.abi.Pack("voteWitnesses", candidate)
 	if err != nil {
@@ -329,7 +359,7 @@ func (e *Election) CancelProxy(signTxParams *SysTxParams) (string, error) {
 	CN - 设置代理
   Params:
   	- signTxParams *SysTxParams 系统合约构造所需参数
-	- proxy: string，???
+	- proxy: string，???  需要判断proxy的合法性！！！
 
   Returns:
   	- string, 交易哈希(transactionHash)，如果交易尚不可用，则为零哈希。
@@ -423,6 +453,10 @@ func (e *Election) UnStake(signTxParams *SysTxParams) (string, error) {
   Call permissions: Anyone
 */
 func (e *Election) GetStake(voterAddress string) (*dto.Stake, error) {
+	if !isValidHexAddress(voterAddress) {
+		return nil, errors.New("voterAddress is not valid bid")
+	}
+
 	params := make([]string, 1)
 	params[0] = voterAddress
 
@@ -532,6 +566,10 @@ func (e *Election) IssueAdditionalBounty(signTxParams *SysTxParams) (string, err
   Call permissions: Anyone
 */
 func (e *Election) GetVoter(voterAddress string) (*dto.Voter, error) {
+	if !isValidHexAddress(voterAddress) {
+		return nil, errors.New("voterAddress is not valid bid")
+	}
+
 	params := make([]string, 1)
 	params[0] = voterAddress
 
@@ -559,6 +597,10 @@ func (e *Election) GetVoter(voterAddress string) (*dto.Voter, error) {
   Call permissions: Anyone
 */
 func (e *Election) GetVoterList(voterAddress string) ([]*dto.Voter, error) {
+	if !isValidHexAddress(voterAddress) {
+		return nil, errors.New("voterAddress is not valid bid")
+	}
+
 	params := make([]string, 1)
 	params[0] = voterAddress
 
