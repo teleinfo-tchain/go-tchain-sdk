@@ -1,8 +1,8 @@
 package system
 
 import (
+	"bytes"
 	"errors"
-	"fmt"
 	"github.com/bif/bif-sdk-go/abi"
 	"github.com/bif/bif-sdk-go/crypto"
 	"github.com/bif/bif-sdk-go/dto"
@@ -50,10 +50,13 @@ func (peerCer *PeerCertificate) messageSignature(message, password string, keyFi
 	}
 
 	var cryptoType crypto.CryptoType
+	var t string
 	if isSM2 {
+		t = "00"
 		cryptoType = crypto.SM2
 	} else {
 		cryptoType = crypto.SECP256K1
+		t = "01"
 	}
 
 	messageSha3Bytes := utils.Hex2Bytes(messageSha3[2:])
@@ -61,8 +64,18 @@ func (peerCer *PeerCertificate) messageSignature(message, password string, keyFi
 	if err != nil {
 		return "", "", err
 	}
-
-	return messageSha3, utils.Bytes2Hex(sig), err
+	// r := new(big.Int).SetBytes(sig[:32])
+	// s := new(big.Int).SetBytes(sig[32:64])
+	// v := new(big.Int).SetBytes([]byte{sig[64] + 27})
+	// fmt.Printf("r %x \n", r)
+	// fmt.Printf("s %x \n", s)
+	// fmt.Printf("v %x \n", v)
+	// fmt.Printf("sig len is  %x \n", len(sig))
+	var buf bytes.Buffer
+	buf.Write([]byte{sig[64] + 27})
+	buf.Write(sig[:64])
+	// fmt.Printf("sig is  %s \n", t+utils.Bytes2Hex(buf.Bytes()))
+	return messageSha3, t+utils.Bytes2Hex(buf.Bytes()), err
 }
 
 /*
@@ -106,7 +119,10 @@ func (peerCer *PeerCertificate) RegisterCertificate(signTxParams *SysTxParams, r
 	if err != nil{
 		return "", err
 	}
-	fmt.Printf("messageSha3 %s, signature  %s \n", messageSha3, signature)
+	// fmt.Printf("messageSha3 %s, signature  %s \n", messageSha3, signature)
+	// 添加messageSha3 signature
+	registerCertificate.MessageSha3 = messageSha3
+	registerCertificate.Signature = signature
 
 	var values []interface{}
 	values = peerCer.super.structToInterface(*registerCertificate, values)
@@ -120,9 +136,9 @@ func (peerCer *PeerCertificate) RegisterCertificate(signTxParams *SysTxParams, r
 		return "", err
 	}
 
-	fmt.Println("signedTx is ", signedTx)
-	// return peerCer.super.sendRawTransaction(signedTx)
-	return "", err
+	// fmt.Println("signedTx is ", signedTx)
+	// return "", err
+	return peerCer.super.sendRawTransaction(signedTx)
 }
 
 /*

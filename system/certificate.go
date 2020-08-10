@@ -70,7 +70,7 @@ func registerCertificatePreCheck(registerCertificate *dto.RegisterCertificate) (
 	} else {
 		publicKey = registerCertificate.SubjectPublicKey
 	}
-	if utils.IsHex(publicKey) {
+	if !utils.IsHex(publicKey) {
 		return false, errors.New("registerAnchor SubjectPublicKey is not valid publicKey")
 	}
 

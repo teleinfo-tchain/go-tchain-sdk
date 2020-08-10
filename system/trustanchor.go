@@ -438,7 +438,12 @@ func (anc *Anchor) GetCertificateList(anchor string) ([]string, error) {
 		return nil, err
 	}
 
-	return pointer.ToStringArray()
+	res, err := pointer.ToStringArray()
+	if err == dto.EMPTYRESPONSE{
+		return nil, errors.New("该信任锚没有颁发过证书")
+	}
+
+	return res, nil
 
 }
 

@@ -1,7 +1,6 @@
 package System
 
 import (
-	"fmt"
 	"github.com/bif/bif-sdk-go"
 	"github.com/bif/bif-sdk-go/core/block"
 	"github.com/bif/bif-sdk-go/dto"
@@ -29,10 +28,9 @@ func TestPeerRegisterCertificate(t *testing.T) {
 		t.Error(err)
 		t.FailNow()
 	}
-	fmt.Println(connection.Core.GetCoinBase())
 
 	// keyFileData 还可以进一步校验
-	keyFileData, err = ioutil.ReadFile("../resources/superNodeKeyStore/UTC--2020-07-07T10-47-32.962000000Z--did-bid-6cc796b8d6e2fbebc9b3cf9e")
+	keyFileData, err := ioutil.ReadFile("../resources/superNodeKeyStore/UTC--2020-07-07T10-47-32.962000000Z--did-bid-6cc796b8d6e2fbebc9b3cf9e")
 	if err != nil {
 		t.Error(err)
 		t.FailNow()
@@ -82,6 +80,17 @@ func TestPeerRevokedCertificate(t *testing.T) {
 	nonce, err := connection.Core.GetTransactionCount(testAddressPeerCertificate, block.LATEST)
 	if err != nil {
 		t.Log(err)
+		t.FailNow()
+	}
+
+	// keyFileData 还可以进一步校验
+	keyFileData, err := ioutil.ReadFile("../resources/superNodeKeyStore/UTC--2020-07-07T10-47-32.962000000Z--did-bid-6cc796b8d6e2fbebc9b3cf9e")
+	if err != nil {
+		t.Error(err)
+		t.FailNow()
+	}
+	if len(keyFileData) == 0 {
+		t.Errorf("keyFileData can't be empty")
 		t.FailNow()
 	}
 

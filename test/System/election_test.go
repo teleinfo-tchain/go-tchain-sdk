@@ -7,6 +7,7 @@ import (
 	"github.com/bif/bif-sdk-go/providers"
 	"github.com/bif/bif-sdk-go/system"
 	"github.com/bif/bif-sdk-go/test/resources"
+	"io/ioutil"
 	"math/big"
 	"testing"
 )
@@ -32,6 +33,17 @@ func TestRegisterWitness(t *testing.T) {
 		t.FailNow()
 	}
 
+	// keyFileData 还可以进一步校验
+	keyFileData, err := ioutil.ReadFile("../resources/superNodeKeyStore/UTC--2020-07-07T10-47-32.962000000Z--did-bid-6cc796b8d6e2fbebc9b3cf9e")
+	if err != nil {
+		t.Error(err)
+		t.FailNow()
+	}
+	if len(keyFileData) == 0 {
+		t.Errorf("keyFileData can't be empty")
+		t.FailNow()
+	}
+
 	sysTxParams := new(system.SysTxParams)
 	sysTxParams.IsSM2 = isSM2Elect
 	sysTxParams.Password = passwordElect
@@ -45,8 +57,8 @@ func TestRegisterWitness(t *testing.T) {
 
 	registerWitness := new(dto.RegisterWitness)
 	registerWitness.NodeUrl = "127.0.0.1/test"
-	registerWitness.Website = "www.tele.info.com"
-	registerWitness.Name = "BeiJing"
+	registerWitness.Website = "www.tele.com"
+	registerWitness.Name = "test"
 
 	// registerWitness
 	registerWitnessHash, err := elect.RegisterWitness(sysTxParams, registerWitness)
@@ -69,6 +81,17 @@ func TestUnRegisterWitness(t *testing.T) {
 	nonce, err := connection.Core.GetTransactionCount(testAddressElect, block.LATEST)
 	if err != nil {
 		t.Log(err)
+		t.FailNow()
+	}
+
+	// keyFileData 还可以进一步校验
+	keyFileData, err := ioutil.ReadFile("../resources/superNodeKeyStore/UTC--2020-07-07T10-47-32.962000000Z--did-bid-6cc796b8d6e2fbebc9b3cf9e")
+	if err != nil {
+		t.Error(err)
+		t.FailNow()
+	}
+	if len(keyFileData) == 0 {
+		t.Errorf("keyFileData can't be empty")
 		t.FailNow()
 	}
 
@@ -130,21 +153,6 @@ func TestGetAllCandidates(t *testing.T) {
 	}
 
 	t.Log(allCandidates)
-	// "did:bid:6cc796b8d6e2fbebc9b3cf9",
-	// "did:bid:13803fb30b7e95d57103c2d",
-	// "did:bid:c117c1794fc7a27bd301ae5",
-	// "did:bid:590ed37615bdfefa496224c",
-	// "did:bid:2e4f6a140ed099d15177d32",
-	// "did:bid:136993a53a0f3b4e5b5dc0d",
-	// "did:bid:55460d49c4364da777f6170",
-	// "did:bid:d8e55affc8ac5016185ddc6",
-	// "did:bid:0fcb3f265375cea7a57cceb",
-	// "did:bid:ade588198aeb5991541c850",
-	// "did:bid:c935bd29a90fbeea87badf3",
-	// "did:bid:cd68ab895f5a238ce60b98f",
-	// "did:bid:ee4f5aa444dc5ec815a25c7",
-	// "did:bid:d423816e6984eaa9bafb4bb",
-	// "did:bid:ae05edab896300f583747fd"
 }
 
 func TestVoteWitnesses(t *testing.T) {
@@ -158,6 +166,17 @@ func TestVoteWitnesses(t *testing.T) {
 	nonce, err := connection.Core.GetTransactionCount(testAddressElect, block.LATEST)
 	if err != nil {
 		t.Log(err)
+		t.FailNow()
+	}
+
+	// keyFileData 还可以进一步校验
+	keyFileData, err := ioutil.ReadFile("../resources/superNodeKeyStore/UTC--2020-07-07T10-47-32.962000000Z--did-bid-6cc796b8d6e2fbebc9b3cf9e")
+	if err != nil {
+		t.Error(err)
+		t.FailNow()
+	}
+	if len(keyFileData) == 0 {
+		t.Errorf("keyFileData can't be empty")
 		t.FailNow()
 	}
 
@@ -198,6 +217,17 @@ func TestElectCancelVote(t *testing.T) {
 		t.FailNow()
 	}
 
+	// keyFileData 还可以进一步校验
+	keyFileData, err := ioutil.ReadFile("../resources/superNodeKeyStore/UTC--2020-07-07T10-47-32.962000000Z--did-bid-6cc796b8d6e2fbebc9b3cf9e")
+	if err != nil {
+		t.Error(err)
+		t.FailNow()
+	}
+	if len(keyFileData) == 0 {
+		t.Errorf("keyFileData can't be empty")
+		t.FailNow()
+	}
+
 	sysTxParams := new(system.SysTxParams)
 	sysTxParams.IsSM2 = isSM2Elect
 	sysTxParams.Password = passwordElect
@@ -233,6 +263,17 @@ func TestStartProxy(t *testing.T) {
 		t.FailNow()
 	}
 
+	// keyFileData 还可以进一步校验
+	keyFileData, err := ioutil.ReadFile("../resources/superNodeKeyStore/UTC--2020-07-07T10-47-32.962000000Z--did-bid-6cc796b8d6e2fbebc9b3cf9e")
+	if err != nil {
+		t.Error(err)
+		t.FailNow()
+	}
+	if len(keyFileData) == 0 {
+		t.Errorf("keyFileData can't be empty")
+		t.FailNow()
+	}
+
 	sysTxParams := new(system.SysTxParams)
 	sysTxParams.IsSM2 = isSM2Elect
 	sysTxParams.Password = passwordElect
@@ -265,6 +306,17 @@ func TestStopProxy(t *testing.T) {
 	nonce, err := connection.Core.GetTransactionCount(testAddressElect, block.LATEST)
 	if err != nil {
 		t.Log(err)
+		t.FailNow()
+	}
+
+	// keyFileData 还可以进一步校验
+	keyFileData, err := ioutil.ReadFile("../resources/superNodeKeyStore/UTC--2020-07-07T10-47-32.962000000Z--did-bid-6cc796b8d6e2fbebc9b3cf9e")
+	if err != nil {
+		t.Error(err)
+		t.FailNow()
+	}
+	if len(keyFileData) == 0 {
+		t.Errorf("keyFileData can't be empty")
 		t.FailNow()
 	}
 
@@ -304,6 +356,17 @@ func TestCancelProxy(t *testing.T) {
 		t.FailNow()
 	}
 
+	// keyFileData 还可以进一步校验
+	keyFileData, err := ioutil.ReadFile("../resources/superNodeKeyStore/UTC--2020-07-07T10-47-32.962000000Z--did-bid-6cc796b8d6e2fbebc9b3cf9e")
+	if err != nil {
+		t.Error(err)
+		t.FailNow()
+	}
+	if len(keyFileData) == 0 {
+		t.Errorf("keyFileData can't be empty")
+		t.FailNow()
+	}
+
 	sysTxParams := new(system.SysTxParams)
 	sysTxParams.IsSM2 = isSM2Elect
 	sysTxParams.Password = passwordElect
@@ -337,6 +400,17 @@ func TestSetProxy(t *testing.T) {
 	nonce, err := connection.Core.GetTransactionCount(testAddressElect, block.LATEST)
 	if err != nil {
 		t.Log(err)
+		t.FailNow()
+	}
+
+	// keyFileData 还可以进一步校验
+	keyFileData, err := ioutil.ReadFile("../resources/superNodeKeyStore/UTC--2020-07-07T10-47-32.962000000Z--did-bid-6cc796b8d6e2fbebc9b3cf9e")
+	if err != nil {
+		t.Error(err)
+		t.FailNow()
+	}
+	if len(keyFileData) == 0 {
+		t.Errorf("keyFileData can't be empty")
 		t.FailNow()
 	}
 
@@ -377,6 +451,17 @@ func TestStake(t *testing.T) {
 		t.FailNow()
 	}
 
+	// keyFileData 还可以进一步校验
+	keyFileData, err := ioutil.ReadFile("../resources/superNodeKeyStore/UTC--2020-07-07T10-47-32.962000000Z--did-bid-6cc796b8d6e2fbebc9b3cf9e")
+	if err != nil {
+		t.Error(err)
+		t.FailNow()
+	}
+	if len(keyFileData) == 0 {
+		t.Errorf("keyFileData can't be empty")
+		t.FailNow()
+	}
+
 	sysTxParams := new(system.SysTxParams)
 	sysTxParams.IsSM2 = isSM2Elect
 	sysTxParams.Password = passwordElect
@@ -410,6 +495,17 @@ func TestUnStake(t *testing.T) {
 	nonce, err := connection.Core.GetTransactionCount(testAddressElect, block.LATEST)
 	if err != nil {
 		t.Log(err)
+		t.FailNow()
+	}
+
+	// keyFileData 还可以进一步校验
+	keyFileData, err := ioutil.ReadFile("../resources/superNodeKeyStore/UTC--2020-07-07T10-47-32.962000000Z--did-bid-6cc796b8d6e2fbebc9b3cf9e")
+	if err != nil {
+		t.Error(err)
+		t.FailNow()
+	}
+	if len(keyFileData) == 0 {
+		t.Errorf("keyFileData can't be empty")
 		t.FailNow()
 	}
 
@@ -494,6 +590,17 @@ func TestElectionExtractOwnBounty(t *testing.T) {
 		t.FailNow()
 	}
 
+	// keyFileData 还可以进一步校验
+	keyFileData, err := ioutil.ReadFile("../resources/superNodeKeyStore/UTC--2020-07-07T10-47-32.962000000Z--did-bid-6cc796b8d6e2fbebc9b3cf9e")
+	if err != nil {
+		t.Error(err)
+		t.FailNow()
+	}
+	if len(keyFileData) == 0 {
+		t.Errorf("keyFileData can't be empty")
+		t.FailNow()
+	}
+
 	sysTxParams := new(system.SysTxParams)
 	sysTxParams.IsSM2 = isSM2Elect
 	sysTxParams.Password = passwordElect
@@ -515,7 +622,6 @@ func TestElectionExtractOwnBounty(t *testing.T) {
 	t.Log(extractHash)
 }
 
-// ？？？？？？？？？？？这个没有输出日志吗？？？？？
 func TestIssueAdditionalBounty(t *testing.T) {
 	var connection = bif.NewBif(providers.NewHTTPProvider(resources.IP55+":"+resources.Port, 10, false))
 	chainId, err := connection.Core.GetChainId()
@@ -527,6 +633,17 @@ func TestIssueAdditionalBounty(t *testing.T) {
 	nonce, err := connection.Core.GetTransactionCount(testAddressElect, block.LATEST)
 	if err != nil {
 		t.Log(err)
+		t.FailNow()
+	}
+
+	// keyFileData 还可以进一步校验
+	keyFileData, err := ioutil.ReadFile("../resources/superNodeKeyStore/UTC--2020-07-07T10-47-32.962000000Z--did-bid-6cc796b8d6e2fbebc9b3cf9e")
+	if err != nil {
+		t.Error(err)
+		t.FailNow()
+	}
+	if len(keyFileData) == 0 {
+		t.Errorf("keyFileData can't be empty")
 		t.FailNow()
 	}
 
@@ -570,12 +687,6 @@ func TestElectGetVoter(t *testing.T) {
 	}
 
 	t.Logf("%#v \n", voter)
-	// {Owner:"did:bid:c935bd29a90fbeea87badf3e", IsProxy:true, ProxyVoteCount:0x0, Proxy:"0000000000000000000000000000000000000000", LastVoteCount:0x0, Timestamp:0x5f0d20f9, VoteCandidatesList:""}
-	// {Owner:"did:bid:590ed37615bdfefa496224c7", IsProxy:false, ProxyVoteCount:0x0, Proxy:"0000000000000000000000000000000000000000", LastVoteCount:0x1e7df, Timestamp:0x5ef5b6a9, VoteCandidatesList:"did:bid:590ed37615bdfefa496224c7"}
-	// {Owner:"did:bid:6cc796b8d6e2fbebc9b3cf9e", IsProxy:false, ProxyVoteCount:0x0, Proxy:"0000000000000000000000000000000000000000", LastVoteCount:0x1e7df, Timestamp:0x5ef5b735, VoteCandidatesList:"did:bid:6cc796b8d6e2fbebc9b3cf9e"}
-	// {Owner:"did:bid:13803fb30b7e95d57103c2dc", IsProxy:false, ProxyVoteCount:0x0, Proxy:"0000000000000000000000000000000000000000", LastVoteCount:0x1e7df, Timestamp:0x5ef5b6f1, VoteCandidatesList:"did:bid:13803fb30b7e95d57103c2dc"}
-	// {Owner:"did:bid:c117c1794fc7a27bd301ae52", IsProxy:false, ProxyVoteCount:0x0, Proxy:"0000000000000000000000000000000000000000", LastVoteCount:0x1e7df, Timestamp:0x5ef5b6d1, VoteCandidatesList:"did:bid:c117c1794fc7a27bd301ae52"}
-
 }
 
 // 获取指定的候选者的投票列表

@@ -2,6 +2,7 @@ package dto
 
 import (
 	"encoding/json"
+	"errors"
 	"github.com/bif/bif-sdk-go/utils"
 	"math/big"
 )
@@ -57,8 +58,12 @@ func (pointer *SystemRequestResult) ToPeerCertificate() (*PeerCertificate, error
 }
 
 func (pointer *SystemRequestResult) ToTrustAnchor() (*TrustAnchor, error) {
-	if err := pointer.checkResponse(); err != nil {
+	err := pointer.checkResponse()
+	if err != nil && err != EMPTYRESPONSE{
 		return nil, err
+	}
+	if err == EMPTYRESPONSE{
+		return nil, errors.New("该信任锚不存在")
 	}
 
 	result := (pointer).Result.(map[string]interface{})
@@ -87,6 +92,10 @@ func (pointer *SystemRequestResult) ToTrustAnchorVoter() ([]*TrustAnchorVoter, e
 	}
 
 	resultLi := (pointer).Result.([]interface{})
+
+	if len(resultLi) == 0 {
+		return nil, errors.New("投票人信息列表为空")
+	}
 
 	trustAnchorVoterLi := make([]*TrustAnchorVoter, len(resultLi))
 
@@ -117,8 +126,12 @@ func (pointer *SystemRequestResult) ToTrustAnchorVoter() ([]*TrustAnchorVoter, e
 }
 
 func (pointer *SystemRequestResult) ToCertificateInfo() (*CertificateInfo, error) {
-	if err := pointer.checkResponse(); err != nil {
+	err := pointer.checkResponse()
+	if err != nil && err != EMPTYRESPONSE{
 		return nil, err
+	}
+	if err == EMPTYRESPONSE{
+		return nil, errors.New("个人可信证书为空")
 	}
 
 	result := (pointer).Result.(map[string]interface{})
@@ -140,8 +153,12 @@ func (pointer *SystemRequestResult) ToCertificateInfo() (*CertificateInfo, error
 }
 
 func (pointer *SystemRequestResult) ToCertificateIssuerSignature() (*IssuerSignature, error) {
-	if err := pointer.checkResponse(); err != nil {
+	err := pointer.checkResponse()
+	if err != nil && err != EMPTYRESPONSE{
 		return nil, err
+	}
+	if err == EMPTYRESPONSE{
+		return nil, errors.New("证书颁发者为空")
 	}
 
 	result := (pointer).Result.(map[string]interface{})
@@ -163,8 +180,12 @@ func (pointer *SystemRequestResult) ToCertificateIssuerSignature() (*IssuerSigna
 }
 
 func (pointer *SystemRequestResult) ToCertificateSubjectSignature() (*SubjectSignature, error) {
-	if err := pointer.checkResponse(); err != nil {
+	err := pointer.checkResponse()
+	if err != nil && err != EMPTYRESPONSE{
 		return nil, err
+	}
+	if err == EMPTYRESPONSE{
+		return nil, errors.New("证书接收者为空")
 	}
 
 	result := (pointer).Result.(map[string]interface{})
@@ -186,8 +207,12 @@ func (pointer *SystemRequestResult) ToCertificateSubjectSignature() (*SubjectSig
 }
 
 func (pointer *SystemRequestResult) ToDocument() (*Document, error) {
-	if err := pointer.checkResponse(); err != nil {
+	err := pointer.checkResponse()
+	if err != nil && err != EMPTYRESPONSE{
 		return nil, err
+	}
+	if err == EMPTYRESPONSE{
+		return nil, errors.New("did 文档为空")
 	}
 
 	result := (pointer).Result.(map[string]interface{})
@@ -216,7 +241,7 @@ func (pointer *SystemRequestResult) ToElectionCandidate() (*Candidate, error) {
 	result := (pointer).Result.(map[string]interface{})
 
 	if len(result) == 0 {
-		return nil, EMPTYRESPONSE
+		return nil, errors.New("无候选者")
 	}
 
 	candidate := &Candidate{}
@@ -233,9 +258,12 @@ func (pointer *SystemRequestResult) ToElectionCandidate() (*Candidate, error) {
 }
 
 func (pointer *SystemRequestResult) ToElectionCandidates() ([]*Candidate, error) {
-
-	if err := pointer.checkResponse(); err != nil {
+	err := pointer.checkResponse()
+	if err != nil && err != EMPTYRESPONSE{
 		return nil, err
+	}
+	if err == EMPTYRESPONSE{
+		return nil, errors.New("候选者列表为空")
 	}
 
 	candidateLi := (pointer).Result.([]interface{})
@@ -271,8 +299,12 @@ func (pointer *SystemRequestResult) ToElectionCandidates() ([]*Candidate, error)
 }
 
 func (pointer *SystemRequestResult) ToElectionVoter() (*Voter, error) {
-	if err := pointer.checkResponse(); err != nil {
+	err := pointer.checkResponse()
+	if err != nil && err != EMPTYRESPONSE{
 		return nil, err
+	}
+	if err == EMPTYRESPONSE{
+		return nil, errors.New("投票人信息为空")
 	}
 
 	result := (pointer).Result.(map[string]interface{})
@@ -294,12 +326,14 @@ func (pointer *SystemRequestResult) ToElectionVoter() (*Voter, error) {
 }
 
 func (pointer *SystemRequestResult) ToElectionVoterList() ([]*Voter, error) {
-
 	if err := pointer.checkResponse(); err != nil {
 		return nil, err
 	}
 
 	resultVoters := (pointer).Result.([]interface{})
+	if len(resultVoters) == 0 {
+		return nil, errors.New("投票人列表为空")
+	}
 
 	voters := make([]*Voter, len(resultVoters))
 
@@ -332,13 +366,17 @@ func (pointer *SystemRequestResult) ToElectionVoterList() ([]*Voter, error) {
 }
 
 func (pointer *SystemRequestResult) ToElectionStake() (*Stake, error) {
-	if err := pointer.checkResponse(); err != nil {
+	err := pointer.checkResponse()
+	if err != nil && err != EMPTYRESPONSE{
 		return nil, err
+	}
+	if err == EMPTYRESPONSE{
+		return nil, errors.New("该地址无抵押权益")
 	}
 
 	result := (pointer).Result.(map[string]interface{})
 	if len(result) == 0 {
-		return nil, EMPTYRESPONSE
+		return nil, errors.New("该地址无抵押权益")
 	}
 
 	stake := &Stake{}

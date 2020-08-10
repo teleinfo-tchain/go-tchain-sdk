@@ -139,7 +139,6 @@ func (doc *Doc) SetBidName(signTxParams *SysTxParams, id string, bidName string)
    	EN -
 	CN - 查询文档的信息
   Params:
-  	- isDidAddress: bool，如果是true则第二个参数传did的地址；否则传入bidName
 	- did: string，did文档的地址或bidName
 
   Returns:
@@ -158,14 +157,13 @@ func (doc *Doc) SetBidName(signTxParams *SysTxParams, id string, bidName string)
 
   Call permissions: ？？
 */
-func (doc *Doc) GetDocument(isDidAddress bool, did string) (*dto.Document, error) {
-	params := make([]string, 2)
-	if isDidAddress {
-		params[0] = "0"
-	} else {
-		params[0] = "1"
+func (doc *Doc) GetDocument(did string) (*dto.Document, error) {
+	if len(did) == 0 {
+		return nil, errors.New("did can't be empty")
 	}
-	params[1] = did
+
+	params := make([]string, 1)
+	params[0] = did
 
 	pointer := &dto.SystemRequestResult{}
 
@@ -579,7 +577,6 @@ func (doc *Doc) Disable(signTxParams *SysTxParams, id string) (string, error) {
    	EN -
 	CN - 查询文档是否可用
   Params:
-  	- isDidAddress: bool，如果是true则第二个参数传did的地址；否则传入bidName
 	- did: string，did文档的地址或bidName
 
   Returns:
@@ -588,14 +585,13 @@ func (doc *Doc) Disable(signTxParams *SysTxParams, id string) (string, error) {
 
   Call permissions: Anyone
 */
-func (doc *Doc) IsEnable(isDidAddress bool, did string) (bool, error) {
-	params := make([]string, 2)
-	if isDidAddress {
-		params[0] = "0"
-	} else {
-		params[0] = "1"
+func (doc *Doc) IsEnable(did string) (bool, error) {
+	if len(did) == 0 {
+		return false, errors.New("did can't be empty")
 	}
-	params[1] = did
+
+	params := make([]string, 1)
+	params[0] = did
 
 	pointer := &dto.SystemRequestResult{}
 

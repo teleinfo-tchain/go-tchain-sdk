@@ -543,13 +543,12 @@ AddExtra:
   Call permissions: ??
 ```
 
-### 13)  GetDocument(isDidAddress bool, did string) (*dto.Document, error)
+### 13)  GetDocument(did string) (*dto.Document, error)
 ```
   GetDocument:
    	EN -
 	CN - 查询文档的信息
   Params:
-  	- isDidAddress: bool，如果是true则第二个参数传did的地址；否则传入bidName
 	- did: string，did文档的地址或bidName
 
   Returns:
@@ -585,14 +584,13 @@ AddExtra:
   Call permissions: ？？
 ```
 
-### 15)  IsEnable(isDidAddress bool, did string) (bool, error)
+### 15)  IsEnable(did string) (bool, error)
 ```
   IsEnable:
    	EN -
 	CN - 查询文档是否可用
   Params:
-  	- isDidAddress: bool，如果是true则第二个参数传did的地址；否则传入bidName
-	- did: string，did文档的地址或bidName
+  	- did: string，did文档的地址或bidName
 
   Returns:
   	- bool, true可用，false不可用

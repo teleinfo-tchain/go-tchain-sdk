@@ -7,15 +7,16 @@ import (
 	"github.com/bif/bif-sdk-go/providers"
 	"github.com/bif/bif-sdk-go/system"
 	"github.com/bif/bif-sdk-go/test/resources"
+	"io/ioutil"
 	"math/big"
 	"testing"
 )
 
 const (
 	// 注册证书的bid
-	personCertificate = "did:bid:c935bd29a90fbeea87badf3e"
-	isSM2Certificate = false
-	passwordCertificate = "teleinfo"
+	personCertificate      = "did:bid:c935bd29a90fbeea87badf3e"
+	isSM2Certificate       = false
+	passwordCertificate    = "teleinfo"
 	testAddressCertificate = "did:bid:6cc796b8d6e2fbebc9b3cf9e"
 )
 
@@ -30,6 +31,17 @@ func TestRegisterCertificate(t *testing.T) {
 	nonce, err := connection.Core.GetTransactionCount(testAddressCertificate, block.LATEST)
 	if err != nil {
 		t.Log(err)
+		t.FailNow()
+	}
+
+	// keyFileData 还可以进一步校验
+	keyFileData, err := ioutil.ReadFile("../resources/superNodeKeyStore/UTC--2020-07-07T10-47-32.962000000Z--did-bid-6cc796b8d6e2fbebc9b3cf9e")
+	if err != nil {
+		t.Error(err)
+		t.FailNow()
+	}
+	if len(keyFileData) == 0 {
+		t.Errorf("keyFileData can't be empty")
 		t.FailNow()
 	}
 
@@ -51,7 +63,7 @@ func TestRegisterCertificate(t *testing.T) {
 	registerCertificate.Period = 1
 	registerCertificate.IssuerAlgorithm = ""
 	registerCertificate.IssuerSignature = ""
-	registerCertificate.SubjectPublicKey = "0x12"
+	registerCertificate.SubjectPublicKey = "0x23"
 	registerCertificate.SubjectAlgorithm = ""
 	registerCertificate.SubjectSignature = ""
 	// registerCertificate
@@ -76,7 +88,20 @@ func TestRevokedCertificate(t *testing.T) {
 		t.Log(err)
 		t.FailNow()
 	}
+
 	t.Logf("nonce is %d , chainId is %d ", nonce, chainId)
+
+	// keyFileData 还可以进一步校验
+	keyFileData, err := ioutil.ReadFile("../resources/superNodeKeyStore/UTC--2020-07-07T10-47-32.962000000Z--did-bid-6cc796b8d6e2fbebc9b3cf9e")
+	if err != nil {
+		t.Error(err)
+		t.FailNow()
+	}
+	if len(keyFileData) == 0 {
+		t.Errorf("keyFileData can't be empty")
+		t.FailNow()
+	}
+
 	sysTxParams := new(system.SysTxParams)
 	sysTxParams.IsSM2 = isSM2Certificate
 	sysTxParams.Password = passwordCertificate
@@ -107,6 +132,17 @@ func TestRevokedCertificates(t *testing.T) {
 	nonce, err := connection.Core.GetTransactionCount(testAddressCertificate, block.LATEST)
 	if err != nil {
 		t.Log(err)
+		t.FailNow()
+	}
+
+	// keyFileData 还可以进一步校验
+	keyFileData, err := ioutil.ReadFile("../resources/superNodeKeyStore/UTC--2020-07-07T10-47-32.962000000Z--did-bid-6cc796b8d6e2fbebc9b3cf9e")
+	if err != nil {
+		t.Error(err)
+		t.FailNow()
+	}
+	if len(keyFileData) == 0 {
+		t.Errorf("keyFileData can't be empty")
 		t.FailNow()
 	}
 

@@ -6,6 +6,7 @@ import (
 	"github.com/bif/bif-sdk-go/providers"
 	"github.com/bif/bif-sdk-go/system"
 	"github.com/bif/bif-sdk-go/test/resources"
+	"io/ioutil"
 	"math/big"
 	"testing"
 )
@@ -27,6 +28,17 @@ func TestContractEnable(t *testing.T) {
 	nonce, err := connection.Core.GetTransactionCount(testAddressManager, block.LATEST)
 	if err != nil {
 		t.Log(err)
+		t.FailNow()
+	}
+
+	// keyFileData 还可以进一步校验
+	keyFileData, err := ioutil.ReadFile("../resources/superNodeKeyStore/UTC--2020-07-07T10-47-32.962000000Z--did-bid-6cc796b8d6e2fbebc9b3cf9e")
+	if err != nil {
+		t.Error(err)
+		t.FailNow()
+	}
+	if len(keyFileData) == 0 {
+		t.Errorf("keyFileData can't be empty")
 		t.FailNow()
 	}
 
@@ -65,6 +77,17 @@ func TestContractDisable(t *testing.T) {
 		t.FailNow()
 	}
 
+	// keyFileData 还可以进一步校验
+	keyFileData, err := ioutil.ReadFile("../resources/superNodeKeyStore/UTC--2020-07-07T10-47-32.962000000Z--did-bid-6cc796b8d6e2fbebc9b3cf9e")
+	if err != nil {
+		t.Error(err)
+		t.FailNow()
+	}
+	if len(keyFileData) == 0 {
+		t.Errorf("keyFileData can't be empty")
+		t.FailNow()
+	}
+
 	sysTxParams := new(system.SysTxParams)
 	sysTxParams.IsSM2 = isSM2Manager
 	sysTxParams.Password = passwordManager
@@ -97,6 +120,17 @@ func TestSetPower(t *testing.T) {
 	nonce, err := connection.Core.GetTransactionCount(testAddressManager, block.LATEST)
 	if err != nil {
 		t.Log(err)
+		t.FailNow()
+	}
+
+	// keyFileData 还可以进一步校验
+	keyFileData, err := ioutil.ReadFile("../resources/superNodeKeyStore/UTC--2020-07-07T10-47-32.962000000Z--did-bid-6cc796b8d6e2fbebc9b3cf9e")
+	if err != nil {
+		t.Error(err)
+		t.FailNow()
+	}
+	if len(keyFileData) == 0 {
+		t.Errorf("keyFileData can't be empty")
 		t.FailNow()
 	}
 

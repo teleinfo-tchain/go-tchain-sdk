@@ -32,8 +32,6 @@ const (
 	passwordTrust = "teleinfo"
 	testAddressTrust = resources.CoinBase
 )
-// 对应的是test Address 的keyStore
-var keyFileData, _ = ioutil.ReadFile("../resources/superNodeKeyStore/UTC--2020-07-07T10-47-38.717000000Z--did-bid-c117c1794fc7a27bd301ae52")
 
 func TestRegisterBaseTrustAnchor(t *testing.T) {
 	var connection = bif.NewBif(providers.NewHTTPProvider(resources.IP55+":"+resources.Port, 10, false))
@@ -46,6 +44,17 @@ func TestRegisterBaseTrustAnchor(t *testing.T) {
 	nonce, err := connection.Core.GetTransactionCount(testAddressTrust, block.LATEST)
 	if err != nil {
 		t.Log(err)
+		t.FailNow()
+	}
+
+	// keyFileData 还可以进一步校验
+	keyFileData, err := ioutil.ReadFile("../resources/superNodeKeyStore/UTC--2020-07-07T10-47-32.962000000Z--did-bid-6cc796b8d6e2fbebc9b3cf9e")
+	if err != nil {
+		t.Error(err)
+		t.FailNow()
+	}
+	if len(keyFileData) == 0 {
+		t.Errorf("keyFileData can't be empty")
 		t.FailNow()
 	}
 
@@ -94,6 +103,17 @@ func TestRegisterExtendTrustAnchor(t *testing.T) {
 		t.FailNow()
 	}
 
+	// keyFileData 还可以进一步校验
+	keyFileData, err := ioutil.ReadFile("../resources/superNodeKeyStore/UTC--2020-07-07T10-47-32.962000000Z--did-bid-6cc796b8d6e2fbebc9b3cf9e")
+	if err != nil {
+		t.Error(err)
+		t.FailNow()
+	}
+	if len(keyFileData) == 0 {
+		t.Errorf("keyFileData can't be empty")
+		t.FailNow()
+	}
+
 	sysTxParams := new(system.SysTxParams)
 	sysTxParams.IsSM2 = isSM2Trust
 	sysTxParams.Password = passwordTrust
@@ -139,6 +159,17 @@ func TestUnRegisterTrustAnchor(t *testing.T) {
 		t.FailNow()
 	}
 
+	// keyFileData 还可以进一步校验
+	keyFileData, err := ioutil.ReadFile("../resources/superNodeKeyStore/UTC--2020-07-07T10-47-32.962000000Z--did-bid-6cc796b8d6e2fbebc9b3cf9e")
+	if err != nil {
+		t.Error(err)
+		t.FailNow()
+	}
+	if len(keyFileData) == 0 {
+		t.Errorf("keyFileData can't be empty")
+		t.FailNow()
+	}
+
 	sysTxParams := new(system.SysTxParams)
 	sysTxParams.IsSM2 = isSM2Trust
 	sysTxParams.Password = passwordTrust
@@ -160,14 +191,14 @@ func TestUnRegisterTrustAnchor(t *testing.T) {
 
 func TestIsBaseTrustAnchor(t *testing.T) {
 	var connection = bif.NewBif(providers.NewHTTPProvider(resources.IP55+":"+resources.Port, 10, false))
-	coinBase, err := connection.Core.GetCoinBase()
+	_, err := connection.Core.GetCoinBase()
 	if err != nil {
 		t.Error(err)
 		t.FailNow()
 	}
 	anchor := connection.System.NewTrustAnchor()
 
-	baseAnchor, err := anchor.IsBaseTrustAnchor(coinBase)
+	baseAnchor, err := anchor.IsBaseTrustAnchor("did:bid:a3fa9bb1b84e722f30dbda8c")
 	if err != nil {
 		t.Error(err)
 		t.FailNow()
@@ -205,6 +236,17 @@ func TestUpdateAnchorInfo(t *testing.T) {
 	nonce, err := connection.Core.GetTransactionCount(testAddressTrust, block.LATEST)
 	if err != nil {
 		t.Log(err)
+		t.FailNow()
+	}
+
+	// keyFileData 还可以进一步校验
+	keyFileData, err := ioutil.ReadFile("../resources/superNodeKeyStore/UTC--2020-07-07T10-47-32.962000000Z--did-bid-6cc796b8d6e2fbebc9b3cf9e")
+	if err != nil {
+		t.Error(err)
+		t.FailNow()
+	}
+	if len(keyFileData) == 0 {
+		t.Errorf("keyFileData can't be empty")
 		t.FailNow()
 	}
 
@@ -246,6 +288,17 @@ func TestExtractOwnBounty(t *testing.T) {
 	nonce, err := connection.Core.GetTransactionCount(testAddressTrust, block.LATEST)
 	if err != nil {
 		t.Log(err)
+		t.FailNow()
+	}
+
+	// keyFileData 还可以进一步校验
+	keyFileData, err := ioutil.ReadFile("../resources/superNodeKeyStore/UTC--2020-07-07T10-47-32.962000000Z--did-bid-6cc796b8d6e2fbebc9b3cf9e")
+	if err != nil {
+		t.Error(err)
+		t.FailNow()
+	}
+	if len(keyFileData) == 0 {
+		t.Errorf("keyFileData can't be empty")
 		t.FailNow()
 	}
 
@@ -410,6 +463,17 @@ func TestVoteElect(t *testing.T) {
 		t.FailNow()
 	}
 
+	// keyFileData 还可以进一步校验
+	keyFileData, err := ioutil.ReadFile("../resources/superNodeKeyStore/UTC--2020-07-07T10-47-32.962000000Z--did-bid-6cc796b8d6e2fbebc9b3cf9e")
+	if err != nil {
+		t.Error(err)
+		t.FailNow()
+	}
+	if len(keyFileData) == 0 {
+		t.Errorf("keyFileData can't be empty")
+		t.FailNow()
+	}
+
 	sysTxParams := new(system.SysTxParams)
 	sysTxParams.IsSM2 = isSM2Trust
 	sysTxParams.Password = passwordTrust
@@ -440,6 +504,17 @@ func TestCancelVote(t *testing.T) {
 	nonce, err := connection.Core.GetTransactionCount(testAddressTrust, block.LATEST)
 	if err != nil {
 		t.Log(err)
+		t.FailNow()
+	}
+
+	// keyFileData 还可以进一步校验
+	keyFileData, err := ioutil.ReadFile("../resources/superNodeKeyStore/UTC--2020-07-07T10-47-32.962000000Z--did-bid-6cc796b8d6e2fbebc9b3cf9e")
+	if err != nil {
+		t.Error(err)
+		t.FailNow()
+	}
+	if len(keyFileData) == 0 {
+		t.Errorf("keyFileData can't be empty")
 		t.FailNow()
 	}
 
