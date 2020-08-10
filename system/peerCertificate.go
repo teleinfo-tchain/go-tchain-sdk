@@ -104,7 +104,7 @@ func (peerCer *PeerCertificate) messageSignature(message, password string, keyFi
 
   Call permissions: 只有监管节点地址可以调用
 */
-func (peerCer *PeerCertificate) RegisterCertificate(signTxParams *SysTxParams, registerCertificate *dto.RegisterCertificateInfo) (string, error) {
+func (peerCer *PeerCertificate) RegisterCertificate(signTxParams *SysTxParams, registerCertificate *dto.RegisterCertificateInfo, idPassword string, idKeyFile []byte, idIsSM2 bool) (string, error) {
 	// 查验参数是否输入合法
 	if !isValidHexAddress(registerCertificate.Id){
 		return "", errors.New("registerCertificate id is not valid bid")
@@ -115,7 +115,7 @@ func (peerCer *PeerCertificate) RegisterCertificate(signTxParams *SysTxParams, r
 
 	// encoding
 	// registerCertificate is a struct we need to use the components.
-	messageSha3, signature, err :=peerCer.messageSignature("test", signTxParams.Password, signTxParams.KeyFileData,signTxParams.IsSM2)
+	messageSha3, signature, err :=peerCer.messageSignature("test", idPassword,idKeyFile, idIsSM2)
 	if err != nil{
 		return "", err
 	}

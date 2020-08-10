@@ -60,7 +60,22 @@ func TestPeerRegisterCertificate(t *testing.T) {
 	registerCertificateInfo.CompanyName = "tele info"
 	registerCertificateInfo.CompanyCode = "10000000000"
 
-	peerRegisterCertificateHash, err := peerCer.RegisterCertificate(sysTxParams, registerCertificateInfo)
+	// 注册的ID（地址） 对应的keystore文件的密码
+	idPassword := "teleinfo"
+	// 注册的ID（地址）对应的keystore文件
+	idKeyFileData, err := ioutil.ReadFile("../resources/superNodeKeyStore/UTC--2020-07-07T10-47-38.717000000Z--did-bid-c117c1794fc7a27bd301ae52")
+	if err != nil {
+		t.Error(err)
+		t.FailNow()
+	}
+	if len(idKeyFileData) == 0 {
+		t.Errorf("idKeyFileData can't be empty")
+		t.FailNow()
+	}
+	//  注册的ID（地址）对应的keyStore文件生成方式
+	idIsSM2 := false
+
+	peerRegisterCertificateHash, err := peerCer.RegisterCertificate(sysTxParams, registerCertificateInfo, idPassword, idKeyFileData, idIsSM2)
 	if err != nil {
 		t.Error(err)
 		t.FailNow()
