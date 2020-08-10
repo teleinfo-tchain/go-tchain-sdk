@@ -66,7 +66,7 @@ func registerCertificatePreCheck(registerCertificate *dto.RegisterCertificate) (
 	// Bug 这个需要修改，判断长度和是否是十六进制，现在暂时判断是否是hex string
 	var publicKey string
 	if utils.Has0xPrefix(registerCertificate.SubjectPublicKey) {
-		publicKey = registerCertificate.SubjectPublicKey
+		publicKey = registerCertificate.SubjectPublicKey[2:]
 	} else {
 		publicKey = registerCertificate.SubjectPublicKey
 	}
