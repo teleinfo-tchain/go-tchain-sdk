@@ -267,5 +267,9 @@ func GetPublicKeyFromFile(privateKeyFilePath, password string, isSM2 bool) (stri
 		return "", err
 	}
 	pubBytes := crypto.FromECDSAPub(privateKeyN.Public().(*ecdsa.PublicKey))
-	return "0x" + utils.Bytes2Hex(pubBytes), nil
+	if isSM2{
+		return "0x" + utils.Bytes2Hex(pubBytes)+utils.Bytes2Hex(privateKeyN.Public().(*ecdsa.PublicKey).Y.Bytes()), nil
+	}else{
+		return "0x" + utils.Bytes2Hex(pubBytes), nil
+	}
 }

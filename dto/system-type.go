@@ -4,7 +4,6 @@ import (
 	"github.com/bif/bif-sdk-go/utils"
 	"github.com/bif/bif-sdk-go/utils/hexutil"
 	"math/big"
-	"time"
 )
 
 /*
@@ -196,16 +195,33 @@ type Attribute struct {
 }
 
 type Document struct {
-	Id              utils.Address `json:"id"` // bid
-	Contexts        []byte        `json:"context"`
-	Name            []byte        `json:"name"`            // bid标识符昵称
-	Type            []byte        `json:"type"`            // bid的类型，包括0: 普通用户,1:智能合约以及设备，2: 企业或者组织，BID类型一经设置，永不能变
-	PublicKeys      []byte        `json:"publicKeys"`      // 用户用于身份认证的公钥信息
-	Authentications []byte        `json:"authentications"` // 用户身份认证列表信息
-	Attributes      []byte        `json:"attributes"`      // 用户填写的个人信息值
-	IsEnable        []byte        `json:"is_enable"`       // 该BID是否启用
-	CreateTime      time.Time     `json:"createTime"`
-	UpdateTime      time.Time     `json:"updateTime"`
+	Id              string       `json:"id"` //bid
+	Contexts        string       `json:"context"`
+	Name            string       `json:"name"`            //bid标识符昵称
+	Type            uint64       `json:"type"`            // bid的类型，包括0：普通用户,1:智能合约以及设备，2：企业或者组织，BID类型一经设置，永不能变
+	PublicKeys      []*PublicKey `json:"publicKeys"`      //用户用于身份认证的公钥信息
+	Authentications []string     `json:"authentications"` //用户身份认证列表信息
+	Services        []*Service   `json:"services"`        //用户填写的服务端点信息
+	Proof           *Proof       `json:"proof"`           //用户填写的证明信息值
+	Extra           string       `json:"extra"`           //用户填写的备注
+	IsEnable        bool         `json:"isEnable"`        //该BID是否启用
+	CreateTime      *big.Int     `json:"createTime"`
+	UpdateTime      *big.Int     `json:"updateTime"`
+}
+
+type Service struct {
+	Id        string `json:"id"`
+	ServiceId string `json:"serviceId"`
+	Type      string `json:"type"`
+	Endpoint  string `json:"endpoint"`
+}
+
+type Proof struct {
+	Id         string   `json:"id"`
+	Type       string   `json:"type"`
+	CreateTime *big.Int `json:"createTime"`
+	Creator    string   `json:"creator"`
+	Signature  string   `json:"signature"`
 }
 
 /*

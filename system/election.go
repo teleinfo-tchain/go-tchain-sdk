@@ -492,7 +492,7 @@ func (e *Election) GetRestBIFBounty() (*big.Int, error) {
 		return nil, err
 	}
 
-	return pointer.ToBigInt()
+	return pointer.ToRestBIFBounty()
 }
 
 /*

@@ -556,6 +556,7 @@ func TestGetStake(t *testing.T) {
 	// {Owner:"did:bid:c117c1794fc7a27bd301ae52", StakeCount:0xea60, Timestamp:0x5ef5b619}
 }
 
+//  这个接口暂时不用测试，链的后台需要修改
 func TestGetRestBIFBounty(t *testing.T) {
 	var connection = bif.NewBif(providers.NewHTTPProvider(resources.IP55+":"+resources.Port, 10, false))
 	_, err := connection.Core.GetCoinBase()

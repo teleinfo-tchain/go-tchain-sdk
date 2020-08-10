@@ -306,7 +306,7 @@ dpos_test.go            | dpos属性单元测试
   Params:
   	- signTxParams *SysTxParams 系统合约构造所需参数
 	- registerCertificate:  *dto.RegisterCertificateInfo，包含可信证书的信息
-		Id          string //节点证书的bid,，必须和public_key相同
+		Id          string //节点证书的bid,，必须和public_key对应
 		Apply       string
 		PublicKey   string // 53个字符的公钥
 		NodeName    string // 节点名称，不含敏感词的字符串
@@ -701,6 +701,7 @@ AddExtra:
   Call permissions: Anyone
 ```
 
+//  这个接口暂时不用测试，链的后台需要修改！！！！！！
 ### 6)   GetRestBIFBounty() (*big.Int, error)
 ```
   GetRestBIFBounty:
