@@ -306,7 +306,7 @@ dpos_test.go            | dpos属性单元测试
   Params:
   	- signTxParams *SysTxParams 系统合约构造所需参数
 	- registerCertificate:  *dto.RegisterCertificateInfo，包含可信证书的信息
-		Id          string //节点证书的bid,，必须和public_key相同
+		Id          string //节点证书的bid,，必须和public_key对应
 		Apply       string
 		PublicKey   string // 53个字符的公钥
 		NodeName    string // 节点名称，不含敏感词的字符串
@@ -543,13 +543,12 @@ AddExtra:
   Call permissions: ??
 ```
 
-### 13)  GetDocument(isDidAddress bool, did string) (*dto.Document, error)
+### 13)  GetDocument(did string) (*dto.Document, error)
 ```
   GetDocument:
    	EN -
 	CN - 查询文档的信息
   Params:
-  	- isDidAddress: bool，如果是true则第二个参数传did的地址；否则传入bidName
 	- did: string，did文档的地址或bidName
 
   Returns:
@@ -585,14 +584,13 @@ AddExtra:
   Call permissions: ？？
 ```
 
-### 15)  IsEnable(isDidAddress bool, did string) (bool, error)
+### 15)  IsEnable(did string) (bool, error)
 ```
   IsEnable:
    	EN -
 	CN - 查询文档是否可用
   Params:
-  	- isDidAddress: bool，如果是true则第二个参数传did的地址；否则传入bidName
-	- did: string，did文档的地址或bidName
+  	- did: string，did文档的地址或bidName
 
   Returns:
   	- bool, true可用，false不可用
@@ -703,6 +701,7 @@ AddExtra:
   Call permissions: Anyone
 ```
 
+//  这个接口暂时不用测试，链的后台需要修改！！！！！！
 ### 6)   GetRestBIFBounty() (*big.Int, error)
 ```
   GetRestBIFBounty:

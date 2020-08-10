@@ -92,15 +92,7 @@ func (account *Account) preCheckTx(signData *SignTxParams, privateKey string, is
 		return nil, errors.New("gas should be greater than 0")
 	}
 
-	var cryptoType uint
-
-	if isSM2 {
-		cryptoType = 0
-	} else {
-		cryptoType = 1
-	}
-
-	publicAddr, err := GetAddressFromPrivate(privateKey, cryptoType)
+	publicAddr, err := GetAddressFromPrivate(privateKey, isSM2)
 	if err != nil {
 		return nil, errors.New("not invalid privateKey")
 	}
@@ -257,6 +249,10 @@ func (account *Account) Encrypt(privateKey string, isSM2 bool, password string, 
   Call permissions: Anyone
 */
 func (account *Account) Decrypt(keystoreJson []byte, isSM2 bool, password string) (string, string, error) {
+	if len(keystoreJson) == 0{
+		return "", "", errors.New("keystoreJson is empty")
+	}
+
 	cryptoType := cryptoType(isSM2)
 
 	key, err := keystore.DecryptKey(keystoreJson, password, cryptoType)

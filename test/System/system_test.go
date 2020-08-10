@@ -9,15 +9,15 @@ import (
 
 // 测试系统合约的执行结果
 func TestSystemLogDecode(t *testing.T) {
-	var connection = bif.NewBif(providers.NewHTTPProvider(resources.IP+":"+resources.Port, 10, false))
+	var connection = bif.NewBif(providers.NewHTTPProvider(resources.IP55+":"+resources.Port, 10, false))
 	_, err := connection.Core.GetCoinBase()
 	if err != nil {
 		t.Error(err)
 		t.FailNow()
 	}
 
-	// 0x0323abd27a827ce2e5a883855f3498730fd181455610f68500c5e563e9379e34
-	log, err := connection.System.SystemLogDecode("0xeb1bafe1a71a6229030faa846c0c6fd0b4f8c06c494c64fcfcb8c0fd6d63f861")
+	// 0x25b5c30ecb5a089e02c419b71a4d5b9aa50e683f6b7dce6da33b380ba5a10ba6
+	log, err := connection.System.SystemLogDecode("0x473003aa18389c77a50db095ef544f8d6093fac6ae52afae8f5caa9a8ad9213f")
 
 	if err != nil {
 		t.Errorf("err log : %v ", err)

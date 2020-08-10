@@ -1,6 +1,7 @@
 package system
 
 import (
+	"errors"
 	"github.com/bif/bif-sdk-go/abi"
 	"github.com/bif/bif-sdk-go/dto"
 	"strings"
@@ -47,6 +48,10 @@ func (sys *System) NewSensitiveWord() *SensitiveWord {
   Call permissions: 只有监管节点地址可以操作
 */
 func (sen *SensitiveWord) AddWord(signTxParams *SysTxParams, word string) (string, error) {
+	if len(word) == 0{
+		return "", errors.New("word can't be empty")
+	}
+
 	// encoding
 	inputEncode, err := sen.abi.Pack("addWord", word)
 	if err != nil {
@@ -76,6 +81,10 @@ func (sen *SensitiveWord) AddWord(signTxParams *SysTxParams, word string) (strin
   Call permissions: 只有监管节点地址可以操作
 */
 func (sen *SensitiveWord) AddWords(signTxParams *SysTxParams, wordsLi []string) (string, error) {
+	if wordsLi == nil || len(wordsLi) == 0{
+		return "", errors.New("wordsLi can't be nil or empty")
+	}
+
 	// encoding
 	var b strings.Builder
 	l:=len(wordsLi)
@@ -112,6 +121,10 @@ func (sen *SensitiveWord) AddWords(signTxParams *SysTxParams, wordsLi []string) 
   Call permissions: 只有监管节点地址可以操作
 */
 func (sen *SensitiveWord) DelWord(signTxParams *SysTxParams, word string) (string, error) {
+	if len(word) == 0{
+		return "", errors.New("word can't be empty")
+	}
+
 	// encoding
 	inputEncode, err := sen.abi.Pack("delWord", word)
 	if err != nil {
@@ -168,6 +181,10 @@ func (sen *SensitiveWord) GetAllWords() ([]string, error) {
   Call permissions: Anyone
 */
 func (sen *SensitiveWord) IsContainWord(word string) (bool, error) {
+	if len(word) == 0{
+		return false, errors.New("word can't be empty")
+	}
+
 	params := make([]string, 1)
 	params[0] = word
 

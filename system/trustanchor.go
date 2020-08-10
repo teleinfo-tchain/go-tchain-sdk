@@ -1,6 +1,7 @@
 package system
 
 import (
+	"errors"
 	"github.com/bif/bif-sdk-go/abi"
 	"github.com/bif/bif-sdk-go/dto"
 	"strings"
@@ -26,17 +27,17 @@ const (
 	// EmptyUrl                   = ""
 )
 
-// var (
-//	ErrIllExtracAmout    = errors.New("积分总额不足100，无法提取")
-//	ErrIllExtracTime     = errors.New("距离上次提取不足24小时，无法提取")
-//	ErrIllAnchorType     = errors.New("未知的信任锚类型，10 代表根信任锚，11代表扩展信任锚")
-//	ErrAnchorExist       = errors.New("该地址已存在于信任锚列表中")
-//	ErrAnchorNoExist     = errors.New("信任锚不存在")
-//	ErrIllegalAnchor     = errors.New("信任锚字段不能为空")
-//	ErrIllegalBalance    = errors.New("账户内积分不足，注册根信任锚需要抵押1000积分，注册扩展信任锚需要抵押100积分")
-//	ErrIllegalVote       = errors.New("信任锚不存在或不是基础信任锚")
-//	ErrIllegalRepeatVote = errors.New("同一个基础信任锚能且仅能投一票")
-// )
+var (
+	//	ErrIllExtracAmout    = errors.New("积分总额不足100，无法提取")
+	//	ErrIllExtracTime     = errors.New("距离上次提取不足24小时，无法提取")
+	ErrIllAnchorType = errors.New("未知的信任锚类型，10 代表根信任锚，11代表扩展信任锚")
+	//	ErrAnchorExist       = errors.New("该地址已存在于信任锚列表中")
+	//	ErrAnchorNoExist     = errors.New("信任锚不存在")
+	//	ErrIllegalAnchor     = errors.New("信任锚字段不能为空")
+	//	ErrIllegalBalance    = errors.New("账户内积分不足，注册根信任锚需要抵押1000积分，注册扩展信任锚需要抵押100积分")
+	//	ErrIllegalVote       = errors.New("信任锚不存在或不是基础信任锚")
+	//	ErrIllegalRepeatVote = errors.New("同一个基础信任锚能且仅能投一票")
+)
 
 // 信任锚的AbiJson数据
 const TrustAnchorAbiJSON = `[
@@ -65,6 +66,70 @@ func (sys *System) NewTrustAnchor() *Anchor {
 	return anchor
 }
 
+func registerTrustPreCheck(registerAnchor *dto.RegisterAnchor) (bool, error) {
+	if !isValidHexAddress(registerAnchor.Anchor) {
+		return false, errors.New("registerAnchor Anchor is not valid bid")
+	}
+
+	if registerAnchor.AnchorType != 10 && registerAnchor.AnchorType != 11 {
+		return false, ErrIllAnchorType
+	}
+
+	if len(registerAnchor.AnchorName) == 0 {
+		return false, errors.New("registerAnchor AnchorName can't be empty")
+	}
+
+	if len(registerAnchor.Company) == 0 {
+		return false, errors.New("registerAnchor Company can't be empty")
+	}
+
+	if len(registerAnchor.CompanyUrl) == 0 {
+		return false, errors.New("registerAnchor CompanyUrl can't be empty")
+	}
+
+	if len(registerAnchor.Website) == 0 {
+		return false, errors.New("registerAnchor Website can't be empty")
+	}
+
+	if len(registerAnchor.DocumentUrl) == 0 {
+		return false, errors.New("registerAnchor DocumentUrl can't be empty")
+	}
+
+	if len(registerAnchor.ServerUrl) == 0 {
+		return false, errors.New("registerAnchor ServerUrl can't be empty")
+	}
+
+	if !verifyEmailFormat(registerAnchor.Email) {
+		return false, errors.New("registerAnchor Email is not valid  e-mail")
+	}
+
+	return true, nil
+}
+
+func updateTrustPreCheck(extendAnchorInfo *dto.UpdateAnchorInfo) (bool, error) {
+	if len(extendAnchorInfo.CompanyUrl) == 0 {
+		return false, errors.New("updateAnchorInfo CompanyUrl can't be empty")
+	}
+
+	if len(extendAnchorInfo.Website) == 0 {
+		return false, errors.New("updateAnchorInfo Website can't be empty")
+	}
+
+	if len(extendAnchorInfo.DocumentUrl) == 0 {
+		return false, errors.New("updateAnchorInfo DocumentUrl can't be empty")
+	}
+
+	if len(extendAnchorInfo.ServerUrl) == 0 {
+		return false, errors.New("updateAnchorInfo ServerUrl can't be empty")
+	}
+
+	if !verifyEmailFormat(extendAnchorInfo.Email) {
+		return false, errors.New("updateAnchorInfo Email is not valid  e-mail")
+	}
+
+	return true, nil
+}
+
 /*
   RegisterTrustAnchor:
    	EN -
@@ -90,6 +155,11 @@ func (sys *System) NewTrustAnchor() *Anchor {
   Call permissions: 如果是注册根信任锚，必须是超级节点才可以注册
 */
 func (anc *Anchor) RegisterTrustAnchor(signTxParams *SysTxParams, registerAnchor *dto.RegisterAnchor) (string, error) {
+	ok, err := registerTrustPreCheck(registerAnchor)
+	if !ok {
+		return "", err
+	}
+
 	// encoding
 	// RegisterAnchor is a struct we need to use the components.
 	var values []interface{}
@@ -146,6 +216,10 @@ func (anc *Anchor) UnRegisterTrustAnchor(signTxParams *SysTxParams) (string, err
   Call permissions: Anyone
 */
 func (anc *Anchor) IsBaseTrustAnchor(anchor string) (bool, error) {
+	if !isValidHexAddress(anchor) {
+		return false, errors.New("anchor is not valid bid")
+	}
+
 	params := make([]string, 1)
 	params[0] = anchor
 
@@ -173,6 +247,10 @@ func (anc *Anchor) IsBaseTrustAnchor(anchor string) (bool, error) {
   Call permissions: Anyone
 */
 func (anc *Anchor) IsTrustAnchor(anchor string) (bool, error) {
+	if !isValidHexAddress(anchor) {
+		return false, errors.New("anchor is not valid bid")
+	}
+
 	params := make([]string, 1)
 	params[0] = anchor
 
@@ -201,6 +279,12 @@ func (anc *Anchor) IsTrustAnchor(anchor string) (bool, error) {
   Call permissions: 只能修改自己的
 */
 func (anc *Anchor) UpdateAnchorInfo(signTxParams *SysTxParams, extendAnchorInfo *dto.UpdateAnchorInfo) (string, error) {
+	// 更新信息检查
+	ok, err := updateTrustPreCheck(extendAnchorInfo)
+	if !ok {
+		return "", err
+	}
+
 	// encoding
 	// extendAnchorInfo is a struct we need to use the components.
 	var values []interface{}
@@ -276,6 +360,10 @@ func (anc *Anchor) ExtractOwnBounty(signTxParams *SysTxParams) (string, error) {
   Call permissions: Anyone
 */
 func (anc *Anchor) GetTrustAnchor(anchor string) (*dto.TrustAnchor, error) {
+	if !isValidHexAddress(anchor) {
+		return nil, errors.New("anchor is not valid bid")
+	}
+
 	params := make([]string, 1)
 	params[0] = anchor
 
@@ -303,6 +391,10 @@ func (anc *Anchor) GetTrustAnchor(anchor string) (*dto.TrustAnchor, error) {
   Call permissions: Anyone
 */
 func (anc *Anchor) GetTrustAnchorStatus(anchor string) (uint64, error) {
+	if !isValidHexAddress(anchor) {
+		return 0, errors.New("anchor is not valid bid")
+	}
+
 	params := make([]string, 1)
 	params[0] = anchor
 
@@ -332,6 +424,10 @@ func (anc *Anchor) GetTrustAnchorStatus(anchor string) (uint64, error) {
   Call permissions: Anyone
 */
 func (anc *Anchor) GetCertificateList(anchor string) ([]string, error) {
+	if !isValidHexAddress(anchor) {
+		return nil, errors.New("anchor is not valid bid")
+	}
+
 	params := make([]string, 1)
 	params[0] = anchor
 
@@ -342,7 +438,12 @@ func (anc *Anchor) GetCertificateList(anchor string) ([]string, error) {
 		return nil, err
 	}
 
-	return pointer.ToStringArray()
+	res, err := pointer.ToStringArray()
+	if err == dto.EMPTYRESPONSE{
+		return nil, errors.New("该信任锚没有颁发过证书")
+	}
+
+	return res, nil
 
 }
 
@@ -438,7 +539,7 @@ func (anc *Anchor) GetExpendList() ([]string, error) {
 func (anc *Anchor) GetExpendNum() (uint64, error) {
 	pointer := &dto.SystemRequestResult{}
 
-	err := anc.super.provider.SendRequest(pointer, "trustanchor_enpendNumber", nil)
+	err := anc.super.provider.SendRequest(pointer, "trustanchor_expendNumber", nil)
 
 	if err != nil {
 		return 0, err
@@ -462,6 +563,10 @@ func (anc *Anchor) GetExpendNum() (uint64, error) {
   Call permissions: 只有超级节点才可投票
 */
 func (anc *Anchor) VoteElect(signTxParams *SysTxParams, candidate string) (string, error) {
+	if !isValidHexAddress(candidate) {
+		return "", errors.New("candidate is not valid bid")
+	}
+
 	// encoding
 	inputEncode, err := anc.abi.Pack("voteElect", candidate)
 	if err != nil {
@@ -491,6 +596,10 @@ func (anc *Anchor) VoteElect(signTxParams *SysTxParams, candidate string) (strin
   Call permissions: 只有超级节点才可投票
 */
 func (anc *Anchor) CancelVote(signTxParams *SysTxParams, candidate string) (string, error) {
+	if !isValidHexAddress(candidate) {
+		return "", errors.New("candidate is not valid bid")
+	}
+
 	// encoding
 	inputEncode, err := anc.abi.Pack("cancelVote", candidate)
 	if err != nil {
@@ -519,6 +628,10 @@ func (anc *Anchor) CancelVote(signTxParams *SysTxParams, candidate string) (stri
   Call permissions: Anyone
 */
 func (anc *Anchor) GetVoter(voterAddress string) ([]*dto.TrustAnchorVoter, error) {
+	if !isValidHexAddress(voterAddress) {
+		return nil, errors.New("voterAddress is not valid bid")
+	}
+
 	params := make([]string, 1)
 	params[0] = voterAddress
 

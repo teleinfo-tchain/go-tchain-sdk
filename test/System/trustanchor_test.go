@@ -7,7 +7,6 @@ import (
 	"github.com/bif/bif-sdk-go/providers"
 	"github.com/bif/bif-sdk-go/system"
 	"github.com/bif/bif-sdk-go/test/resources"
-	"github.com/bif/bif-sdk-go/utils"
 	"io/ioutil"
 	"math/big"
 	"testing"
@@ -24,36 +23,44 @@ const (
 	TrustAnchorWebsite     = "www.server.teleinfo.cn"
 	TrustAnchorDocumentUrl = "www.doc.teleinfo.cn"
 	TrustAnchorServerUrl   = "1.1.1.1"
-	TrustAnchorEmail       = "www.email.teleinfo.cn"
+	TrustAnchorEmail       = "j203@163.com"
 	TrustAnchorDesc        = "info test"
 )
 
 const (
-	isSM2 = false
-	password = "teleinfo"
-	testAddress = resources.CoinBase
-
+	isSM2Trust = false
+	passwordTrust = "teleinfo"
+	testAddressTrust = resources.CoinBase
 )
-// 对应的是test Address 的keyStore
-var keyFileData, _ = ioutil.ReadFile("../resources/superNodeKeyStore/UTC--172.17.6.53--did-bid-c935bd29a90fbeea87badf3e")
 
 func TestRegisterBaseTrustAnchor(t *testing.T) {
-	var connection = bif.NewBif(providers.NewHTTPProvider(resources.IP+":"+resources.Port, 10, false))
+	var connection = bif.NewBif(providers.NewHTTPProvider(resources.IP55+":"+resources.Port, 10, false))
 	chainId, err := connection.Core.GetChainId()
 	if err != nil {
 		t.Log(err)
 		t.FailNow()
 	}
 
-	nonce, err := connection.Core.GetTransactionCount(testAddress, block.LATEST)
+	nonce, err := connection.Core.GetTransactionCount(testAddressTrust, block.LATEST)
 	if err != nil {
 		t.Log(err)
 		t.FailNow()
 	}
 
+	// keyFileData 还可以进一步校验
+	keyFileData, err := ioutil.ReadFile("../resources/superNodeKeyStore/UTC--2020-07-07T10-47-32.962000000Z--did-bid-6cc796b8d6e2fbebc9b3cf9e")
+	if err != nil {
+		t.Error(err)
+		t.FailNow()
+	}
+	if len(keyFileData) == 0 {
+		t.Errorf("keyFileData can't be empty")
+		t.FailNow()
+	}
+
 	sysTxParams := new(system.SysTxParams)
-	sysTxParams.IsSM2 = isSM2
-	sysTxParams.Password = password
+	sysTxParams.IsSM2 = isSM2Trust
+	sysTxParams.Password = passwordTrust
 	sysTxParams.KeyFileData = keyFileData
 	sysTxParams.GasPrice = big.NewInt(35)
 	sysTxParams.Gas = 2000000
@@ -63,7 +70,7 @@ func TestRegisterBaseTrustAnchor(t *testing.T) {
 	anchor := connection.System.NewTrustAnchor()
 
 	registerBaseAnchor := new(dto.RegisterAnchor)
-	registerBaseAnchor.Anchor = utils.StringToAddress(BaseAnchorAddr).String()
+	registerBaseAnchor.Anchor = BaseAnchorAddr
 	registerBaseAnchor.AnchorType = BaseAnchorType
 	registerBaseAnchor.AnchorName = TrustAnchorName
 	registerBaseAnchor.Company = TrustAnchorCompany
@@ -83,24 +90,35 @@ func TestRegisterBaseTrustAnchor(t *testing.T) {
 }
 
 func TestRegisterExtendTrustAnchor(t *testing.T) {
-	var connection = bif.NewBif(providers.NewHTTPProvider(resources.IP+":"+resources.Port, 10, false))
+	var connection = bif.NewBif(providers.NewHTTPProvider(resources.IP55+":"+resources.Port, 10, false))
 	chainId, err := connection.Core.GetChainId()
 	if err != nil {
 		t.Log(err)
 		t.FailNow()
 	}
 
-	nonce, err := connection.Core.GetTransactionCount(testAddress, block.LATEST)
+	nonce, err := connection.Core.GetTransactionCount(testAddressTrust, block.LATEST)
 	if err != nil {
 		t.Log(err)
 		t.FailNow()
 	}
 
+	// keyFileData 还可以进一步校验
+	keyFileData, err := ioutil.ReadFile("../resources/superNodeKeyStore/UTC--2020-07-07T10-47-32.962000000Z--did-bid-6cc796b8d6e2fbebc9b3cf9e")
+	if err != nil {
+		t.Error(err)
+		t.FailNow()
+	}
+	if len(keyFileData) == 0 {
+		t.Errorf("keyFileData can't be empty")
+		t.FailNow()
+	}
+
 	sysTxParams := new(system.SysTxParams)
-	sysTxParams.IsSM2 = isSM2
-	sysTxParams.Password = password
+	sysTxParams.IsSM2 = isSM2Trust
+	sysTxParams.Password = passwordTrust
 	sysTxParams.KeyFileData = keyFileData
-	sysTxParams.GasPrice = big.NewInt(35)
+	sysTxParams.GasPrice = big.NewInt(55)
 	sysTxParams.Gas = 2000000
 	sysTxParams.Nonce = nonce.Uint64()
 	sysTxParams.ChainId = big.NewInt(0).SetUint64(chainId)
@@ -108,7 +126,7 @@ func TestRegisterExtendTrustAnchor(t *testing.T) {
 	anchor := connection.System.NewTrustAnchor()
 
 	registerExtendAnchor := new(dto.RegisterAnchor)
-	registerExtendAnchor.Anchor = utils.StringToAddress(ExtendAnchorAddr).String()
+	registerExtendAnchor.Anchor = ExtendAnchorAddr
 	registerExtendAnchor.AnchorType = ExtendAnchorType
 	registerExtendAnchor.AnchorName = TrustAnchorName
 	registerExtendAnchor.Company = TrustAnchorCompany
@@ -128,22 +146,33 @@ func TestRegisterExtendTrustAnchor(t *testing.T) {
 }
 
 func TestUnRegisterTrustAnchor(t *testing.T) {
-	var connection = bif.NewBif(providers.NewHTTPProvider(resources.IP+":"+resources.Port, 10, false))
+	var connection = bif.NewBif(providers.NewHTTPProvider(resources.IP55+":"+resources.Port, 10, false))
 	chainId, err := connection.Core.GetChainId()
 	if err != nil {
 		t.Log(err)
 		t.FailNow()
 	}
 
-	nonce, err := connection.Core.GetTransactionCount(testAddress, block.LATEST)
+	nonce, err := connection.Core.GetTransactionCount(testAddressTrust, block.LATEST)
 	if err != nil {
 		t.Log(err)
 		t.FailNow()
 	}
 
+	// keyFileData 还可以进一步校验
+	keyFileData, err := ioutil.ReadFile("../resources/superNodeKeyStore/UTC--2020-07-07T10-47-32.962000000Z--did-bid-6cc796b8d6e2fbebc9b3cf9e")
+	if err != nil {
+		t.Error(err)
+		t.FailNow()
+	}
+	if len(keyFileData) == 0 {
+		t.Errorf("keyFileData can't be empty")
+		t.FailNow()
+	}
+
 	sysTxParams := new(system.SysTxParams)
-	sysTxParams.IsSM2 = isSM2
-	sysTxParams.Password = password
+	sysTxParams.IsSM2 = isSM2Trust
+	sysTxParams.Password = passwordTrust
 	sysTxParams.KeyFileData = keyFileData
 	sysTxParams.GasPrice = big.NewInt(35)
 	sysTxParams.Gas = 2000000
@@ -161,15 +190,15 @@ func TestUnRegisterTrustAnchor(t *testing.T) {
 }
 
 func TestIsBaseTrustAnchor(t *testing.T) {
-	var connection = bif.NewBif(providers.NewHTTPProvider(resources.IP+":"+resources.Port, 10, false))
-	coinBase, err := connection.Core.GetCoinBase()
+	var connection = bif.NewBif(providers.NewHTTPProvider(resources.IP55+":"+resources.Port, 10, false))
+	_, err := connection.Core.GetCoinBase()
 	if err != nil {
 		t.Error(err)
 		t.FailNow()
 	}
 	anchor := connection.System.NewTrustAnchor()
 
-	baseAnchor, err := anchor.IsBaseTrustAnchor(coinBase)
+	baseAnchor, err := anchor.IsBaseTrustAnchor("did:bid:a3fa9bb1b84e722f30dbda8c")
 	if err != nil {
 		t.Error(err)
 		t.FailNow()
@@ -179,7 +208,7 @@ func TestIsBaseTrustAnchor(t *testing.T) {
 }
 
 func TestIsTrustAnchor(t *testing.T) {
-	var connection = bif.NewBif(providers.NewHTTPProvider(resources.IP+":"+resources.Port, 10, false))
+	var connection = bif.NewBif(providers.NewHTTPProvider(resources.IP55+":"+resources.Port, 10, false))
 	coinBase, err := connection.Core.GetCoinBase()
 	if err != nil {
 		t.Error(err)
@@ -197,22 +226,33 @@ func TestIsTrustAnchor(t *testing.T) {
 }
 
 func TestUpdateAnchorInfo(t *testing.T) {
-	var connection = bif.NewBif(providers.NewHTTPProvider(resources.IP+":"+resources.Port, 10, false))
+	var connection = bif.NewBif(providers.NewHTTPProvider(resources.IP55+":"+resources.Port, 10, false))
 	chainId, err := connection.Core.GetChainId()
 	if err != nil {
 		t.Log(err)
 		t.FailNow()
 	}
 
-	nonce, err := connection.Core.GetTransactionCount(testAddress, block.LATEST)
+	nonce, err := connection.Core.GetTransactionCount(testAddressTrust, block.LATEST)
 	if err != nil {
 		t.Log(err)
 		t.FailNow()
 	}
 
+	// keyFileData 还可以进一步校验
+	keyFileData, err := ioutil.ReadFile("../resources/superNodeKeyStore/UTC--2020-07-07T10-47-32.962000000Z--did-bid-6cc796b8d6e2fbebc9b3cf9e")
+	if err != nil {
+		t.Error(err)
+		t.FailNow()
+	}
+	if len(keyFileData) == 0 {
+		t.Errorf("keyFileData can't be empty")
+		t.FailNow()
+	}
+
 	sysTxParams := new(system.SysTxParams)
-	sysTxParams.IsSM2 = isSM2
-	sysTxParams.Password = password
+	sysTxParams.IsSM2 = isSM2Trust
+	sysTxParams.Password = passwordTrust
 	sysTxParams.KeyFileData = keyFileData
 	sysTxParams.GasPrice = big.NewInt(35)
 	sysTxParams.Gas = 2000000
@@ -226,7 +266,7 @@ func TestUpdateAnchorInfo(t *testing.T) {
 	extendAnchorInfo.Website = "0www.server.teleinfo.cn"
 	extendAnchorInfo.DocumentUrl = "0www.doc.teleinfo.cn"
 	extendAnchorInfo.ServerUrl = "01.1.1.1"
-	extendAnchorInfo.Email = "0www.email.teleinfo.cn"
+	extendAnchorInfo.Email = "j23@163.com"
 	extendAnchorInfo.Desc = "0info test"
 
 	transactionHash, err := anchor.UpdateAnchorInfo(sysTxParams, extendAnchorInfo)
@@ -238,22 +278,33 @@ func TestUpdateAnchorInfo(t *testing.T) {
 }
 
 func TestExtractOwnBounty(t *testing.T) {
-	var connection = bif.NewBif(providers.NewHTTPProvider(resources.IP+":"+resources.Port, 10, false))
+	var connection = bif.NewBif(providers.NewHTTPProvider(resources.IP55+":"+resources.Port, 10, false))
 	chainId, err := connection.Core.GetChainId()
 	if err != nil {
 		t.Log(err)
 		t.FailNow()
 	}
 
-	nonce, err := connection.Core.GetTransactionCount(testAddress, block.LATEST)
+	nonce, err := connection.Core.GetTransactionCount(testAddressTrust, block.LATEST)
 	if err != nil {
 		t.Log(err)
 		t.FailNow()
 	}
 
+	// keyFileData 还可以进一步校验
+	keyFileData, err := ioutil.ReadFile("../resources/superNodeKeyStore/UTC--2020-07-07T10-47-32.962000000Z--did-bid-6cc796b8d6e2fbebc9b3cf9e")
+	if err != nil {
+		t.Error(err)
+		t.FailNow()
+	}
+	if len(keyFileData) == 0 {
+		t.Errorf("keyFileData can't be empty")
+		t.FailNow()
+	}
+
 	sysTxParams := new(system.SysTxParams)
-	sysTxParams.IsSM2 = isSM2
-	sysTxParams.Password = password
+	sysTxParams.IsSM2 = isSM2Trust
+	sysTxParams.Password = passwordTrust
 	sysTxParams.KeyFileData = keyFileData
 	sysTxParams.GasPrice = big.NewInt(35)
 	sysTxParams.Gas = 2000000
@@ -271,7 +322,7 @@ func TestExtractOwnBounty(t *testing.T) {
 }
 
 func TestGetTrustAnchor(t *testing.T) {
-	var connection = bif.NewBif(providers.NewHTTPProvider(resources.IP+":"+resources.Port, 10, false))
+	var connection = bif.NewBif(providers.NewHTTPProvider(resources.IP55+":"+resources.Port, 10, false))
 	coinBase, err := connection.Core.GetCoinBase()
 	if err != nil {
 		t.Error(err)
@@ -289,7 +340,7 @@ func TestGetTrustAnchor(t *testing.T) {
 }
 
 func TestGetTrustAnchorStatus(t *testing.T) {
-	var connection = bif.NewBif(providers.NewHTTPProvider(resources.IP+":"+resources.Port, 10, false))
+	var connection = bif.NewBif(providers.NewHTTPProvider(resources.IP55+":"+resources.Port, 10, false))
 	coinBase, err := connection.Core.GetCoinBase()
 	if err != nil {
 		t.Error(err)
@@ -307,7 +358,7 @@ func TestGetTrustAnchorStatus(t *testing.T) {
 }
 
 func TestGetCertificateList(t *testing.T) {
-	var connection = bif.NewBif(providers.NewHTTPProvider(resources.IP+":"+resources.Port, 10, false))
+	var connection = bif.NewBif(providers.NewHTTPProvider(resources.IP55+":"+resources.Port, 10, false))
 	coinBase, err := connection.Core.GetCoinBase()
 	if err != nil {
 		t.Error(err)
@@ -325,7 +376,7 @@ func TestGetCertificateList(t *testing.T) {
 }
 
 func TestGetBaseList(t *testing.T) {
-	var connection = bif.NewBif(providers.NewHTTPProvider(resources.IP+":"+resources.Port, 10, false))
+	var connection = bif.NewBif(providers.NewHTTPProvider(resources.IP55+":"+resources.Port, 10, false))
 	_, err := connection.Core.GetCoinBase()
 	if err != nil {
 		t.Error(err)
@@ -343,7 +394,7 @@ func TestGetBaseList(t *testing.T) {
 }
 
 func TestGetBaseTrustAnchorNum(t *testing.T) {
-	var connection = bif.NewBif(providers.NewHTTPProvider(resources.IP+":"+resources.Port, 10, false))
+	var connection = bif.NewBif(providers.NewHTTPProvider(resources.IP55+":"+resources.Port, 10, false))
 	_, err := connection.Core.GetCoinBase()
 	if err != nil {
 		t.Error(err)
@@ -361,7 +412,7 @@ func TestGetBaseTrustAnchorNum(t *testing.T) {
 }
 
 func TestGetExpendList(t *testing.T) {
-	var connection = bif.NewBif(providers.NewHTTPProvider(resources.IP+":"+resources.Port, 10, false))
+	var connection = bif.NewBif(providers.NewHTTPProvider(resources.IP55+":"+resources.Port, 10, false))
 	_, err := connection.Core.GetCoinBase()
 	if err != nil {
 		t.Error(err)
@@ -375,11 +426,12 @@ func TestGetExpendList(t *testing.T) {
 		t.FailNow()
 	}
 
+	// [did:bid:6cc796b8d6e2fbebc9b3cf9e did:bid:c935bd29a90fbeea87badf3e]
 	t.Log(expendList)
 }
 
 func TestGetExpendNum(t *testing.T) {
-	var connection = bif.NewBif(providers.NewHTTPProvider(resources.IP+":"+resources.Port, 10, false))
+	var connection = bif.NewBif(providers.NewHTTPProvider(resources.IP55+":"+resources.Port, 10, false))
 	_, err := connection.Core.GetCoinBase()
 	if err != nil {
 		t.Error(err)
@@ -398,22 +450,33 @@ func TestGetExpendNum(t *testing.T) {
 
 // 投票超过2/3才能激活信任锚(现在有5个超级节点，超过2/3就是需要有至少4个投票)
 func TestVoteElect(t *testing.T) {
-	var connection = bif.NewBif(providers.NewHTTPProvider(resources.IP+":"+resources.Port, 10, false))
+	var connection = bif.NewBif(providers.NewHTTPProvider(resources.IP55+":"+resources.Port, 10, false))
 	chainId, err := connection.Core.GetChainId()
 	if err != nil {
 		t.Log(err)
 		t.FailNow()
 	}
 
-	nonce, err := connection.Core.GetTransactionCount(testAddress, block.LATEST)
+	nonce, err := connection.Core.GetTransactionCount(testAddressTrust, block.LATEST)
 	if err != nil {
 		t.Log(err)
 		t.FailNow()
 	}
 
+	// keyFileData 还可以进一步校验
+	keyFileData, err := ioutil.ReadFile("../resources/superNodeKeyStore/UTC--2020-07-07T10-47-32.962000000Z--did-bid-6cc796b8d6e2fbebc9b3cf9e")
+	if err != nil {
+		t.Error(err)
+		t.FailNow()
+	}
+	if len(keyFileData) == 0 {
+		t.Errorf("keyFileData can't be empty")
+		t.FailNow()
+	}
+
 	sysTxParams := new(system.SysTxParams)
-	sysTxParams.IsSM2 = isSM2
-	sysTxParams.Password = password
+	sysTxParams.IsSM2 = isSM2Trust
+	sysTxParams.Password = passwordTrust
 	sysTxParams.KeyFileData = keyFileData
 	sysTxParams.GasPrice = big.NewInt(35)
 	sysTxParams.Gas = 2000000
@@ -422,7 +485,7 @@ func TestVoteElect(t *testing.T) {
 
 	anchor := connection.System.NewTrustAnchor()
 
-	transactionHash, err := anchor.VoteElect(sysTxParams, testAddress)
+	transactionHash, err := anchor.VoteElect(sysTxParams, testAddressTrust)
 	if err != nil {
 		t.Error(err)
 		t.FailNow()
@@ -431,22 +494,33 @@ func TestVoteElect(t *testing.T) {
 }
 
 func TestCancelVote(t *testing.T) {
-	var connection = bif.NewBif(providers.NewHTTPProvider(resources.IP+":"+resources.Port, 10, false))
+	var connection = bif.NewBif(providers.NewHTTPProvider(resources.IP55+":"+resources.Port, 10, false))
 	chainId, err := connection.Core.GetChainId()
 	if err != nil {
 		t.Log(err)
 		t.FailNow()
 	}
 
-	nonce, err := connection.Core.GetTransactionCount(testAddress, block.LATEST)
+	nonce, err := connection.Core.GetTransactionCount(testAddressTrust, block.LATEST)
 	if err != nil {
 		t.Log(err)
 		t.FailNow()
 	}
 
+	// keyFileData 还可以进一步校验
+	keyFileData, err := ioutil.ReadFile("../resources/superNodeKeyStore/UTC--2020-07-07T10-47-32.962000000Z--did-bid-6cc796b8d6e2fbebc9b3cf9e")
+	if err != nil {
+		t.Error(err)
+		t.FailNow()
+	}
+	if len(keyFileData) == 0 {
+		t.Errorf("keyFileData can't be empty")
+		t.FailNow()
+	}
+
 	sysTxParams := new(system.SysTxParams)
-	sysTxParams.IsSM2 = isSM2
-	sysTxParams.Password = password
+	sysTxParams.IsSM2 = isSM2Trust
+	sysTxParams.Password = passwordTrust
 	sysTxParams.KeyFileData = keyFileData
 	sysTxParams.GasPrice = big.NewInt(35)
 	sysTxParams.Gas = 2000000
@@ -454,7 +528,7 @@ func TestCancelVote(t *testing.T) {
 	sysTxParams.ChainId = big.NewInt(0).SetUint64(chainId)
 
 	anchor := connection.System.NewTrustAnchor()
-	transactionHash, err := anchor.CancelVote(sysTxParams, testAddress)
+	transactionHash, err := anchor.CancelVote(sysTxParams, testAddressTrust)
 	if err != nil {
 		t.Error(err)
 		t.FailNow()
@@ -463,7 +537,7 @@ func TestCancelVote(t *testing.T) {
 }
 
 func TestGetVoter(t *testing.T) {
-	var connection = bif.NewBif(providers.NewHTTPProvider(resources.IP+":"+resources.Port, 10, false))
+	var connection = bif.NewBif(providers.NewHTTPProvider(resources.IP55+":"+resources.Port, 10, false))
 	coinBase, err := connection.Core.GetCoinBase()
 	if err != nil {
 		t.Error(err)

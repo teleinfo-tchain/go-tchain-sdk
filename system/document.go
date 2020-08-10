@@ -78,6 +78,10 @@ func (sys *System) NewDoc() *Doc {
   Call permissions: ？？
 */
 func (doc *Doc) Init(signTxParams *SysTxParams, bidType uint64) (string, error) {
+	if bidType != 0 && bidType != 1 && bidType != 2 {
+		return "", errors.New("bidType should be 0, 1, or 2")
+	}
+
 	// encoding
 	inputEncode, err := doc.abi.Pack("init", bidType)
 	if err != nil {
@@ -108,9 +112,14 @@ func (doc *Doc) Init(signTxParams *SysTxParams, bidType uint64) (string, error) 
   Call permissions: ？？
 */
 func (doc *Doc) SetBidName(signTxParams *SysTxParams, id string, bidName string) (string, error) {
-	if len(bidName) < 6 || len(bidName) > 20 {
-		return "", errors.New("nickname's length must 6 to 20")
+	if !isValidHexAddress(id) {
+		return "", errors.New("id is not valid bid")
 	}
+
+	if len(bidName) < 6 || len(bidName) > 20 {
+		return "", errors.New("bidName's length must 6 to 20")
+	}
+
 	// encoding
 	inputEncode, err := doc.abi.Pack("setBidName", id, bidName)
 	if err != nil {
@@ -130,7 +139,6 @@ func (doc *Doc) SetBidName(signTxParams *SysTxParams, id string, bidName string)
    	EN -
 	CN - 查询文档的信息
   Params:
-  	- isDidAddress: bool，如果是true则第二个参数传did的地址；否则传入bidName
 	- did: string，did文档的地址或bidName
 
   Returns:
@@ -149,14 +157,13 @@ func (doc *Doc) SetBidName(signTxParams *SysTxParams, id string, bidName string)
 
   Call permissions: ？？
 */
-func (doc *Doc) GetDocument(isDidAddress bool, did string) (*dto.Document, error) {
-	params := make([]string, 2)
-	if isDidAddress {
-		params[0] = "0"
-	} else {
-		params[0] = "1"
+func (doc *Doc) GetDocument(did string) (*dto.Document, error) {
+	if len(did) == 0 {
+		return nil, errors.New("did can't be empty")
 	}
-	params[1] = did
+
+	params := make([]string, 1)
+	params[0] = did
 
 	pointer := &dto.SystemRequestResult{}
 
@@ -186,6 +193,10 @@ func (doc *Doc) GetDocument(isDidAddress bool, did string) (*dto.Document, error
   Call permissions: ？？
 */
 func (doc *Doc) AddPublic(signTxParams *SysTxParams, id string, publicType string, publicAuth string, publicKey string) (string, error) {
+	if !isValidHexAddress(id) {
+		return "", errors.New("id is not valid bid")
+	}
+
 	// encoding
 	inputEncode, err := doc.abi.Pack("addPublic", id, publicType, publicAuth, publicKey)
 	if err != nil {
@@ -216,6 +227,10 @@ func (doc *Doc) AddPublic(signTxParams *SysTxParams, id string, publicType strin
   Call permissions: ??
 */
 func (doc *Doc) DelPublic(signTxParams *SysTxParams, id string, publicKey string) (string, error) {
+	if !isValidHexAddress(id) {
+		return "", errors.New("id is not valid bid")
+	}
+
 	// encoding
 	inputEncode, err := doc.abi.Pack("delPublic", id, publicKey)
 	if err != nil {
@@ -245,6 +260,10 @@ func (doc *Doc) DelPublic(signTxParams *SysTxParams, id string, publicKey string
   Call permissions: ??
 */
 func (doc *Doc) AddAuth(signTxParams *SysTxParams, id string, auth string) (string, error) {
+	if !isValidHexAddress(id) {
+		return "", errors.New("id is not valid bid")
+	}
+
 	// encoding
 	inputEncode, err := doc.abi.Pack("addAuth", id, auth)
 	if err != nil {
@@ -274,6 +293,10 @@ func (doc *Doc) AddAuth(signTxParams *SysTxParams, id string, auth string) (stri
   Call permissions: ??
 */
 func (doc *Doc) DelAuth(signTxParams *SysTxParams, id string, auth string) (string, error) {
+	if !isValidHexAddress(id) {
+		return "", errors.New("id is not valid bid")
+	}
+
 	// encoding
 	inputEncode, err := doc.abi.Pack("delAuth", id, auth)
 	if err != nil {
@@ -303,6 +326,10 @@ func (doc *Doc) DelAuth(signTxParams *SysTxParams, id string, auth string) (stri
   Call permissions: Anyone
 */
 func (doc *Doc) AddService(signTxParams *SysTxParams, id string, serviceId string, serviceType string, serviceEndpoint string) (string, error) {
+	if !isValidHexAddress(id) {
+		return "", errors.New("id is not valid bid")
+	}
+
 	// encoding
 	inputEncode, err := doc.abi.Pack("addService", id, serviceId, serviceType, serviceEndpoint)
 	if err != nil {
@@ -332,6 +359,10 @@ func (doc *Doc) AddService(signTxParams *SysTxParams, id string, serviceId strin
   Call permissions: Anyone
 */
 func (doc *Doc) DelService(signTxParams *SysTxParams, id string, serviceId string) (string, error) {
+	if !isValidHexAddress(id) {
+		return "", errors.New("id is not valid bid")
+	}
+
 	// encoding
 	inputEncode, err := doc.abi.Pack("delService", id, serviceId)
 	if err != nil {
@@ -363,6 +394,10 @@ func (doc *Doc) DelService(signTxParams *SysTxParams, id string, serviceId strin
   Call permissions: ??
 */
 func (doc *Doc) AddProof(signTxParams *SysTxParams, id string, proofType string, proofCreator string, proofSign string) (string, error) {
+	if !isValidHexAddress(id) {
+		return "", errors.New("id is not valid bid")
+	}
+
 	// encoding
 	inputEncode, err := doc.abi.Pack("addProof", id, proofType, proofCreator, proofSign)
 	if err != nil {
@@ -392,6 +427,10 @@ func (doc *Doc) AddProof(signTxParams *SysTxParams, id string, proofType string,
   Call permissions: ？？
 */
 func (doc *Doc) DelProof(signTxParams *SysTxParams, id string) (string, error) {
+	if !isValidHexAddress(id) {
+		return "", errors.New("id is not valid bid")
+	}
+
 	// encoding
 	inputEncode, err := doc.abi.Pack("delProof", id)
 	if err != nil {
@@ -422,6 +461,10 @@ func (doc *Doc) DelProof(signTxParams *SysTxParams, id string) (string, error) {
   Call permissions: ??
 */
 func (doc *Doc) AddExtra(signTxParams *SysTxParams, id string, extra string) (string, error) {
+	if !isValidHexAddress(id) {
+		return "", errors.New("id is not valid bid")
+	}
+
 	// encoding
 	inputEncode, err := doc.abi.Pack("addExtra", id, extra)
 	if err != nil {
@@ -451,6 +494,10 @@ func (doc *Doc) AddExtra(signTxParams *SysTxParams, id string, extra string) (st
   Call permissions: Anyone
 */
 func (doc *Doc) DelExtra(signTxParams *SysTxParams, id string) (string, error) {
+	if !isValidHexAddress(id) {
+		return "", errors.New("id is not valid bid")
+	}
+
 	// encoding
 	inputEncode, err := doc.abi.Pack("delExtra", id)
 	if err != nil {
@@ -480,6 +527,10 @@ func (doc *Doc) DelExtra(signTxParams *SysTxParams, id string) (string, error) {
   Call permissions: ??
 */
 func (doc *Doc) Enable(signTxParams *SysTxParams, id string) (string, error) {
+	if !isValidHexAddress(id) {
+		return "", errors.New("id is not valid bid")
+	}
+
 	// encoding
 	inputEncode, _ := doc.abi.Pack("enable", id)
 
@@ -506,6 +557,10 @@ func (doc *Doc) Enable(signTxParams *SysTxParams, id string) (string, error) {
   Call permissions: ??
 */
 func (doc *Doc) Disable(signTxParams *SysTxParams, id string) (string, error) {
+	if !isValidHexAddress(id) {
+		return "", errors.New("id is not valid bid")
+	}
+
 	// encoding
 	inputEncode, _ := doc.abi.Pack("disable", id)
 
@@ -522,7 +577,6 @@ func (doc *Doc) Disable(signTxParams *SysTxParams, id string) (string, error) {
    	EN -
 	CN - 查询文档是否可用
   Params:
-  	- isDidAddress: bool，如果是true则第二个参数传did的地址；否则传入bidName
 	- did: string，did文档的地址或bidName
 
   Returns:
@@ -531,14 +585,13 @@ func (doc *Doc) Disable(signTxParams *SysTxParams, id string) (string, error) {
 
   Call permissions: Anyone
 */
-func (doc *Doc) IsEnable(isDidAddress bool, did string) (bool, error) {
-	params := make([]string, 2)
-	if isDidAddress {
-		params[0] = "0"
-	} else {
-		params[0] = "1"
+func (doc *Doc) IsEnable(did string) (bool, error) {
+	if len(did) == 0 {
+		return false, errors.New("did can't be empty")
 	}
-	params[1] = did
+
+	params := make([]string, 1)
+	params[0] = did
 
 	pointer := &dto.SystemRequestResult{}
 

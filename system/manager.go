@@ -1,6 +1,7 @@
 package system
 
 import (
+	"errors"
 	"github.com/bif/bif-sdk-go/abi"
 	"github.com/bif/bif-sdk-go/dto"
 	"strings"
@@ -47,6 +48,10 @@ func (sys *System) NewManager() *Manager {
   Call permissions: 监管节点地址，权限包含1的地址
 */
 func (manager *Manager) Enable(signTxParams *SysTxParams, contractAddress string) (string, error) {
+	if !isValidHexAddress(contractAddress) {
+		return "", errors.New("contractAddress is not valid hex address")
+	}
+
 	// encoding
 	inputEncode, err := manager.abi.Pack("enable", contractAddress)
 	if err != nil {
@@ -76,6 +81,10 @@ func (manager *Manager) Enable(signTxParams *SysTxParams, contractAddress string
   Call permissions: 监管节点地址，权限包含2的地址
 */
 func (manager *Manager) Disable(signTxParams *SysTxParams, contractAddress string) (string, error) {
+	if !isValidHexAddress(contractAddress) {
+		return "", errors.New("contractAddress is not valid hex address")
+	}
+
 	// encoding
 	inputEncode, err := manager.abi.Pack("disable", contractAddress)
 	if err != nil {
@@ -106,6 +115,10 @@ func (manager *Manager) Disable(signTxParams *SysTxParams, contractAddress strin
   Call permissions: 监管节点地址，权限包含4的地址
 */
 func (manager *Manager) SetPower(signTxParams *SysTxParams, userAddress string, power uint64) (string, error) {
+	if !isValidHexAddress(userAddress) {
+		return "", errors.New("userAddress is not valid hex address")
+	}
+
 	// encoding
 	inputEncode, err := manager.abi.Pack("power", userAddress, power)
 	if err != nil {
@@ -158,6 +171,10 @@ func (manager *Manager) GetAllContracts() ([]*dto.AllContract, error) {
   Call permissions: Anyone
 */
 func (manager *Manager) IsEnable(contractAddress string) (bool, error) {
+	if !isValidHexAddress(contractAddress) {
+		return false, errors.New("contractAddress is not valid hex address")
+	}
+
 	params := make([]string, 1)
 	params[0] = contractAddress
 
@@ -185,6 +202,10 @@ func (manager *Manager) IsEnable(contractAddress string) (bool, error) {
   Call permissions: Anyone
 */
 func (manager *Manager) GetPower(userAddress string) (uint64, error) {
+	if !isValidHexAddress(userAddress) {
+		return 0, errors.New("userAddress is not valid hex address")
+	}
+
 	params := make([]string, 1)
 	params[0] = userAddress
 

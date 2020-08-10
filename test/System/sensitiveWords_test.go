@@ -6,29 +6,47 @@ import (
 	"github.com/bif/bif-sdk-go/providers"
 	"github.com/bif/bif-sdk-go/system"
 	"github.com/bif/bif-sdk-go/test/resources"
+	"io/ioutil"
 	"math/big"
 	"testing"
 )
 
+const (
+	isSM2Sen       = false
+	passwordSen    = "teleinfo"
+	testAddressSen = "did:bid:6cc796b8d6e2fbebc9b3cf9e"
+)
+
 func TestAddWord(t *testing.T) {
-	var connection = bif.NewBif(providers.NewHTTPProvider(resources.IP+":"+resources.Port, 10, false))
+	var connection = bif.NewBif(providers.NewHTTPProvider(resources.IP55+":"+resources.Port, 10, false))
 	chainId, err := connection.Core.GetChainId()
 	if err != nil {
 		t.Log(err)
 		t.FailNow()
 	}
 
-	nonce, err := connection.Core.GetTransactionCount(testAddress, block.LATEST)
+	nonce, err := connection.Core.GetTransactionCount(testAddressSen, block.LATEST)
 	if err != nil {
 		t.Log(err)
 		t.FailNow()
 	}
 
+	// keyFileData 还可以进一步校验
+	keyFileData, err := ioutil.ReadFile("../resources/superNodeKeyStore/UTC--2020-07-07T10-47-32.962000000Z--did-bid-6cc796b8d6e2fbebc9b3cf9e")
+	if err != nil {
+		t.Error(err)
+		t.FailNow()
+	}
+	if len(keyFileData) == 0 {
+		t.Errorf("keyFileData can't be empty")
+		t.FailNow()
+	}
+
 	sysTxParams := new(system.SysTxParams)
-	sysTxParams.IsSM2 = isSM2
-	sysTxParams.Password = password
+	sysTxParams.IsSM2 = isSM2Sen
+	sysTxParams.Password = passwordSen
 	sysTxParams.KeyFileData = keyFileData
-	sysTxParams.GasPrice = big.NewInt(35)
+	sysTxParams.GasPrice = big.NewInt(55)
 	sysTxParams.Gas = 2000000
 	sysTxParams.Nonce = nonce.Uint64()
 	sysTxParams.ChainId = big.NewInt(0).SetUint64(chainId)
@@ -46,24 +64,35 @@ func TestAddWord(t *testing.T) {
 }
 
 func TestAddWords(t *testing.T) {
-	var connection = bif.NewBif(providers.NewHTTPProvider(resources.IP+":"+resources.Port, 10, false))
+	var connection = bif.NewBif(providers.NewHTTPProvider(resources.IP55+":"+resources.Port, 10, false))
 	chainId, err := connection.Core.GetChainId()
 	if err != nil {
 		t.Log(err)
 		t.FailNow()
 	}
 
-	nonce, err := connection.Core.GetTransactionCount(testAddress, block.LATEST)
+	nonce, err := connection.Core.GetTransactionCount(testAddressSen, block.LATEST)
 	if err != nil {
 		t.Log(err)
 		t.FailNow()
 	}
 
+	// keyFileData 还可以进一步校验
+	keyFileData, err := ioutil.ReadFile("../resources/superNodeKeyStore/UTC--2020-07-07T10-47-32.962000000Z--did-bid-6cc796b8d6e2fbebc9b3cf9e")
+	if err != nil {
+		t.Error(err)
+		t.FailNow()
+	}
+	if len(keyFileData) == 0 {
+		t.Errorf("keyFileData can't be empty")
+		t.FailNow()
+	}
+
 	sysTxParams := new(system.SysTxParams)
-	sysTxParams.IsSM2 = isSM2
-	sysTxParams.Password = password
+	sysTxParams.IsSM2 = isSM2Sen
+	sysTxParams.Password = passwordSen
 	sysTxParams.KeyFileData = keyFileData
-	sysTxParams.GasPrice = big.NewInt(35)
+	sysTxParams.GasPrice = big.NewInt(45)
 	sysTxParams.Gas = 2000000
 	sysTxParams.Nonce = nonce.Uint64()
 	sysTxParams.ChainId = big.NewInt(0).SetUint64(chainId)
@@ -81,22 +110,33 @@ func TestAddWords(t *testing.T) {
 }
 
 func TestDelWord(t *testing.T) {
-	var connection = bif.NewBif(providers.NewHTTPProvider(resources.IP+":"+resources.Port, 10, false))
+	var connection = bif.NewBif(providers.NewHTTPProvider(resources.IP55+":"+resources.Port, 10, false))
 	chainId, err := connection.Core.GetChainId()
 	if err != nil {
 		t.Log(err)
 		t.FailNow()
 	}
 
-	nonce, err := connection.Core.GetTransactionCount(testAddress, block.LATEST)
+	nonce, err := connection.Core.GetTransactionCount(testAddressSen, block.LATEST)
 	if err != nil {
 		t.Log(err)
 		t.FailNow()
 	}
 
+	// keyFileData 还可以进一步校验
+	keyFileData, err := ioutil.ReadFile("../resources/superNodeKeyStore/UTC--2020-07-07T10-47-32.962000000Z--did-bid-6cc796b8d6e2fbebc9b3cf9e")
+	if err != nil {
+		t.Error(err)
+		t.FailNow()
+	}
+	if len(keyFileData) == 0 {
+		t.Errorf("keyFileData can't be empty")
+		t.FailNow()
+	}
+
 	sysTxParams := new(system.SysTxParams)
-	sysTxParams.IsSM2 = isSM2
-	sysTxParams.Password = password
+	sysTxParams.IsSM2 = isSM2Sen
+	sysTxParams.Password = passwordSen
 	sysTxParams.KeyFileData = keyFileData
 	sysTxParams.GasPrice = big.NewInt(35)
 	sysTxParams.Gas = 2000000
@@ -116,7 +156,7 @@ func TestDelWord(t *testing.T) {
 }
 
 func TestGetAllWords(t *testing.T) {
-	var connection = bif.NewBif(providers.NewHTTPProvider(resources.IP+":"+resources.Port, 10, false))
+	var connection = bif.NewBif(providers.NewHTTPProvider(resources.IP55+":"+resources.Port, 10, false))
 	_, err := connection.Core.GetCoinBase()
 
 	if err != nil {
@@ -135,7 +175,7 @@ func TestGetAllWords(t *testing.T) {
 }
 
 func TestIsContainWord(t *testing.T) {
-	var connection = bif.NewBif(providers.NewHTTPProvider(resources.IP+":"+resources.Port, 10, false))
+	var connection = bif.NewBif(providers.NewHTTPProvider(resources.IP55+":"+resources.Port, 10, false))
 	_, err := connection.Core.GetCoinBase()
 
 	if err != nil {
