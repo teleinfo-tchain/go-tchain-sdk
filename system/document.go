@@ -94,7 +94,7 @@ func (doc *Doc) Init(signTxParams *SysTxParams, bidType uint64) (string, error) 
   	- string, 交易哈希(transactionHash)，如果交易尚不可用，则为零哈希。
 	- error
 
-  Call permissions: 文档公钥权限是`all`的用户
+  Call permissions: 权限为`all`
 */
 func (doc *Doc) SetBidName(signTxParams *SysTxParams, id string, bidName string) (string, error) {
 	if !isValidHexAddress(id) {
@@ -167,32 +167,36 @@ func (doc *Doc) GetDocument(did string) (*dto.Document, error) {
   Params:
   	- signTxParams *SysTxParams 系统合约构造所需参数
 	- id: string      bid
-	- publicType: string, 公钥类型（secp256k1、SM2）
-	- publicAuth: string, 公钥权限（all、update、ban）
-	- publicKey: string,  公钥（十六进制的字符串）
+	- publicType: string, 公钥类型（随机字符串）
+	- publicAuth: string, 公钥权限（通常用all, update, ban）
+	- publicKey: string,  公钥（十六进制的字符串(130)）
 
   Returns:
   	- string, transactionHash，32 Bytes，交易哈希，如果交易尚不可用，则为零哈希
 	- error
 
-  Call permissions: publicAuth权限为all
+  Call permissions: 权限为`all`
 */
 func (doc *Doc) AddPublic(signTxParams *SysTxParams, id string, publicType string, publicAuth string, publicKey string) (string, error) {
 	if !isValidHexAddress(id) {
 		return "", errors.New("id is not valid bid")
 	}
-	if publicType != "secp256k1" && publicType != "SM2" {
-		return "", errors.New("publicType should be secp256k1 or SM2")
+	if len(publicType) == 0 || isBlankCharacter(publicType) {
+		return "", errors.New("publicType can't be empty or blank character")
 	}
 	if publicAuth != "all" && publicAuth != "update" && publicAuth != "ban" {
 		return "", errors.New("publicAuth should be all 、update or ban")
 	}
+
 	if utils.Has0xPrefix(publicKey) {
 		publicKey = publicKey[2:]
 	}
-	// 需要修改
-	if !utils.IsHex(publicKey) {
-		return "", errors.New("publicKey should be hex string")
+	// 检测公钥合法性
+	if !(utils.IsHex(publicKey) && len(publicKey) == 130) {
+		return "", errors.New("publicKey is not a hexadecimal string or the length is less than 130(132 with prefix '0x'")
+	}
+	if !(publicKey[:2] == "01" || publicKey[:2] == "02" || publicKey[:2] == "04") {
+		return "", errors.New("publicKey should be with prefix 01、 02 、04 or 0x01、 0x02、 0x04")
 	}
 
 	// encoding
@@ -216,13 +220,13 @@ func (doc *Doc) AddPublic(signTxParams *SysTxParams, id string, publicType strin
   Params:
   	- signTxParams *SysTxParams 系统合约构造所需参数
 	- id: string      bid
-	- publicKey: string,   公钥
+	- publicKey: string,   公钥（十六进制的字符串(130)）
 
   Returns:
   	- string, transactionHash，32 Bytes，交易哈希，如果交易尚不可用，则为零哈希
 	- error
 
-  Call permissions: publicAuth权限为all
+  Call permissions: 权限为`all`
 */
 func (doc *Doc) DelPublic(signTxParams *SysTxParams, id string, publicKey string) (string, error) {
 	if !isValidHexAddress(id) {
@@ -231,9 +235,13 @@ func (doc *Doc) DelPublic(signTxParams *SysTxParams, id string, publicKey string
 	if utils.Has0xPrefix(publicKey) {
 		publicKey = publicKey[2:]
 	}
-	// 需要修改
-	if !utils.IsHex(publicKey) {
-		return "", errors.New("publicKey should be hex string")
+
+	// 检测公钥合法性
+	if !(utils.IsHex(publicKey) && len(publicKey) == 130) {
+		return "", errors.New("publicKey is not a hexadecimal string or the length is less than 130(132 with prefix '0x'")
+	}
+	if !(publicKey[:2] == "01" || publicKey[:2] == "02" || publicKey[:2] == "04") {
+		return "", errors.New("publicKey should be with prefix 01、 02 、04 or 0x01、 0x02、 0x04")
 	}
 
 	// encoding
@@ -257,13 +265,13 @@ func (doc *Doc) DelPublic(signTxParams *SysTxParams, id string, publicKey string
   Params:
   	- signTxParams *SysTxParams 系统合约构造所需参数
 	- id: string      bid
-	- auth: string,
+	- auth: string,  权限(随机字符串)
 
   Returns:
 	- string, transactionHash，32 Bytes，交易哈希，如果交易尚不可用，则为零哈希
 	- error
 
-  Call permissions: publicAuth权限为all、update
+  Call permissions: 权限为all、update
 */
 func (doc *Doc) AddAuth(signTxParams *SysTxParams, id string, auth string) (string, error) {
 	if !isValidHexAddress(id) {
@@ -294,13 +302,13 @@ func (doc *Doc) AddAuth(signTxParams *SysTxParams, id string, auth string) (stri
   Params:
   	- signTxParams *SysTxParams 系统合约构造所需参数
 	- id: string      bid
-	- auth: string,
+	- auth: string,  权限(随机字符串)
 
   Returns:
   	- string, transactionHash，32 Bytes，交易哈希，如果交易尚不可用，则为零哈希
 	- error
 
-  Call permissions: publicAuth权限为all、update
+  Call permissions: 权限为all、update
 */
 func (doc *Doc) DelAuth(signTxParams *SysTxParams, id string, auth string) (string, error) {
 	if !isValidHexAddress(id) {
@@ -330,23 +338,23 @@ func (doc *Doc) DelAuth(signTxParams *SysTxParams, id string, auth string) (stri
 	CN -
   Params:
   	- signTxParams *SysTxParams 系统合约构造所需参数
-	- id: string
-	- serviceId: string
-	- serviceType: string,  服务类型
-	- serviceEndpoint: string, 服务url
+	- id: string             bid地址
+	- serviceId: string		 bid地址
+	- serviceType: string,  服务类型(随机字符串)
+	- serviceEndpoint: string, 服务url(随机字符串)
 
   Returns:
   	- string, transactionHash，32 Bytes，交易哈希，如果交易尚不可用，则为零哈希
 	- error
 
-  Call permissions: publicAuth权限为all、update
+  Call permissions: 权限为all、update
 */
 func (doc *Doc) AddService(signTxParams *SysTxParams, id string, serviceId string, serviceType string, serviceEndpoint string) (string, error) {
 	if !isValidHexAddress(id) {
 		return "", errors.New("id is not valid bid")
 	}
-	if len(serviceId) == 0 || isBlankCharacter(serviceId) {
-		return "", errors.New("serviceId can't be empty or blank character")
+	if !isValidHexAddress(serviceId) {
+		return "", errors.New("serviceId is not valid bid")
 	}
 	if len(serviceType) == 0 || isBlankCharacter(serviceType) {
 		return "", errors.New("serviceType can't be empty or blank character")
@@ -375,20 +383,21 @@ func (doc *Doc) AddService(signTxParams *SysTxParams, id string, serviceId strin
 	CN -
   Params:
   	- signTxParams *SysTxParams 系统合约构造所需参数
-	- serviceId: string
+	- id: string             bid地址
+	- serviceId: string		 bid地址
 
   Returns:
   	- string, transactionHash，32 Bytes，交易哈希，如果交易尚不可用，则为零哈希
 	- error
 
-  Call permissions: publicAuth权限为all、update
+  Call permissions: 权限为all、update
 */
 func (doc *Doc) DelService(signTxParams *SysTxParams, id string, serviceId string) (string, error) {
 	if !isValidHexAddress(id) {
 		return "", errors.New("id is not valid bid")
 	}
-	if len(serviceId) == 0 || isBlankCharacter(serviceId) {
-		return "", errors.New("serviceId can't be empty or blank character")
+	if !isValidHexAddress(serviceId) {
+		return "", errors.New("serviceId is not valid bid")
 	}
 
 	// encoding
@@ -411,15 +420,15 @@ func (doc *Doc) DelService(signTxParams *SysTxParams, id string, serviceId strin
   Params:
   	- signTxParams *SysTxParams 系统合约构造所需参数
 	- id: string      bid
-	- proofType: string, 证书类型
-	- proofCreator: string, 证书创建人
-	- proofSign: string, 证书的签名
+	- proofType: string, 证书类型（随机字符串）
+	- proofCreator: string, 证书创建人（随机字符串）
+	- proofSign: string, 证书的签名（随机字符串）
 
   Returns:
   	- string, transactionHash，32 Bytes，交易哈希，如果交易尚不可用，则为零哈希
 	- error
 
-  Call permissions: publicAuth权限为all、update
+  Call permissions: 权限为all、update
 */
 func (doc *Doc) AddProof(signTxParams *SysTxParams, id string, proofType string, proofCreator string, proofSign string) (string, error) {
 	if !isValidHexAddress(id) {
@@ -461,7 +470,7 @@ func (doc *Doc) AddProof(signTxParams *SysTxParams, id string, proofType string,
   	- string, transactionHash，32 Bytes，交易哈希，如果交易尚不可用，则为零哈希
 	- error
 
-  Call permissions: publicAuth权限为all、update
+  Call permissions: 权限为all、update
 */
 func (doc *Doc) DelProof(signTxParams *SysTxParams, id string) (string, error) {
 	if !isValidHexAddress(id) {
@@ -489,7 +498,7 @@ func (doc *Doc) DelProof(signTxParams *SysTxParams, id string) (string, error) {
   Params:
   	- signTxParams *SysTxParams 系统合约构造所需参数
 	- id: string, bid
-	- extra: string, ??
+	- extra: string, 随机字符串
 
   Returns:
   	- string, transactionHash，32 Bytes，交易哈希，如果交易尚不可用，则为零哈希

@@ -9,34 +9,6 @@ import (
 
 const (
 	TrustAnchorContractAddr = "did:bid:00000000000000000000000c"
-	// AnchorStatusUnknow      = 0
-	// AnchorStatusOK          = 1
-	// AnchorStatusErr         = 2
-	// AnchorStatusDelete      = 3
-	//
-	// BaseAnchor                 = 10
-	// ExtendAnchor               = 11
-	// UnknowAnchorType           = 2
-	// Day                        = 86400        //24*60*60秒，每次提取积分的最小时间间隔
-	// Bifer                      = 100000000    //10^9
-	// MiniExtractAmount          = 100 * Bifer  //每次提取积分的最小额度是100
-	// BaseTrustAnchorPledge      = 1000 * Bifer //注册根信任锚抵押的积分
-	// ExtendTrustAnchorPledge    = 100 * Bifer  //注册扩展信任锚抵押的积分
-	// IncentivesToExtendIssueCer = 1 * Bifer    //颁发一个证书获得的奖励
-	// IncentivesToBaseIssueCer   = 2 * Bifer    //颁发一个证书获得的奖励
-	// EmptyUrl                   = ""
-)
-
-var (
-	//	ErrIllExtracAmout    = errors.New("积分总额不足100，无法提取")
-	//	ErrIllExtracTime     = errors.New("距离上次提取不足24小时，无法提取")
-	ErrIllAnchorType = errors.New("未知的信任锚类型，10 代表根信任锚，11代表扩展信任锚")
-	//	ErrAnchorExist       = errors.New("该地址已存在于信任锚列表中")
-	//	ErrAnchorNoExist     = errors.New("信任锚不存在")
-	//	ErrIllegalAnchor     = errors.New("信任锚字段不能为空")
-	//	ErrIllegalBalance    = errors.New("账户内积分不足，注册根信任锚需要抵押1000积分，注册扩展信任锚需要抵押100积分")
-	//	ErrIllegalVote       = errors.New("信任锚不存在或不是基础信任锚")
-	//	ErrIllegalRepeatVote = errors.New("同一个基础信任锚能且仅能投一票")
 )
 
 // 信任锚的AbiJson数据
@@ -72,60 +44,61 @@ func registerTrustPreCheck(registerAnchor *dto.RegisterAnchor) (bool, error) {
 	}
 
 	if registerAnchor.AnchorType != 10 && registerAnchor.AnchorType != 11 {
-		return false, ErrIllAnchorType
+		return false, errors.New("未知的信任锚类型，10 代表根信任锚，11代表扩展信任锚")
 	}
 
-	if len(registerAnchor.AnchorName) == 0 {
-		return false, errors.New("registerAnchor AnchorName can't be empty")
+	if len(registerAnchor.AnchorName) == 0 || isBlankCharacter(registerAnchor.AnchorName) {
+		return false, errors.New("registerAnchor AnchorName can't be empty or blank character")
 	}
 
-	if len(registerAnchor.Company) == 0 {
-		return false, errors.New("registerAnchor Company can't be empty")
+	if len(registerAnchor.Company) == 0 || isBlankCharacter(registerAnchor.Company) {
+		return false, errors.New("registerAnchor Company can't be empty or blank character")
 	}
 
-	if len(registerAnchor.CompanyUrl) == 0 {
-		return false, errors.New("registerAnchor CompanyUrl can't be empty")
+	if len(registerAnchor.CompanyUrl) == 0 || isBlankCharacter(registerAnchor.CompanyUrl) {
+		return false, errors.New("registerAnchor CompanyUrl can't be empty or blank character")
 	}
 
-	if len(registerAnchor.Website) == 0 {
-		return false, errors.New("registerAnchor Website can't be empty")
+	if len(registerAnchor.Website) == 0 || isBlankCharacter(registerAnchor.Website) {
+		return false, errors.New("registerAnchor Website can't be empty or blank character")
 	}
 
-	if len(registerAnchor.DocumentUrl) == 0 {
-		return false, errors.New("registerAnchor DocumentUrl can't be empty")
+	if len(registerAnchor.DocumentUrl) == 0 || isBlankCharacter(registerAnchor.DocumentUrl) {
+		return false, errors.New("registerAnchor DocumentUrl can't be empty or blank character")
 	}
 
-	if len(registerAnchor.ServerUrl) == 0 {
-		return false, errors.New("registerAnchor ServerUrl can't be empty")
+	if len(registerAnchor.ServerUrl) == 0 || isBlankCharacter(registerAnchor.ServerUrl) {
+		return false, errors.New("registerAnchor ServerUrl can't be empty or blank character")
 	}
 
-	if !verifyEmailFormat(registerAnchor.Email) {
-		return false, errors.New("registerAnchor Email is not valid  e-mail")
-	}
+	// 后期可能会开启检查
+	// if !verifyEmailFormat(registerAnchor.Email) {
+	// 	return false, errors.New("registerAnchor Email is not valid  e-mail")
+	// }
 
 	return true, nil
 }
 
 func updateTrustPreCheck(extendAnchorInfo *dto.UpdateAnchorInfo) (bool, error) {
-	if len(extendAnchorInfo.CompanyUrl) == 0 {
-		return false, errors.New("updateAnchorInfo CompanyUrl can't be empty")
+	if len(extendAnchorInfo.CompanyUrl) == 0 || isBlankCharacter(extendAnchorInfo.CompanyUrl) {
+		return false, errors.New("updateAnchorInfo CompanyUrl can't be empty or blank character")
 	}
 
-	if len(extendAnchorInfo.Website) == 0 {
-		return false, errors.New("updateAnchorInfo Website can't be empty")
+	if len(extendAnchorInfo.Website) == 0 || isBlankCharacter(extendAnchorInfo.Website) {
+		return false, errors.New("updateAnchorInfo Website can't be empty or blank character")
 	}
 
-	if len(extendAnchorInfo.DocumentUrl) == 0 {
-		return false, errors.New("updateAnchorInfo DocumentUrl can't be empty")
+	if len(extendAnchorInfo.DocumentUrl) == 0 || isBlankCharacter(extendAnchorInfo.DocumentUrl) {
+		return false, errors.New("updateAnchorInfo DocumentUrl can't be empty or blank character")
 	}
 
-	if len(extendAnchorInfo.ServerUrl) == 0 {
-		return false, errors.New("updateAnchorInfo ServerUrl can't be empty")
+	if len(extendAnchorInfo.ServerUrl) == 0 || isBlankCharacter(extendAnchorInfo.ServerUrl) {
+		return false, errors.New("updateAnchorInfo ServerUrl can't be empty or blank character")
 	}
 
-	if !verifyEmailFormat(extendAnchorInfo.Email) {
-		return false, errors.New("updateAnchorInfo Email is not valid  e-mail")
-	}
+	// if !verifyEmailFormat(extendAnchorInfo.Email) {
+	// 	return false, errors.New("updateAnchorInfo Email is not valid  e-mail")
+	// }
 
 	return true, nil
 }
@@ -439,7 +412,7 @@ func (anc *Anchor) GetCertificateList(anchor string) ([]string, error) {
 	}
 
 	res, err := pointer.ToStringArray()
-	if err == dto.EMPTYRESPONSE{
+	if err == dto.EMPTYRESPONSE {
 		return nil, errors.New("该信任锚没有颁发过证书")
 	}
 

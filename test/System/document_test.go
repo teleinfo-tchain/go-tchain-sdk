@@ -15,6 +15,7 @@ const (
 	isSM2Doc       = false
 	passwordDoc    = "teleinfo"
 	testAddressDoc = "did:bid:6cc796b8d6e2fbebc9b3cf9e"
+	testAddressDocPublicKey = "0x04862d66d1255c7ac9c6d86920081069a4d7c295c838140217644ac6f4fcddd0d2edef63951148affb107223fbd1331363e275125bc0cfeb34b1daad26328f8b20"
 )
 
 func TestInit(t *testing.T) {
@@ -154,8 +155,7 @@ func TestAddPublic(t *testing.T) {
 	sysTxParams.ChainId = big.NewInt(0).SetUint64(chainId)
 
 	doc := connection.System.NewDoc()
-
-	txHash, err := doc.AddPublic(sysTxParams, testAddressDoc, "secp256k1", "all", " ")
+	txHash, err := doc.AddPublic(sysTxParams, testAddressDoc, "secp256k1", "all", testAddressDocPublicKey)
 	if err != nil {
 		t.Error(err)
 		t.FailNow()
