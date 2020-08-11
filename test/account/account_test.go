@@ -80,11 +80,12 @@ func TestRecoverTransaction(t *testing.T) {
 		// 这个为什么会抛出panic？？？？  不应该提示错误吗？ 是国密解密的初始化问题，国密那里代码需要修改
 		// E:\code\go\pkg\mod\github.com\teleinfo-bif\bit-gmsm@v1.0.5\sm2\sm2.go
 		// E:\code\go\pkg\mod\github.com\teleinfo-bif\bit-gmsm@v1.0.5\sm2\p256.go
-		{"非国密交易签名解析", resources.CoinBase, false, "0xf87f82938f23831e8480946469643a6269643ac935bd29a90fbeea87badf3e946469643a6269643a7368eb1b26408f44721e20bd850ba43b740080018202bea0368f6865897245b3d2e3148bf110e81ef7a8fc8d0284700342e4f289319ac485a00a7463274634171a32d412a620df4db3a0f587ee879c1ea27353239b1d6c05c6"},
+		// 注意使用不同的chainId签名会得到不同的签名交易，因此解析可能报错（因为签名的chainId变了）。
+		{"非国密交易签名解析", resources.CoinBase, false, "0xf87d8023831e8480946469643a6269643ac935bd29a90fbeea87badf3e946469643a6269643a7368eb1b26408f44721e20bd850ba43b74008001820558a018eaaade5d45e1d461ddb8d763ec7d5f5b12bf17f36daa4bc3cdefae3a395fdba00d95dc9143c1d3cde74b3ddcb7a87e562ca89fca9dbe1530a73ba38e2a15cfb7"},
 		// 这里试着对从GetRawTransactionByHash中获得hash获取；
 		{"非国密交易签名解析", resources.CoinBase, false, "0xf8bf8292fe19829c40946469643a6269643ac935bd29a90fbeea87badf3e946469643a6269643ac935bd29a90fbeea87badf3e0a80018202bda0e96150ad4fd738be89a982dd4a0d739fc3992ebfe48c63ce07e0b5249f03f57ca0481e40b26a7bd13a5b9a5a1429c761152c2a5b44bb7d96ec7e6352cd0952908b018202bda0e96150ad4fd738be89a982dd4a0d739fc3992ebfe48c63ce07e0b5249f03f57ca0481e40b26a7bd13a5b9a5a1429c761152c2a5b44bb7d96ec7e6352cd0952908b"},
 	} {
-		var connection = bif.NewBif(providers.NewHTTPProvider(resources.IP+":"+resources.Port, 10, false))
+		var connection = bif.NewBif(providers.NewHTTPProvider(resources.IP55+":"+resources.Port, 10, false))
 		recoverAddress, err := connection.Account.RecoverTransaction(test.rawTx, test.isSM2)
 		if err != nil {
 			t.Error(err)
@@ -111,7 +112,7 @@ func TestSignTransaction(t *testing.T) {
 		// {"国密签名转账", resources.AddressSM2, resources.AddressPriKey, resources.CoinBase, true},
 		{"非国密签名转账", resources.CoinBase, resources.CoinBasePriKey, resources.AddressSM2, false},
 	} {
-		var connection = bif.NewBif(providers.NewHTTPProvider(resources.IP+":"+resources.Port, 10, false))
+		var connection = bif.NewBif(providers.NewHTTPProvider(resources.IP55+":"+resources.Port, 10, false))
 		nonce, err := connection.Core.GetTransactionCount(test.address, block.LATEST)
 		if err != nil {
 			t.Errorf("Failed connection")

@@ -30,6 +30,39 @@ type PeerCertificate struct {
 	abi   abi.ABI
 }
 
+func (peerCer *PeerCertificate) peerRegisterPreCheck(registerCertificate *dto.RegisterCertificateInfo) (bool, error) {
+	// 查验参数是否输入合法
+	if !isValidHexAddress(registerCertificate.Id) {
+		return false, errors.New("registerCertificate id is not valid bid")
+	}
+	if !isValidHexAddress(registerCertificate.Apply) {
+		return false, errors.New("registerCertificate Apply is not valid bid")
+	}
+	if len(registerCertificate.PublicKey) != 53  || isBlankCharacter(registerCertificate.PublicKey) {
+		return false, errors.New("registerCertificate publicKey's len should be 53")
+	}
+	if len(registerCertificate.NodeName) == 0 || isBlankCharacter(registerCertificate.NodeName) {
+		return false, errors.New("registerCertificate NodeName can't be empty or blank character")
+	}
+	if registerCertificate.NodeType != 0 && registerCertificate.NodeType != 1 {
+		return false, errors.New("registerCertificate NodeType should be 0 or 1")
+	}
+	if !isLegalIP(registerCertificate.IP) {
+		return false, errors.New("registerCertificate IP is illegal")
+	}
+	if registerCertificate.Port > 65535 {
+		return false, errors.New("registerCertificate Port should be in range 0 to 65535")
+	}
+	if len(registerCertificate.CompanyName) == 0 || isBlankCharacter(registerCertificate.NodeName) {
+		return false, errors.New("registerCertificate CompanyName can't be empty or blank character")
+	}
+	if len(registerCertificate.CompanyCode) == 0 || isBlankCharacter(registerCertificate.NodeName) {
+		return false, errors.New("registerCertificate CompanyCode can't be empty or blank character")
+	}
+
+	return true, nil
+}
+
 // NewPeerCertificate - 初始化PeerCertificate
 func (sys *System) NewPeerCertificate() *PeerCertificate {
 	parseAbi, _ := abi.JSON(strings.NewReader(PeerCertificateAbiJSON))
@@ -75,7 +108,7 @@ func (peerCer *PeerCertificate) messageSignature(message, password string, keyFi
 	buf.Write([]byte{sig[64] + 27})
 	buf.Write(sig[:64])
 	// fmt.Printf("sig is  %s \n", t+utils.Bytes2Hex(buf.Bytes()))
-	return messageSha3, t+utils.Bytes2Hex(buf.Bytes()), err
+	return messageSha3, t + utils.Bytes2Hex(buf.Bytes()), err
 }
 
 /*
@@ -85,18 +118,18 @@ func (peerCer *PeerCertificate) messageSignature(message, password string, keyFi
   Params:
   	- signTxParams *SysTxParams 系统合约构造所需参数
 	- registerCertificate:  *dto.RegisterCertificateInfo，包含可信证书的信息
-		Id          string //节点证书的bid,，必须和public_key相同
-		Apply       string
-		PublicKey   string // 53个字符的公钥
+		Id          string // 节点证书的bid，必须和public_key对应，索引
+		Apply       string // 申请人的bid（与Id可以相同，可以不同）
+		PublicKey   string // 53个字符的公钥，也就是p2p节点id的形式
 		NodeName    string // 节点名称，不含敏感词的字符串
-		MessageSha3 string // 消息sha3后的16进制字符串
+		MessageSha3 string // 消息sha3后的16进制字符串，用于本地签名和链上验证签名，该字段不会被链保存
 		Signature   string // 对上一个字段消息的签名，16进制字符串
 		NodeType    uint64 // 节点类型，0企业，1个人
 		Period      uint64 // 证书有效期，以年为单位的整型
-		IP          string // ip
-		Port        uint64 // port
-		CompanyName string // 公司名（如果是个人，则是个人姓名）
-		CompanyCode string // 公司代码
+		IP          string // 节点间互连的ip
+		Port        uint64 // 节点间互连的端口
+		CompanyName string // 公司名（如果是个人，则是个人姓名），不含敏感词的字符串
+		CompanyCode string // 公司代码，不含敏感词的字符串
 
   Returns:
   	- string, 交易哈希(transactionHash)，如果交易尚不可用，则为零哈希。
@@ -105,18 +138,15 @@ func (peerCer *PeerCertificate) messageSignature(message, password string, keyFi
   Call permissions: 只有监管节点地址可以调用
 */
 func (peerCer *PeerCertificate) RegisterCertificate(signTxParams *SysTxParams, registerCertificate *dto.RegisterCertificateInfo, idPassword string, idKeyFile []byte, idIsSM2 bool) (string, error) {
-	// 查验参数是否输入合法
-	if !isValidHexAddress(registerCertificate.Id){
-		return "", errors.New("registerCertificate id is not valid bid")
-	}
-	if len(registerCertificate.PublicKey) != 53{
-		return "", errors.New("registerCertificate publicKey's len should be 53")
+	ok, err := peerCer.peerRegisterPreCheck(registerCertificate)
+	if !ok {
+		return "", err
 	}
 
 	// encoding
 	// registerCertificate is a struct we need to use the components.
-	messageSha3, signature, err :=peerCer.messageSignature("test", idPassword,idKeyFile, idIsSM2)
-	if err != nil{
+	messageSha3, signature, err := peerCer.messageSignature("test", idPassword, idKeyFile, idIsSM2)
+	if err != nil {
 		return "", err
 	}
 	// fmt.Printf("messageSha3 %s, signature  %s \n", messageSha3, signature)
@@ -156,7 +186,7 @@ func (peerCer *PeerCertificate) RegisterCertificate(signTxParams *SysTxParams, r
   Call permissions: 只有监管节点地址可以调用
 */
 func (peerCer *PeerCertificate) RevokedCertificate(signTxParams *SysTxParams, id string) (string, error) {
-	if !isValidHexAddress(id){
+	if !isValidHexAddress(id) {
 		return "", errors.New("id is not valid bid address")
 	}
 
@@ -188,7 +218,7 @@ func (peerCer *PeerCertificate) RevokedCertificate(signTxParams *SysTxParams, id
   Call permissions: Anyone
 */
 func (peerCer *PeerCertificate) GetPeriod(id string) (uint64, error) {
-	if !isValidHexAddress(id){
+	if !isValidHexAddress(id) {
 		return 0, errors.New("id is not valid bid address")
 	}
 
@@ -219,7 +249,7 @@ func (peerCer *PeerCertificate) GetPeriod(id string) (uint64, error) {
   Call permissions: Anyone
 */
 func (peerCer *PeerCertificate) GetActive(id string) (bool, error) {
-	if !isValidHexAddress(id){
+	if !isValidHexAddress(id) {
 		return false, errors.New("id is not valid bid address")
 	}
 
@@ -247,7 +277,7 @@ func (peerCer *PeerCertificate) GetActive(id string) (bool, error) {
   	- *dto.PeerCertificate
 		Id          string   `json:"id"`          //唯一索引
 		Issuer      string   `json:"issuer"`      //颁发者地址
-		Apply       string   `json:"apply"`       // 申请人bid
+		Apply       string   `json:"apply"`       //申请人bid
 		PublicKey   string   `json:"publicKey"`   //节点公钥
 		NodeName    string   `json:"nodeName"`    //节点名称
 		Signature   string   `json:"signature"`   //节点签名内容
@@ -262,7 +292,7 @@ func (peerCer *PeerCertificate) GetActive(id string) (bool, error) {
   Call permissions: Anyone
 */
 func (peerCer *PeerCertificate) GetPeerCertificate(id string) (*dto.PeerCertificate, error) {
-	if !isValidHexAddress(id){
+	if !isValidHexAddress(id) {
 		return nil, errors.New("id is not valid bid address")
 	}
 
@@ -284,7 +314,7 @@ func (peerCer *PeerCertificate) GetPeerCertificate(id string) (*dto.PeerCertific
    	EN - Get applied certificates by bid
  	CN - 根据节点可信证书申请人的bid获取申请的证书列表
   Params:
-  	- id: string，节点证书的bid
+  	- id: string，节点可信证书申请人（Apply）bid
 
   Returns:
   	- []string, 申请人申请的证书列表
@@ -293,7 +323,7 @@ func (peerCer *PeerCertificate) GetPeerCertificate(id string) (*dto.PeerCertific
   Call permissions: Anyone
 */
 func (peerCer *PeerCertificate) GetPeerCertificateIdList(id string) ([]string, error) {
-	if !isValidHexAddress(id){
+	if !isValidHexAddress(id) {
 		return nil, errors.New("id is not valid bid address")
 	}
 

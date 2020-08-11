@@ -6,7 +6,7 @@ const (
 	IP52           string = "172.17.6.52"
 	IP54           string = "172.17.6.54"
 	IP55           string = "172.17.6.55"
-	Port           string = "44042"
+	Port           string = "44022"
 	CoinBase       string = "did:bid:c935bd29a90fbeea87badf3e"
 	CoinBasePriKey string = "296450657cf696cf3175b462415a84a8969dd4219841741690e85f770e4654d7"
 	AddressTwo     string = "did:bid:c117c1794fc7a27bd301ae52"

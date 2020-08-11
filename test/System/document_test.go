@@ -91,7 +91,7 @@ func TestSetBidName(t *testing.T) {
 
 	doc := connection.System.NewDoc()
 
-	txHash, err := doc.SetBidName(sysTxParams, testAddressDoc, "testTele2")
+	txHash, err := doc.SetBidName(sysTxParams, testAddressDoc, "       ")
 	if err != nil {
 		t.Error(err)
 		t.FailNow()
@@ -155,7 +155,7 @@ func TestAddPublic(t *testing.T) {
 
 	doc := connection.System.NewDoc()
 
-	txHash, err := doc.AddPublic(sysTxParams, "test", "test", "1", "123")
+	txHash, err := doc.AddPublic(sysTxParams, testAddressDoc, "secp256k1", "all", " ")
 	if err != nil {
 		t.Error(err)
 		t.FailNow()
@@ -200,7 +200,7 @@ func TestDelPublic(t *testing.T) {
 
 	doc := connection.System.NewDoc()
 
-	txHash, err := doc.DelPublic(sysTxParams, "test", "123")
+	txHash, err := doc.DelPublic(sysTxParams, testAddressDoc, " ")
 	if err != nil {
 		t.Error(err)
 		t.FailNow()
@@ -245,7 +245,7 @@ func TestAddAuth(t *testing.T) {
 
 	doc := connection.System.NewDoc()
 
-	txHash, err := doc.AddAuth(sysTxParams, "test", "123")
+	txHash, err := doc.AddAuth(sysTxParams, testAddressDoc, "")
 	if err != nil {
 		t.Error(err)
 		t.FailNow()
@@ -290,7 +290,7 @@ func TestDelAuth(t *testing.T) {
 
 	doc := connection.System.NewDoc()
 
-	txHash, err := doc.DelAuth(sysTxParams, "test", "123")
+	txHash, err := doc.DelAuth(sysTxParams, testAddressDoc, "123")
 	if err != nil {
 		t.Error(err)
 		t.FailNow()
@@ -335,7 +335,7 @@ func TestAddService(t *testing.T) {
 
 	doc := connection.System.NewDoc()
 
-	txHash, err := doc.AddService(sysTxParams, "test", "123", "0", "serviceEndpoint")
+	txHash, err := doc.AddService(sysTxParams, testAddressDoc, "123", "0", "serviceEndpoint")
 	if err != nil {
 		t.Error(err)
 		t.FailNow()
@@ -380,7 +380,7 @@ func TestDelService(t *testing.T) {
 
 	doc := connection.System.NewDoc()
 
-	txHash, err := doc.DelService(sysTxParams, "test", "123")
+	txHash, err := doc.DelService(sysTxParams, testAddressDoc, "123")
 	if err != nil {
 		t.Error(err)
 		t.FailNow()
@@ -425,7 +425,7 @@ func TestAddProof(t *testing.T) {
 
 	doc := connection.System.NewDoc()
 
-	txHash, err := doc.AddProof(sysTxParams, "123", "0", "testProof", "1")
+	txHash, err := doc.AddProof(sysTxParams, testAddressDoc, "0", "testProof", "1")
 	if err != nil {
 		t.Error(err)
 		t.FailNow()
@@ -470,7 +470,7 @@ func TestDelProof(t *testing.T) {
 
 	doc := connection.System.NewDoc()
 
-	txHash, err := doc.DelProof(sysTxParams, "123")
+	txHash, err := doc.DelProof(sysTxParams, testAddressDoc)
 	if err != nil {
 		t.Error(err)
 		t.FailNow()
@@ -515,7 +515,7 @@ func TestAddExtra(t *testing.T) {
 
 	doc := connection.System.NewDoc()
 
-	txHash, err := doc.AddExtra(sysTxParams, "testAttr", "attr")
+	txHash, err := doc.AddExtra(sysTxParams, testAddressDoc, "attr")
 	if err != nil {
 		t.Error(err)
 		t.FailNow()

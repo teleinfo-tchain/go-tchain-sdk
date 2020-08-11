@@ -49,18 +49,18 @@ type RoundChangeSetInfo struct {
 */
 
 type RegisterCertificateInfo struct {
-	Id          string // 节点证书的bid,，必须和public_key对应
-	Apply       string
-	PublicKey   string // 53个字符的公钥
+	Id          string // 节点证书的bid，必须和public_key对应，索引
+	Apply       string // 申请人的bid（与Id可以相同，可以不同）
+	PublicKey   string // 53个字符的公钥，也就是p2p节点id的形式
 	NodeName    string // 节点名称，不含敏感词的字符串
-	MessageSha3 string // 消息sha3后的16进制字符串
+	MessageSha3 string // 消息sha3后的16进制字符串，用于本地签名和链上验证签名，该字段不会被链保存
 	Signature   string // 对上一个字段消息的签名，16进制字符串
 	NodeType    uint64 // 节点类型，0企业，1个人
 	Period      uint64 // 证书有效期，以年为单位的整型
-	IP          string // ip
-	Port        uint64 // port
-	CompanyName string // 公司名（如果是个人，则是个人姓名）
-	CompanyCode string // 公司代码
+	IP          string // 节点间互连的ip
+	Port        uint64 // 节点间互连的端口
+	CompanyName string // 公司名（如果是个人，则是个人姓名），不含敏感词的字符串
+	CompanyCode string // 公司代码，不含敏感词的字符串
 }
 
 type PeerCertificate struct {
@@ -195,16 +195,16 @@ type Attribute struct {
 }
 
 type Document struct {
-	Id              string       `json:"id"` //bid
+	Id              string       `json:"id"` // bid
 	Contexts        string       `json:"context"`
-	Name            string       `json:"name"`            //bid标识符昵称
+	Name            string       `json:"name"`            // bid标识符昵称
 	Type            uint64       `json:"type"`            // bid的类型，包括0：普通用户,1:智能合约以及设备，2：企业或者组织，BID类型一经设置，永不能变
-	PublicKeys      []*PublicKey `json:"publicKeys"`      //用户用于身份认证的公钥信息
-	Authentications []string     `json:"authentications"` //用户身份认证列表信息
-	Services        []*Service   `json:"services"`        //用户填写的服务端点信息
-	Proof           *Proof       `json:"proof"`           //用户填写的证明信息值
-	Extra           string       `json:"extra"`           //用户填写的备注
-	IsEnable        bool         `json:"isEnable"`        //该BID是否启用
+	PublicKeys      []*PublicKey `json:"publicKeys"`      // 用户用于身份认证的公钥信息
+	Authentications []string     `json:"authentications"` // 用户身份认证列表信息
+	Services        []*Service   `json:"services"`        // 用户填写的服务端点信息
+	Proof           *Proof       `json:"proof"`           // 用户填写的证明信息值
+	Extra           string       `json:"extra"`           // 用户填写的备注
+	IsEnable        bool         `json:"isEnable"`        // 该BID是否启用
 	CreateTime      *big.Int     `json:"createTime"`
 	UpdateTime      *big.Int     `json:"updateTime"`
 }

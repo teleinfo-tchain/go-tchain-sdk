@@ -3,20 +3,13 @@ package system
 import (
 	"errors"
 	"github.com/bif/bif-sdk-go/abi"
+	"github.com/bif/bif-sdk-go/account"
 	"github.com/bif/bif-sdk-go/dto"
-	"github.com/bif/bif-sdk-go/utils"
 	"strings"
 )
 
 const (
 	CertificateContractAddr = "did:bid:00000000000000000000000b"
-)
-
-var (
-	// ErrCertificateRegistered  = errors.New("certificate is already registered")
-	ErrCertificateNotExist = errors.New("certificate doesn't exist")
-	// ErrIllegalSender          = errors.New("illegal sender")
-	// ErrIllSenderOrCerNotExist = errors.New("illegal sender Or certificate doesn't exist")
 )
 
 // 个人可信的AbiJson数据
@@ -43,38 +36,25 @@ func (sys *System) NewCertificate() *Certificate {
 	return cer
 }
 
-// type RegisterCertificate struct {
-//	Id               string // 个人可信证书bid
-//	Context          string // 证书上下文环境，随便一个字符串，不验证
-//	Subject          string // 证书接收者的bid，证书是颁给谁的
-//	Period           uint64 // 证书有效期，以年为单位的整型
-//	IssuerAlgorithm  string // 颁发者签名算法，字符串
-//	IssuerSignature  string // 颁发者签名值，16进制字符串
-//	SubjectPublicKey string // 接收者公钥，16进制字符串
-//	SubjectAlgorithm string // 接收者签名算法，字符串
-//	SubjectSignature string // 接收者签名值，16进制字符串
-// }
-func registerCertificatePreCheck(registerCertificate *dto.RegisterCertificate) (bool, error) {
+// TODO: 后续需要加上 IssuerAlgorithm  IssuerSignature SubjectAlgorithm  SubjectSignature 的检测
+func (cer *Certificate) registerCertificatePreCheck(registerCertificate *dto.RegisterCertificate) (bool, error) {
 	if !isValidHexAddress(registerCertificate.Id) {
 		return false, errors.New("registerCertificate Id is not valid bid")
+	}
+
+	if len(registerCertificate.Context) == 0 || isBlankCharacter(registerCertificate.Context) {
+		return false, errors.New("registerCertificate Context can't be empty")
 	}
 
 	if !isValidHexAddress(registerCertificate.Subject) {
 		return false, errors.New("registerCertificate Subject is not valid bid")
 	}
 
-	// Bug 这个需要修改，判断长度和是否是十六进制，现在暂时判断是否是hex string
-	var publicKey string
-	if utils.Has0xPrefix(registerCertificate.SubjectPublicKey) {
-		publicKey = registerCertificate.SubjectPublicKey[2:]
-	} else {
-		publicKey = registerCertificate.SubjectPublicKey
+	// 检测公钥，且判断是否与subject的地址相匹配
+	ok, err := account.CheckPublicKeyToAccount(registerCertificate.Subject, registerCertificate.SubjectPublicKey)
+	if !ok {
+		return false, err
 	}
-	if !utils.IsHex(publicKey) {
-		return false, errors.New("registerAnchor SubjectPublicKey is not valid publicKey")
-	}
-
-	// 其余IssuerAlgorithm  IssuerSignature SubjectAlgorithm  SubjectSignature 暂不检查
 
 	return true, nil
 }
@@ -103,12 +83,11 @@ func registerCertificatePreCheck(registerCertificate *dto.RegisterCertificate) (
   Call permissions: 只有信任锚地址可以调用
 */
 func (cer *Certificate) RegisterCertificate(signTxParams *SysTxParams, registerCertificate *dto.RegisterCertificate) (string, error) {
-	ok, err := registerCertificatePreCheck(registerCertificate)
+	ok, err := cer.registerCertificatePreCheck(registerCertificate)
 	if !ok {
 		return "", err
 	}
 
-	// encoding
 	// registerCertificate is a struct we need to use the components.
 	var values []interface{}
 	values = cer.super.structToInterface(*registerCertificate, values)

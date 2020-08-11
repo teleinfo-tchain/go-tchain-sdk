@@ -118,6 +118,9 @@ func (manager *Manager) SetPower(signTxParams *SysTxParams, userAddress string, 
 	if !isValidHexAddress(userAddress) {
 		return "", errors.New("userAddress is not valid hex address")
 	}
+	if power != 1 && power != 2 && power != 3 && power != 4 && power != 5 && power != 6 {
+		return "", errors.New("power is not illegal")
+	}
 
 	// encoding
 	inputEncode, err := manager.abi.Pack("power", userAddress, power)

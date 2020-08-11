@@ -13,8 +13,8 @@ import (
 )
 
 const (
-	isSM2Elect = false
-	passwordElect = "teleinfo"
+	isSM2Elect       = false
+	passwordElect    = "teleinfo"
 	testAddressElect = "did:bid:6cc796b8d6e2fbebc9b3cf9e"
 )
 
@@ -193,12 +193,9 @@ func TestVoteWitnesses(t *testing.T) {
 
 	candidate := "did:bid:ee4f5aa444dc5ec815a25c7"
 	voteWitnessHash, err := elect.VoteWitnesses(sysTxParams, candidate)
-	if err != nil && err != system.ErrCertificateNotExist {
+	if err != nil {
 		t.Error(err)
 		t.FailNow()
-	}
-	if err == system.ErrCertificateNotExist {
-		t.Log(err)
 	}
 	t.Log(voteWitnessHash)
 }

@@ -50,12 +50,12 @@ func TestPeerRegisterCertificate(t *testing.T) {
 
 	registerCertificateInfo := new(dto.RegisterCertificateInfo)
 	registerCertificateInfo.Id = bid
-	registerCertificateInfo.Apply = ""
+	registerCertificateInfo.Apply = bid
 	registerCertificateInfo.PublicKey = publicKeyTest
 	registerCertificateInfo.NodeName = "testTELE"
 	registerCertificateInfo.NodeType = 0
 	registerCertificateInfo.Period = 1
-	registerCertificateInfo.IP = resources.IP55
+	registerCertificateInfo.IP = resources.IP
 	registerCertificateInfo.Port = uint64(44012)
 	registerCertificateInfo.CompanyName = "tele info"
 	registerCertificateInfo.CompanyCode = "10000000000"

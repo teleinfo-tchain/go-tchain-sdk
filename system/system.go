@@ -168,3 +168,22 @@ func verifyEmailFormat(email string) bool {
 	reg := regexp.MustCompile(pattern)
 	return reg.MatchString(email)
 }
+
+// 检测是否空白字符
+func isBlankCharacter(judge string) bool {
+	reg, _ := regexp.Compile(`^\s+$`)
+	return reg.MatchString(judge)
+}
+
+// 检测IP是否合法
+// (1~255).(0~255).(0~255).(0~255)
+func isLegalIP(ip string) bool {
+	// ip地址范围：(1~255).(0~255).(0~255).(0~255)
+	// ipRegEx := "^([1-9]|([1-9][0-9])|(1[0-9][0-9])|(2[0-4][0-9])|(25[0-5]))(\\.([0-9]|([1-9][0-9])|(1[0-9][0-9])|(2[0-4][0-9])|(25[0-5]))){3}$"
+	ipRegEx := "^([1-9]|([1-9]\\d)|(1\\d{2})|(2[0-4]\\d)|(25[0-5]))(\\.(\\d|([1-9]\\d)|(1\\d{2})|(2[0-4]\\d)|(25[0-5]))){3}$"
+	// ipRegEx := "^(([1-9]\\d?)|(1\\d{2})|(2[0-4]\\d)|(25[0-5]))(\\.(0|([1-9]\\d?)|(1\\d{2})|(2[0-4]\\d)|(25[0-5]))){3}$"
+	// Pattern
+	reg, _ := regexp.Compile(ipRegEx)
+	// Matcher
+	return reg.MatchString(ip)
+}

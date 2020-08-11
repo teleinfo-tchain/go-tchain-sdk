@@ -14,10 +14,12 @@ import (
 
 const (
 	// 注册证书的bid
-	personCertificate      = "did:bid:c935bd29a90fbeea87badf3e"
-	isSM2Certificate       = false
-	passwordCertificate    = "teleinfo"
-	testAddressCertificate = "did:bid:6cc796b8d6e2fbebc9b3cf9e"
+	personCertificate = "did:bid:c935bd29a90fbeea87badf3e"
+	// 与personCertificate对应的公钥
+	personCertificatePublicKey = "0x040d843e75752ca5c7db12c2e8e2dc4e6eb771ddf1511809c4e708bc74abad0f14f970229a64287ec34122d3657167ea7dd5c9f1902ca6fcfc0b0a91e78d39573c"
+	isSM2Certificate           = false
+	passwordCertificate        = "teleinfo"
+	testAddressCertificate     = "did:bid:6cc796b8d6e2fbebc9b3cf9e"
 )
 
 func TestRegisterCertificate(t *testing.T) {
@@ -58,12 +60,12 @@ func TestRegisterCertificate(t *testing.T) {
 
 	registerCertificate := new(dto.RegisterCertificate)
 	registerCertificate.Id = personCertificate
-	registerCertificate.Context = "context_test"
+	registerCertificate.Context = "test context"
 	registerCertificate.Subject = personCertificate
 	registerCertificate.Period = 1
 	registerCertificate.IssuerAlgorithm = ""
 	registerCertificate.IssuerSignature = ""
-	registerCertificate.SubjectPublicKey = "0x23"
+	registerCertificate.SubjectPublicKey = personCertificatePublicKey
 	registerCertificate.SubjectAlgorithm = ""
 	registerCertificate.SubjectSignature = ""
 	// registerCertificate

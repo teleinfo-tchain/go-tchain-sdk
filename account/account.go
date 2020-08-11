@@ -249,7 +249,7 @@ func (account *Account) Encrypt(privateKey string, isSM2 bool, password string, 
   Call permissions: Anyone
 */
 func (account *Account) Decrypt(keystoreJson []byte, isSM2 bool, password string) (string, string, error) {
-	if len(keystoreJson) == 0{
+	if len(keystoreJson) == 0 {
 		return "", "", errors.New("keystoreJson is empty")
 	}
 
@@ -343,7 +343,7 @@ func (account *Account) SignTransaction(signData *SignTxParams, privateKey strin
   TODO：由于解密交易和签名交易的还没统一，后期需要修改，将rlp.DecodeBytes(rawTx, &tx)加上错误处理（即上文注释的部分）
 */
 func (account *Account) RecoverTransaction(rawTxString string, isSM2 bool) (string, error) {
-	if rawTxString[:2] == "0x" || rawTxString[:2] == "0X" {
+	if utils.Has0xPrefix(rawTxString) {
 		rawTxString = rawTxString[2:]
 	}
 
@@ -505,7 +505,7 @@ func (account *Account) Sign(signData *SignData, privateKey string, isSm2 bool, 
   Bug:国密解密有问题
 */
 func (account *Account) Recover(rawTxString string, isSM2 bool) (string, error) {
-	if rawTxString[:2] == "0x" || rawTxString[:2] == "0X" {
+	if utils.Has0xPrefix(rawTxString) {
 		rawTxString = rawTxString[2:]
 	}
 

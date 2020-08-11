@@ -10,7 +10,6 @@ import (
 
 const (
 	ElectionContractAddr = "did:bid:000000000000000000000009"
-	// VoteLimit         = 64
 	// OneDay            = int64(24) * 3600
 	// VoteOrProxyOneDay = OneDay
 	// VoteOrProxyOneDay = 60
@@ -19,6 +18,7 @@ const (
 	// year    = 1559318400   // 2019-06-01 00:00:00
 )
 
+// todo:这几种错误对应的判断，需要填入前置判断
 // var (
 // 	ErrCandiNameLenInvalid    = errors.New("the length of candidate's name should between [4, 20]")
 // 	ErrCandiUrlLenInvalid     = errors.New("the length of candidate's website url should between [6, 60]")
@@ -26,19 +26,6 @@ const (
 // 	ErrCandiInfoDup           = errors.New("candidate's name, website url or node url is duplicated with a registered candidate")
 // 	ErrCandiAlreadyRegistered = errors.New("candidate is already registered")
 // 	ErrPeerNotTrust           = errors.New("peer is not apply trust")
-// )
-
-// var (
-// 	nowTimeStamp = big.NewInt(year)
-//
-// 	// 投票周期
-// 	unStakePeriod   = big.NewInt(VoteOrProxyOneDay)
-// 	baseBounty      = big.NewInt(0).Mul(big.NewInt(1e+18), big.NewInt(1000))
-// 	restTotalBounty = big.NewInt(0).Mul(big.NewInt(1e18), big.NewInt(1e9))
-//
-// 	//代币增量 初始发行量的5%
-// 	tokenAdd = big.NewInt(0).Div(restTotalBounty, big.NewInt(20))
-//
 // )
 
 // 见证人选举的AbiJson数据
@@ -74,17 +61,29 @@ func (sys *System) NewElection() *Election {
 	return election
 }
 
-func registerWitnessPreCheck(witness *dto.RegisterWitness) (bool, error) {
-	if len(witness.NodeUrl) == 0 {
-		return false, errors.New("witness NodeUrl can't be empty")
+func (e *Election) judgeScheme(url string) bool {
+	parts := strings.Split(url, "://")
+	if len(parts) != 2 || parts[0] == "" {
+		return false
+	}
+	return true
+}
+
+func (e *Election) registerWitnessPreCheck(witness *dto.RegisterWitness) (bool, error) {
+	if len(witness.NodeUrl) == 0 || isBlankCharacter(witness.NodeUrl) {
+		return false, errors.New("witness NodeUrl can't be empty or blank character")
 	}
 
-	if len(witness.Website) == 0 {
-		return false, errors.New("witness Website can't be empty")
+	if len(witness.Website) == 0 || isBlankCharacter(witness.Website) {
+		return false, errors.New("witness Website can't be empty or blank character")
 	}
 
-	if len(witness.Name) == 0 {
-		return false, errors.New("witness Name can't be empty")
+	if !e.judgeScheme(witness.Website) {
+		return false, errors.New("witness Website protocol scheme missing")
+	}
+
+	if len(witness.Name) == 0 || isBlankCharacter(witness.Name) {
+		return false, errors.New("witness Name can't be empty or blank character")
 	}
 
 	return true, nil
@@ -108,7 +107,7 @@ func registerWitnessPreCheck(witness *dto.RegisterWitness) (bool, error) {
   Call permissions: ？？？
 */
 func (e *Election) RegisterWitness(signTxParams *SysTxParams, witness *dto.RegisterWitness) (string, error) {
-	ok, err := registerWitnessPreCheck(witness)
+	ok, err := e.registerWitnessPreCheck(witness)
 	if !ok {
 		return "", err
 	}
@@ -359,15 +358,20 @@ func (e *Election) CancelProxy(signTxParams *SysTxParams) (string, error) {
 	CN - 设置代理
   Params:
   	- signTxParams *SysTxParams 系统合约构造所需参数
-	- proxy: string，???  需要判断proxy的合法性！！！
+	- proxy: string，???
 
   Returns:
   	- string, 交易哈希(transactionHash)，如果交易尚不可用，则为零哈希。
 	- error
 
   Call permissions: ？？？
+  todo:需要前置判断proxy的合法性，proxy的特点
 */
 func (e *Election) SetProxy(signTxParams *SysTxParams, proxy string) (string, error) {
+	if len(proxy) == 0 || isBlankCharacter(proxy) {
+		return "", errors.New("proxy can't be empty or blank character")
+	}
+
 	// encoding
 	inputEncode, err := e.abi.Pack("setProxy", proxy)
 	if err != nil {

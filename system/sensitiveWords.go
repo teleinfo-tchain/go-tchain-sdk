@@ -48,8 +48,8 @@ func (sys *System) NewSensitiveWord() *SensitiveWord {
   Call permissions: 只有监管节点地址可以操作
 */
 func (sen *SensitiveWord) AddWord(signTxParams *SysTxParams, word string) (string, error) {
-	if len(word) == 0{
-		return "", errors.New("word can't be empty")
+	if len(word) == 0 || isBlankCharacter(word) {
+		return "", errors.New("word can't be empty or blank character")
 	}
 
 	// encoding
@@ -81,14 +81,17 @@ func (sen *SensitiveWord) AddWord(signTxParams *SysTxParams, word string) (strin
   Call permissions: 只有监管节点地址可以操作
 */
 func (sen *SensitiveWord) AddWords(signTxParams *SysTxParams, wordsLi []string) (string, error) {
-	if wordsLi == nil || len(wordsLi) == 0{
+	if wordsLi == nil || len(wordsLi) == 0 {
 		return "", errors.New("wordsLi can't be nil or empty")
 	}
 
 	// encoding
 	var b strings.Builder
-	l:=len(wordsLi)
-	for i:=0;i<l;i++{
+	l := len(wordsLi)
+	for i := 0; i < l; i++ {
+		if len(wordsLi[i]) == 0 || isBlankCharacter(wordsLi[i]){
+			return "", errors.New("wordsLi's element can't be empty or blank character")
+		}
 		b.WriteString(wordsLi[i])
 		b.WriteString(",")
 	}
@@ -121,8 +124,8 @@ func (sen *SensitiveWord) AddWords(signTxParams *SysTxParams, wordsLi []string) 
   Call permissions: 只有监管节点地址可以操作
 */
 func (sen *SensitiveWord) DelWord(signTxParams *SysTxParams, word string) (string, error) {
-	if len(word) == 0{
-		return "", errors.New("word can't be empty")
+	if len(word) == 0 || isBlankCharacter(word) {
+		return "", errors.New("word can't be empty or blank character")
 	}
 
 	// encoding
@@ -164,7 +167,7 @@ func (sen *SensitiveWord) GetAllWords() ([]string, error) {
 	if err != nil {
 		return nil, err
 	}
-	return strings.Split(words,","), nil
+	return strings.Split(words, ","), nil
 }
 
 /*
@@ -181,8 +184,8 @@ func (sen *SensitiveWord) GetAllWords() ([]string, error) {
   Call permissions: Anyone
 */
 func (sen *SensitiveWord) IsContainWord(word string) (bool, error) {
-	if len(word) == 0{
-		return false, errors.New("word can't be empty")
+	if len(word) == 0 || isBlankCharacter(word) {
+		return false, errors.New("word can't be empty or blank character")
 	}
 
 	params := make([]string, 1)

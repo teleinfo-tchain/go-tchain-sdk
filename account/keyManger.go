@@ -11,9 +11,9 @@ import (
 	"io/ioutil"
 )
 
-func preCheck(keyDir string, password string, UseLightweightKDF bool) (int, int, error) {
-	if keyDir == "" {
-		return -1, -1, errors.New("empty keyDir, please check")
+func preCheck(keyStorePath string, password string, UseLightweightKDF bool) (int, int, error) {
+	if keyStorePath == "" {
+		return -1, -1, errors.New("empty keyStorePath, please check")
 	}
 	if password == "" {
 		return -1, -1, errors.New("empty password, please check")
@@ -33,7 +33,7 @@ func preCheck(keyDir string, password string, UseLightweightKDF bool) (int, int,
    	EN - Generate private key file
 	CN - 生成私钥文件
   Params:
-  	- keyDir string          私钥文件生成的存储地址
+  	- keyStorePath string          私钥文件生成的存储地址
   	- isSM2   bool            是否采用国密生成私钥，true为是国密，false为否
   	- password string        私钥文件密码，用于加密私钥
   	- UseLightweightKDF bool 一般选择false；如果是true会降低密钥库的内存和CPU要求,不过是以牺牲安全性为代价
@@ -44,9 +44,9 @@ func preCheck(keyDir string, password string, UseLightweightKDF bool) (int, int,
 
   Call permissions: Anyone
 */
-func GenerateKeyStore(keyDir string, isSM2 bool, password string, UseLightweightKDF bool) (string, error) {
+func GenerateKeyStore(keyStorePath string, isSM2 bool, password string, UseLightweightKDF bool) (string, error) {
 
-	scryptN, scryptP, err := preCheck(keyDir, password, UseLightweightKDF)
+	scryptN, scryptP, err := preCheck(keyStorePath, password, UseLightweightKDF)
 	if err != nil {
 		return "", err
 	}
@@ -57,7 +57,7 @@ func GenerateKeyStore(keyDir string, isSM2 bool, password string, UseLightweight
 		cryptoType = crypto.SECP256K1
 	}
 
-	address, err := keystore.StoreKey(keyDir, password, scryptN, scryptP, cryptoType)
+	address, err := keystore.StoreKey(keyStorePath, password, scryptN, scryptP, cryptoType)
 	if err != nil {
 		return "", err
 	}
@@ -70,7 +70,7 @@ func GenerateKeyStore(keyDir string, isSM2 bool, password string, UseLightweight
 	CN - 从文件获取私钥和账户地址
   Params:
   	- address string         要解析的账户地址
-  	- privateKeyFile string  keyStore文件地址
+  	- keyStorePath string     keyStore文件地址
   	- password string        keyStore加密密码
 
   Returns:
@@ -79,8 +79,8 @@ func GenerateKeyStore(keyDir string, isSM2 bool, password string, UseLightweight
 
   Call permissions: Anyone
 */
-func GetPrivateKeyFromFile(address string, privateKeyFile, password string) (string, error) {
-	keyJson, err := ioutil.ReadFile(privateKeyFile)
+func GetPrivateKeyFromFile(address string, keyStorePath, password string) (string, error) {
+	keyJson, err := ioutil.ReadFile(keyStorePath)
 	if err != nil {
 		return "", err
 	}
@@ -108,7 +108,7 @@ func GetPrivateKeyFromFile(address string, privateKeyFile, password string) (str
    	EN - Transfer private key to keyStore file
 	CN - 私钥转keyStore文件
   Params:
-  	- keyDir string      keyStore文件地址
+  	- keyStorePath string      keyStore文件地址
   	- isSM2   bool       是否采用国密生成私钥，true为是国密，false为否
   	- privateKey string  私钥
   	- password string    keyStore加密密码
@@ -119,12 +119,12 @@ func GetPrivateKeyFromFile(address string, privateKeyFile, password string) (str
 
   Call permissions: Anyone
 */
-func PrivateKeyToKeyStoreFile(keyDir string, isSM2 bool, privateKey string, password string) (bool, error) {
-	if utils.Has0xPrefix(privateKey){
+func PrivateKeyToKeyStoreFile(keyStorePath string, isSM2 bool, privateKey string, password string) (bool, error) {
+	if utils.Has0xPrefix(privateKey) {
 		privateKey = privateKey[2:]
 	}
 
-	if !utils.IsHex(privateKey) || len(privateKey) != 64{
+	if !utils.IsHex(privateKey) || len(privateKey) != 64 {
 		return false, errors.New("privateKey is not hex string or not 32 Bytes")
 	}
 
@@ -140,12 +140,12 @@ func PrivateKeyToKeyStoreFile(keyDir string, isSM2 bool, privateKey string, pass
 		return false, err
 	}
 
-	scryptN, scryptP, err := preCheck(keyDir, password, false)
+	scryptN, scryptP, err := preCheck(keyStorePath, password, false)
 	if err != nil {
 		return false, err
 	}
 
-	key := keystore.NewKeyStore(keyDir, scryptN, scryptP)
+	key := keystore.NewKeyStore(keyStorePath, scryptN, scryptP)
 	_, err = key.ImportECDSA(privateKeyN, password)
 	if err != nil {
 		return false, err
@@ -168,11 +168,11 @@ func PrivateKeyToKeyStoreFile(keyDir string, isSM2 bool, privateKey string, pass
   Call permissions: Anyone
 */
 func GetAddressFromPrivate(privateKey string, isSM2 bool) (string, error) {
-	if utils.Has0xPrefix(privateKey){
+	if utils.Has0xPrefix(privateKey) {
 		privateKey = privateKey[2:]
 	}
 
-	if !utils.IsHex(privateKey) || len(privateKey) != 64{
+	if !utils.IsHex(privateKey) || len(privateKey) != 64 {
 		return "", errors.New("privateKey is not hex string or not 32 Bytes")
 	}
 
@@ -206,11 +206,11 @@ func GetAddressFromPrivate(privateKey string, isSM2 bool) (string, error) {
   Call permissions: Anyone
 */
 func GetPublicKeyFromPrivate(privateKey string, isSM2 bool) (string, error) {
-	if utils.Has0xPrefix(privateKey){
+	if utils.Has0xPrefix(privateKey) {
 		privateKey = privateKey[2:]
 	}
 
-	if !utils.IsHex(privateKey) || len(privateKey) != 64{
+	if !utils.IsHex(privateKey) || len(privateKey) != 64 {
 		return "", errors.New("privateKey is not hex string or not 32 Bytes")
 	}
 
@@ -234,7 +234,7 @@ func GetPublicKeyFromPrivate(privateKey string, isSM2 bool) (string, error) {
    	EN -
 	CN - 根据keyStore获取公钥
   Params:
-  	- privateKeyFilePath string   keyStore的存储路径
+  	- keyStorePath       string   keyStore的存储路径
   	- password           string   keyStore的加密密码
 	- isSM2              bool     是否采用国密生成私钥，true为是国密，false为否
 
@@ -244,8 +244,8 @@ func GetPublicKeyFromPrivate(privateKey string, isSM2 bool) (string, error) {
 
   Call permissions: Anyone
 */
-func GetPublicKeyFromFile(privateKeyFilePath, password string, isSM2 bool) (string, error) {
-	keyJson, err := ioutil.ReadFile(privateKeyFilePath)
+func GetPublicKeyFromFile(keyStorePath, password string, isSM2 bool) (string, error) {
+	keyJson, err := ioutil.ReadFile(keyStorePath)
 	if err != nil {
 		return "", errors.New("not find privateKeyFile")
 	}
@@ -267,9 +267,59 @@ func GetPublicKeyFromFile(privateKeyFilePath, password string, isSM2 bool) (stri
 		return "", err
 	}
 	pubBytes := crypto.FromECDSAPub(privateKeyN.Public().(*ecdsa.PublicKey))
-	if isSM2{
-		return "0x" + utils.Bytes2Hex(pubBytes)+utils.Bytes2Hex(privateKeyN.Public().(*ecdsa.PublicKey).Y.Bytes()), nil
-	}else{
+	if isSM2 {
+		return "0x" + utils.Bytes2Hex(pubBytes) + utils.Bytes2Hex(privateKeyN.Public().(*ecdsa.PublicKey).Y.Bytes()), nil
+	} else {
 		return "0x" + utils.Bytes2Hex(pubBytes), nil
 	}
+}
+
+/*
+  CheckPublicKeyToAccount:
+   	EN -
+	CN - 判断给定的公钥是否与账户地址相匹配
+  Params:
+  	-
+  	-
+
+  Returns:
+  	-
+     - error
+
+  Call permissions: Anyone
+*/
+func CheckPublicKeyToAccount(account, publicKey string) (bool, error) {
+	// 检测是否是hex address
+	if !utils.IsHexAddress(account) {
+		return false, errors.New("account is not valid ")
+	}
+
+	// 检测是否带有前缀
+	if utils.Has0xPrefix(publicKey) {
+		publicKey = publicKey[2:]
+	}
+
+	// 检测公钥合法性
+	if !(utils.IsHex(publicKey) && len(publicKey) == 130) {
+		return false, errors.New("publicKey is not a hexadecimal string or the length is less than 130(132 with prefix '0x'")
+	}
+
+	addr := utils.StringToAddress(account)
+
+	var addrParse []byte
+	if addr[8] == 115 {
+		addrParse = crypto.Keccak256(crypto.SM2, utils.Hex2Bytes(publicKey)[1:])[12:]
+		addrParse[8] = 115
+	} else {
+		addrParse = crypto.Keccak256(crypto.SECP256K1, utils.Hex2Bytes(publicKey)[1:])[12:]
+		if addr[8] == 115 {
+			addr[8] = 103
+		}
+	}
+
+	if addr != utils.BytesToAddress(addrParse) {
+		return false, errors.New("publicKey does not match account")
+	}
+
+	return true, nil
 }
