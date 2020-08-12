@@ -117,7 +117,16 @@ func TestGetDocument(t *testing.T) {
 		t.FailNow()
 	}
 
-	t.Log(document)
+	t.Logf("doc is %#v \n", document)
+	// t.Logf("doc  extra is %#v \n", document.Extra)
+	// t.Logf("doc Authentications len is %#v \n", len(document.Authentications))
+	// t.Logf("doc atuh is %#v \n", document.Authentications)
+	// t.Logf("doc publicKey len is %#v \n", len(document.PublicKeys))
+	// t.Logf("doc publicKey is %#v \n", document.PublicKeys[0])
+	// t.Logf("doc Services len is %#v \n", len(document.Services))
+	// t.Logf("doc service is %#v \n", document.Services[0])
+	// t.Logf("doc service is %#v \n", document.Proof)
+
 }
 
 func TestAddPublic(t *testing.T) {
@@ -200,7 +209,7 @@ func TestDelPublic(t *testing.T) {
 
 	doc := connection.System.NewDoc()
 
-	txHash, err := doc.DelPublic(sysTxParams, testAddressDoc, " ")
+	txHash, err := doc.DelPublic(sysTxParams, testAddressDoc, testAddressDocPublicKey)
 	if err != nil {
 		t.Error(err)
 		t.FailNow()
@@ -245,7 +254,7 @@ func TestAddAuth(t *testing.T) {
 
 	doc := connection.System.NewDoc()
 
-	txHash, err := doc.AddAuth(sysTxParams, testAddressDoc, "")
+	txHash, err := doc.AddAuth(sysTxParams, testAddressDoc, "test1")
 	if err != nil {
 		t.Error(err)
 		t.FailNow()
@@ -290,7 +299,7 @@ func TestDelAuth(t *testing.T) {
 
 	doc := connection.System.NewDoc()
 
-	txHash, err := doc.DelAuth(sysTxParams, testAddressDoc, "123")
+	txHash, err := doc.DelAuth(sysTxParams, testAddressDoc, "test")
 	if err != nil {
 		t.Error(err)
 		t.FailNow()
@@ -335,7 +344,7 @@ func TestAddService(t *testing.T) {
 
 	doc := connection.System.NewDoc()
 
-	txHash, err := doc.AddService(sysTxParams, testAddressDoc, "123", "0", "serviceEndpoint")
+	txHash, err := doc.AddService(sysTxParams, testAddressDoc, "did:bid:590ed37615bdfefa496224c7", "2", "123")
 	if err != nil {
 		t.Error(err)
 		t.FailNow()
@@ -380,7 +389,7 @@ func TestDelService(t *testing.T) {
 
 	doc := connection.System.NewDoc()
 
-	txHash, err := doc.DelService(sysTxParams, testAddressDoc, "123")
+	txHash, err := doc.DelService(sysTxParams, testAddressDoc, "did:bid:590ed37615bdfefa496224c7")
 	if err != nil {
 		t.Error(err)
 		t.FailNow()
@@ -560,7 +569,7 @@ func TestDelExtra(t *testing.T) {
 
 	doc := connection.System.NewDoc()
 
-	txHash, err := doc.DelExtra(sysTxParams, "testAttr")
+	txHash, err := doc.DelExtra(sysTxParams, testAddressDoc)
 	if err != nil {
 		t.Error(err)
 		t.FailNow()

@@ -4,7 +4,6 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"github.com/bif/bif-sdk-go/utils"
 	"math/big"
 )
 
@@ -13,19 +12,19 @@ type SystemRequestResult struct {
 }
 
 type Voter struct {
-	Owner             utils.Address   `json:"owner"`             // 投票人的地址
-	IsProxy           bool            `json:"isProxy"`           // 是否是代理人
-	ProxyVoteCount    *big.Int        `json:"proxyVoteCount"`    // 收到的代理的票数
-	Proxy             utils.Address   `json:"proxy"`             // 该节点设置的代理人
-	LastVoteCount     *big.Int        `json:"lastVoteCount"`     // 上次投的票数
-	LastVoteTimeStamp *big.Int        `json:"lastVoteTimeStamp"` // 上次投票时间戳
-	VoteCandidates    []utils.Address `json:"voteCandidates"`    // 投了哪些人
+	Owner             string   `json:"owner"`             // 投票人的地址
+	IsProxy           bool     `json:"isProxy"`           // 是否是代理人
+	ProxyVoteCount    *big.Int `json:"proxyVoteCount"`    // 收到的代理的票数
+	Proxy             string   `json:"proxy"`             // 该节点设置的代理人
+	LastVoteCount     *big.Int `json:"lastVoteCount"`     // 上次投的票数
+	LastVoteTimeStamp *big.Int `json:"lastVoteTimeStamp"` // 上次投票时间戳
+	VoteCandidates    []string `json:"voteCandidates"`    // 投了哪些人
 }
 
 type Stake struct {
-	Owner              utils.Address `json:"owner"`              // 抵押代币的所有人
-	StakeCount         *big.Int      `json:"stakeCount"`         // 抵押的代币数量
-	LastStakeTimeStamp *big.Int      `json:"lastStakeTimeStamp"` // 上次抵押时间戳
+	Owner              string   `json:"owner"`              // 抵押代币的所有人
+	StakeCount         *big.Int `json:"stakeCount"`         // 抵押的代币数量
+	LastStakeTimeStamp *big.Int `json:"lastStakeTimeStamp"` // 上次抵押时间戳
 }
 
 type AllContract struct {
@@ -60,10 +59,10 @@ func (pointer *SystemRequestResult) ToPeerCertificate() (*PeerCertificate, error
 
 func (pointer *SystemRequestResult) ToTrustAnchor() (*TrustAnchor, error) {
 	err := pointer.checkResponse()
-	if err != nil && err != EMPTYRESPONSE{
+	if err != nil && err != EMPTYRESPONSE {
 		return nil, err
 	}
-	if err == EMPTYRESPONSE{
+	if err == EMPTYRESPONSE {
 		return nil, errors.New("该信任锚不存在")
 	}
 
@@ -128,10 +127,10 @@ func (pointer *SystemRequestResult) ToTrustAnchorVoter() ([]*TrustAnchorVoter, e
 
 func (pointer *SystemRequestResult) ToCertificateInfo() (*CertificateInfo, error) {
 	err := pointer.checkResponse()
-	if err != nil && err != EMPTYRESPONSE{
+	if err != nil && err != EMPTYRESPONSE {
 		return nil, err
 	}
-	if err == EMPTYRESPONSE{
+	if err == EMPTYRESPONSE {
 		return nil, errors.New("个人可信证书为空")
 	}
 
@@ -155,10 +154,10 @@ func (pointer *SystemRequestResult) ToCertificateInfo() (*CertificateInfo, error
 
 func (pointer *SystemRequestResult) ToCertificateIssuerSignature() (*IssuerSignature, error) {
 	err := pointer.checkResponse()
-	if err != nil && err != EMPTYRESPONSE{
+	if err != nil && err != EMPTYRESPONSE {
 		return nil, err
 	}
-	if err == EMPTYRESPONSE{
+	if err == EMPTYRESPONSE {
 		return nil, errors.New("证书颁发者为空")
 	}
 
@@ -182,10 +181,10 @@ func (pointer *SystemRequestResult) ToCertificateIssuerSignature() (*IssuerSigna
 
 func (pointer *SystemRequestResult) ToCertificateSubjectSignature() (*SubjectSignature, error) {
 	err := pointer.checkResponse()
-	if err != nil && err != EMPTYRESPONSE{
+	if err != nil && err != EMPTYRESPONSE {
 		return nil, err
 	}
-	if err == EMPTYRESPONSE{
+	if err == EMPTYRESPONSE {
 		return nil, errors.New("证书接收者为空")
 	}
 
@@ -209,10 +208,10 @@ func (pointer *SystemRequestResult) ToCertificateSubjectSignature() (*SubjectSig
 
 func (pointer *SystemRequestResult) ToDocument() (*Document, error) {
 	err := pointer.checkResponse()
-	if err != nil && err != EMPTYRESPONSE{
+	if err != nil && err != EMPTYRESPONSE {
 		return nil, err
 	}
-	if err == EMPTYRESPONSE{
+	if err == EMPTYRESPONSE {
 		return nil, errors.New("did 文档为空")
 	}
 
@@ -234,7 +233,7 @@ func (pointer *SystemRequestResult) ToDocument() (*Document, error) {
 	return document, err
 }
 
-func (pointer *SystemRequestResult) ToRestBIFBounty()(*big.Int, error){
+func (pointer *SystemRequestResult) ToRestBIFBounty() (*big.Int, error) {
 
 	if err := pointer.checkResponse(); err != nil {
 		return nil, err
@@ -276,10 +275,10 @@ func (pointer *SystemRequestResult) ToElectionCandidate() (*Candidate, error) {
 
 func (pointer *SystemRequestResult) ToElectionCandidates() ([]*Candidate, error) {
 	err := pointer.checkResponse()
-	if err != nil && err != EMPTYRESPONSE{
+	if err != nil && err != EMPTYRESPONSE {
 		return nil, err
 	}
-	if err == EMPTYRESPONSE{
+	if err == EMPTYRESPONSE {
 		return nil, errors.New("候选者列表为空")
 	}
 
@@ -317,10 +316,10 @@ func (pointer *SystemRequestResult) ToElectionCandidates() ([]*Candidate, error)
 
 func (pointer *SystemRequestResult) ToElectionVoter() (*Voter, error) {
 	err := pointer.checkResponse()
-	if err != nil && err != EMPTYRESPONSE{
+	if err != nil && err != EMPTYRESPONSE {
 		return nil, err
 	}
-	if err == EMPTYRESPONSE{
+	if err == EMPTYRESPONSE {
 		return nil, errors.New("投票人信息为空")
 	}
 
@@ -331,7 +330,6 @@ func (pointer *SystemRequestResult) ToElectionVoter() (*Voter, error) {
 	}
 
 	voter := &Voter{}
-
 	marshal, err := json.Marshal(result)
 
 	if err != nil {
@@ -357,7 +355,7 @@ func (pointer *SystemRequestResult) ToElectionVoterList() ([]*Voter, error) {
 	for i, v := range resultVoters {
 
 		result := v.(map[string]interface{})
-
+		fmt.Println(result)
 		if len(result) == 0 {
 			return nil, EMPTYRESPONSE
 		}
@@ -384,10 +382,10 @@ func (pointer *SystemRequestResult) ToElectionVoterList() ([]*Voter, error) {
 
 func (pointer *SystemRequestResult) ToElectionStake() (*Stake, error) {
 	err := pointer.checkResponse()
-	if err != nil && err != EMPTYRESPONSE{
+	if err != nil && err != EMPTYRESPONSE {
 		return nil, err
 	}
-	if err == EMPTYRESPONSE{
+	if err == EMPTYRESPONSE {
 		return nil, errors.New("该地址无抵押权益")
 	}
 

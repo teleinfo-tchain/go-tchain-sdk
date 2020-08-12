@@ -173,12 +173,12 @@ type SubjectSignature struct {
 	did文档合约
 */
 type PublicKey struct {
-	Id         utils.Address `json:"id"`
-	KeyId      []byte        `json:"key_id"`
-	Type       []byte        `json:"type"`
-	Controller []byte        `json:"controller"`
-	Authority  []byte        `json:"authority"` // 公钥权限
-	PublicKey  []byte        `json:"publicKey"`
+	Id string `json:"id"`
+	// KeyId      string `json:"key_id"`
+	Type       string `json:"type"`
+	Controller string `json:"controller"`
+	Authority  string `json:"authority"` // 公钥权限
+	PublicKey  string `json:"publicKey"`
 }
 
 type Authentication struct {
@@ -197,31 +197,30 @@ type Attribute struct {
 type Document struct {
 	Id              string       `json:"id"` // bid
 	Contexts        string       `json:"context"`
-	Name            string       `json:"name"`            // bid标识符昵称
-	Type            uint64       `json:"type"`            // bid的类型，包括0：普通用户,1:智能合约以及设备，2：企业或者组织，BID类型一经设置，永不能变
-	PublicKeys      []*PublicKey `json:"publicKeys"`      // 用户用于身份认证的公钥信息
-	Authentications []string     `json:"authentications"` // 用户身份认证列表信息
-	Services        []*Service   `json:"services"`        // 用户填写的服务端点信息
-	Proof           *Proof       `json:"proof"`           // 用户填写的证明信息值
-	Extra           string       `json:"extra"`           // 用户填写的备注
-	IsEnable        bool         `json:"isEnable"`        // 该BID是否启用
-	CreateTime      *big.Int     `json:"createTime"`
-	UpdateTime      *big.Int     `json:"updateTime"`
+	Name            string       `json:"name"`           // bid标识符昵称
+	Type            uint64       `json:"type"`           // bid的类型，包括0：普通用户,1:智能合约以及设备，2：企业或者组织，BID类型一经设置，永不能变
+	PublicKeys      []*PublicKey `json:"publicKey"`      // 用户用于身份认证的公钥信息
+	Authentications []string     `json:"authentication"` // 用户身份认证列表信息
+	Services        []*Service   `json:"service"`        // 用户填写的服务端点信息
+	Proof           *Proof       `json:"proof"`          // 用户填写的证明信息值
+	Extra           string       `json:"extra"`          // 用户填写的备注
+	IsEnable        bool         `json:"isEnable"`       // 该BID是否启用
+	CreateTime      string       `json:"created"`
+	UpdateTime      string       `json:"updated"`
 }
 
 type Service struct {
-	Id        string `json:"id"`
-	ServiceId string `json:"serviceId"`
+	ServiceId string `json:"id"`
 	Type      string `json:"type"`
-	Endpoint  string `json:"endpoint"`
+	Endpoint  string `json:"serviceEndpoint"`
 }
 
 type Proof struct {
-	Id         string   `json:"id"`
-	Type       string   `json:"type"`
-	CreateTime *big.Int `json:"createTime"`
-	Creator    string   `json:"creator"`
-	Signature  string   `json:"signature"`
+	// Id         string   `json:"id"`
+	Type       string `json:"type"`
+	CreateTime string `json:"created"`
+	Creator    string `json:"creator"`
+	Signature  string `json:"signatureValue"`
 }
 
 /*

@@ -56,8 +56,9 @@ func TestRegisterWitness(t *testing.T) {
 	elect := connection.System.NewElection()
 
 	registerWitness := new(dto.RegisterWitness)
-	registerWitness.NodeUrl = "127.0.0.1/test"
-	registerWitness.Website = "www.tele.com"
+	// 但是需要
+	registerWitness.NodeUrl = "/ip4/172.17.6.55/tcp/44031/p2p/16Uiu2HAm3vYMiiZmikcmGBUaQqX6g74ozASwfT2VPZVMbBRdnFET"
+	registerWitness.Website = "https://www.tele.com"
 	registerWitness.Name = "test"
 
 	// registerWitness
@@ -152,7 +153,8 @@ func TestGetAllCandidates(t *testing.T) {
 		t.FailNow()
 	}
 
-	t.Log(allCandidates)
+	t.Logf("%#v \n", allCandidates)
+	// t.Logf("%#v \n", allCandidates[0])
 }
 
 func TestVoteWitnesses(t *testing.T) {
@@ -191,7 +193,7 @@ func TestVoteWitnesses(t *testing.T) {
 
 	elect := connection.System.NewElection()
 
-	candidate := "did:bid:ee4f5aa444dc5ec815a25c7"
+	candidate := "did:bid:6cc796b8d6e2fbebc9b3cf9e"
 	voteWitnessHash, err := elect.VoteWitnesses(sysTxParams, candidate)
 	if err != nil {
 		t.Error(err)
@@ -669,15 +671,14 @@ func TestIssueAdditionalBounty(t *testing.T) {
 // 获取指定候选者的基本信息
 func TestElectGetVoter(t *testing.T) {
 	var connection = bif.NewBif(providers.NewHTTPProvider(resources.IP55+":"+resources.Port, 10, false))
-	coinBase, err := connection.Core.GetCoinBase()
+	_ , err := connection.Core.GetCoinBase()
 	if err != nil {
 		t.Error(err)
 		t.FailNow()
 	}
 
 	elect := connection.System.NewElection()
-
-	voter, err := elect.GetVoter(coinBase)
+	voter, err := elect.GetVoter(testAddressElect)
 
 	if err != nil {
 		t.Error(err)
@@ -698,7 +699,7 @@ func TestGetVoterList(t *testing.T) {
 
 	elect := connection.System.NewElection()
 
-	voterList, err := elect.GetVoterList(resources.Address52)
+	voterList, err := elect.GetVoterList(testAddressElect)
 
 	if err != nil {
 		t.Error(err)
@@ -706,4 +707,5 @@ func TestGetVoterList(t *testing.T) {
 	}
 
 	t.Logf("%#v \n", voterList)
+	// t.Logf("%#v \n", voterList[0])
 }

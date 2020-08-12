@@ -5,7 +5,6 @@ import (
 	"crypto/ecdsa"
 	"encoding/hex"
 	"errors"
-	"fmt"
 	"github.com/bif/bif-sdk-go/account/keystore"
 	"github.com/bif/bif-sdk-go/crypto"
 	"github.com/bif/bif-sdk-go/dto"
@@ -122,7 +121,8 @@ func (account *Account) preCheckTx(signData *SignTxParams, privateKey string, is
 	// 校验gasPrice
 	if signData.GasPrice == nil {
 		signData.GasPrice, err = account.getGasPrice()
-		fmt.Println("gas ", signData.GasPrice)
+		// fmt.Println("gas ", signData.GasPrice)
+		// 20000000000
 		if err != nil {
 			return nil, err
 		}
