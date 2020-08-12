@@ -138,7 +138,7 @@ func TestSignTransaction(t *testing.T) {
 		tx := &account.SignTxParams{
 			To:       test.to,
 			Nonce:    0,
-			Gas:      2000000,
+			Gas:      21000,
 			GasPrice: nil,
 			Value:    big.NewInt(50000000000),
 			Data:     nil,
@@ -151,14 +151,14 @@ func TestSignTransaction(t *testing.T) {
 			t.FailNow()
 		}
 		t.Logf("%s : %v \n", test.id, res.Raw)
-		// t.Logf("%#v \n", res.Tx.Hash)
-
-		txHash, err := connection.Core.SendRawTransaction(res.Raw.String())
-		if err != nil {
-			t.Error(err)
-			t.FailNow()
-		}
-		t.Logf("txHash is %s", txHash)
+		// // t.Logf("%#v \n", res.Tx.Hash)
+		//
+		// txHash, err := connection.Core.SendRawTransaction(res.Raw.String())
+		// if err != nil {
+		// 	t.Error(err)
+		// 	t.FailNow()
+		// }
+		// t.Logf("txHash is %s", txHash)
 
 	}
 }

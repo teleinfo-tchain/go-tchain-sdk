@@ -5,6 +5,7 @@ import (
 	"crypto/ecdsa"
 	"encoding/hex"
 	"errors"
+	"fmt"
 	"github.com/bif/bif-sdk-go/account/keystore"
 	"github.com/bif/bif-sdk-go/crypto"
 	"github.com/bif/bif-sdk-go/dto"
@@ -87,22 +88,25 @@ func (account *Account) getTransactionCount(publicAddr string) (uint64, error) {
 	return pointer.ToUint64()
 }
 
+// To       string
+//	Nonce    uint64
+//	Gas      uint64
+//	GasPrice *big.Int
+//	Value    *big.Int
+//	Data     []byte
+//	ChainId  *big.Int
 func (account *Account) preCheckTx(signData *SignTxParams, privateKey string, isSM2 bool) (*txData, error) {
-	if signData.Gas == 0 {
-		return nil, errors.New("gas should be greater than 0")
-	}
-
-	publicAddr, err := GetAddressFromPrivate(privateKey, isSM2)
-	if err != nil {
-		return nil, errors.New("not invalid privateKey")
-	}
-
 	var recipient utils.Address
-
+	// 校验地址
 	if signData.To != "" {
 		recipient = utils.StringToAddress(signData.To)
 	}
 
+	// 校验Nonce
+	publicAddr, err := GetAddressFromPrivate(privateKey, isSM2)
+	if err != nil {
+		return nil, errors.New("not invalid privateKey")
+	}
 	if signData.Nonce == 0 {
 		signData.Nonce, err = account.getTransactionCount(publicAddr)
 		if err != nil {
@@ -110,18 +114,37 @@ func (account *Account) preCheckTx(signData *SignTxParams, privateKey string, is
 		}
 	}
 
+	// 校验gas
+	if signData.Gas < 21000 {
+		return nil, errors.New("gas should be at least 21000")
+	}
+
+	// 校验gasPrice
 	if signData.GasPrice == nil {
 		signData.GasPrice, err = account.getGasPrice()
+		fmt.Println("gas ", signData.GasPrice)
 		if err != nil {
 			return nil, err
 		}
+	}else if signData.GasPrice != nil && signData.GasPrice.Cmp(big.NewInt(0)) != 1{
+		return nil, errors.New("gasPrice should be greater than 0")
 	}
 
+	// 校验Value
+	if signData.Value != nil && signData.Value.Cmp(big.NewInt(0)) != 1{
+		return nil, errors.New("value should be greater than 0")
+	}
+
+	// 校验Data
+
+	// 校验ChainId
 	if signData.ChainId == nil {
 		signData.ChainId, err = account.getChainId()
 		if err != nil {
 			return nil, err
 		}
+	}else if signData.ChainId != nil && signData.ChainId.Cmp(big.NewInt(0)) != 1{
+		return nil, errors.New("chainId should be greater than 0")
 	}
 
 	sender := utils.StringToAddress(publicAddr)
