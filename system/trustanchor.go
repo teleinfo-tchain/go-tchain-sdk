@@ -96,9 +96,9 @@ func updateTrustPreCheck(extendAnchorInfo *dto.UpdateAnchorInfo) (bool, error) {
 		return false, errors.New("updateAnchorInfo ServerUrl can't be empty or blank character")
 	}
 
-	// if !verifyEmailFormat(extendAnchorInfo.Email) {
-	// 	return false, errors.New("updateAnchorInfo Email is not valid  e-mail")
-	// }
+	if !verifyEmailFormat(extendAnchorInfo.Email) {
+		return false, errors.New("updateAnchorInfo Email is not valid  e-mail")
+	}
 
 	return true, nil
 }
