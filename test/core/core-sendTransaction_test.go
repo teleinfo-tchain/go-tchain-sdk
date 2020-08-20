@@ -16,6 +16,7 @@ package test
 
 import (
 	"encoding/json"
+	"fmt"
 	"github.com/bif/bif-sdk-go"
 	Abi "github.com/bif/bif-sdk-go/abi"
 	"github.com/bif/bif-sdk-go/core/block"
@@ -35,14 +36,14 @@ import (
 func TestCoreSendTransaction(t *testing.T) {
 
 	var connection = bif.NewBif(providers.NewHTTPProvider(resources.IP+":"+resources.Port, 10, false))
-	coinBase, err := connection.Core.GetCoinBase()
-	if err != nil {
-		t.Error(err)
-		t.FailNow()
-	}
-
-	toAddress := resources.AddressTwo
-	balance, err := connection.Core.GetBalance(toAddress, block.LATEST)
+	// coinBase, err := connection.Core.GetCoinBase()
+	// if err != nil {
+	// 	t.Error(err)
+	// 	t.FailNow()
+	// }
+	coinBase := resources.TestAddr
+	toAddress := resources.NewAddrZ
+	balance, err := connection.Core.GetBalance(resources.NewAddrE, block.LATEST)
 	if err == nil {
 		util := utils.NewUtils()
 		balBif, _ := util.FromWei(balance)
@@ -103,12 +104,14 @@ func TestCoreSendTransactionDeployContract(t *testing.T) {
 	}
 
 	transaction := new(dto.TransactionParameters)
-	coinBase, err := connection.Core.GetCoinBase()
-	if err != nil {
-		t.Error(err)
-		t.FailNow()
-	}
-	transaction.From = coinBase
+
+	// coinBase, err := connection.Core.GetCoinBase()
+	// if err != nil {
+	// 	t.Error(err)
+	// 	t.FailNow()
+	// }
+
+	transaction.From = resources.TestAddr
 	transaction.Data = types.ComplexString(byteCode) + types.ComplexString(utils.Bytes2Hex(inputEncode))
 	// estimate the gas required to deploy the contract
 	gas, err := connection.Core.EstimateGas(transaction)
@@ -130,28 +133,36 @@ func TestCoreSendTransactionDeployContract(t *testing.T) {
 	}
 	t.Log("transaction hash is ", txHash)
 
+	//
+	// var receipt *dto.TransactionReceipt
+	//
+	// for receipt == nil {
+	// 	time.Sleep(time.Second)
+	// 	receipt, err = connection.Core.GetTransactionReceipt(txHash)
+	// }
+	//
+	// if err != nil {
+	// 	t.Error(err)
+	// 	t.FailNow()
+	// }
+	//
+	// // did:bid:ace45606ce7b19c7da1143cb
+	// t.Log("contract Address is ", receipt.ContractAddress)
 
-	var receipt *dto.TransactionReceipt
+}
 
-	for receipt == nil {
-		time.Sleep(time.Second)
-		receipt, err = connection.Core.GetTransactionReceipt(txHash)
-	}
-
-	if err != nil {
-		t.Error(err)
-		t.FailNow()
-	}
-
-	// did:bid:ace45606ce7b19c7da1143cb
-	t.Log("contract Address is ", receipt.ContractAddress)
-
+func TestGetReceipt(t *testing.T){
+	txHash := "0x92ad4dda18bc0e04746dca021e86d42df471c7b639d5f1e87095c0be9c98b4ad"
+	var connection = bif.NewBif(providers.NewHTTPProvider(resources.IP+":"+resources.Port, 10, false))
+	receipt, err := connection.Core.GetTransactionReceipt(txHash)
+	fmt.Println("err", err)
+	fmt.Printf("txHash %#v", receipt)
 }
 
 // 测试合约的交互(只是为了测试合约交互，实际使用contract中的Call或者Send)
 func TestCoreSendTransactionInteractContract(t *testing.T) {
 	content, err := ioutil.ReadFile("../resources/simple-contract.json")
-	const contractAddress = "did:bid:ace45606ce7b19c7da1143cb"
+	const contractAddress = "0x3f6b3a8a7da315b9b514da82135b16f837e5bd63b9cbc4cf98c1bd8915bfb6c8"
 
 	type Contract struct {
 		Abi      string `json:"abi"`
