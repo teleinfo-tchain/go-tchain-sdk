@@ -21,10 +21,12 @@ import (
 	"encoding/hex"
 	"errors"
 	"github.com/bif/bif-sdk-go/utils"
+	"github.com/btcsuite/btcutil/base58"
 	"io"
 	"io/ioutil"
 	"math/big"
 	"os"
+	"strings"
 
 	"github.com/bif/bif-sdk-go/utils/math"
 )
@@ -92,7 +94,7 @@ func FromECDSA(priv *ecdsa.PrivateKey) []byte {
 
 // UnmarshalPubkey converts bytes to a secp256k1 public key.
 func UnmarshalPubkey(pub []byte) (*ecdsa.PublicKey, error) {
-	if nil == pub{
+	if nil == pub {
 		return nil, errors.New("nil pub byte")
 	}
 	if pub[0] != 4 { // uncompressed form
@@ -169,25 +171,44 @@ func GenerateKey(cryptoType CryptoType) (*ecdsa.PrivateKey, error) {
 // ValidateSignatureValues verifies whether the signature values are valid with
 // the given chain rules. The v value is assumed to be either 0 or 1.
 func ValidateSignatureValues(v byte, r, s *big.Int, homestead bool) bool {
-	//if r.Cmp(common.Big1) < 0 || s.Cmp(common.Big1) < 0 {
+	// if r.Cmp(common.Big1) < 0 || s.Cmp(common.Big1) < 0 {
 	//	return false
-	//}
-	//// reject upper range of s values (ECDSA malleability)
-	//// see discussion in secp256k1/libsecp256k1/include/secp256k1.h
-	//if homestead && s.Cmp(secp256k1halfN) > 0 {
+	// }
+	// // reject upper range of s values (ECDSA malleability)
+	// // see discussion in secp256k1/libsecp256k1/include/secp256k1.h
+	// if homestead && s.Cmp(secp256k1halfN) > 0 {
 	//	return false
-	//}
-	//// Frontier: allow s to be in full N range
-	//return r.Cmp(secp256k1N) < 0 && s.Cmp(secp256k1N) < 0 && (v == 0 || v == 1)
+	// }
+	// // Frontier: allow s to be in full N range
+	// return r.Cmp(secp256k1N) < 0 && s.Cmp(secp256k1N) < 0 && (v == 0 || v == 1)
 	return true
 }
 
 func PubkeyToAddress(p ecdsa.PublicKey) utils.Address {
+	var hash []byte
+	var h []byte
+	var prefix strings.Builder
+	prefix.WriteString(utils.AddressPrefixString)
 	if S256Sm2().IsOnCurve(p.X, p.Y) {
-		return PubkeyToAddressSm2(p)
+		hash = PubkeyToAddressSm2(p)
+		prefix.WriteString(string(SM2_Prefix))
+	} else if S256Btc().IsOnCurve(p.X, p.Y) {
+		hash = PubkeyToAddressBtc(p)
+		prefix.WriteString(string(SECP256K1_Prefix))
+	} else {
+		hash = PubkeyToAddressSm2(p)
+		prefix.WriteString(string(SM2_Prefix))
 	}
-	if S256Btc().IsOnCurve(p.X, p.Y) {
-		return PubkeyToAddressBtc(p)
+
+	// todo: 公钥压缩的长度会比20小吗？？
+	if len(hash) < HashLength {
+		h = hash[:]
+	} else {
+		h = hash[len(hash)-HashLength:]
 	}
-	return PubkeyToAddressSm2(p)
+
+	// todo: is always Base58??
+	prefix.WriteString(string(BASE58_Prefix))
+	prefix.WriteString(string(HashLength20))
+	return utils.StringToAddress(prefix.String() + base58.Encode(h))
 }

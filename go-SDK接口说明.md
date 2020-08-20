@@ -102,7 +102,7 @@ dpos_test.go            | dpos属性单元测试
     	// （选填）从该账户发起交易的Nonce值 ，可以不写
     	sysTxParams.Nonce = nonce.Uint64()
     	// （选填）链的ChainId，可以不写
-    	sysTxParams.ChainId = big.NewInt(0).SetUint64(chainId)
+    	sysTxParams.ChainId = chainId
     
     	cer := connection.System.NewCertificate()
         

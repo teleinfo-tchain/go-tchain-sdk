@@ -29,13 +29,15 @@ type LogData struct {
 // 系统合约交易构建参数
 // TODO： 在使用此本地签署交易时，注意签署的内容是否要增加，其参数用于prePareSignTransaction，涉及account.TxData中的交易构建！！！（后续可能会增加）
 type SysTxParams struct {
+	From        string   // 交易的发起方，与私钥对应的地址可以相同也可不同
 	IsSM2       bool     // 私钥生成是否使用国密，true为国密；false为非国密
 	Password    string   // 解密私钥的密码
 	KeyFileData []byte   // keystore文件内容
 	GasPrice    *big.Int // 交易的gas价格，默认是网络gas价格的平均值
 	Gas         uint64   // 交易可使用的gas，未使用的gas会退回
 	Nonce       uint64   // 从该账户发起交易的Nonce值
-	ChainId     *big.Int // 链的ChainId
+	ChainId     uint64   // 链的ChainId
+	Version     uint64
 }
 
 // NewSystem - System Module constructor to set the default provider
@@ -58,6 +60,7 @@ func (sys *System) prePareSignTransaction(signTxParams *SysTxParams, payLoad []b
 	}
 
 	signTx := &account.SignTxParams{
+		From:     signTxParams.From,
 		To:       contractAddr,
 		Nonce:    signTxParams.Nonce,
 		Gas:      signTxParams.Gas,
@@ -65,6 +68,7 @@ func (sys *System) prePareSignTransaction(signTxParams *SysTxParams, payLoad []b
 		Value:    nil,
 		Data:     payLoad,
 		ChainId:  signTxParams.ChainId,
+		Version:  signTxParams.Version,
 	}
 	signResult, err := sys.acc.SignTransaction(signTx, privateKey, signTxParams.IsSM2)
 	if err != nil {

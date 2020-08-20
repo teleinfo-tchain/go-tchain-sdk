@@ -107,9 +107,14 @@ func ValidateSignatureValuesSm2(v byte, r, s *big.Int, homestead bool) bool {
 	return true
 }
 
-func PubkeyToAddressSm2(p ecdsa.PublicKey) utils.Address {
-	pubBytes := FromECDSAPub(&p)
-	addr := Keccak256(SM2, pubBytes[1:])[12:]
-	addr[8] = 115
-	return utils.BytesToAddress(addr)
+// func PubkeyToAddressSm2(p ecdsa.PublicKey) utils.Address {
+// 	pubBytes := FromECDSAPub(&p)
+// 	addr := Keccak256(SM2, pubBytes[1:])[12:]
+// 	addr[8] = 115
+// 	return utils.BytesToAddress(addr)
+// }
+
+func PubkeyToAddressSm2(p ecdsa.PublicKey) []byte {
+	pubBytes := CompressPubkeySm2(&p)
+	return Keccak256(SM2, pubBytes)
 }

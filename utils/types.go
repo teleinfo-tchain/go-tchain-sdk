@@ -22,6 +22,7 @@ import (
 	"encoding/hex"
 	"encoding/json"
 	"fmt"
+	"github.com/btcsuite/btcutil/base58"
 	"golang.org/x/crypto/sha3"
 	"math/big"
 	"math/rand"
@@ -32,17 +33,25 @@ import (
 	// "golang.org/x/crypto/sha3"
 )
 
+// todo: 需要置于加密模块中
+type (
+	AddressPrefix  string
+	HashLengthType string
+)
+
 // Lengths of hashes and addresses in bytes.
 const (
 	// HashLength is the expected length of the hash
 	HashLength = 32
 	// AddressLength is the expected length of the address
-	AddressLength = 20
+	AddressLength       = 31
+	AddressPrefixString = "did:bid:"
 )
 
 var (
-	hashT    = reflect.TypeOf(Hash{})
-	addressT = reflect.TypeOf(Address{})
+	hashT             = reflect.TypeOf(Hash{})
+	addressT          = reflect.TypeOf(Address{})
+	AddressPrefixByte = []byte(AddressPrefixString)
 )
 
 // Hash represents the 32 byte Keccak256 hash of arbitrary data.
@@ -187,6 +196,9 @@ type Address [AddressLength]byte
 // BytesToAddress returns Address with value b.
 // If b is larger than len(h), b will be cropped from the left.
 func BytesToAddress(b []byte) Address {
+	if !bytes.HasPrefix(b, AddressPrefixByte) {
+		return Address{}
+	}
 	var a Address
 	a.SetBytes(b)
 	return a
@@ -200,10 +212,30 @@ func BytesToAddressWithoutPre(b []byte) Address {
 
 func StringToAddressWithoutPre(s string) Address { return BytesToAddressWithoutPre([]byte(s)) }
 
+// func StringToAddress(s string) Address {
+// 	addr := FromHex(s)
+// 	return BytesToAddress(addr)
+// } // dep: Istanbul
 func StringToAddress(s string) Address {
-	addr := FromHex(s)
-	return BytesToAddress(addr)
-} // dep: Istanbul
+	s = strings.TrimSpace(s)
+	if s == "" {
+		return Address{}
+	}
+	// todo:Base58的长度在一定范围内，参展base58的实现修改
+	if len(s) < 32 {
+		return Address{}
+	}
+
+	if !strings.HasPrefix(s, AddressPrefixString) {
+		return Address{}
+	}
+	var b bytes.Buffer
+	b.Write([]byte(s[:11]))
+	// todo: is always Base58??
+	b.Write(base58.Decode(s[11:]))
+
+	return BytesToAddress(b.Bytes())
+}
 
 func ByteAddressToString(address []byte) string {
 	if bytes.HasPrefix(address, []byte("did:bid:")) {
@@ -230,18 +262,31 @@ func HexToAddress(s string) Address { return BytesToAddress(FromHex(s)) }
 // IsHexAddress verifies whether a string can represent a valid hex-encoded
 // Ethereum address or not.
 func IsHexAddress(s string) bool {
-	if Has0xPrefix(s) {
-		s = s[2:]
-		return len(s) == 2*AddressLength && IsHex(s)
-	} else if HasDidBidPrefix(s) {
-		s = s[8:]
-		return len(s) == 2*AddressLength-16 && IsHex(s)
+	// if Has0xPrefix(s) {
+	// 	s = s[2:]
+	// 	return len(s) == AddressLength && IsHex(s)
+	// } else if HasDidBidPrefix(s) {
+	// 	s = s[8:]
+	// 	return len(s) == AddressLength-16 && IsHex(s)
+	// }
+	// return false
+	// 暂时值判断前缀，后面等格式确定，再增加额外的判断
+	if HasDidBidPrefix(s) {
+		return true
 	}
 	return false
 }
 
 // Bytes gets the string representation of the underlying address.
 func (a Address) Bytes() []byte { return a[:] }
+
+func (a Address) IsSM2() bool {
+	if bytes.HasPrefix(a.Bytes(), []byte(AddressPrefixString)) && a[8] == 90 {
+		return true
+	} else {
+		return false
+	}
+}
 
 // Hash converts an address to a hash by left-padding it with zeros.
 func (a Address) Hash() Hash { return BytesToHash(a[:]) }
@@ -272,7 +317,18 @@ func (a Address) Hex() string {
 
 // String implements fmt.Stringer.
 func (a Address) String() string {
-	return a.Hex()
+	// return a.Hex()
+	tmpAddress := Address{}
+	if a == tmpAddress {
+		return ""
+	}
+	addr := a.Bytes()
+	if !bytes.Equal(addr[:8], AddressPrefixByte) {
+		return ""
+	}
+	prefix := fmt.Sprintf("%s", addr[:11])
+	suffix := base58.Encode(addr[11:])
+	return prefix + suffix
 }
 
 // Format implements fmt.Formatter, forcing the byte slice to be formatted as is,
@@ -290,15 +346,21 @@ func (a *Address) SetBytesWithoutPre(b []byte) {
 
 // SetBytes sets the address to the value of b.
 // If b is larger than len(a) it will panic.
+// func (a *Address) SetBytes(b []byte) {
+// 	if len(b) > len(a) {
+// 		b = b[len(b)-AddressLength:]
+// 	}
+// 	copy(a[AddressLength-len(b):], b)
+// 	addressPrefix := []byte("did:bid:")
+// 	if !bytes.HasPrefix(b, addressPrefix) {
+// 		copy(a[:8], addressPrefix)
+// 	}
+// }
 func (a *Address) SetBytes(b []byte) {
 	if len(b) > len(a) {
 		b = b[len(b)-AddressLength:]
 	}
 	copy(a[AddressLength-len(b):], b)
-	addressPrefix := []byte("did:bid:")
-	if !bytes.HasPrefix(b, addressPrefix) {
-		copy(a[:8], addressPrefix)
-	}
 }
 
 // MarshalText returns the hex representation of a.

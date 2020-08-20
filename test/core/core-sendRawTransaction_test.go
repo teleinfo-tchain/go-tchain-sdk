@@ -36,7 +36,7 @@ func TestCoreSendRawTransaction(t *testing.T) {
 		GasPrice: big.NewInt(30),
 		Value:    big.NewInt(50000000000),
 		Data:     nil,
-		ChainId:  big.NewInt(0).SetUint64(chainId),
+		ChainId:  chainId,
 	}
 
 	res, err := connection.Account.SignTransaction(tx, privKey, false)

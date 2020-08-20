@@ -1,7 +1,6 @@
 package account
 
 import (
-	"bytes"
 	"crypto/ecdsa"
 	"encoding/hex"
 	"errors"
@@ -61,7 +60,7 @@ func GenerateKeyStore(keyStorePath string, isSM2 bool, password string, UseLight
 	if err != nil {
 		return "", err
 	}
-	return address.Hex(), nil
+	return address.String(), nil
 }
 
 /*
@@ -87,7 +86,7 @@ func GetPrivateKeyFromFile(address string, keyStorePath, password string) (strin
 	var key *keystore.Key
 
 	addr := utils.StringToAddress(address)
-	if bytes.HasPrefix(addr.Bytes(), []byte("did:bid:")) && addr[8] == 115 {
+	if addr.IsSM2() {
 		key, err = keystore.DecryptKey(keyJson, password, crypto.SM2)
 	} else {
 		key, err = keystore.DecryptKey(keyJson, password, crypto.SECP256K1)
@@ -188,7 +187,7 @@ func GetAddressFromPrivate(privateKey string, isSM2 bool) (string, error) {
 		return "", err
 	}
 	// 转换成地址
-	return crypto.PubkeyToAddress(*privateKeyN.Public().(*ecdsa.PublicKey)).Hex(), nil
+	return crypto.PubkeyToAddress(*privateKeyN.Public().(*ecdsa.PublicKey)).String(), nil
 }
 
 /*
@@ -226,7 +225,11 @@ func GetPublicKeyFromPrivate(privateKey string, isSM2 bool) (string, error) {
 		return "", err
 	}
 	pubBytes := crypto.FromECDSAPub(privateKeyN.Public().(*ecdsa.PublicKey))
-	return "0x" + utils.Bytes2Hex(pubBytes), nil
+	if isSM2 {
+		return "0x" + utils.Bytes2Hex(pubBytes) + utils.Bytes2Hex(privateKeyN.Public().(*ecdsa.PublicKey).Y.Bytes()), nil
+	} else {
+		return "0x" + utils.Bytes2Hex(pubBytes), nil
+	}
 }
 
 /*
@@ -322,4 +325,40 @@ func CheckPublicKeyToAccount(account, publicKey string) (bool, error) {
 	}
 
 	return true, nil
+}
+
+func GetAddressFromPublicKey(p ecdsa.PublicKey) utils.Address{
+	// length := utils.HashLength
+	// var publicKey []byte
+	// var hash []byte
+	// var prefix strings.Builder
+	// prefix.WriteString(utils.AddressPrefixString)
+	//
+	// if sm2.S256Sm2().IsOnCurve(p.X, p.Y) {
+	// 	publicKey = sm2.CompressPubkeySm2(&p)
+	// 	hash = sm2.Keccak256Sm2(publicKey)
+	// 	prefix.WriteString(string(utils.SM2_Prefix))
+	// } else if secp.S256Btc().IsOnCurve(p.X, p.Y) {
+	// 	publicKey = secp.CompressPubkeyBtc(&p)
+	// 	hash = secp.Keccak256Btc(publicKey)
+	// 	prefix.WriteString(string(utils.SECP256K1_Prefix))
+	// } else {
+	// 	publicKey = sm2.CompressPubkeySm2(&p)
+	// 	hash = sm2.Keccak256Sm2(publicKey)
+	// 	prefix.WriteString(string(utils.SM2_Prefix))
+	// }
+	//
+	// hashLength := len(hash)
+	// if hashLength < length {
+	// 	length = hashLength
+	// }
+	// h := hash[hashLength-length:]
+	//
+	// var encode string
+	// encode = base58.Encode(h)
+	// prefix.WriteString(string(utils.BASE58_Prefix))
+	// prefix.WriteString(string(utils.HashLength20))
+	//
+	// return common.StringToAddress(prefix.String() + encode)
+	return utils.Address{}
 }

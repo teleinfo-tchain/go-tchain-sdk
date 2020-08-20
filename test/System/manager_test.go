@@ -49,7 +49,7 @@ func TestContractEnable(t *testing.T) {
 	sysTxParams.GasPrice = big.NewInt(35)
 	sysTxParams.Gas = 2000000
 	sysTxParams.Nonce = nonce.Uint64()
-	sysTxParams.ChainId = big.NewInt(0).SetUint64(chainId)
+	sysTxParams.ChainId = chainId
 
 	manager := connection.System.NewManager()
 
@@ -95,7 +95,7 @@ func TestContractDisable(t *testing.T) {
 	sysTxParams.GasPrice = big.NewInt(35)
 	sysTxParams.Gas = 2000000
 	sysTxParams.Nonce = nonce.Uint64()
-	sysTxParams.ChainId = big.NewInt(0).SetUint64(chainId)
+	sysTxParams.ChainId = chainId
 
 	manager := connection.System.NewManager()
 
@@ -141,7 +141,7 @@ func TestSetPower(t *testing.T) {
 	sysTxParams.GasPrice = big.NewInt(35)
 	sysTxParams.Gas = 2000000
 	sysTxParams.Nonce = nonce.Uint64()
-	sysTxParams.ChainId = big.NewInt(0).SetUint64(chainId)
+	sysTxParams.ChainId = chainId
 
 	manager := connection.System.NewManager()
 

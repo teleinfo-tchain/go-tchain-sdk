@@ -49,7 +49,7 @@ func TestAddWord(t *testing.T) {
 	sysTxParams.GasPrice = big.NewInt(55)
 	sysTxParams.Gas = 2000000
 	sysTxParams.Nonce = nonce.Uint64()
-	sysTxParams.ChainId = big.NewInt(0).SetUint64(chainId)
+	sysTxParams.ChainId = chainId
 
 	sen := connection.System.NewSensitiveWord()
 
@@ -95,7 +95,7 @@ func TestAddWords(t *testing.T) {
 	sysTxParams.GasPrice = big.NewInt(45)
 	sysTxParams.Gas = 2000000
 	sysTxParams.Nonce = nonce.Uint64()
-	sysTxParams.ChainId = big.NewInt(0).SetUint64(chainId)
+	sysTxParams.ChainId = chainId
 
 	sen := connection.System.NewSensitiveWord()
 
@@ -141,7 +141,7 @@ func TestDelWord(t *testing.T) {
 	sysTxParams.GasPrice = big.NewInt(35)
 	sysTxParams.Gas = 2000000
 	sysTxParams.Nonce = nonce.Uint64()
-	sysTxParams.ChainId = big.NewInt(0).SetUint64(chainId)
+	sysTxParams.ChainId = chainId
 
 	sen := connection.System.NewSensitiveWord()
 

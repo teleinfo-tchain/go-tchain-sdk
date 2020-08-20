@@ -111,13 +111,17 @@ func GenerateKeyBtc() (*ecdsa.PrivateKey, error) {
 	return ecdsa.GenerateKey(S256Btc(), rand.Reader)
 }
 
-func PubkeyToAddressBtc(p ecdsa.PublicKey) utils.Address {
-	pubBytes := FromECDSAPub(&p)
-	addr := Keccak256(SECP256K1, pubBytes[1:])[12:]
-	if addr[8] == 115 {
-		addr[8] = 103
-	}
-	return utils.BytesToAddress(addr)
+// func PubkeyToAddressBtc(p ecdsa.PublicKey) utils.Address {
+// 	pubBytes := FromECDSAPub(&p)
+// 	addr := Keccak256(SECP256K1, pubBytes[1:])[12:]
+// 	if addr[8] == 115 {
+// 		addr[8] = 103
+// 	}
+// 	return utils.BytesToAddress(addr)
+// }
+func PubkeyToAddressBtc(p ecdsa.PublicKey) []byte {
+	pubBytes := CompressPubkeyBtc(&p)
+	return Keccak256(SECP256K1, pubBytes)
 }
 
 func zeroBytes(bytes []byte) {

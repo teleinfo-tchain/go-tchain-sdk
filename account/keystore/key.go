@@ -194,7 +194,7 @@ func writeTemporaryKeyFile(file string, content []byte) (string, error) {
 // UTC--<created_at UTC ISO8601>-<address hex>
 func keyFileName(keyAddr utils.Address) string {
 	ts := time.Now().UTC()
-	addr := utils.ByteAddressToString(keyAddr[:])
+	addr := keyAddr.String()
 	addr = strings.ReplaceAll(addr, ":", "-")
 	return fmt.Sprintf("UTC--%s--%s", toISO8601(ts), addr)
 }

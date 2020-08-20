@@ -43,7 +43,7 @@ func TestInit(t *testing.T) {
 	sysTxParams.KeyFileData = keyFileData
 	sysTxParams.GasPrice = big.NewInt(35)
 	sysTxParams.Gas = 2000000
-	sysTxParams.ChainId = big.NewInt(0).SetUint64(chainId)
+	sysTxParams.ChainId = chainId
 
 	doc := connection.System.NewDoc()
 
@@ -88,7 +88,7 @@ func TestSetBidName(t *testing.T) {
 	sysTxParams.GasPrice = big.NewInt(55)
 	sysTxParams.Gas = 2000000
 	sysTxParams.Nonce = nonce.Uint64()
-	sysTxParams.ChainId = big.NewInt(0).SetUint64(chainId)
+	sysTxParams.ChainId = chainId
 
 	doc := connection.System.NewDoc()
 
@@ -161,7 +161,7 @@ func TestAddPublic(t *testing.T) {
 	sysTxParams.GasPrice = big.NewInt(35)
 	sysTxParams.Gas = 2000000
 	sysTxParams.Nonce = nonce.Uint64()
-	sysTxParams.ChainId = big.NewInt(0).SetUint64(chainId)
+	sysTxParams.ChainId = chainId
 
 	doc := connection.System.NewDoc()
 	txHash, err := doc.AddPublic(sysTxParams, testAddressDoc, "secp256k1", "all", testAddressDocPublicKey)
@@ -205,7 +205,7 @@ func TestDelPublic(t *testing.T) {
 	sysTxParams.GasPrice = big.NewInt(35)
 	sysTxParams.Gas = 2000000
 	sysTxParams.Nonce = nonce.Uint64()
-	sysTxParams.ChainId = big.NewInt(0).SetUint64(chainId)
+	sysTxParams.ChainId = chainId
 
 	doc := connection.System.NewDoc()
 
@@ -250,7 +250,7 @@ func TestAddAuth(t *testing.T) {
 	sysTxParams.GasPrice = big.NewInt(35)
 	sysTxParams.Gas = 2000000
 	sysTxParams.Nonce = nonce.Uint64()
-	sysTxParams.ChainId = big.NewInt(0).SetUint64(chainId)
+	sysTxParams.ChainId = chainId
 
 	doc := connection.System.NewDoc()
 
@@ -295,7 +295,7 @@ func TestDelAuth(t *testing.T) {
 	sysTxParams.GasPrice = big.NewInt(35)
 	sysTxParams.Gas = 2000000
 	sysTxParams.Nonce = nonce.Uint64()
-	sysTxParams.ChainId = big.NewInt(0).SetUint64(chainId)
+	sysTxParams.ChainId = chainId
 
 	doc := connection.System.NewDoc()
 
@@ -340,7 +340,7 @@ func TestAddService(t *testing.T) {
 	sysTxParams.GasPrice = big.NewInt(35)
 	sysTxParams.Gas = 2000000
 	sysTxParams.Nonce = nonce.Uint64()
-	sysTxParams.ChainId = big.NewInt(0).SetUint64(chainId)
+	sysTxParams.ChainId = chainId
 
 	doc := connection.System.NewDoc()
 
@@ -385,7 +385,7 @@ func TestDelService(t *testing.T) {
 	sysTxParams.GasPrice = big.NewInt(35)
 	sysTxParams.Gas = 2000000
 	sysTxParams.Nonce = nonce.Uint64()
-	sysTxParams.ChainId = big.NewInt(0).SetUint64(chainId)
+	sysTxParams.ChainId = chainId
 
 	doc := connection.System.NewDoc()
 
@@ -430,7 +430,7 @@ func TestAddProof(t *testing.T) {
 	sysTxParams.GasPrice = big.NewInt(35)
 	sysTxParams.Gas = 2000000
 	sysTxParams.Nonce = nonce.Uint64()
-	sysTxParams.ChainId = big.NewInt(0).SetUint64(chainId)
+	sysTxParams.ChainId = chainId
 
 	doc := connection.System.NewDoc()
 
@@ -475,7 +475,7 @@ func TestDelProof(t *testing.T) {
 	sysTxParams.GasPrice = big.NewInt(35)
 	sysTxParams.Gas = 2000000
 	sysTxParams.Nonce = nonce.Uint64()
-	sysTxParams.ChainId = big.NewInt(0).SetUint64(chainId)
+	sysTxParams.ChainId = chainId
 
 	doc := connection.System.NewDoc()
 
@@ -520,7 +520,7 @@ func TestAddExtra(t *testing.T) {
 	sysTxParams.GasPrice = big.NewInt(35)
 	sysTxParams.Gas = 2000000
 	sysTxParams.Nonce = nonce.Uint64()
-	sysTxParams.ChainId = big.NewInt(0).SetUint64(chainId)
+	sysTxParams.ChainId = chainId
 
 	doc := connection.System.NewDoc()
 
@@ -565,7 +565,7 @@ func TestDelExtra(t *testing.T) {
 	sysTxParams.GasPrice = big.NewInt(35)
 	sysTxParams.Gas = 2000000
 	sysTxParams.Nonce = nonce.Uint64()
-	sysTxParams.ChainId = big.NewInt(0).SetUint64(chainId)
+	sysTxParams.ChainId = chainId
 
 	doc := connection.System.NewDoc()
 
@@ -610,7 +610,7 @@ func TestEnable(t *testing.T) {
 	sysTxParams.GasPrice = big.NewInt(35)
 	sysTxParams.Gas = 2000000
 	sysTxParams.Nonce = nonce.Uint64()
-	sysTxParams.ChainId = big.NewInt(0).SetUint64(chainId)
+	sysTxParams.ChainId = chainId
 
 	doc := connection.System.NewDoc()
 
@@ -655,7 +655,7 @@ func TestDisable(t *testing.T) {
 	sysTxParams.GasPrice = big.NewInt(35)
 	sysTxParams.Gas = 2000000
 	sysTxParams.Nonce = nonce.Uint64()
-	sysTxParams.ChainId = big.NewInt(0).SetUint64(chainId)
+	sysTxParams.ChainId = chainId
 
 	doc := connection.System.NewDoc()
 

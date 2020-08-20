@@ -1,6 +1,7 @@
 package account
 
 import (
+	"fmt"
 	"github.com/bif/bif-sdk-go"
 	"github.com/bif/bif-sdk-go/account"
 	"github.com/bif/bif-sdk-go/core/block"
@@ -40,33 +41,49 @@ func TestPrivateKeyToAccount(t *testing.T) {
 }
 
 func TestEncrypt(t *testing.T) {
-	var connection = bif.NewBif(providers.NewHTTPProvider(resources.IP+":"+resources.Port, 10, false))
-	privateKey := "683179891753cad00325ae51a7c274ad1f39563ca56e07e4d86c2ef5e9ab82b3"
-	password := "teleinfo"
-	keyJson, err := connection.Account.Encrypt(privateKey, false, password, false)
-	if err != nil {
-		t.Error(err)
-		t.FailNow()
+	for _, test := range []struct {
+		privateKey string
+		isSM2      bool
+		password   string
+	}{
+		{"89b9c1cfc8ab8937cfda96393d4cf2f9789b824c75ff8eaeeeebd572193bec38", true, "teleinfo"},
+		{"e4b4a35bee3d92a0b07f16e3253ae8459e817305514dcd0ed0c64342312b41d8", false, "teleinfo"},
+	} {
+		var connection = bif.NewBif(providers.NewHTTPProvider(resources.IP+":"+resources.Port, 10, false))
+		keyJson, err := connection.Account.Encrypt(test.privateKey, test.isSM2, test.password, false)
+		if err != nil {
+			t.Error(err)
+			t.FailNow()
+		}
+		t.Log("keyJson is ", keyJson)
 	}
-	t.Log("keyJson is ", keyJson)
 }
 
 func TestDecrypt(t *testing.T) {
-	var connection = bif.NewBif(providers.NewHTTPProvider(resources.IP+":"+resources.Port, 10, false))
-	privateKeyFile := "../resources/superNodeKeyStore/UTC--172.17.6.51--did-bid-590ed37615bdfefa496224c7"
-	password := "teleinfo"
-	keyJson, err := ioutil.ReadFile(privateKeyFile)
-	if err != nil {
-		t.Error(err)
-		t.FailNow()
+	for _, test := range []struct {
+		isSM2      bool
+		password   string
+		keyDir   string
+		wantAddress string
+	}{
+		{true, "teleinfo", "./keystore/UTC--2020-08-19T05-48-44.625362500Z--did-bid-ZFT4CziA2ktCNgfQPqSm1GpQxSck5q4", "did:bid:ZFT4CziA2ktCNgfQPqSm1GpQxSck5q4"},
+		{false,"teleinfo", "./keystore/UTC--2020-08-19T05-48-46.004537900Z--did-bid-EFTTQWPMdtghuZByPsfQAUuPkWkWYb", "did:bid:EFTTQWPMdtghuZByPsfQAUuPkWkWYb"},
+	} {
+		var connection = bif.NewBif(providers.NewHTTPProvider(resources.IP+":"+resources.Port, 10, false))
+		keyJson, err := ioutil.ReadFile(test.keyDir)
+		if err != nil {
+			t.Error(err)
+			t.FailNow()
+		}
+		address, _, err := connection.Account.Decrypt(keyJson, test.isSM2, test.password)
+		if err != nil {
+			t.Error(err)
+			t.FailNow()
+		}
+		if address != test.wantAddress{
+			t.Logf("result address is %s, want address is %s \n", address,test.wantAddress)
+		}
 	}
-	address, privateKey, err := connection.Account.Decrypt(keyJson, false, password)
-	if err != nil {
-		t.Error(err)
-		t.FailNow()
-	}
-	t.Log("PublicAddress is ", address)
-	t.Log("PrivateKey is ", privateKey)
 }
 
 func TestRecoverTransaction(t *testing.T) {
@@ -109,10 +126,10 @@ func TestSignTransaction(t *testing.T) {
 		to         string
 		isSM2      bool
 	}{
-		// {"国密签名转账", resources.AddressSM2, resources.AddressPriKey, resources.CoinBase, true},
-		{"非国密签名转账", resources.CoinBase, resources.CoinBasePriKey, resources.AddressSM2, false},
+		{"国密签名转账", resources.NewAddrZ, resources.NewAddrZPri, resources.NewAddrE, true},
+		// {"非国密签名转账", resources.NewAddrE, resources.NewAddrEPri, resources.NewAddrZ, false},
 	} {
-		var connection = bif.NewBif(providers.NewHTTPProvider(resources.IP55+":"+resources.Port, 10, false))
+		var connection = bif.NewBif(providers.NewHTTPProvider(resources.IP+":"+resources.Port, 10, false))
 		nonce, err := connection.Core.GetTransactionCount(test.address, block.LATEST)
 		if err != nil {
 			t.Errorf("Failed connection")
@@ -132,7 +149,7 @@ func TestSignTransaction(t *testing.T) {
 		// 	GasPrice: big.NewInt(30),
 		// 	Value:    big.NewInt(50000000000),
 		// 	Data:     nil,
-		// 	ChainId:  big.NewInt(0).SetUint64(chainId),
+		// 	ChainId:  chainId,
 		// }
 		t.Log("nonce is ", nonce, " chainId is ", chainId)
 		tx := &account.SignTxParams{
@@ -142,7 +159,8 @@ func TestSignTransaction(t *testing.T) {
 			GasPrice: nil,
 			Value:    big.NewInt(50000000000),
 			Data:     nil,
-			ChainId:  nil,
+			ChainId:  0,
+			Version: 1,
 		}
 		res, err := connection.Account.SignTransaction(tx, test.privateKey, test.isSM2)
 
@@ -151,18 +169,21 @@ func TestSignTransaction(t *testing.T) {
 			t.FailNow()
 		}
 		t.Logf("%s : %v \n", test.id, res.Raw)
-		// // t.Logf("%#v \n", res.Tx.Hash)
-		//
-		// txHash, err := connection.Core.SendRawTransaction(res.Raw.String())
-		// if err != nil {
-		// 	t.Error(err)
-		// 	t.FailNow()
-		// }
-		// t.Logf("txHash is %s", txHash)
 
+		txHash, err := connection.Core.SendRawTransaction(res.Raw.String())
+		if err != nil {
+			t.Error(err)
+			t.FailNow()
+		}
+		t.Logf("txHash is %s", txHash)
 	}
 }
 
+func Test1(t *testing.T)  {
+	var connection = bif.NewBif(providers.NewHTTPProvider(resources.IP+":"+resources.Port, 10, false))
+	bal, err := connection.Core.GetBalance(resources.NewAddrE,block.LATEST)
+	fmt.Println(bal, err)
+}
 func TestHashMessage(t *testing.T) {
 	for _, test := range []struct {
 		message     string
@@ -214,7 +235,7 @@ func TestSign(t *testing.T) {
 			// NS:           new(big.Int),
 		}
 
-		res, err := connection.Account.Sign(sign, test.privateKey, test.isSm2, big.NewInt(0).SetUint64(chainId))
+		res, err := connection.Account.Sign(sign, test.privateKey, test.isSm2, chainId)
 		if err != nil {
 			t.Error(err)
 			t.FailNow()

@@ -17,14 +17,14 @@
 
 package crypto
 
+import "C"
 import (
 	"crypto/ecdsa"
 	"crypto/elliptic"
 	"errors"
 	"fmt"
-	"math/big"
-
 	"github.com/btcsuite/btcd/btcec"
+	"math/big"
 )
 
 // Ecrecover returns the uncompressed public key that created the given signature.
@@ -109,9 +109,26 @@ func DecompressPubkeyBtc(pubkey []byte) (*ecdsa.PublicKey, error) {
 // CompressPubkey encodes a public key to the 33-byte compressed format.
 func CompressPubkeyBtc(pubkey *ecdsa.PublicKey) []byte {
 	return (*btcec.PublicKey)(pubkey).SerializeCompressed()
+	// return CompressPubkey(pubkey.X, pubkey.Y)
 }
 
 // S256 returns an instance of the secp256k1 curve.
 func S256Btc() elliptic.Curve {
 	return btcec.S256()
 }
+
+// // CompressPubkey encodes a public key to 33-byte compressed format.
+// func CompressPubkey(x, y *big.Int) []byte {
+// 	var (
+// 		pubkey     = S256().Marshal(x, y)
+// 		pubkeydata = (*C.uchar)(unsafe.Pointer(&pubkey[0]))
+// 		pubkeylen  = C.size_t(len(pubkey))
+// 		out        = make([]byte, 33)
+// 		outdata    = (*C.uchar)(unsafe.Pointer(&out[0]))
+// 		outlen     = C.size_t(len(out))
+// 	)
+// 	if C.secp256k1_ext_reencode_pubkey(context, outdata, outlen, pubkeydata, pubkeylen) == 0 {
+// 		panic("libsecp256k1 error")
+// 	}
+// 	return out
+// }

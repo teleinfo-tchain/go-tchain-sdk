@@ -1,8 +1,8 @@
 package account
 
 import (
+	"bytes"
 	"crypto/ecdsa"
-	"fmt"
 	"github.com/bif/bif-sdk-go/crypto"
 	"github.com/bif/bif-sdk-go/utils"
 	"github.com/bif/bif-sdk-go/utils/hexutil"
@@ -12,35 +12,32 @@ import (
 )
 
 type SignTxParams struct {
+	From     string
 	To       string
 	Nonce    uint64
 	Gas      uint64
 	GasPrice *big.Int
 	Value    *big.Int
 	Data     []byte
-	ChainId  *big.Int
+	ChainId  uint64
+	Version  uint64
 }
 
 type txData struct {
+	// todo：暂时默认Version为1，用于升级所用
+	Version      uint64         `json:"version"    gencodec:"required"`
+	ChainId      uint64         `json:"chainId"    gencodec:"required"`
 	AccountNonce uint64         `json:"nonce"    gencodec:"required"`
 	Price        *big.Int       `json:"gasPrice" gencodec:"required"`
 	GasLimit     uint64         `json:"gas"      gencodec:"required"`
-	Sender       *utils.Address `json:"from"     rlp:"nil"`
+	Sender       *utils.Address `json:"from"     rlp:"nil"` // nil means contract creation
 	Recipient    *utils.Address `json:"to"       rlp:"nil"` // nil means contract creation
 	Amount       *big.Int       `json:"value"    gencodec:"required"`
 	Payload      []byte         `json:"input"    gencodec:"required"`
 
 	// account Signature values
-	T *big.Int `json:"t" gencodec:"required"`
-	V *big.Int `json:"v" gencodec:"required"`
-	R *big.Int `json:"r" gencodec:"required"`
-	S *big.Int `json:"s" gencodec:"required"`
+	SignUser []byte `json:"signUser"    gencodec:"required"` // 33 + 1 + 32 + 32  即  公钥 + 类型 + r + s
 
-	// // node Signature values
-	// NT *big.Int `json:"nt" gencodec:"required"`
-	// NV *big.Int `json:"nv" gencodec:"required"`
-	// NR *big.Int `json:"nr" gencodec:"required"`
-	// NS *big.Int `json:"ns" gencodec:"required"`
 	// This is only used when marshaling to JSON.
 	Hash *utils.Hash `json:"hash" rlp:"-"`
 }
@@ -57,14 +54,14 @@ func rlpHash(x interface{}) (h utils.Hash) {
 	return h
 }
 
-type BIFSigner struct {
-	chainId, chainIdMul *big.Int
-}
+type BIFSigner struct{}
 
 // Hash returns the hash to be signed by the sender.
 // It does not uniquely identify the transaction.
 func (bfs BIFSigner) Hash(tx *txData) utils.Hash {
 	return rlpHash([]interface{}{
+		tx.Version,
+		tx.ChainId,
 		tx.AccountNonce,
 		tx.Price,
 		tx.GasLimit,
@@ -72,68 +69,21 @@ func (bfs BIFSigner) Hash(tx *txData) utils.Hash {
 		tx.Recipient,
 		tx.Amount,
 		tx.Payload,
-		bfs.chainId, uint(0), uint(0),
 	})
 }
 
-// SignatureValues returns signature values. This signature
-// needs to be in the [R || S || V] format where V is 0 or 1.
-func (bfs BIFSigner) SignatureValue(sig []byte) (r, s, v *big.Int, err error) {
-	if len(sig) < SignatureLength {
-		return nil, nil, nil, fmt.Errorf("wrong size for signature: got %d, want %d ", len(sig), 65)
-	}
-	r = new(big.Int).SetBytes(sig[:32])
-	s = new(big.Int).SetBytes(sig[32:64])
-	v = new(big.Int).SetBytes([]byte{sig[64] + 27})
-	return r, s, v, nil
-}
-
-// SignatureValues returns signature values. This signature
-// needs to be in the [R || S || V] format where V is 0 or 1.
-func (bfs BIFSigner) SignatureValues(sig []byte) (R, S, V *big.Int, err error) {
-	R, S, V, err = bfs.SignatureValue(sig)
-	// fmt.Println("v is ", V)
-	if err != nil {
-		return nil, nil, nil, err
-	}
-	if bfs.chainId.Sign() != 0 {
-		V = big.NewInt(int64(sig[64] + 35))
-		V.Add(V, bfs.chainIdMul)
-	}
-	return R, S, V, nil
-}
-
-// WithSignature returns a new transaction with the given signature.
-// This signature needs to be in the [R || S || V] format where V is 0 or 1.
-func (tx *txData) WithSignature(signer BIFSigner, sig []byte) (*txData, error) {
-	r, s, v, err := signer.SignatureValues(sig)
-	if err != nil {
-		return nil, err
-	}
-	cpy := tx
-	cpy.R, cpy.S, cpy.V = r, s, v
-	return cpy, nil
-}
-
 // SignTx signs the transaction using the given signer and private key
-func SignTx(tx *txData, s BIFSigner, prv *ecdsa.PrivateKey) (*txData, error) {
+func SignTx(tx *txData, s BIFSigner, prv *ecdsa.PrivateKey, cryptoType crypto.CryptoType) (*txData, error) {
 	h := s.Hash(tx)
-	var sig []byte
 	var err error
-	t := tx.T.Uint64()
-	switch t {
-	case 0:
-		sig, err = crypto.Sign(h[:], prv, crypto.SM2)
-	case 1:
-		sig, err = crypto.Sign(h[:], prv, crypto.SECP256K1)
-	default:
-		sig, err = crypto.Sign(h[:], prv, crypto.SM2)
-	}
+	Signature, err := crypto.GenSignature(h[:], prv, cryptoType)
 	if err != nil {
 		return nil, err
 	}
-	// fmt.Println("Hash is ", h[:])
-	// fmt.Println("sig is ", sig)
-	// fmt.Println("sig len is ", len(sig))
-	return tx.WithSignature(s, sig)
+	var b bytes.Buffer
+	b.Write(Signature.PublicKey)
+	b.Write(Signature.CryptoType)
+	b.Write(Signature.Signature)
+	tx.SignUser = b.Bytes()
+	return tx, nil
 }

@@ -116,7 +116,7 @@ func TestPeerRevokedCertificate(t *testing.T) {
 	sysTxParams.GasPrice = big.NewInt(35)
 	sysTxParams.Gas = 2000000
 	sysTxParams.Nonce = nonce.Uint64()
-	sysTxParams.ChainId = big.NewInt(0).SetUint64(chainId)
+	sysTxParams.ChainId = chainId
 
 	peerCer := connection.System.NewPeerCertificate()
 	transactionHash, err := peerCer.RevokedCertificate(sysTxParams, bid)

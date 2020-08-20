@@ -1,12 +1,12 @@
 package resources
 
 const (
-	IP             string = "172.17.6.53"
+	IP             string = "127.0.0.1"
 	IP51           string = "172.17.6.51"
 	IP52           string = "172.17.6.52"
 	IP54           string = "172.17.6.54"
 	IP55           string = "172.17.6.55"
-	Port           string = "44022"
+	Port           string = "55555"
 	CoinBase       string = "did:bid:c935bd29a90fbeea87badf3e"
 	CoinBasePriKey string = "296450657cf696cf3175b462415a84a8969dd4219841741690e85f770e4654d7"
 	AddressTwo     string = "did:bid:c117c1794fc7a27bd301ae52"
@@ -17,4 +17,10 @@ const (
 	Address53      string = "did:bid:c935bd29a90fbeea87badf3e"
 	Address54      string = "did:bid:13803fb30b7e95d57103c2dc"
 	Address55      string = "did:bid:c117c1794fc7a27bd301ae52"
+	NewAddrZ       string = "did:bid:ZFT4CziA2ktCNgfQPqSm1GpQxSck5q4"
+	NewAddrZPri    string = "89b9c1cfc8ab8937cfda96393d4cf2f9789b824c75ff8eaeeeebd572193bec38"
+	NewAddrE       string = "did:bid:EFTTQWPMdtghuZByPsfQAUuPkWkWYb"
+	NewAddrEPri    string = "e4b4a35bee3d92a0b07f16e3253ae8459e817305514dcd0ed0c64342312b41d8"
+	TestAddr       string = "did:bid:EFTVcqqKyFR17jfPxqwEtpmRpbkvSs"
+	TestAddrPri    string = "41e46e858ea707453d8fc553805772165a4f66e6e18ca38220daa157534e0c0e"
 )

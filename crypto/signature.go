@@ -23,8 +23,77 @@ import (
 	"errors"
 	"fmt"
 	"github.com/bif/bif-sdk-go/utils"
+	"github.com/prometheus/common/log"
 	"time"
 )
+
+type Signature struct {
+	PublicKey  []byte `json:"publicKey"    gencodec:"required"`  // 公钥，33字节，第1个字节是类型0, 1, 2，3，后32字节是公钥的x
+	CryptoType []byte `json:"cryptoType"    gencodec:"required"` // 签名类型，0是sm2，1是secp
+	Signature  []byte `json:"signature"    gencodec:"required"`  // 签名，64字字，前32字节是r，后32字节是s
+}
+
+func GenSignature(hash []byte, prv *ecdsa.PrivateKey, cryptoType CryptoType) (*Signature, error) {
+	signature := &Signature{
+		PublicKey:  make([]byte, 0, 33),
+		CryptoType: make([]byte, 0, 1),
+		Signature:  make([]byte, 0, 64),
+	}
+	sig, err := sign(hash, prv, cryptoType)
+	if err != nil {
+		return signature, err
+	}
+
+	var pubkey []byte
+	var ct []byte
+
+	switch cryptoType {
+	case SM2:
+		pubkey = CompressPubkeySm2(&prv.PublicKey)
+		ct = []byte{0}
+	case SECP256K1:
+		pubkey = CompressPubkeyBtc(&prv.PublicKey)
+		ct = []byte{1}
+	default:
+		pubkey = CompressPubkeySm2(&prv.PublicKey)
+		ct = []byte{0}
+	}
+
+	signature.PublicKey = pubkey
+	signature.CryptoType = ct
+	signature.Signature = sig[:64]
+
+	return signature, nil
+}
+
+func sign(hash []byte, prv *ecdsa.PrivateKey, cryptoType CryptoType) (sig []byte, err error) {
+	switch cryptoType {
+	case SM2:
+		// start := time.Now()
+		sig, err = SignSm2(hash, prv)
+		// log.Debug("Sign SM2", "nanoseconds", common.PrettyDuration(time.Since(start)))
+	case SECP256K1:
+		// start := time.Now()
+		sig, err = SignBtc(hash, prv)
+		// log.Debug("Sign SECP256K1", "nanoseconds", common.PrettyDuration(time.Since(start)))
+	default:
+		// start := time.Now()
+		sig, err = SignBtc(hash, prv)
+		// log.Debug("Sign SECP256K1", "nanoseconds", common.PrettyDuration(time.Since(start)))
+	}
+
+	if bytes.Count(sig[:32], []byte{0}) == 32 {
+		log.Error("Sign, r is nil", "sig", sig, "err", err)
+		return nil, errors.New("r of sig of Sign is nil")
+	}
+
+	if bytes.Count(sig[32:64], []byte{0}) == 32 {
+		log.Error("Sign, s is nil", "sig", sig, "err", err)
+		return nil, errors.New("s of sig of Sign is nil")
+	}
+
+	return sig, err
+}
 
 // Ecrecover returns the uncompressed public key that created the given signature.
 func Ecrecover(hash, sig []byte) ([]byte, error) {

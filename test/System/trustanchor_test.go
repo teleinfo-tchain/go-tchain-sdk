@@ -65,7 +65,7 @@ func TestRegisterBaseTrustAnchor(t *testing.T) {
 	sysTxParams.GasPrice = big.NewInt(35)
 	sysTxParams.Gas = 2000000
 	sysTxParams.Nonce = nonce.Uint64()
-	sysTxParams.ChainId = big.NewInt(0).SetUint64(chainId)
+	sysTxParams.ChainId = chainId
 
 	anchor := connection.System.NewTrustAnchor()
 
@@ -121,7 +121,7 @@ func TestRegisterExtendTrustAnchor(t *testing.T) {
 	sysTxParams.GasPrice = big.NewInt(55)
 	sysTxParams.Gas = 2000000
 	sysTxParams.Nonce = nonce.Uint64()
-	sysTxParams.ChainId = big.NewInt(0).SetUint64(chainId)
+	sysTxParams.ChainId = chainId
 
 	anchor := connection.System.NewTrustAnchor()
 
@@ -177,7 +177,7 @@ func TestUnRegisterTrustAnchor(t *testing.T) {
 	sysTxParams.GasPrice = big.NewInt(35)
 	sysTxParams.Gas = 2000000
 	sysTxParams.Nonce = nonce.Uint64()
-	sysTxParams.ChainId = big.NewInt(0).SetUint64(chainId)
+	sysTxParams.ChainId = chainId
 
 	anchor := connection.System.NewTrustAnchor()
 
@@ -257,7 +257,7 @@ func TestUpdateAnchorInfo(t *testing.T) {
 	sysTxParams.GasPrice = big.NewInt(35)
 	sysTxParams.Gas = 2000000
 	sysTxParams.Nonce = nonce.Uint64()
-	sysTxParams.ChainId = big.NewInt(0).SetUint64(chainId)
+	sysTxParams.ChainId = chainId
 
 	anchor := connection.System.NewTrustAnchor()
 
@@ -309,7 +309,7 @@ func TestExtractOwnBounty(t *testing.T) {
 	sysTxParams.GasPrice = big.NewInt(35)
 	sysTxParams.Gas = 2000000
 	sysTxParams.Nonce = nonce.Uint64()
-	sysTxParams.ChainId = big.NewInt(0).SetUint64(chainId)
+	sysTxParams.ChainId = chainId
 
 	anchor := connection.System.NewTrustAnchor()
 
@@ -481,7 +481,7 @@ func TestVoteElect(t *testing.T) {
 	sysTxParams.GasPrice = big.NewInt(35)
 	sysTxParams.Gas = 2000000
 	sysTxParams.Nonce = nonce.Uint64()
-	sysTxParams.ChainId = big.NewInt(0).SetUint64(chainId)
+	sysTxParams.ChainId = chainId
 
 	anchor := connection.System.NewTrustAnchor()
 
@@ -525,7 +525,7 @@ func TestCancelVote(t *testing.T) {
 	sysTxParams.GasPrice = big.NewInt(35)
 	sysTxParams.Gas = 2000000
 	sysTxParams.Nonce = nonce.Uint64()
-	sysTxParams.ChainId = big.NewInt(0).SetUint64(chainId)
+	sysTxParams.ChainId = chainId
 
 	anchor := connection.System.NewTrustAnchor()
 	transactionHash, err := anchor.CancelVote(sysTxParams, testAddressTrust)

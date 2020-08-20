@@ -57,8 +57,7 @@ func SignSm2(hash []byte, prv *ecdsa.PrivateKey) ([]byte, error) {
 		},
 		D: prv.D,
 	}
-	uid := PubkeyToAddress(prv.PublicKey).Bytes()
-
+	var uid []byte
 	return sm2.Sm2Sign(&prvKey, hash, uid)
 }
 
@@ -78,4 +77,14 @@ func VerifySignatureSm2(pubkey ecdsa.PublicKey, hash, signature []byte) bool {
 // S256 returns an instance of the secp256k1 curve.
 func S256Sm2() elliptic.Curve {
 	return sm2.P256Sm2()
+}
+
+// CompressPubkey encodes a public key to the 33-byte compressed format.
+func CompressPubkeySm2(pubkey *ecdsa.PublicKey) []byte {
+	key := &sm2.PublicKey{
+		Curve: S256Sm2(),
+		X:     pubkey.X,
+		Y:     pubkey.Y,
+	}
+	return sm2.Compress(key)
 }

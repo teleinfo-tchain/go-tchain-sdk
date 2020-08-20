@@ -5,6 +5,7 @@ import (
 	"crypto/ecdsa"
 	"encoding/hex"
 	"errors"
+	"fmt"
 	"github.com/bif/bif-sdk-go/account/keystore"
 	"github.com/bif/bif-sdk-go/crypto"
 	"github.com/bif/bif-sdk-go/dto"
@@ -52,16 +53,16 @@ func publicKeyStrToAddress(pubBytes []byte, isSM2 bool) (string, error) {
 	return utils.BytesToAddress(addr).String(), nil
 }
 
-func (account *Account) getChainId() (*big.Int, error) {
+func (account *Account) getChainId() (uint64, error) {
 	pointer := &dto.CoreRequestResult{}
 
 	err := account.provider.SendRequest(pointer, "core_chainId", nil)
 
 	if err != nil {
-		return nil, err
+		return 0, err
 	}
 
-	return pointer.ToBigInt()
+	return pointer.ToUint64()
 }
 
 func (account *Account) getGasPrice() (*big.Int, error) {
@@ -87,25 +88,30 @@ func (account *Account) getTransactionCount(publicAddr string) (uint64, error) {
 	return pointer.ToUint64()
 }
 
-// To       string
-//	Nonce    uint64
-//	Gas      uint64
-//	GasPrice *big.Int
-//	Value    *big.Int
-//	Data     []byte
-//	ChainId  *big.Int
 func (account *Account) preCheckTx(signData *SignTxParams, privateKey string, isSM2 bool) (*txData, error) {
+	if signData.Version == 0{
+		return nil, errors.New("version should be greater than 0")
+	}
+
 	var recipient utils.Address
 	// 校验地址
 	if signData.To != "" {
 		recipient = utils.StringToAddress(signData.To)
 	}
 
-	// 校验Nonce
 	publicAddr, err := GetAddressFromPrivate(privateKey, isSM2)
 	if err != nil {
 		return nil, errors.New("not invalid privateKey")
 	}
+	// 校验地址
+	var sender utils.Address
+	if signData.From != "" {
+		sender = utils.StringToAddress(signData.From)
+	} else {
+		sender = utils.StringToAddress(publicAddr)
+	}
+
+	// 校验Nonce(谁签名就取谁的Nonce)
 	if signData.Nonce == 0 {
 		signData.Nonce, err = account.getTransactionCount(publicAddr)
 		if err != nil {
@@ -126,29 +132,28 @@ func (account *Account) preCheckTx(signData *SignTxParams, privateKey string, is
 		if err != nil {
 			return nil, err
 		}
-	}else if signData.GasPrice != nil && signData.GasPrice.Cmp(big.NewInt(0)) != 1{
+	} else if signData.GasPrice != nil && signData.GasPrice.Cmp(big.NewInt(0)) != 1 {
 		return nil, errors.New("gasPrice should be greater than 0")
 	}
 
 	// 校验Value
-	if signData.Value != nil && signData.Value.Cmp(big.NewInt(0)) != 1{
+	if signData.Value != nil && signData.Value.Cmp(big.NewInt(0)) != 1 {
 		return nil, errors.New("value should be greater than 0")
 	}
 
 	// 校验Data
 
 	// 校验ChainId
-	if signData.ChainId == nil {
+	if signData.ChainId == 0 {
 		signData.ChainId, err = account.getChainId()
 		if err != nil {
 			return nil, err
 		}
-	}else if signData.ChainId != nil && signData.ChainId.Cmp(big.NewInt(0)) != 1{
-		return nil, errors.New("chainId should be greater than 0")
 	}
 
-	sender := utils.StringToAddress(publicAddr)
 	tx := &txData{
+		Version:      signData.Version,
+		ChainId:      signData.ChainId,
 		AccountNonce: signData.Nonce,
 		Price:        signData.GasPrice,
 		GasLimit:     signData.Gas,
@@ -156,14 +161,7 @@ func (account *Account) preCheckTx(signData *SignTxParams, privateKey string, is
 		Recipient:    &recipient,
 		Amount:       signData.Value,
 		Payload:      signData.Data,
-		V:            new(big.Int),
-		R:            new(big.Int),
-		S:            new(big.Int),
-		T:            new(big.Int),
-		// NT:           new(big.Int),
-		// NV:           new(big.Int),
-		// NR:           new(big.Int),
-		// NS:           new(big.Int),
+		SignUser:     nil,
 	}
 	return tx, nil
 }
@@ -187,7 +185,7 @@ func (account *Account) Create(isSM2 bool) (string, string, error) {
 	if err != nil {
 		return "", "", err
 	}
-	accountAddress := crypto.PubkeyToAddress(*privateKeyECDSA.Public().(*ecdsa.PublicKey)).Hex()
+	accountAddress := crypto.PubkeyToAddress(*privateKeyECDSA.Public().(*ecdsa.PublicKey)).String()
 	privateKey := hex.EncodeToString(privateKeyECDSA.D.Bytes())
 	return accountAddress, privateKey, nil
 }
@@ -213,7 +211,7 @@ func (account *Account) PrivateKeyToAccount(privateKey string, isSM2 bool) (stri
 		return "", err
 	}
 	// 转换成地址
-	return crypto.PubkeyToAddress(*privKey.Public().(*ecdsa.PublicKey)).Hex(), nil
+	return crypto.PubkeyToAddress(*privKey.Public().(*ecdsa.PublicKey)).String(), nil
 }
 
 /*
@@ -312,6 +310,7 @@ func (account *Account) Decrypt(keystoreJson []byte, isSM2 bool, password string
 func (account *Account) SignTransaction(signData *SignTxParams, privateKey string, isSM2 bool) (*SignTransactionResult, error) {
 	// 1 check input
 	tx, err := account.preCheckTx(signData, privateKey, isSM2)
+	fmt.Printf("tx is %#v \n", tx)
 	if err != nil {
 		return nil, err
 	}
@@ -321,7 +320,6 @@ func (account *Account) SignTransaction(signData *SignTxParams, privateKey strin
 	if isSM2 {
 		cryptoType = crypto.SM2
 	} else {
-		tx.T = utils.Big1
 		cryptoType = crypto.SECP256K1
 	}
 
@@ -331,13 +329,9 @@ func (account *Account) SignTransaction(signData *SignTxParams, privateKey strin
 	}
 
 	// 3 New Signer
-	signer := &BIFSigner{
-		chainId:    signData.ChainId,
-		chainIdMul: new(big.Int).Mul(signData.ChainId, big.NewInt(2)),
-	}
-
-	signed, err := SignTx(tx, *signer, privKey)
-
+	signer := &BIFSigner{}
+	signed, err := SignTx(tx, *signer, privKey, cryptoType)
+	fmt.Printf("tx is %#v \n", signed)
 	if err != nil {
 		return nil, err
 	}
@@ -363,7 +357,8 @@ func (account *Account) SignTransaction(signData *SignTxParams, privateKey strin
 
   Call permissions: Anyone
   BUG:国密解密有问题(SM2初始化的问题)
-  TODO：由于解密交易和签名交易的还没统一，后期需要修改，将rlp.DecodeBytes(rawTx, &tx)加上错误处理（即上文注释的部分）
+  TODO：由于解密交易和签名交易的还没统一，后期需要修改，将rlp.DecodeBytes(rawTx, &tx)加上错误处理（即上文注释的部分）,暂时不做这个接口
+
 */
 func (account *Account) RecoverTransaction(rawTxString string, isSM2 bool) (string, error) {
 	if utils.Has0xPrefix(rawTxString) {
@@ -388,44 +383,42 @@ func (account *Account) RecoverTransaction(rawTxString string, isSM2 bool) (stri
 	// }
 	rlp.DecodeBytes(rawTx, &tx)
 
-	// fmt.Printf("%v \n ", tx)
-	chainId, err := account.getChainId()
-	if err != nil {
-		return "", err
-	}
-
-	signer := &BIFSigner{
-		chainId:    chainId,
-		chainIdMul: new(big.Int).Mul(chainId, big.NewInt(2)),
-	}
-	sigHash := signer.Hash(&tx)
-
-	r, s := tx.R.Bytes(), tx.S.Bytes()
-	// deprecated: 国密加密不知道为啥会变长
-	sig := make([]byte, SignatureLength+1)
-	copy(sig[32-len(r):32], r)
-	copy(sig[64-len(s):64], s)
-	var v byte
-	if signer.chainId.Sign() != 0 {
-		tx.V.Sub(tx.V, signer.chainIdMul)
-		v = byte(tx.V.Uint64() - 35)
-	} else {
-		v = byte(tx.V.Uint64() - 27)
-
-	}
-
-	sig[64] = v
-	if isSM2 {
-		sig[65] = byte(0)
-	} else {
-		sig[65] = byte(1)
-	}
-	// _, err = crypto.HexToECDSA(resources.AddressPriKey, crypto.SM2)
-	pubBytes, err := crypto.Ecrecover(sigHash[:], sig)
-	if err != nil {
-		return "", err
-	}
-	return publicKeyStrToAddress(pubBytes, isSM2)
+	// // fmt.Printf("%v \n ", tx)
+	// chainId, err := account.getChainId()
+	// if err != nil {
+	// 	return "", err
+	// }
+	//
+	// signer := &BIFSigner{}
+	// sigHash := signer.Hash(&tx)
+	//
+	// r, s := tx.R.Bytes(), tx.S.Bytes()
+	// // deprecated: 国密加密不知道为啥会变长
+	// sig := make([]byte, SignatureLength+1)
+	// copy(sig[32-len(r):32], r)
+	// copy(sig[64-len(s):64], s)
+	// var v byte
+	// if signer.chainId.Sign() != 0 {
+	// 	tx.V.Sub(tx.V, signer.chainIdMul)
+	// 	v = byte(tx.V.Uint64() - 35)
+	// } else {
+	// 	v = byte(tx.V.Uint64() - 27)
+	//
+	// }
+	//
+	// sig[64] = v
+	// if isSM2 {
+	// 	sig[65] = byte(0)
+	// } else {
+	// 	sig[65] = byte(1)
+	// }
+	// // _, err = crypto.HexToECDSA(resources.AddressPriKey, crypto.SM2)
+	// pubBytes, err := crypto.Ecrecover(sigHash[:], sig)
+	// if err != nil {
+	// 	return "", err
+	// }
+	// return publicKeyStrToAddress(pubBytes, isSM2)
+	return "", err
 }
 
 /*
@@ -482,35 +475,33 @@ func (account *Account) HashMessage(message string, isSm2 bool) string {
   Call permissions: Anyone
   Deprecated: 这个接口暂时没有用
 */
-func (account *Account) Sign(signData *SignData, privateKey string, isSm2 bool, chainId *big.Int) (*SignData, error) {
-	// 1 Get signature type based on Sender type
-	var cryptoType crypto.CryptoType
-	if isSm2 {
-		signData.T = utils.Big0
-		cryptoType = crypto.SM2
-	} else {
-		signData.T = utils.Big1
-		cryptoType = crypto.SECP256K1
-	}
-
-	privKey, err := crypto.HexToECDSA(privateKey, cryptoType)
-	if err != nil {
-		return nil, err
-	}
-
-	// 2 New Signer
-	signer := &BIFSigner{
-		chainId:    chainId,
-		chainIdMul: new(big.Int).Mul(chainId, big.NewInt(2)),
-	}
-
-	signed, err := SignDt(signData, *signer, privKey)
-
-	if err != nil {
-		return nil, err
-	}
-
-	return signed, nil
+func (account *Account) Sign(signData *SignData, privateKey string, isSm2 bool, chainId uint64) (*SignData, error) {
+	// // 1 Get signature type based on Sender type
+	// var cryptoType crypto.CryptoType
+	// if isSm2 {
+	// 	signData.T = utils.Big0
+	// 	cryptoType = crypto.SM2
+	// } else {
+	// 	signData.T = utils.Big1
+	// 	cryptoType = crypto.SECP256K1
+	// }
+	//
+	// privKey, err := crypto.HexToECDSA(privateKey, cryptoType)
+	// if err != nil {
+	// 	return nil, err
+	// }
+	//
+	// // 2 New Signer
+	// signer := &BIFSigner{}
+	//
+	// signed, err := SignDt(signData, *signer, privKey)
+	//
+	// if err != nil {
+	// 	return nil, err
+	// }
+	//
+	// return signed, nil
+	return nil, errors.New("接口待修改")
 }
 
 /*
@@ -526,66 +517,68 @@ func (account *Account) Sign(signData *SignData, privateKey string, isSm2 bool, 
 
   Call permissions: Anyone
   Bug:国密解密有问题
+todo:暂时注释这个接口
 */
 func (account *Account) Recover(rawTxString string, isSM2 bool) (string, error) {
-	if utils.Has0xPrefix(rawTxString) {
-		rawTxString = rawTxString[2:]
-	}
-
-	rawTx, err := hex.DecodeString(rawTxString)
-	if err != nil {
-		return "", err
-	}
-
-	var tx txData
-	rawTx, err = hex.DecodeString(rawTxString)
-	if err != nil {
-		return "", err
-	}
-
-	// err = rlp.DecodeBytes(rawTx, &tx)
-	// // fmt.Printf("tx is %v \n", tx)
+	// if utils.Has0xPrefix(rawTxString) {
+	// 	rawTxString = rawTxString[2:]
+	// }
+	//
+	// rawTx, err := hex.DecodeString(rawTxString)
 	// if err != nil {
 	// 	return "", err
 	// }
-	rlp.DecodeBytes(rawTx, &tx)
-
-	// fmt.Printf("%v \n ", tx)
-	chainId, err := account.getChainId()
-	if err != nil {
-		return "", err
-	}
-
-	signer := &BIFSigner{
-		chainId:    chainId,
-		chainIdMul: new(big.Int).Mul(chainId, big.NewInt(2)),
-	}
-	sigHash := signer.Hash(&tx)
-
-	r, s := tx.R.Bytes(), tx.S.Bytes()
-	// deprecated: 国密加密不知道为啥会变长
-	sig := make([]byte, SignatureLength+1)
-	copy(sig[32-len(r):32], r)
-	copy(sig[64-len(s):64], s)
-	var v byte
-	if signer.chainId.Sign() != 0 {
-		tx.V.Sub(tx.V, signer.chainIdMul)
-		v = byte(tx.V.Uint64() - 35)
-	} else {
-		v = byte(tx.V.Uint64() - 27)
-
-	}
-
-	sig[64] = v
-	if isSM2 {
-		sig[65] = byte(0)
-	} else {
-		sig[65] = byte(1)
-	}
-	// _, err = crypto.HexToECDSA(resources.AddressPriKey, crypto.SM2)
-	pubBytes, err := crypto.Ecrecover(sigHash[:], sig)
-	if err != nil {
-		return "", err
-	}
-	return publicKeyStrToAddress(pubBytes, isSM2)
+	//
+	// var tx txData
+	// rawTx, err = hex.DecodeString(rawTxString)
+	// if err != nil {
+	// 	return "", err
+	// }
+	//
+	// // err = rlp.DecodeBytes(rawTx, &tx)
+	// // // fmt.Printf("tx is %v \n", tx)
+	// // if err != nil {
+	// // 	return "", err
+	// // }
+	// rlp.DecodeBytes(rawTx, &tx)
+	//
+	// // fmt.Printf("%v \n ", tx)
+	// chainId, err := account.getChainId()
+	// if err != nil {
+	// 	return "", err
+	// }
+	//
+	// signer := &BIFSigner{
+	// 	chainId:    chainId,
+	// 	chainIdMul: new(big.Int).Mul(chainId, big.NewInt(2)),
+	// }
+	// sigHash := signer.Hash(&tx)
+	//
+	// r, s := tx.R.Bytes(), tx.S.Bytes()
+	// // deprecated: 国密加密不知道为啥会变长
+	// sig := make([]byte, SignatureLength+1)
+	// copy(sig[32-len(r):32], r)
+	// copy(sig[64-len(s):64], s)
+	// var v byte
+	// if signer.chainId.Sign() != 0 {
+	// 	tx.V.Sub(tx.V, signer.chainIdMul)
+	// 	v = byte(tx.V.Uint64() - 35)
+	// } else {
+	// 	v = byte(tx.V.Uint64() - 27)
+	//
+	// }
+	//
+	// sig[64] = v
+	// if isSM2 {
+	// 	sig[65] = byte(0)
+	// } else {
+	// 	sig[65] = byte(1)
+	// }
+	// // _, err = crypto.HexToECDSA(resources.AddressPriKey, crypto.SM2)
+	// pubBytes, err := crypto.Ecrecover(sigHash[:], sig)
+	// if err != nil {
+	// 	return "", err
+	// }
+	// return publicKeyStrToAddress(pubBytes, isSM2)
+	return "", errors.New("接口待修改")
 }

@@ -12,8 +12,8 @@ func TestGenerateKeyStore(t *testing.T) {
 		password          string
 		useLightweightKDF bool
 	}{
-		{"./keystore", true, "123456", false},
-		{"./keystore", false, "123456", false},
+		{"./keystore", true, "teleinfo", false},
+		{"./keystore", false, "teleinfo", false},
 	} {
 		addr, err := account.GenerateKeyStore(test.storeKeyDir, test.isSm2, test.password, test.useLightweightKDF)
 		if err != nil {
@@ -31,8 +31,9 @@ func TestGetPrivateKeyFromFile(t *testing.T) {
 		address  string
 		keyDir   string
 	}{
-		{"123456", "0x6469643A6269643a738cB17e4DB903d1bF802fEC", "./keystore/UTC--2020-08-08T16-09-37.005318300Z--did-bid-738cb17e4db903d1bf802fec"},
-		{"123456", "0x6469643A6269643a46727D4aA2Bf54976C22b6d4", "./keystore/UTC--2020-08-08T16-09-38.381643000Z--did-bid-46727d4aa2bf54976c22b6d4"},
+		{"teleinfo", "did:bid:ZFT4CziA2ktCNgfQPqSm1GpQxSck5q4", "./keystore/UTC--2020-08-19T05-48-44.625362500Z--did-bid-ZFT4CziA2ktCNgfQPqSm1GpQxSck5q4"},
+		{"teleinfo", "did:bid:EFTTQWPMdtghuZByPsfQAUuPkWkWYb", "./keystore/UTC--2020-08-19T05-48-46.004537900Z--did-bid-EFTTQWPMdtghuZByPsfQAUuPkWkWYb"},
+		{"node", "did:bid:EFTVcqqKyFR17jfPxqwEtpmRpbkvSs", "./keystore/UTC--2020-08-18T02-40-32.306282000Z--did-bid-EFTVcqqKyFR17jfPxqwEtpmRpbkvSs"},
 	} {
 		pri, err := account.GetPrivateKeyFromFile(test.address, test.keyDir, test.password)
 		if err != nil {
@@ -50,8 +51,8 @@ func TestPrivateKeyToKeyStoreFile(t *testing.T) {
 		isSM2      bool
 		keyDir     string
 	}{
-		{"123456", "d64912c32615ed55b9d9602539714fdf22bbe5c32608d5f1082a60a2bc22ac0a", true, "./keystore"},
-		{"123456", "dc06dc71470401dbbd7e064a82df5b714d6e60d5dfecd694d19b40d6f6398137", false, "./keystore"},
+		{"teleinfo", "89b9c1cfc8ab8937cfda96393d4cf2f9789b824c75ff8eaeeeebd572193bec38", true, "./keystore"},
+		{"teleinfo", "e4b4a35bee3d92a0b07f16e3253ae8459e817305514dcd0ed0c64342312b41d8", false, "./keystore"},
 	} {
 		isSuccess, err := account.PrivateKeyToKeyStoreFile(test.keyDir, test.isSM2, test.privateKey, test.password)
 		if err != nil {
@@ -70,8 +71,8 @@ func TestGetAddressFromPrivate(t *testing.T) {
 		privateKey string
 		isSM2      bool
 	}{
-		{"d64912c32615ed55b9d9602539714fdf22bbe5c32608d5f1082a60a2bc22ac0a", true},
-		{"dc06dc71470401dbbd7e064a82df5b714d6e60d5dfecd694d19b40d6f6398137", false},
+		{"89b9c1cfc8ab8937cfda96393d4cf2f9789b824c75ff8eaeeeebd572193bec38", true},
+		{"e4b4a35bee3d92a0b07f16e3253ae8459e817305514dcd0ed0c64342312b41d8", false},
 	} {
 		accountAddress, err := account.GetAddressFromPrivate(test.privateKey, test.isSM2)
 		if err != nil {
@@ -86,16 +87,20 @@ func TestGetPublicKeyFromPrivate(t *testing.T) {
 	for _, test := range []struct {
 		privateKey string
 		isSM2      bool
+		want               string
 	}{
-		{"d64912c32615ed55b9d9602539714fdf22bbe5c32608d5f1082a60a2bc22ac0a", true},
-		{"dc06dc71470401dbbd7e064a82df5b714d6e60d5dfecd694d19b40d6f6398137", false},
+		{"89b9c1cfc8ab8937cfda96393d4cf2f9789b824c75ff8eaeeeebd572193bec38", true, "0x0102d53a8080379bb6499966687a9fccd3ac0641010eb53c983b9dd7f6a0c860b1665275b26d616eecee10d7bd03755c31c4e1ab7ca45e3b7b266442f7f64efa03"},
+		{"e4b4a35bee3d92a0b07f16e3253ae8459e817305514dcd0ed0c64342312b41d8", false, "0x043ee1708e4b431e71b1cc596c15425b8e889b80ec120840b6dd998a3a6397142405875eebe6b3488723e6ad3c5c7397c42c57696ac1e2fa925c0a1f6a61fc20a7"},
 	} {
 		publicKey, err := account.GetPublicKeyFromPrivate(test.privateKey, test.isSM2)
 		if err != nil {
 			t.Error(err)
 			t.FailNow()
 		}
-		t.Logf("len is %d , publicKey is : %s \n", len(publicKey[2:]), publicKey)
+		// t.Log("publicKey len is ", len(publicKey[2:]))
+		if publicKey != test.want{
+			t.Logf("want publicKey is : %s , result is %s \n", test.want, publicKey)
+		}
 	}
 
 }
@@ -105,18 +110,20 @@ func TestGetGetPublicKeyFromFile(t *testing.T) {
 		privateKeyFilePath string
 		password           string
 		isSM2              bool
+		want               string
 	}{
-		{"./keystore/UTC--2020-08-08T16-09-37.005318300Z--did-bid-738cb17e4db903d1bf802fec", "123456", true},
-		{"./keystore/UTC--2020-08-08T16-09-38.381643000Z--did-bid-46727d4aa2bf54976c22b6d4", "123456", false},
+		{"./keystore/UTC--2020-08-19T05-48-44.625362500Z--did-bid-ZFT4CziA2ktCNgfQPqSm1GpQxSck5q4", "teleinfo", true, "0x0102d53a8080379bb6499966687a9fccd3ac0641010eb53c983b9dd7f6a0c860b1665275b26d616eecee10d7bd03755c31c4e1ab7ca45e3b7b266442f7f64efa03"},
+		{"./keystore/UTC--2020-08-19T05-48-46.004537900Z--did-bid-EFTTQWPMdtghuZByPsfQAUuPkWkWYb", "teleinfo", false, "0x043ee1708e4b431e71b1cc596c15425b8e889b80ec120840b6dd998a3a6397142405875eebe6b3488723e6ad3c5c7397c42c57696ac1e2fa925c0a1f6a61fc20a7"},
 	} {
 		publicKey, err := account.GetPublicKeyFromFile(test.privateKeyFilePath, test.password, test.isSM2)
 		if err != nil {
 			t.Error(err)
 			t.FailNow()
 		}
-		// 0x01cea5a1d9b901bb2b3306e8cf28762dbed3c9a886c40b5c3860582a9bdf51c9ed
-		// 0x042466cb80265bcf5669f65f041c31e433cf8328a3070bc7d20279015c61b27fe6826f235eda0baacbff7e5e19567995410ecb3efcc280d7daaa44331b5c5027b9
-		t.Logf("len is %d , publicKey is : %s \n", len(publicKey[2:]), publicKey)
+		// t.Log("publicKey len is ", len(publicKey[2:]))
+		if publicKey != test.want{
+			t.Logf("want publicKey is : %s , result is %s \n", test.want, publicKey)
+		}
 	}
 
 }

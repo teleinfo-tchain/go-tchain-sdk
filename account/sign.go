@@ -2,6 +2,8 @@ package account
 
 import (
 	"crypto/ecdsa"
+	"errors"
+	"fmt"
 	"github.com/bif/bif-sdk-go/crypto"
 	"github.com/bif/bif-sdk-go/utils"
 	"math/big"
@@ -25,17 +27,6 @@ type SignData  struct {
 	Hash *utils.Hash `json:"hash" rlp:"-"`
 }
 
-// This signature needs to be in the [R || S || V] format where V is 0 or 1.
-func (sign *SignData) WithSignature(signer BIFSigner, sig []byte) (*SignData, error) {
-	r, s, v, err := signer.SignatureValues(sig)
-	if err != nil {
-		return nil, err
-	}
-	cpy := sign
-	cpy.R, cpy.S, cpy.V = r, s, v
-	return cpy, nil
-}
-
 // SignDt signs the data using the given signer and private key
 func SignDt(signData *SignData, s BIFSigner, prv *ecdsa.PrivateKey) (*SignData, error) {
 	h := utils.Hex2Bytes(signData.MessageHash[2:])
@@ -53,5 +44,6 @@ func SignDt(signData *SignData, s BIFSigner, prv *ecdsa.PrivateKey) (*SignData, 
 	if err != nil {
 		return nil, err
 	}
-	return signData.WithSignature(s, sig)
+	fmt.Println("sig ", sig)
+	return nil,errors.New("接口待修改")
 }
