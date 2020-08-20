@@ -12,14 +12,15 @@ import (
 )
 
 const (
-	isSM2Doc       = false
-	passwordDoc    = "teleinfo"
-	testAddressDoc = "did:bid:6cc796b8d6e2fbebc9b3cf9e"
-	testAddressDocPublicKey = "0x04862d66d1255c7ac9c6d86920081069a4d7c295c838140217644ac6f4fcddd0d2edef63951148affb107223fbd1331363e275125bc0cfeb34b1daad26328f8b20"
+	isSM2Doc                = false
+	passwordDoc             = "teleinfo"
+	testAddressDoc          = "did:bid:EFTVcqqKyFR17jfPxqwEtpmRpbkvSs"
+	testAddressDocPublicKey = "0x04647f729afb309e4cd20f4b186a7883e1cd23b245e9fb6eb939ad74e47cc16c55e60aa12f20ed21bee8d23291aae377ad319b166604dec1a81dfb2b008bdc3c68"
+	testAddressDocFile      = "../resources/superNodeKeyStore/UTC--2020-08-20T05-28-39.403642600Z--did-bid-EFTVcqqKyFR17jfPxqwEtpmRpbkvSs"
 )
 
 func TestInit(t *testing.T) {
-	var connection = bif.NewBif(providers.NewHTTPProvider(resources.IP55+":"+resources.Port, 10, false))
+	var connection = bif.NewBif(providers.NewHTTPProvider(resources.IP+":"+resources.Port, 10, false))
 	chainId, err := connection.Core.GetChainId()
 	if err != nil {
 		t.Log(err)
@@ -27,7 +28,7 @@ func TestInit(t *testing.T) {
 	}
 
 	// keyFileData 还可以进一步校验
-	keyFileData, err := ioutil.ReadFile("../resources/superNodeKeyStore/UTC--2020-07-07T10-47-32.962000000Z--did-bid-6cc796b8d6e2fbebc9b3cf9e")
+	keyFileData, err := ioutil.ReadFile(testAddressDocFile)
 	if err != nil {
 		t.Error(err)
 		t.FailNow()
@@ -44,6 +45,7 @@ func TestInit(t *testing.T) {
 	sysTxParams.GasPrice = big.NewInt(35)
 	sysTxParams.Gas = 2000000
 	sysTxParams.ChainId = chainId
+	sysTxParams.Version = 1
 
 	doc := connection.System.NewDoc()
 
@@ -57,7 +59,7 @@ func TestInit(t *testing.T) {
 }
 
 func TestSetBidName(t *testing.T) {
-	var connection = bif.NewBif(providers.NewHTTPProvider(resources.IP55+":"+resources.Port, 10, false))
+	var connection = bif.NewBif(providers.NewHTTPProvider(resources.IP+":"+resources.Port, 10, false))
 	chainId, err := connection.Core.GetChainId()
 	if err != nil {
 		t.Log(err)
@@ -71,7 +73,7 @@ func TestSetBidName(t *testing.T) {
 	}
 
 	// keyFileData 还可以进一步校验
-	keyFileData, err := ioutil.ReadFile("../resources/superNodeKeyStore/UTC--2020-07-07T10-47-32.962000000Z--did-bid-6cc796b8d6e2fbebc9b3cf9e")
+	keyFileData, err := ioutil.ReadFile(testAddressDocFile)
 	if err != nil {
 		t.Error(err)
 		t.FailNow()
@@ -89,10 +91,11 @@ func TestSetBidName(t *testing.T) {
 	sysTxParams.Gas = 2000000
 	sysTxParams.Nonce = nonce.Uint64()
 	sysTxParams.ChainId = chainId
+	sysTxParams.Version = 1
 
 	doc := connection.System.NewDoc()
 
-	txHash, err := doc.SetBidName(sysTxParams, testAddressDoc, "       ")
+	txHash, err := doc.SetBidName(sysTxParams, testAddressDoc, "test12")
 	if err != nil {
 		t.Error(err)
 		t.FailNow()
@@ -102,8 +105,8 @@ func TestSetBidName(t *testing.T) {
 }
 
 func TestGetDocument(t *testing.T) {
-	var connection = bif.NewBif(providers.NewHTTPProvider(resources.IP55+":"+resources.Port, 10, false))
-	_, err := connection.Core.GetCoinBase()
+	var connection = bif.NewBif(providers.NewHTTPProvider(resources.IP+":"+resources.Port, 10, false))
+	_, err := connection.Core.GetChainId()
 	if err != nil {
 		t.Error(err)
 		t.FailNow()
@@ -130,7 +133,7 @@ func TestGetDocument(t *testing.T) {
 }
 
 func TestAddPublic(t *testing.T) {
-	var connection = bif.NewBif(providers.NewHTTPProvider(resources.IP55+":"+resources.Port, 10, false))
+	var connection = bif.NewBif(providers.NewHTTPProvider(resources.IP+":"+resources.Port, 10, false))
 	chainId, err := connection.Core.GetChainId()
 	if err != nil {
 		t.Log(err)
@@ -138,7 +141,7 @@ func TestAddPublic(t *testing.T) {
 	}
 
 	// keyFileData 还可以进一步校验
-	keyFileData, err := ioutil.ReadFile("../resources/superNodeKeyStore/UTC--2020-07-07T10-47-32.962000000Z--did-bid-6cc796b8d6e2fbebc9b3cf9e")
+	keyFileData, err := ioutil.ReadFile(testAddressDocFile)
 	if err != nil {
 		t.Error(err)
 		t.FailNow()
@@ -162,6 +165,7 @@ func TestAddPublic(t *testing.T) {
 	sysTxParams.Gas = 2000000
 	sysTxParams.Nonce = nonce.Uint64()
 	sysTxParams.ChainId = chainId
+	sysTxParams.Version = 1
 
 	doc := connection.System.NewDoc()
 	txHash, err := doc.AddPublic(sysTxParams, testAddressDoc, "secp256k1", "all", testAddressDocPublicKey)
@@ -174,7 +178,7 @@ func TestAddPublic(t *testing.T) {
 }
 
 func TestDelPublic(t *testing.T) {
-	var connection = bif.NewBif(providers.NewHTTPProvider(resources.IP55+":"+resources.Port, 10, false))
+	var connection = bif.NewBif(providers.NewHTTPProvider(resources.IP+":"+resources.Port, 10, false))
 	chainId, err := connection.Core.GetChainId()
 	if err != nil {
 		t.Log(err)
@@ -188,7 +192,7 @@ func TestDelPublic(t *testing.T) {
 	}
 
 	// keyFileData 还可以进一步校验
-	keyFileData, err := ioutil.ReadFile("../resources/superNodeKeyStore/UTC--2020-07-07T10-47-32.962000000Z--did-bid-6cc796b8d6e2fbebc9b3cf9e")
+	keyFileData, err := ioutil.ReadFile(testAddressDocFile)
 	if err != nil {
 		t.Error(err)
 		t.FailNow()
@@ -206,6 +210,7 @@ func TestDelPublic(t *testing.T) {
 	sysTxParams.Gas = 2000000
 	sysTxParams.Nonce = nonce.Uint64()
 	sysTxParams.ChainId = chainId
+	sysTxParams.Version = 1
 
 	doc := connection.System.NewDoc()
 
@@ -219,7 +224,7 @@ func TestDelPublic(t *testing.T) {
 }
 
 func TestAddAuth(t *testing.T) {
-	var connection = bif.NewBif(providers.NewHTTPProvider(resources.IP55+":"+resources.Port, 10, false))
+	var connection = bif.NewBif(providers.NewHTTPProvider(resources.IP+":"+resources.Port, 10, false))
 	chainId, err := connection.Core.GetChainId()
 	if err != nil {
 		t.Log(err)
@@ -233,7 +238,7 @@ func TestAddAuth(t *testing.T) {
 	}
 
 	// keyFileData 还可以进一步校验
-	keyFileData, err := ioutil.ReadFile("../resources/superNodeKeyStore/UTC--2020-07-07T10-47-32.962000000Z--did-bid-6cc796b8d6e2fbebc9b3cf9e")
+	keyFileData, err := ioutil.ReadFile(testAddressDocFile)
 	if err != nil {
 		t.Error(err)
 		t.FailNow()
@@ -251,6 +256,7 @@ func TestAddAuth(t *testing.T) {
 	sysTxParams.Gas = 2000000
 	sysTxParams.Nonce = nonce.Uint64()
 	sysTxParams.ChainId = chainId
+	sysTxParams.Version = 1
 
 	doc := connection.System.NewDoc()
 
@@ -264,7 +270,7 @@ func TestAddAuth(t *testing.T) {
 }
 
 func TestDelAuth(t *testing.T) {
-	var connection = bif.NewBif(providers.NewHTTPProvider(resources.IP55+":"+resources.Port, 10, false))
+	var connection = bif.NewBif(providers.NewHTTPProvider(resources.IP+":"+resources.Port, 10, false))
 	chainId, err := connection.Core.GetChainId()
 	if err != nil {
 		t.Log(err)
@@ -278,7 +284,7 @@ func TestDelAuth(t *testing.T) {
 	}
 
 	// keyFileData 还可以进一步校验
-	keyFileData, err := ioutil.ReadFile("../resources/superNodeKeyStore/UTC--2020-07-07T10-47-32.962000000Z--did-bid-6cc796b8d6e2fbebc9b3cf9e")
+	keyFileData, err := ioutil.ReadFile(testAddressDocFile)
 	if err != nil {
 		t.Error(err)
 		t.FailNow()
@@ -296,6 +302,7 @@ func TestDelAuth(t *testing.T) {
 	sysTxParams.Gas = 2000000
 	sysTxParams.Nonce = nonce.Uint64()
 	sysTxParams.ChainId = chainId
+	sysTxParams.Version = 1
 
 	doc := connection.System.NewDoc()
 
@@ -309,7 +316,7 @@ func TestDelAuth(t *testing.T) {
 }
 
 func TestAddService(t *testing.T) {
-	var connection = bif.NewBif(providers.NewHTTPProvider(resources.IP55+":"+resources.Port, 10, false))
+	var connection = bif.NewBif(providers.NewHTTPProvider(resources.IP+":"+resources.Port, 10, false))
 	chainId, err := connection.Core.GetChainId()
 	if err != nil {
 		t.Log(err)
@@ -323,7 +330,7 @@ func TestAddService(t *testing.T) {
 	}
 
 	// keyFileData 还可以进一步校验
-	keyFileData, err := ioutil.ReadFile("../resources/superNodeKeyStore/UTC--2020-07-07T10-47-32.962000000Z--did-bid-6cc796b8d6e2fbebc9b3cf9e")
+	keyFileData, err := ioutil.ReadFile(testAddressDocFile)
 	if err != nil {
 		t.Error(err)
 		t.FailNow()
@@ -341,6 +348,7 @@ func TestAddService(t *testing.T) {
 	sysTxParams.Gas = 2000000
 	sysTxParams.Nonce = nonce.Uint64()
 	sysTxParams.ChainId = chainId
+	sysTxParams.Version = 1
 
 	doc := connection.System.NewDoc()
 
@@ -354,7 +362,7 @@ func TestAddService(t *testing.T) {
 }
 
 func TestDelService(t *testing.T) {
-	var connection = bif.NewBif(providers.NewHTTPProvider(resources.IP55+":"+resources.Port, 10, false))
+	var connection = bif.NewBif(providers.NewHTTPProvider(resources.IP+":"+resources.Port, 10, false))
 	chainId, err := connection.Core.GetChainId()
 	if err != nil {
 		t.Log(err)
@@ -368,7 +376,7 @@ func TestDelService(t *testing.T) {
 	}
 
 	// keyFileData 还可以进一步校验
-	keyFileData, err := ioutil.ReadFile("../resources/superNodeKeyStore/UTC--2020-07-07T10-47-32.962000000Z--did-bid-6cc796b8d6e2fbebc9b3cf9e")
+	keyFileData, err := ioutil.ReadFile(testAddressDocFile)
 	if err != nil {
 		t.Error(err)
 		t.FailNow()
@@ -386,6 +394,7 @@ func TestDelService(t *testing.T) {
 	sysTxParams.Gas = 2000000
 	sysTxParams.Nonce = nonce.Uint64()
 	sysTxParams.ChainId = chainId
+	sysTxParams.Version = 1
 
 	doc := connection.System.NewDoc()
 
@@ -399,7 +408,7 @@ func TestDelService(t *testing.T) {
 }
 
 func TestAddProof(t *testing.T) {
-	var connection = bif.NewBif(providers.NewHTTPProvider(resources.IP55+":"+resources.Port, 10, false))
+	var connection = bif.NewBif(providers.NewHTTPProvider(resources.IP+":"+resources.Port, 10, false))
 	chainId, err := connection.Core.GetChainId()
 	if err != nil {
 		t.Log(err)
@@ -413,7 +422,7 @@ func TestAddProof(t *testing.T) {
 	}
 
 	// keyFileData 还可以进一步校验
-	keyFileData, err := ioutil.ReadFile("../resources/superNodeKeyStore/UTC--2020-07-07T10-47-32.962000000Z--did-bid-6cc796b8d6e2fbebc9b3cf9e")
+	keyFileData, err := ioutil.ReadFile(testAddressDocFile)
 	if err != nil {
 		t.Error(err)
 		t.FailNow()
@@ -431,6 +440,7 @@ func TestAddProof(t *testing.T) {
 	sysTxParams.Gas = 2000000
 	sysTxParams.Nonce = nonce.Uint64()
 	sysTxParams.ChainId = chainId
+	sysTxParams.Version = 1
 
 	doc := connection.System.NewDoc()
 
@@ -444,7 +454,7 @@ func TestAddProof(t *testing.T) {
 }
 
 func TestDelProof(t *testing.T) {
-	var connection = bif.NewBif(providers.NewHTTPProvider(resources.IP55+":"+resources.Port, 10, false))
+	var connection = bif.NewBif(providers.NewHTTPProvider(resources.IP+":"+resources.Port, 10, false))
 	chainId, err := connection.Core.GetChainId()
 	if err != nil {
 		t.Log(err)
@@ -458,7 +468,7 @@ func TestDelProof(t *testing.T) {
 	}
 
 	// keyFileData 还可以进一步校验
-	keyFileData, err := ioutil.ReadFile("../resources/superNodeKeyStore/UTC--2020-07-07T10-47-32.962000000Z--did-bid-6cc796b8d6e2fbebc9b3cf9e")
+	keyFileData, err := ioutil.ReadFile(testAddressDocFile)
 	if err != nil {
 		t.Error(err)
 		t.FailNow()
@@ -476,6 +486,7 @@ func TestDelProof(t *testing.T) {
 	sysTxParams.Gas = 2000000
 	sysTxParams.Nonce = nonce.Uint64()
 	sysTxParams.ChainId = chainId
+	sysTxParams.Version = 1
 
 	doc := connection.System.NewDoc()
 
@@ -489,7 +500,7 @@ func TestDelProof(t *testing.T) {
 }
 
 func TestAddExtra(t *testing.T) {
-	var connection = bif.NewBif(providers.NewHTTPProvider(resources.IP55+":"+resources.Port, 10, false))
+	var connection = bif.NewBif(providers.NewHTTPProvider(resources.IP+":"+resources.Port, 10, false))
 	chainId, err := connection.Core.GetChainId()
 	if err != nil {
 		t.Log(err)
@@ -503,7 +514,7 @@ func TestAddExtra(t *testing.T) {
 	}
 
 	// keyFileData 还可以进一步校验
-	keyFileData, err := ioutil.ReadFile("../resources/superNodeKeyStore/UTC--2020-07-07T10-47-32.962000000Z--did-bid-6cc796b8d6e2fbebc9b3cf9e")
+	keyFileData, err := ioutil.ReadFile(testAddressDocFile)
 	if err != nil {
 		t.Error(err)
 		t.FailNow()
@@ -521,6 +532,7 @@ func TestAddExtra(t *testing.T) {
 	sysTxParams.Gas = 2000000
 	sysTxParams.Nonce = nonce.Uint64()
 	sysTxParams.ChainId = chainId
+	sysTxParams.Version = 1
 
 	doc := connection.System.NewDoc()
 
@@ -534,7 +546,7 @@ func TestAddExtra(t *testing.T) {
 }
 
 func TestDelExtra(t *testing.T) {
-	var connection = bif.NewBif(providers.NewHTTPProvider(resources.IP55+":"+resources.Port, 10, false))
+	var connection = bif.NewBif(providers.NewHTTPProvider(resources.IP+":"+resources.Port, 10, false))
 	chainId, err := connection.Core.GetChainId()
 	if err != nil {
 		t.Log(err)
@@ -548,7 +560,7 @@ func TestDelExtra(t *testing.T) {
 	}
 
 	// keyFileData 还可以进一步校验
-	keyFileData, err := ioutil.ReadFile("../resources/superNodeKeyStore/UTC--2020-07-07T10-47-32.962000000Z--did-bid-6cc796b8d6e2fbebc9b3cf9e")
+	keyFileData, err := ioutil.ReadFile(testAddressDocFile)
 	if err != nil {
 		t.Error(err)
 		t.FailNow()
@@ -566,6 +578,7 @@ func TestDelExtra(t *testing.T) {
 	sysTxParams.Gas = 2000000
 	sysTxParams.Nonce = nonce.Uint64()
 	sysTxParams.ChainId = chainId
+	sysTxParams.Version = 1
 
 	doc := connection.System.NewDoc()
 
@@ -579,7 +592,7 @@ func TestDelExtra(t *testing.T) {
 }
 
 func TestEnable(t *testing.T) {
-	var connection = bif.NewBif(providers.NewHTTPProvider(resources.IP55+":"+resources.Port, 10, false))
+	var connection = bif.NewBif(providers.NewHTTPProvider(resources.IP+":"+resources.Port, 10, false))
 	chainId, err := connection.Core.GetChainId()
 	if err != nil {
 		t.Log(err)
@@ -593,7 +606,7 @@ func TestEnable(t *testing.T) {
 	}
 
 	// keyFileData 还可以进一步校验
-	keyFileData, err := ioutil.ReadFile("../resources/superNodeKeyStore/UTC--2020-07-07T10-47-32.962000000Z--did-bid-6cc796b8d6e2fbebc9b3cf9e")
+	keyFileData, err := ioutil.ReadFile(testAddressDocFile)
 	if err != nil {
 		t.Error(err)
 		t.FailNow()
@@ -611,6 +624,7 @@ func TestEnable(t *testing.T) {
 	sysTxParams.Gas = 2000000
 	sysTxParams.Nonce = nonce.Uint64()
 	sysTxParams.ChainId = chainId
+	sysTxParams.Version = 1
 
 	doc := connection.System.NewDoc()
 
@@ -624,7 +638,7 @@ func TestEnable(t *testing.T) {
 }
 
 func TestDisable(t *testing.T) {
-	var connection = bif.NewBif(providers.NewHTTPProvider(resources.IP55+":"+resources.Port, 10, false))
+	var connection = bif.NewBif(providers.NewHTTPProvider(resources.IP+":"+resources.Port, 10, false))
 	chainId, err := connection.Core.GetChainId()
 	if err != nil {
 		t.Log(err)
@@ -638,7 +652,7 @@ func TestDisable(t *testing.T) {
 	}
 
 	// keyFileData 还可以进一步校验
-	keyFileData, err := ioutil.ReadFile("../resources/superNodeKeyStore/UTC--2020-07-07T10-47-32.962000000Z--did-bid-6cc796b8d6e2fbebc9b3cf9e")
+	keyFileData, err := ioutil.ReadFile(testAddressDocFile)
 	if err != nil {
 		t.Error(err)
 		t.FailNow()
@@ -656,6 +670,7 @@ func TestDisable(t *testing.T) {
 	sysTxParams.Gas = 2000000
 	sysTxParams.Nonce = nonce.Uint64()
 	sysTxParams.ChainId = chainId
+	sysTxParams.Version = 1
 
 	doc := connection.System.NewDoc()
 
@@ -669,7 +684,7 @@ func TestDisable(t *testing.T) {
 }
 
 func TestIsEnable(t *testing.T) {
-	var connection = bif.NewBif(providers.NewHTTPProvider(resources.IP55+":"+resources.Port, 10, false))
+	var connection = bif.NewBif(providers.NewHTTPProvider(resources.IP+":"+resources.Port, 10, false))
 	_, err := connection.Core.GetCoinBase()
 	if err != nil {
 		t.Error(err)

@@ -13,8 +13,8 @@ import (
 )
 
 const (
-	BaseAnchorAddr         = "did:bid:a3fa9bb1b84e722f30dbda8c"
-	ExtendAnchorAddr       = "did:bid:c935bd29a90fbeea87badf3e"
+	BaseAnchorAddr         = "did:bid:EFTVcqqKyFR17jfPxqwEtpmRpbkvSs"
+	ExtendAnchorAddr       = "did:bid:EFTTQWPMdtghuZByPsfQAUuPkWkWYb"
 	BaseAnchorType         = 10
 	ExtendAnchorType       = 11
 	TrustAnchorName        = "trustAnchor"
@@ -30,11 +30,12 @@ const (
 const (
 	isSM2Trust = false
 	passwordTrust = "teleinfo"
-	testAddressTrust = resources.CoinBase
+	testAddressTrust = resources.TestAddr
+	testAddressTrustFile = "../resources/superNodeKeyStore/UTC--2020-08-20T05-28-39.403642600Z--did-bid-EFTVcqqKyFR17jfPxqwEtpmRpbkvSs"
 )
 
 func TestRegisterBaseTrustAnchor(t *testing.T) {
-	var connection = bif.NewBif(providers.NewHTTPProvider(resources.IP55+":"+resources.Port, 10, false))
+	var connection = bif.NewBif(providers.NewHTTPProvider(resources.IP+":"+resources.Port, 10, false))
 	chainId, err := connection.Core.GetChainId()
 	if err != nil {
 		t.Log(err)
@@ -48,7 +49,7 @@ func TestRegisterBaseTrustAnchor(t *testing.T) {
 	}
 
 	// keyFileData 还可以进一步校验
-	keyFileData, err := ioutil.ReadFile("../resources/superNodeKeyStore/UTC--2020-07-07T10-47-32.962000000Z--did-bid-6cc796b8d6e2fbebc9b3cf9e")
+	keyFileData, err := ioutil.ReadFile(testAddressTrustFile)
 	if err != nil {
 		t.Error(err)
 		t.FailNow()
@@ -66,6 +67,7 @@ func TestRegisterBaseTrustAnchor(t *testing.T) {
 	sysTxParams.Gas = 2000000
 	sysTxParams.Nonce = nonce.Uint64()
 	sysTxParams.ChainId = chainId
+	sysTxParams.Version = 1
 
 	anchor := connection.System.NewTrustAnchor()
 
@@ -90,7 +92,7 @@ func TestRegisterBaseTrustAnchor(t *testing.T) {
 }
 
 func TestRegisterExtendTrustAnchor(t *testing.T) {
-	var connection = bif.NewBif(providers.NewHTTPProvider(resources.IP55+":"+resources.Port, 10, false))
+	var connection = bif.NewBif(providers.NewHTTPProvider(resources.IP+":"+resources.Port, 10, false))
 	chainId, err := connection.Core.GetChainId()
 	if err != nil {
 		t.Log(err)
@@ -104,7 +106,7 @@ func TestRegisterExtendTrustAnchor(t *testing.T) {
 	}
 
 	// keyFileData 还可以进一步校验
-	keyFileData, err := ioutil.ReadFile("../resources/superNodeKeyStore/UTC--2020-07-07T10-47-32.962000000Z--did-bid-6cc796b8d6e2fbebc9b3cf9e")
+	keyFileData, err := ioutil.ReadFile(testAddressTrustFile)
 	if err != nil {
 		t.Error(err)
 		t.FailNow()
@@ -122,6 +124,7 @@ func TestRegisterExtendTrustAnchor(t *testing.T) {
 	sysTxParams.Gas = 2000000
 	sysTxParams.Nonce = nonce.Uint64()
 	sysTxParams.ChainId = chainId
+	sysTxParams.Version = 1
 
 	anchor := connection.System.NewTrustAnchor()
 
@@ -146,7 +149,7 @@ func TestRegisterExtendTrustAnchor(t *testing.T) {
 }
 
 func TestUnRegisterTrustAnchor(t *testing.T) {
-	var connection = bif.NewBif(providers.NewHTTPProvider(resources.IP55+":"+resources.Port, 10, false))
+	var connection = bif.NewBif(providers.NewHTTPProvider(resources.IP+":"+resources.Port, 10, false))
 	chainId, err := connection.Core.GetChainId()
 	if err != nil {
 		t.Log(err)
@@ -160,7 +163,7 @@ func TestUnRegisterTrustAnchor(t *testing.T) {
 	}
 
 	// keyFileData 还可以进一步校验
-	keyFileData, err := ioutil.ReadFile("../resources/superNodeKeyStore/UTC--2020-07-07T10-47-32.962000000Z--did-bid-6cc796b8d6e2fbebc9b3cf9e")
+	keyFileData, err := ioutil.ReadFile(testAddressTrustFile)
 	if err != nil {
 		t.Error(err)
 		t.FailNow()
@@ -178,6 +181,7 @@ func TestUnRegisterTrustAnchor(t *testing.T) {
 	sysTxParams.Gas = 2000000
 	sysTxParams.Nonce = nonce.Uint64()
 	sysTxParams.ChainId = chainId
+	sysTxParams.Version = 1
 
 	anchor := connection.System.NewTrustAnchor()
 
@@ -190,15 +194,15 @@ func TestUnRegisterTrustAnchor(t *testing.T) {
 }
 
 func TestIsBaseTrustAnchor(t *testing.T) {
-	var connection = bif.NewBif(providers.NewHTTPProvider(resources.IP55+":"+resources.Port, 10, false))
-	_, err := connection.Core.GetCoinBase()
+	var connection = bif.NewBif(providers.NewHTTPProvider(resources.IP+":"+resources.Port, 10, false))
+	_, err := connection.Core.GetChainId()
 	if err != nil {
 		t.Error(err)
 		t.FailNow()
 	}
 	anchor := connection.System.NewTrustAnchor()
 
-	baseAnchor, err := anchor.IsBaseTrustAnchor("did:bid:a3fa9bb1b84e722f30dbda8c")
+	baseAnchor, err := anchor.IsBaseTrustAnchor(ExtendAnchorAddr)
 	if err != nil {
 		t.Error(err)
 		t.FailNow()
@@ -208,15 +212,15 @@ func TestIsBaseTrustAnchor(t *testing.T) {
 }
 
 func TestIsTrustAnchor(t *testing.T) {
-	var connection = bif.NewBif(providers.NewHTTPProvider(resources.IP55+":"+resources.Port, 10, false))
-	coinBase, err := connection.Core.GetCoinBase()
+	var connection = bif.NewBif(providers.NewHTTPProvider(resources.IP+":"+resources.Port, 10, false))
+	_, err := connection.Core.GetChainId()
 	if err != nil {
 		t.Error(err)
 		t.FailNow()
 	}
 	anchor := connection.System.NewTrustAnchor()
 
-	trustAnchor, err := anchor.IsTrustAnchor(coinBase)
+	trustAnchor, err := anchor.IsTrustAnchor(ExtendAnchorAddr)
 	if err != nil {
 		t.Error(err)
 		t.FailNow()
@@ -226,7 +230,7 @@ func TestIsTrustAnchor(t *testing.T) {
 }
 
 func TestUpdateAnchorInfo(t *testing.T) {
-	var connection = bif.NewBif(providers.NewHTTPProvider(resources.IP55+":"+resources.Port, 10, false))
+	var connection = bif.NewBif(providers.NewHTTPProvider(resources.IP+":"+resources.Port, 10, false))
 	chainId, err := connection.Core.GetChainId()
 	if err != nil {
 		t.Log(err)
@@ -240,7 +244,7 @@ func TestUpdateAnchorInfo(t *testing.T) {
 	}
 
 	// keyFileData 还可以进一步校验
-	keyFileData, err := ioutil.ReadFile("../resources/superNodeKeyStore/UTC--2020-07-07T10-47-32.962000000Z--did-bid-6cc796b8d6e2fbebc9b3cf9e")
+	keyFileData, err := ioutil.ReadFile(testAddressTrustFile)
 	if err != nil {
 		t.Error(err)
 		t.FailNow()
@@ -258,6 +262,7 @@ func TestUpdateAnchorInfo(t *testing.T) {
 	sysTxParams.Gas = 2000000
 	sysTxParams.Nonce = nonce.Uint64()
 	sysTxParams.ChainId = chainId
+	sysTxParams.Version = 1
 
 	anchor := connection.System.NewTrustAnchor()
 
@@ -278,7 +283,7 @@ func TestUpdateAnchorInfo(t *testing.T) {
 }
 
 func TestExtractOwnBounty(t *testing.T) {
-	var connection = bif.NewBif(providers.NewHTTPProvider(resources.IP55+":"+resources.Port, 10, false))
+	var connection = bif.NewBif(providers.NewHTTPProvider(resources.IP+":"+resources.Port, 10, false))
 	chainId, err := connection.Core.GetChainId()
 	if err != nil {
 		t.Log(err)
@@ -292,7 +297,7 @@ func TestExtractOwnBounty(t *testing.T) {
 	}
 
 	// keyFileData 还可以进一步校验
-	keyFileData, err := ioutil.ReadFile("../resources/superNodeKeyStore/UTC--2020-07-07T10-47-32.962000000Z--did-bid-6cc796b8d6e2fbebc9b3cf9e")
+	keyFileData, err := ioutil.ReadFile(testAddressTrustFile)
 	if err != nil {
 		t.Error(err)
 		t.FailNow()
@@ -310,6 +315,7 @@ func TestExtractOwnBounty(t *testing.T) {
 	sysTxParams.Gas = 2000000
 	sysTxParams.Nonce = nonce.Uint64()
 	sysTxParams.ChainId = chainId
+	sysTxParams.Version = 1
 
 	anchor := connection.System.NewTrustAnchor()
 
@@ -322,15 +328,15 @@ func TestExtractOwnBounty(t *testing.T) {
 }
 
 func TestGetTrustAnchor(t *testing.T) {
-	var connection = bif.NewBif(providers.NewHTTPProvider(resources.IP55+":"+resources.Port, 10, false))
-	coinBase, err := connection.Core.GetCoinBase()
+	var connection = bif.NewBif(providers.NewHTTPProvider(resources.IP+":"+resources.Port, 10, false))
+	_, err := connection.Core.GetChainId()
 	if err != nil {
 		t.Error(err)
 		t.FailNow()
 	}
 	anchor := connection.System.NewTrustAnchor()
 
-	trustAnchor, err := anchor.GetTrustAnchor(coinBase)
+	trustAnchor, err := anchor.GetTrustAnchor(testAddressTrust)
 	if err != nil {
 		t.Error(err)
 		t.FailNow()
@@ -340,15 +346,15 @@ func TestGetTrustAnchor(t *testing.T) {
 }
 
 func TestGetTrustAnchorStatus(t *testing.T) {
-	var connection = bif.NewBif(providers.NewHTTPProvider(resources.IP55+":"+resources.Port, 10, false))
-	coinBase, err := connection.Core.GetCoinBase()
+	var connection = bif.NewBif(providers.NewHTTPProvider(resources.IP+":"+resources.Port, 10, false))
+	_, err := connection.Core.GetChainId()
 	if err != nil {
 		t.Error(err)
 		t.FailNow()
 	}
 	anchor := connection.System.NewTrustAnchor()
 
-	trustAnchorStatus, err := anchor.GetTrustAnchorStatus(coinBase)
+	trustAnchorStatus, err := anchor.GetTrustAnchorStatus(testAddressTrust)
 	if err != nil {
 		t.Error(err)
 		t.FailNow()
@@ -358,15 +364,15 @@ func TestGetTrustAnchorStatus(t *testing.T) {
 }
 
 func TestGetCertificateList(t *testing.T) {
-	var connection = bif.NewBif(providers.NewHTTPProvider(resources.IP55+":"+resources.Port, 10, false))
-	coinBase, err := connection.Core.GetCoinBase()
+	var connection = bif.NewBif(providers.NewHTTPProvider(resources.IP+":"+resources.Port, 10, false))
+	_, err := connection.Core.GetChainId()
 	if err != nil {
 		t.Error(err)
 		t.FailNow()
 	}
 	anchor := connection.System.NewTrustAnchor()
 
-	certificateLi, err := anchor.GetCertificateList(coinBase)
+	certificateLi, err := anchor.GetCertificateList(testAddressTrust)
 	if err != nil {
 		t.Error(err)
 		t.FailNow()
@@ -376,8 +382,8 @@ func TestGetCertificateList(t *testing.T) {
 }
 
 func TestGetBaseList(t *testing.T) {
-	var connection = bif.NewBif(providers.NewHTTPProvider(resources.IP55+":"+resources.Port, 10, false))
-	_, err := connection.Core.GetCoinBase()
+	var connection = bif.NewBif(providers.NewHTTPProvider(resources.IP+":"+resources.Port, 10, false))
+	_, err := connection.Core.GetChainId()
 	if err != nil {
 		t.Error(err)
 		t.FailNow()
@@ -394,8 +400,8 @@ func TestGetBaseList(t *testing.T) {
 }
 
 func TestGetBaseTrustAnchorNum(t *testing.T) {
-	var connection = bif.NewBif(providers.NewHTTPProvider(resources.IP55+":"+resources.Port, 10, false))
-	_, err := connection.Core.GetCoinBase()
+	var connection = bif.NewBif(providers.NewHTTPProvider(resources.IP+":"+resources.Port, 10, false))
+	_, err := connection.Core.GetChainId()
 	if err != nil {
 		t.Error(err)
 		t.FailNow()
@@ -412,8 +418,8 @@ func TestGetBaseTrustAnchorNum(t *testing.T) {
 }
 
 func TestGetExpendList(t *testing.T) {
-	var connection = bif.NewBif(providers.NewHTTPProvider(resources.IP55+":"+resources.Port, 10, false))
-	_, err := connection.Core.GetCoinBase()
+	var connection = bif.NewBif(providers.NewHTTPProvider(resources.IP+":"+resources.Port, 10, false))
+	_, err := connection.Core.GetChainId()
 	if err != nil {
 		t.Error(err)
 		t.FailNow()
@@ -431,8 +437,8 @@ func TestGetExpendList(t *testing.T) {
 }
 
 func TestGetExpendNum(t *testing.T) {
-	var connection = bif.NewBif(providers.NewHTTPProvider(resources.IP55+":"+resources.Port, 10, false))
-	_, err := connection.Core.GetCoinBase()
+	var connection = bif.NewBif(providers.NewHTTPProvider(resources.IP+":"+resources.Port, 10, false))
+	_, err := connection.Core.GetChainId()
 	if err != nil {
 		t.Error(err)
 		t.FailNow()
@@ -450,7 +456,7 @@ func TestGetExpendNum(t *testing.T) {
 
 // 投票超过2/3才能激活信任锚(现在有5个超级节点，超过2/3就是需要有至少4个投票)
 func TestVoteElect(t *testing.T) {
-	var connection = bif.NewBif(providers.NewHTTPProvider(resources.IP55+":"+resources.Port, 10, false))
+	var connection = bif.NewBif(providers.NewHTTPProvider(resources.IP+":"+resources.Port, 10, false))
 	chainId, err := connection.Core.GetChainId()
 	if err != nil {
 		t.Log(err)
@@ -464,7 +470,7 @@ func TestVoteElect(t *testing.T) {
 	}
 
 	// keyFileData 还可以进一步校验
-	keyFileData, err := ioutil.ReadFile("../resources/superNodeKeyStore/UTC--2020-07-07T10-47-32.962000000Z--did-bid-6cc796b8d6e2fbebc9b3cf9e")
+	keyFileData, err := ioutil.ReadFile(testAddressTrustFile)
 	if err != nil {
 		t.Error(err)
 		t.FailNow()
@@ -482,6 +488,7 @@ func TestVoteElect(t *testing.T) {
 	sysTxParams.Gas = 2000000
 	sysTxParams.Nonce = nonce.Uint64()
 	sysTxParams.ChainId = chainId
+	sysTxParams.Version = 1
 
 	anchor := connection.System.NewTrustAnchor()
 
@@ -494,7 +501,7 @@ func TestVoteElect(t *testing.T) {
 }
 
 func TestCancelVote(t *testing.T) {
-	var connection = bif.NewBif(providers.NewHTTPProvider(resources.IP55+":"+resources.Port, 10, false))
+	var connection = bif.NewBif(providers.NewHTTPProvider(resources.IP+":"+resources.Port, 10, false))
 	chainId, err := connection.Core.GetChainId()
 	if err != nil {
 		t.Log(err)
@@ -508,7 +515,7 @@ func TestCancelVote(t *testing.T) {
 	}
 
 	// keyFileData 还可以进一步校验
-	keyFileData, err := ioutil.ReadFile("../resources/superNodeKeyStore/UTC--2020-07-07T10-47-32.962000000Z--did-bid-6cc796b8d6e2fbebc9b3cf9e")
+	keyFileData, err := ioutil.ReadFile(testAddressTrustFile)
 	if err != nil {
 		t.Error(err)
 		t.FailNow()
@@ -526,6 +533,7 @@ func TestCancelVote(t *testing.T) {
 	sysTxParams.Gas = 2000000
 	sysTxParams.Nonce = nonce.Uint64()
 	sysTxParams.ChainId = chainId
+	sysTxParams.Version = 1
 
 	anchor := connection.System.NewTrustAnchor()
 	transactionHash, err := anchor.CancelVote(sysTxParams, testAddressTrust)
@@ -537,14 +545,14 @@ func TestCancelVote(t *testing.T) {
 }
 
 func TestGetVoter(t *testing.T) {
-	var connection = bif.NewBif(providers.NewHTTPProvider(resources.IP55+":"+resources.Port, 10, false))
-	coinBase, err := connection.Core.GetCoinBase()
+	var connection = bif.NewBif(providers.NewHTTPProvider(resources.IP+":"+resources.Port, 10, false))
+	_, err := connection.Core.GetChainId()
 	if err != nil {
 		t.Error(err)
 		t.FailNow()
 	}
 	anchor := connection.System.NewTrustAnchor()
-	trustAnchorVoterLi, err := anchor.GetVoter(coinBase)
+	trustAnchorVoterLi, err := anchor.GetVoter(testAddressTrust)
 	if err != nil {
 		t.Error(err)
 		t.FailNow()

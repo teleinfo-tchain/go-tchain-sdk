@@ -8,7 +8,7 @@ import (
 )
 
 const (
-	TrustAnchorContractAddr = "did:bid:00000000000000000000000c"
+	TrustAnchorContractAddr = "did:bid:ZFT4ZiZvprLWsu418tkK3xrdhp471ms"
 )
 
 // 信任锚的AbiJson数据

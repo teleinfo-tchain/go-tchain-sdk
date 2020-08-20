@@ -14,16 +14,17 @@ import (
 
 const (
 	// 注册证书的bid
-	personCertificate = "did:bid:c935bd29a90fbeea87badf3e"
+	personCertificate = "did:bid:EFTVcqqKyFR17jfPxqwEtpmRpbkvSs"
 	// 与personCertificate对应的公钥
-	personCertificatePublicKey = "0x040d843e75752ca5c7db12c2e8e2dc4e6eb771ddf1511809c4e708bc74abad0f14f970229a64287ec34122d3657167ea7dd5c9f1902ca6fcfc0b0a91e78d39573c"
+	personCertificatePublicKey = "0x04647f729afb309e4cd20f4b186a7883e1cd23b245e9fb6eb939ad74e47cc16c55e60aa12f20ed21bee8d23291aae377ad319b166604dec1a81dfb2b008bdc3c68"
 	isSM2Certificate           = false
 	passwordCertificate        = "teleinfo"
-	testAddressCertificate     = "did:bid:6cc796b8d6e2fbebc9b3cf9e"
+	testAddressCertificate     = "did:bid:EFTTQWPMdtghuZByPsfQAUuPkWkWYb"
+	testAddressCertificateFile     = "../resources/superNodeKeyStore/UTC--2020-08-19T05-48-46.004537900Z--did-bid-EFTTQWPMdtghuZByPsfQAUuPkWkWYb"
 )
 
 func TestRegisterCertificate(t *testing.T) {
-	var connection = bif.NewBif(providers.NewHTTPProvider(resources.IP55+":"+resources.Port, 10, false))
+	var connection = bif.NewBif(providers.NewHTTPProvider(resources.IP+":"+resources.Port, 10, false))
 	chainId, err := connection.Core.GetChainId()
 	if err != nil {
 		t.Log(err)
@@ -37,7 +38,7 @@ func TestRegisterCertificate(t *testing.T) {
 	}
 
 	// keyFileData 还可以进一步校验
-	keyFileData, err := ioutil.ReadFile("../resources/superNodeKeyStore/UTC--2020-07-07T10-47-32.962000000Z--did-bid-6cc796b8d6e2fbebc9b3cf9e")
+	keyFileData, err := ioutil.ReadFile(testAddressCertificateFile)
 	if err != nil {
 		t.Error(err)
 		t.FailNow()
@@ -55,6 +56,7 @@ func TestRegisterCertificate(t *testing.T) {
 	sysTxParams.Gas = 2000000
 	sysTxParams.Nonce = nonce.Uint64()
 	sysTxParams.ChainId = chainId
+	sysTxParams.Version = 1
 
 	cer := connection.System.NewCertificate()
 
@@ -74,11 +76,12 @@ func TestRegisterCertificate(t *testing.T) {
 		t.Error(err)
 		t.FailNow()
 	}
+	// 0x03b536ee4e2764aa78d8455e730971be00de89b65677395dea4c0bfa1ec7f753
 	t.Log(registerCertificateHash, err)
 }
 
 func TestRevokedCertificate(t *testing.T) {
-	var connection = bif.NewBif(providers.NewHTTPProvider(resources.IP55+":"+resources.Port, 10, false))
+	var connection = bif.NewBif(providers.NewHTTPProvider(resources.IP+":"+resources.Port, 10, false))
 	chainId, err := connection.Core.GetChainId()
 	if err != nil {
 		t.Log(err)
@@ -94,7 +97,7 @@ func TestRevokedCertificate(t *testing.T) {
 	t.Logf("nonce is %d , chainId is %d ", nonce, chainId)
 
 	// keyFileData 还可以进一步校验
-	keyFileData, err := ioutil.ReadFile("../resources/superNodeKeyStore/UTC--2020-07-07T10-47-32.962000000Z--did-bid-6cc796b8d6e2fbebc9b3cf9e")
+	keyFileData, err := ioutil.ReadFile(testAddressCertificateFile)
 	if err != nil {
 		t.Error(err)
 		t.FailNow()
@@ -110,8 +113,7 @@ func TestRevokedCertificate(t *testing.T) {
 	sysTxParams.KeyFileData = keyFileData
 	sysTxParams.GasPrice = nil
 	sysTxParams.Gas = 2000000
-	sysTxParams.Nonce = 0
-	sysTxParams.ChainId = 0
+	sysTxParams.Version = 1
 
 	cer := connection.System.NewCertificate()
 
@@ -124,7 +126,7 @@ func TestRevokedCertificate(t *testing.T) {
 }
 
 func TestRevokedCertificates(t *testing.T) {
-	var connection = bif.NewBif(providers.NewHTTPProvider(resources.IP55+":"+resources.Port, 10, false))
+	var connection = bif.NewBif(providers.NewHTTPProvider(resources.IP+":"+resources.Port, 10, false))
 	chainId, err := connection.Core.GetChainId()
 	if err != nil {
 		t.Log(err)
@@ -138,7 +140,7 @@ func TestRevokedCertificates(t *testing.T) {
 	}
 
 	// keyFileData 还可以进一步校验
-	keyFileData, err := ioutil.ReadFile("../resources/superNodeKeyStore/UTC--2020-07-07T10-47-32.962000000Z--did-bid-6cc796b8d6e2fbebc9b3cf9e")
+	keyFileData, err := ioutil.ReadFile(testAddressCertificateFile)
 	if err != nil {
 		t.Error(err)
 		t.FailNow()
@@ -156,6 +158,7 @@ func TestRevokedCertificates(t *testing.T) {
 	sysTxParams.Gas = 2000000
 	sysTxParams.Nonce = nonce.Uint64()
 	sysTxParams.ChainId = chainId
+	sysTxParams.Version = 1
 
 	cer := connection.System.NewCertificate()
 
@@ -168,8 +171,8 @@ func TestRevokedCertificates(t *testing.T) {
 }
 
 func TestGetPeriod(t *testing.T) {
-	var connection = bif.NewBif(providers.NewHTTPProvider(resources.IP55+":"+resources.Port, 10, false))
-	_, err := connection.Core.GetCoinBase()
+	var connection = bif.NewBif(providers.NewHTTPProvider(resources.IP+":"+resources.Port, 10, false))
+	_, err := connection.Core.GetChainId()
 	if err != nil {
 		t.Error(err)
 		t.FailNow()
@@ -185,8 +188,8 @@ func TestGetPeriod(t *testing.T) {
 }
 
 func TestGetActive(t *testing.T) {
-	var connection = bif.NewBif(providers.NewHTTPProvider(resources.IP55+":"+resources.Port, 10, false))
-	_, err := connection.Core.GetCoinBase()
+	var connection = bif.NewBif(providers.NewHTTPProvider(resources.IP+":"+resources.Port, 10, false))
+	_, err := connection.Core.GetChainId()
 	if err != nil {
 		t.Error(err)
 		t.FailNow()
@@ -203,8 +206,8 @@ func TestGetActive(t *testing.T) {
 }
 
 func TestGetCertificate(t *testing.T) {
-	var connection = bif.NewBif(providers.NewHTTPProvider(resources.IP55+":"+resources.Port, 10, false))
-	_, err := connection.Core.GetCoinBase()
+	var connection = bif.NewBif(providers.NewHTTPProvider(resources.IP+":"+resources.Port, 10, false))
+	_, err := connection.Core.GetChainId()
 	if err != nil {
 		t.Error(err)
 		t.FailNow()
@@ -221,15 +224,15 @@ func TestGetCertificate(t *testing.T) {
 }
 
 func TestGetIssuer(t *testing.T) {
-	var connection = bif.NewBif(providers.NewHTTPProvider(resources.IP55+":"+resources.Port, 10, false))
-	coinBase, err := connection.Core.GetCoinBase()
+	var connection = bif.NewBif(providers.NewHTTPProvider(resources.IP+":"+resources.Port, 10, false))
+	_, err := connection.Core.GetChainId()
 	if err != nil {
 		t.Log(err)
 		t.FailNow()
 	}
 	cer := connection.System.NewCertificate()
 
-	issuer, err := cer.GetIssuer(coinBase)
+	issuer, err := cer.GetIssuer(personCertificate)
 	if err != nil {
 		t.Error(err)
 		t.FailNow()
@@ -238,24 +241,18 @@ func TestGetIssuer(t *testing.T) {
 }
 
 func TestGetSubject(t *testing.T) {
-	var connection = bif.NewBif(providers.NewHTTPProvider(resources.IP55+":"+resources.Port, 10, false))
-	coinBase, err := connection.Core.GetCoinBase()
+	var connection = bif.NewBif(providers.NewHTTPProvider(resources.IP+":"+resources.Port, 10, false))
+	_, err := connection.Core.GetChainId()
 	if err != nil {
 		t.Log(err)
 		t.FailNow()
 	}
 	cer := connection.System.NewCertificate()
 
-	subjectSignature, err := cer.GetSubject(coinBase)
+	subjectSignature, err := cer.GetSubject(personCertificate)
 	if err != nil {
 		t.Error(err)
 		t.FailNow()
 	}
-
-	if subjectSignature != nil {
-		t.Log(subjectSignature.Id)
-		t.Log(subjectSignature.PublicKey)
-		t.Log(subjectSignature.Algorithm)
-		t.Log(subjectSignature.Signature)
-	}
+	t.Log(subjectSignature)
 }

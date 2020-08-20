@@ -2,6 +2,7 @@ package system
 
 import (
 	"errors"
+	"fmt"
 	"github.com/bif/bif-sdk-go/abi"
 	"github.com/bif/bif-sdk-go/dto"
 	"github.com/bif/bif-sdk-go/utils"
@@ -9,7 +10,7 @@ import (
 )
 
 const (
-	DocContractAddr = "did:bid:00000000000000000000000a"
+	DocContractAddr = "did:bid:ZFT2iHNnPP5bc5sy3kJz7rDUzYR1pSX"
 )
 
 // did文档的AbiJson数据
@@ -142,9 +143,10 @@ func (doc *Doc) SetBidName(signTxParams *SysTxParams, id string, bidName string)
 
   Call permissions: Anyone
 */
-func (doc *Doc) GetDocument(did string) (*dto.Document, error) {
+func (doc *Doc) GetDocument(did string) (dto.Document, error) {
+	var document dto.Document
 	if len(did) == 0 || isBlankCharacter(did) {
-		return nil, errors.New("did can't be empty or blank character")
+		return document, errors.New("did can't be empty or blank character")
 	}
 
 	params := make([]string, 1)
@@ -154,10 +156,20 @@ func (doc *Doc) GetDocument(did string) (*dto.Document, error) {
 
 	err := doc.super.provider.SendRequest(pointer, "document_document", params)
 	if err != nil {
-		return nil, err
+		return document, err
 	}
 
-	return pointer.ToDocument()
+	res, err := pointer.ToDocument()
+	fmt.Printf("doc is %#v \n", res)
+	if err != nil{
+		return document, err
+	}
+
+	if res.Id == ""{
+		return document, errors.New("did 文档为空")
+	}
+
+	return *res, nil
 }
 
 /*

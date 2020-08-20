@@ -14,11 +14,12 @@ import (
 const (
 	isSM2Manager       = false
 	passwordManager    = "teleinfo"
-	testAddressManager = "did:bid:6cc796b8d6e2fbebc9b3cf9e"
+	testAddressManager = "did:bid:EFTTQWPMdtghuZByPsfQAUuPkWkWYb"
+	testAddressManagerFile    = "../resources/superNodeKeyStore/UTC--2020-08-19T05-48-46.004537900Z--did-bid-EFTTQWPMdtghuZByPsfQAUuPkWkWYb"
 )
 
 func TestContractEnable(t *testing.T) {
-	var connection = bif.NewBif(providers.NewHTTPProvider(resources.IP55+":"+resources.Port, 10, false))
+	var connection = bif.NewBif(providers.NewHTTPProvider(resources.IP+":"+resources.Port, 10, false))
 	chainId, err := connection.Core.GetChainId()
 	if err != nil {
 		t.Log(err)
@@ -32,7 +33,7 @@ func TestContractEnable(t *testing.T) {
 	}
 
 	// keyFileData 还可以进一步校验
-	keyFileData, err := ioutil.ReadFile("../resources/superNodeKeyStore/UTC--2020-07-07T10-47-32.962000000Z--did-bid-6cc796b8d6e2fbebc9b3cf9e")
+	keyFileData, err := ioutil.ReadFile(testAddressManagerFile)
 	if err != nil {
 		t.Error(err)
 		t.FailNow()
@@ -53,7 +54,7 @@ func TestContractEnable(t *testing.T) {
 
 	manager := connection.System.NewManager()
 
-	contractAddress := resources.Address55
+	contractAddress := resources.TestAddr
 
 	txHash, err := manager.Enable(sysTxParams, contractAddress)
 	if err != nil {
@@ -64,7 +65,7 @@ func TestContractEnable(t *testing.T) {
 }
 
 func TestContractDisable(t *testing.T) {
-	var connection = bif.NewBif(providers.NewHTTPProvider(resources.IP55+":"+resources.Port, 10, false))
+	var connection = bif.NewBif(providers.NewHTTPProvider(resources.IP+":"+resources.Port, 10, false))
 	chainId, err := connection.Core.GetChainId()
 	if err != nil {
 		t.Log(err)
@@ -78,7 +79,7 @@ func TestContractDisable(t *testing.T) {
 	}
 
 	// keyFileData 还可以进一步校验
-	keyFileData, err := ioutil.ReadFile("../resources/superNodeKeyStore/UTC--2020-07-07T10-47-32.962000000Z--did-bid-6cc796b8d6e2fbebc9b3cf9e")
+	keyFileData, err := ioutil.ReadFile(testAddressManagerFile)
 	if err != nil {
 		t.Error(err)
 		t.FailNow()
@@ -99,7 +100,7 @@ func TestContractDisable(t *testing.T) {
 
 	manager := connection.System.NewManager()
 
-	contractAddress := resources.Address55
+	contractAddress := resources.TestAddr
 
 	txHash, err := manager.Disable(sysTxParams, contractAddress)
 	if err != nil {
@@ -110,7 +111,7 @@ func TestContractDisable(t *testing.T) {
 }
 
 func TestSetPower(t *testing.T) {
-	var connection = bif.NewBif(providers.NewHTTPProvider(resources.IP55+":"+resources.Port, 10, false))
+	var connection = bif.NewBif(providers.NewHTTPProvider(resources.IP+":"+resources.Port, 10, false))
 	chainId, err := connection.Core.GetChainId()
 	if err != nil {
 		t.Log(err)
@@ -124,7 +125,7 @@ func TestSetPower(t *testing.T) {
 	}
 
 	// keyFileData 还可以进一步校验
-	keyFileData, err := ioutil.ReadFile("../resources/superNodeKeyStore/UTC--2020-07-07T10-47-32.962000000Z--did-bid-6cc796b8d6e2fbebc9b3cf9e")
+	keyFileData, err := ioutil.ReadFile(testAddressManagerFile)
 	if err != nil {
 		t.Error(err)
 		t.FailNow()
@@ -145,7 +146,7 @@ func TestSetPower(t *testing.T) {
 
 	manager := connection.System.NewManager()
 
-	userAddress := resources.Address55
+	userAddress := resources.TestAddr
 	var power uint64 = 1
 
 	txHash, err := manager.SetPower(sysTxParams, userAddress, power)
@@ -157,8 +158,8 @@ func TestSetPower(t *testing.T) {
 }
 
 func TestAllContracts(t *testing.T) {
-	var connection = bif.NewBif(providers.NewHTTPProvider(resources.IP55+":"+resources.Port, 10, false))
-	_, err := connection.Core.GetCoinBase()
+	var connection = bif.NewBif(providers.NewHTTPProvider(resources.IP+":"+resources.Port, 10, false))
+	_, err := connection.Core.GetChainId()
 
 	if err != nil {
 		t.Error(err)
@@ -174,14 +175,14 @@ func TestAllContracts(t *testing.T) {
 
 	t.Logf("%#v \n", contracts)
 
-	if len(contracts) != 0{
+	if len(contracts) != 0 {
 		t.Logf("%#v \n", contracts[0])
 	}
 }
 
 func TestContractIsEnable(t *testing.T) {
-	var connection = bif.NewBif(providers.NewHTTPProvider(resources.IP55+":"+resources.Port, 10, false))
-	_, err := connection.Core.GetCoinBase()
+	var connection = bif.NewBif(providers.NewHTTPProvider(resources.IP+":"+resources.Port, 10, false))
+	_, err := connection.Core.GetChainId()
 
 	if err != nil {
 		t.Error(err)
@@ -189,7 +190,7 @@ func TestContractIsEnable(t *testing.T) {
 	}
 
 	manager := connection.System.NewManager()
-	contractAddress := resources.Address55
+	contractAddress := resources.TestAddr
 	isEnable, err := manager.IsEnable(contractAddress)
 	if err != nil {
 		t.Error(err)
@@ -200,8 +201,8 @@ func TestContractIsEnable(t *testing.T) {
 }
 
 func TestGetPower(t *testing.T) {
-	var connection = bif.NewBif(providers.NewHTTPProvider(resources.IP55+":"+resources.Port, 10, false))
-	_, err := connection.Core.GetCoinBase()
+	var connection = bif.NewBif(providers.NewHTTPProvider(resources.IP+":"+resources.Port, 10, false))
+	_, err := connection.Core.GetChainId()
 
 	if err != nil {
 		t.Error(err)
@@ -209,7 +210,7 @@ func TestGetPower(t *testing.T) {
 	}
 
 	manager := connection.System.NewManager()
-	userAddress := resources.Address55
+	userAddress := resources.TestAddr
 	power, err := manager.GetPower(userAddress)
 	if err != nil {
 		t.Error(err)

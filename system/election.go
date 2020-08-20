@@ -9,7 +9,7 @@ import (
 )
 
 const (
-	ElectionContractAddr = "did:bid:000000000000000000000009"
+	ElectionContractAddr = "did:bid:ZFT6dswwQWN63BF8pup729HuxLTRhy"
 	// OneDay            = int64(24) * 3600
 	// VoteOrProxyOneDay = OneDay
 	// VoteOrProxyOneDay = 60
@@ -177,9 +177,10 @@ func (e *Election) UnRegisterWitness(signTxParams *SysTxParams) (string, error) 
 
   Call permissions: Anyone
 */
-func (e *Election) GetCandidate(candidateAddress string) (*dto.Candidate, error) {
+func (e *Election) GetCandidate(candidateAddress string) (dto.Candidate, error) {
+	var candidate dto.Candidate
 	if !isValidHexAddress(candidateAddress) {
-		return nil, errors.New("candidateAddress is not valid bid")
+		return candidate, errors.New("candidateAddress is not valid bid")
 	}
 
 	params := make([]string, 1)
@@ -189,10 +190,17 @@ func (e *Election) GetCandidate(candidateAddress string) (*dto.Candidate, error)
 
 	err := e.super.provider.SendRequest(pointer, "election_candidate", params)
 	if err != nil {
-		return nil, err
+		return candidate, err
 	}
 
-	return pointer.ToElectionCandidate()
+	res, err := pointer.ToElectionCandidate()
+	if err != nil{
+		return candidate, err
+	}
+	if res.Owner == ""{
+		return candidate, errors.New("无候选者")
+	}
+	return *res,nil
 }
 
 /*
@@ -208,7 +216,7 @@ func (e *Election) GetCandidate(candidateAddress string) (*dto.Candidate, error)
 
   Call permissions: Anyone
 */
-func (e *Election) GetAllCandidates() ([]*dto.Candidate, error) {
+func (e *Election) GetAllCandidates() ([]dto.Candidate, error) {
 	pointer := &dto.SystemRequestResult{}
 
 	err := e.super.provider.SendRequest(pointer, "election_allCandidates", nil)
@@ -216,7 +224,11 @@ func (e *Election) GetAllCandidates() ([]*dto.Candidate, error) {
 		return nil, err
 	}
 
-	return pointer.ToElectionCandidates()
+	res, err := pointer.ToElectionCandidates()
+	if err == dto.EMPTYRESPONSE{
+		return nil, errors.New("候选者列表为空")
+	}
+	return res,nil
 }
 
 /*

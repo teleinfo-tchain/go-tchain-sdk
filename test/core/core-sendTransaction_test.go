@@ -42,7 +42,7 @@ func TestCoreSendTransaction(t *testing.T) {
 	// 	t.FailNow()
 	// }
 	coinBase := resources.TestAddr
-	toAddress := resources.NewAddrZ
+	toAddress := resources.NewAddrE
 	balance, err := connection.Core.GetBalance(resources.NewAddrE, block.LATEST)
 	if err == nil {
 		util := utils.NewUtils()
@@ -133,26 +133,26 @@ func TestCoreSendTransactionDeployContract(t *testing.T) {
 	}
 	t.Log("transaction hash is ", txHash)
 
-	//
-	// var receipt *dto.TransactionReceipt
-	//
-	// for receipt == nil {
-	// 	time.Sleep(time.Second)
-	// 	receipt, err = connection.Core.GetTransactionReceipt(txHash)
-	// }
-	//
-	// if err != nil {
-	// 	t.Error(err)
-	// 	t.FailNow()
-	// }
-	//
-	// // did:bid:ace45606ce7b19c7da1143cb
-	// t.Log("contract Address is ", receipt.ContractAddress)
+
+	var receipt *dto.TransactionReceipt
+
+	for receipt == nil {
+		time.Sleep(time.Second)
+		receipt, err = connection.Core.GetTransactionReceipt(txHash)
+	}
+
+	if err != nil {
+		t.Error(err)
+		t.FailNow()
+	}
+
+	// did:bid:ace45606ce7b19c7da1143cb
+	t.Log("contract Address is ", receipt.ContractAddress)
 
 }
 
 func TestGetReceipt(t *testing.T){
-	txHash := "0x92ad4dda18bc0e04746dca021e86d42df471c7b639d5f1e87095c0be9c98b4ad"
+	txHash := "0x24d339d9d55ddc86041ecc8a5ca52e50800d81b94956d2b57b97092a2b750de6"
 	var connection = bif.NewBif(providers.NewHTTPProvider(resources.IP+":"+resources.Port, 10, false))
 	receipt, err := connection.Core.GetTransactionReceipt(txHash)
 	fmt.Println("err", err)
@@ -162,7 +162,7 @@ func TestGetReceipt(t *testing.T){
 // 测试合约的交互(只是为了测试合约交互，实际使用contract中的Call或者Send)
 func TestCoreSendTransactionInteractContract(t *testing.T) {
 	content, err := ioutil.ReadFile("../resources/simple-contract.json")
-	const contractAddress = "0x3f6b3a8a7da315b9b514da82135b16f837e5bd63b9cbc4cf98c1bd8915bfb6c8"
+	const contractAddress = "did:bid:EFT3zLGVg6PeULDZzHkTwKCuWwsc75m"
 
 	type Contract struct {
 		Abi      string `json:"abi"`
@@ -190,11 +190,12 @@ func TestCoreSendTransactionInteractContract(t *testing.T) {
 		t.FailNow()
 	}
 
-	fromAddress, err := connection.Core.GetCoinBase()
-	if err != nil {
-		t.Error(err)
-		t.FailNow()
-	}
+	// fromAddress, err := connection.Core.GetCoinBase()
+	// if err != nil {
+	// 	t.Error(err)
+	// 	t.FailNow()
+	// }
+	fromAddress := resources.TestAddr
 
 	transaction := new(dto.TransactionParameters)
 	transaction.From = fromAddress

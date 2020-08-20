@@ -308,57 +308,18 @@ func CheckPublicKeyToAccount(account, publicKey string) (bool, error) {
 	}
 
 	addr := utils.StringToAddress(account)
-
-	var addrParse []byte
-	if addr[8] == 115 {
-		addrParse = crypto.Keccak256(crypto.SM2, utils.Hex2Bytes(publicKey)[1:])[12:]
-		addrParse[8] = 115
-	} else {
-		addrParse = crypto.Keccak256(crypto.SECP256K1, utils.Hex2Bytes(publicKey)[1:])[12:]
-		if addr[8] == 115 {
-			addr[8] = 103
-		}
+	pubBytes, err := hex.DecodeString(publicKey)
+	if err != nil {
+		return false, errors.New("publicKey can't be decode to bytes")
 	}
-
-	if addr != utils.BytesToAddress(addrParse) {
+	key, err := crypto.UnmarshalPubkey(pubBytes)
+	if err != nil {
+		return false, errors.New("publicKey is not valid")
+	}
+	addrParse := crypto.PubkeyToAddress(*key)
+	if addr != addrParse {
 		return false, errors.New("publicKey does not match account")
 	}
 
 	return true, nil
-}
-
-func GetAddressFromPublicKey(p ecdsa.PublicKey) utils.Address{
-	// length := utils.HashLength
-	// var publicKey []byte
-	// var hash []byte
-	// var prefix strings.Builder
-	// prefix.WriteString(utils.AddressPrefixString)
-	//
-	// if sm2.S256Sm2().IsOnCurve(p.X, p.Y) {
-	// 	publicKey = sm2.CompressPubkeySm2(&p)
-	// 	hash = sm2.Keccak256Sm2(publicKey)
-	// 	prefix.WriteString(string(utils.SM2_Prefix))
-	// } else if secp.S256Btc().IsOnCurve(p.X, p.Y) {
-	// 	publicKey = secp.CompressPubkeyBtc(&p)
-	// 	hash = secp.Keccak256Btc(publicKey)
-	// 	prefix.WriteString(string(utils.SECP256K1_Prefix))
-	// } else {
-	// 	publicKey = sm2.CompressPubkeySm2(&p)
-	// 	hash = sm2.Keccak256Sm2(publicKey)
-	// 	prefix.WriteString(string(utils.SM2_Prefix))
-	// }
-	//
-	// hashLength := len(hash)
-	// if hashLength < length {
-	// 	length = hashLength
-	// }
-	// h := hash[hashLength-length:]
-	//
-	// var encode string
-	// encode = base58.Encode(h)
-	// prefix.WriteString(string(utils.BASE58_Prefix))
-	// prefix.WriteString(string(utils.HashLength20))
-	//
-	// return common.StringToAddress(prefix.String() + encode)
-	return utils.Address{}
 }

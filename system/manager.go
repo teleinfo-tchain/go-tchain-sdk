@@ -8,7 +8,7 @@ import (
 )
 
 const (
-	ManagerContractAddr = "did:bid:00000000000000000000000f"
+	ManagerContractAddr = "did:bid:ZFT2ndSGfBuT1jKrsYBU5hLm7DmDV8u"
 	ManagerAbiJSON      = `[
 {"constant": false,"name":"enable","inputs":[{"name":"contract_address","type":"string"}],"outputs":[],"type":"function"},
 {"constant": false,"name":"disable","inputs":[{"name":"contract_address","type":"string"}],"outputs":[],"type":"function"},
@@ -149,7 +149,7 @@ func (manager *Manager) SetPower(signTxParams *SysTxParams, userAddress string, 
 
   Call permissions: Anyone
 */
-func (manager *Manager) GetAllContracts() ([]*dto.AllContract, error) {
+func (manager *Manager) GetAllContracts() ([]dto.AllContract, error) {
 	pointer := &dto.SystemRequestResult{}
 
 	err := manager.super.provider.SendRequest(pointer, "supermanager_allContracts", nil)

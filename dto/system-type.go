@@ -241,6 +241,6 @@ type Candidate struct {
 	VoteCount       *hexutil.Big `json:"voteCount"`       // 收到的票数
 	TotalBounty     *hexutil.Big `json:"totalBounty"`     // 总奖励金额
 	ExtractedBounty *hexutil.Big `json:"extractedBounty"` // 已提取奖励金额
-	LastExtractTime *hexutil.Big `json:"lastExtractTime"` // 上次提权时间
+	LastExtractTime uint64       `json:"lastExtractTime"` // 上次提权时间
 	Website         string       `json:"website"`         // 见证人网站
 }

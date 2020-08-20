@@ -8,7 +8,7 @@ import (
 )
 
 const (
-	SensitiveWordsContractAddr = "did:bid:00000000000000000000000e"
+	SensitiveWordsContractAddr = "did:bid:ZFT2yHwKD7GQeBdiFsUy5gbPQqLMKPA"
 	SensitiveWordsAbiJSON      = `[
 {"constant": false,"name":"addWord","inputs":[{"name":"word","type":"string"}],"outputs":[],"type":"function"},
 {"constant": false,"name":"addWords","inputs":[{"name":"word","type":"string"}],"outputs":[],"type":"function"},

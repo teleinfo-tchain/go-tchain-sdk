@@ -11,7 +11,7 @@ import (
 )
 
 const (
-	PeerCertificateContractAddr = "did:bid:00000000000000000000000d"
+	PeerCertificateContractAddr = "did:bid:ZFTc4jj4bH95pomT8JkGXFTxLnjbbj"
 	Year                        = uint64(24) * 3600 * 365
 	// regulatoryAddressLength     = 12 // 地址，除去did:bid:还有12字节
 )

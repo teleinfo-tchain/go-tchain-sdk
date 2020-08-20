@@ -14,11 +14,12 @@ import (
 const (
 	isSM2Sen       = false
 	passwordSen    = "teleinfo"
-	testAddressSen = "did:bid:6cc796b8d6e2fbebc9b3cf9e"
+	testAddressSen = "did:bid:EFTVcqqKyFR17jfPxqwEtpmRpbkvSs"
+	testAddressSenFile    = "../resources/superNodeKeyStore/UTC--2020-08-20T05-28-39.403642600Z--did-bid-EFTVcqqKyFR17jfPxqwEtpmRpbkvSs"
 )
 
 func TestAddWord(t *testing.T) {
-	var connection = bif.NewBif(providers.NewHTTPProvider(resources.IP55+":"+resources.Port, 10, false))
+	var connection = bif.NewBif(providers.NewHTTPProvider(resources.IP+":"+resources.Port, 10, false))
 	chainId, err := connection.Core.GetChainId()
 	if err != nil {
 		t.Log(err)
@@ -32,7 +33,7 @@ func TestAddWord(t *testing.T) {
 	}
 
 	// keyFileData 还可以进一步校验
-	keyFileData, err := ioutil.ReadFile("../resources/superNodeKeyStore/UTC--2020-07-07T10-47-32.962000000Z--did-bid-6cc796b8d6e2fbebc9b3cf9e")
+	keyFileData, err := ioutil.ReadFile(testAddressSenFile)
 	if err != nil {
 		t.Error(err)
 		t.FailNow()
@@ -50,6 +51,7 @@ func TestAddWord(t *testing.T) {
 	sysTxParams.Gas = 2000000
 	sysTxParams.Nonce = nonce.Uint64()
 	sysTxParams.ChainId = chainId
+	sysTxParams.Version = 1
 
 	sen := connection.System.NewSensitiveWord()
 
@@ -64,7 +66,7 @@ func TestAddWord(t *testing.T) {
 }
 
 func TestAddWords(t *testing.T) {
-	var connection = bif.NewBif(providers.NewHTTPProvider(resources.IP55+":"+resources.Port, 10, false))
+	var connection = bif.NewBif(providers.NewHTTPProvider(resources.IP+":"+resources.Port, 10, false))
 	chainId, err := connection.Core.GetChainId()
 	if err != nil {
 		t.Log(err)
@@ -78,7 +80,7 @@ func TestAddWords(t *testing.T) {
 	}
 
 	// keyFileData 还可以进一步校验
-	keyFileData, err := ioutil.ReadFile("../resources/superNodeKeyStore/UTC--2020-07-07T10-47-32.962000000Z--did-bid-6cc796b8d6e2fbebc9b3cf9e")
+	keyFileData, err := ioutil.ReadFile(testAddressSenFile)
 	if err != nil {
 		t.Error(err)
 		t.FailNow()
@@ -96,6 +98,7 @@ func TestAddWords(t *testing.T) {
 	sysTxParams.Gas = 2000000
 	sysTxParams.Nonce = nonce.Uint64()
 	sysTxParams.ChainId = chainId
+	sysTxParams.Version = 1
 
 	sen := connection.System.NewSensitiveWord()
 
@@ -110,7 +113,7 @@ func TestAddWords(t *testing.T) {
 }
 
 func TestDelWord(t *testing.T) {
-	var connection = bif.NewBif(providers.NewHTTPProvider(resources.IP55+":"+resources.Port, 10, false))
+	var connection = bif.NewBif(providers.NewHTTPProvider(resources.IP+":"+resources.Port, 10, false))
 	chainId, err := connection.Core.GetChainId()
 	if err != nil {
 		t.Log(err)
@@ -124,7 +127,7 @@ func TestDelWord(t *testing.T) {
 	}
 
 	// keyFileData 还可以进一步校验
-	keyFileData, err := ioutil.ReadFile("../resources/superNodeKeyStore/UTC--2020-07-07T10-47-32.962000000Z--did-bid-6cc796b8d6e2fbebc9b3cf9e")
+	keyFileData, err := ioutil.ReadFile(testAddressSenFile)
 	if err != nil {
 		t.Error(err)
 		t.FailNow()
@@ -142,6 +145,7 @@ func TestDelWord(t *testing.T) {
 	sysTxParams.Gas = 2000000
 	sysTxParams.Nonce = nonce.Uint64()
 	sysTxParams.ChainId = chainId
+	sysTxParams.Version = 1
 
 	sen := connection.System.NewSensitiveWord()
 
@@ -156,8 +160,8 @@ func TestDelWord(t *testing.T) {
 }
 
 func TestGetAllWords(t *testing.T) {
-	var connection = bif.NewBif(providers.NewHTTPProvider(resources.IP55+":"+resources.Port, 10, false))
-	_, err := connection.Core.GetCoinBase()
+	var connection = bif.NewBif(providers.NewHTTPProvider(resources.IP+":"+resources.Port, 10, false))
+	_, err := connection.Core.GetChainId()
 
 	if err != nil {
 		t.Error(err)
@@ -175,8 +179,8 @@ func TestGetAllWords(t *testing.T) {
 }
 
 func TestIsContainWord(t *testing.T) {
-	var connection = bif.NewBif(providers.NewHTTPProvider(resources.IP55+":"+resources.Port, 10, false))
-	_, err := connection.Core.GetCoinBase()
+	var connection = bif.NewBif(providers.NewHTTPProvider(resources.IP+":"+resources.Port, 10, false))
+	_, err := connection.Core.GetChainId()
 
 	if err != nil {
 		t.Error(err)

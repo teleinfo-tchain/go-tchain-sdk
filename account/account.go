@@ -310,7 +310,6 @@ func (account *Account) Decrypt(keystoreJson []byte, isSM2 bool, password string
 func (account *Account) SignTransaction(signData *SignTxParams, privateKey string, isSM2 bool) (*SignTransactionResult, error) {
 	// 1 check input
 	tx, err := account.preCheckTx(signData, privateKey, isSM2)
-	fmt.Printf("tx is %#v \n", tx)
 	if err != nil {
 		return nil, err
 	}
@@ -331,7 +330,6 @@ func (account *Account) SignTransaction(signData *SignTxParams, privateKey strin
 	// 3 New Signer
 	signer := &BIFSigner{}
 	signed, err := SignTx(tx, *signer, privKey, cryptoType)
-	fmt.Printf("tx is %#v \n", signed)
 	if err != nil {
 		return nil, err
 	}
@@ -341,6 +339,8 @@ func (account *Account) SignTransaction(signData *SignTxParams, privateKey strin
 	if err != nil {
 		return nil, err
 	}
+	fmt.Printf("signed  %#v \n", signed)
+	fmt.Printf("signed  from %#v \n", signed.Sender.String())
 	return &SignTransactionResult{data, signed}, nil
 }
 

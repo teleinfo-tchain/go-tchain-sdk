@@ -15,12 +15,13 @@ import (
 const (
 	isSM2Elect       = false
 	passwordElect    = "teleinfo"
-	testAddressElect = "did:bid:6cc796b8d6e2fbebc9b3cf9e"
+	testAddressElect = "did:bid:EFTTQWPMdtghuZByPsfQAUuPkWkWYb"
+	testAddressFile  = "../resources/superNodeKeyStore/UTC--2020-08-19T05-48-46.004537900Z--did-bid-EFTTQWPMdtghuZByPsfQAUuPkWkWYb"
 )
 
 // 注册成为候选者节点
 func TestRegisterWitness(t *testing.T) {
-	var connection = bif.NewBif(providers.NewHTTPProvider(resources.IP55+":"+resources.Port, 10, false))
+	var connection = bif.NewBif(providers.NewHTTPProvider(resources.IP+":"+resources.Port, 10, false))
 	chainId, err := connection.Core.GetChainId()
 	if err != nil {
 		t.Log(err)
@@ -34,7 +35,7 @@ func TestRegisterWitness(t *testing.T) {
 	}
 
 	// keyFileData 还可以进一步校验
-	keyFileData, err := ioutil.ReadFile("../resources/superNodeKeyStore/UTC--2020-07-07T10-47-32.962000000Z--did-bid-6cc796b8d6e2fbebc9b3cf9e")
+	keyFileData, err := ioutil.ReadFile(testAddressFile)
 	if err != nil {
 		t.Error(err)
 		t.FailNow()
@@ -52,6 +53,7 @@ func TestRegisterWitness(t *testing.T) {
 	sysTxParams.Gas = 2000000
 	sysTxParams.Nonce = nonce.Uint64()
 	sysTxParams.ChainId = chainId
+	sysTxParams.Version = 1
 
 	elect := connection.System.NewElection()
 
@@ -72,7 +74,7 @@ func TestRegisterWitness(t *testing.T) {
 
 // 取消成为候选者节点
 func TestUnRegisterWitness(t *testing.T) {
-	var connection = bif.NewBif(providers.NewHTTPProvider(resources.IP55+":"+resources.Port, 10, false))
+	var connection = bif.NewBif(providers.NewHTTPProvider(resources.IP+":"+resources.Port, 10, false))
 	chainId, err := connection.Core.GetChainId()
 	if err != nil {
 		t.Log(err)
@@ -86,7 +88,7 @@ func TestUnRegisterWitness(t *testing.T) {
 	}
 
 	// keyFileData 还可以进一步校验
-	keyFileData, err := ioutil.ReadFile("../resources/superNodeKeyStore/UTC--2020-07-07T10-47-32.962000000Z--did-bid-6cc796b8d6e2fbebc9b3cf9e")
+	keyFileData, err := ioutil.ReadFile(testAddressFile)
 	if err != nil {
 		t.Error(err)
 		t.FailNow()
@@ -104,6 +106,7 @@ func TestUnRegisterWitness(t *testing.T) {
 	sysTxParams.Gas = 2000000
 	sysTxParams.Nonce = nonce.Uint64()
 	sysTxParams.ChainId = chainId
+	sysTxParams.Version = 1
 
 	elect := connection.System.NewElection()
 
@@ -117,8 +120,8 @@ func TestUnRegisterWitness(t *testing.T) {
 
 // 获取候选节点基本信息
 func TestGetCandidate(t *testing.T) {
-	var connection = bif.NewBif(providers.NewHTTPProvider(resources.IP55+":"+resources.Port, 10, false))
-	_, err := connection.Core.GetCoinBase()
+	var connection = bif.NewBif(providers.NewHTTPProvider(resources.IP+":"+resources.Port, 10, false))
+	_, err := connection.Core.GetChainId()
 	if err != nil {
 		t.Error(err)
 		t.FailNow()
@@ -137,8 +140,8 @@ func TestGetCandidate(t *testing.T) {
 
 // 获取所有的见证候选节点
 func TestGetAllCandidates(t *testing.T) {
-	var connection = bif.NewBif(providers.NewHTTPProvider(resources.IP55+":"+resources.Port, 10, false))
-	_, err := connection.Core.GetCoinBase()
+	var connection = bif.NewBif(providers.NewHTTPProvider(resources.IP+":"+resources.Port, 10, false))
+	_, err := connection.Core.GetChainId()
 	if err != nil {
 		t.Error(err)
 		t.FailNow()
@@ -158,7 +161,7 @@ func TestGetAllCandidates(t *testing.T) {
 }
 
 func TestVoteWitnesses(t *testing.T) {
-	var connection = bif.NewBif(providers.NewHTTPProvider(resources.IP55+":"+resources.Port, 10, false))
+	var connection = bif.NewBif(providers.NewHTTPProvider(resources.IP+":"+resources.Port, 10, false))
 	chainId, err := connection.Core.GetChainId()
 	if err != nil {
 		t.Log(err)
@@ -172,7 +175,7 @@ func TestVoteWitnesses(t *testing.T) {
 	}
 
 	// keyFileData 还可以进一步校验
-	keyFileData, err := ioutil.ReadFile("../resources/superNodeKeyStore/UTC--2020-07-07T10-47-32.962000000Z--did-bid-6cc796b8d6e2fbebc9b3cf9e")
+	keyFileData, err := ioutil.ReadFile(testAddressFile)
 	if err != nil {
 		t.Error(err)
 		t.FailNow()
@@ -190,6 +193,7 @@ func TestVoteWitnesses(t *testing.T) {
 	sysTxParams.Gas = 2000000
 	sysTxParams.Nonce = nonce.Uint64()
 	sysTxParams.ChainId = chainId
+	sysTxParams.Version = 1
 
 	elect := connection.System.NewElection()
 
@@ -203,7 +207,7 @@ func TestVoteWitnesses(t *testing.T) {
 }
 
 func TestElectCancelVote(t *testing.T) {
-	var connection = bif.NewBif(providers.NewHTTPProvider(resources.IP55+":"+resources.Port, 10, false))
+	var connection = bif.NewBif(providers.NewHTTPProvider(resources.IP+":"+resources.Port, 10, false))
 	chainId, err := connection.Core.GetChainId()
 	if err != nil {
 		t.Log(err)
@@ -217,7 +221,7 @@ func TestElectCancelVote(t *testing.T) {
 	}
 
 	// keyFileData 还可以进一步校验
-	keyFileData, err := ioutil.ReadFile("../resources/superNodeKeyStore/UTC--2020-07-07T10-47-32.962000000Z--did-bid-6cc796b8d6e2fbebc9b3cf9e")
+	keyFileData, err := ioutil.ReadFile(testAddressFile)
 	if err != nil {
 		t.Error(err)
 		t.FailNow()
@@ -235,6 +239,7 @@ func TestElectCancelVote(t *testing.T) {
 	sysTxParams.Gas = 2000000
 	sysTxParams.Nonce = nonce.Uint64()
 	sysTxParams.ChainId = chainId
+	sysTxParams.Version = 1
 
 	elect := connection.System.NewElection()
 
@@ -249,7 +254,7 @@ func TestElectCancelVote(t *testing.T) {
 }
 
 func TestStartProxy(t *testing.T) {
-	var connection = bif.NewBif(providers.NewHTTPProvider(resources.IP55+":"+resources.Port, 10, false))
+	var connection = bif.NewBif(providers.NewHTTPProvider(resources.IP+":"+resources.Port, 10, false))
 	chainId, err := connection.Core.GetChainId()
 	if err != nil {
 		t.Log(err)
@@ -263,7 +268,7 @@ func TestStartProxy(t *testing.T) {
 	}
 
 	// keyFileData 还可以进一步校验
-	keyFileData, err := ioutil.ReadFile("../resources/superNodeKeyStore/UTC--2020-07-07T10-47-32.962000000Z--did-bid-6cc796b8d6e2fbebc9b3cf9e")
+	keyFileData, err := ioutil.ReadFile(testAddressFile)
 	if err != nil {
 		t.Error(err)
 		t.FailNow()
@@ -281,6 +286,7 @@ func TestStartProxy(t *testing.T) {
 	sysTxParams.Gas = 2000000
 	sysTxParams.Nonce = nonce.Uint64()
 	sysTxParams.ChainId = chainId
+	sysTxParams.Version = 1
 
 	elect := connection.System.NewElection()
 
@@ -295,7 +301,7 @@ func TestStartProxy(t *testing.T) {
 }
 
 func TestStopProxy(t *testing.T) {
-	var connection = bif.NewBif(providers.NewHTTPProvider(resources.IP55+":"+resources.Port, 10, false))
+	var connection = bif.NewBif(providers.NewHTTPProvider(resources.IP+":"+resources.Port, 10, false))
 	chainId, err := connection.Core.GetChainId()
 	if err != nil {
 		t.Log(err)
@@ -309,7 +315,7 @@ func TestStopProxy(t *testing.T) {
 	}
 
 	// keyFileData 还可以进一步校验
-	keyFileData, err := ioutil.ReadFile("../resources/superNodeKeyStore/UTC--2020-07-07T10-47-32.962000000Z--did-bid-6cc796b8d6e2fbebc9b3cf9e")
+	keyFileData, err := ioutil.ReadFile(testAddressFile)
 	if err != nil {
 		t.Error(err)
 		t.FailNow()
@@ -327,6 +333,7 @@ func TestStopProxy(t *testing.T) {
 	sysTxParams.Gas = 2000000
 	sysTxParams.Nonce = nonce.Uint64()
 	sysTxParams.ChainId = chainId
+	sysTxParams.Version = 1
 
 	elect := connection.System.NewElection()
 
@@ -342,7 +349,7 @@ func TestStopProxy(t *testing.T) {
 
 // not set proxy
 func TestCancelProxy(t *testing.T) {
-	var connection = bif.NewBif(providers.NewHTTPProvider(resources.IP55+":"+resources.Port, 10, false))
+	var connection = bif.NewBif(providers.NewHTTPProvider(resources.IP+":"+resources.Port, 10, false))
 	chainId, err := connection.Core.GetChainId()
 	if err != nil {
 		t.Log(err)
@@ -356,7 +363,7 @@ func TestCancelProxy(t *testing.T) {
 	}
 
 	// keyFileData 还可以进一步校验
-	keyFileData, err := ioutil.ReadFile("../resources/superNodeKeyStore/UTC--2020-07-07T10-47-32.962000000Z--did-bid-6cc796b8d6e2fbebc9b3cf9e")
+	keyFileData, err := ioutil.ReadFile(testAddressFile)
 	if err != nil {
 		t.Error(err)
 		t.FailNow()
@@ -374,6 +381,7 @@ func TestCancelProxy(t *testing.T) {
 	sysTxParams.Gas = 2000000
 	sysTxParams.Nonce = nonce.Uint64()
 	sysTxParams.ChainId = chainId
+	sysTxParams.Version = 1
 
 	elect := connection.System.NewElection()
 
@@ -389,7 +397,7 @@ func TestCancelProxy(t *testing.T) {
 
 // account registered as a proxy is not allowed to use a proxy??
 func TestSetProxy(t *testing.T) {
-	var connection = bif.NewBif(providers.NewHTTPProvider(resources.IP55+":"+resources.Port, 10, false))
+	var connection = bif.NewBif(providers.NewHTTPProvider(resources.IP+":"+resources.Port, 10, false))
 	chainId, err := connection.Core.GetChainId()
 	if err != nil {
 		t.Log(err)
@@ -403,7 +411,7 @@ func TestSetProxy(t *testing.T) {
 	}
 
 	// keyFileData 还可以进一步校验
-	keyFileData, err := ioutil.ReadFile("../resources/superNodeKeyStore/UTC--2020-07-07T10-47-32.962000000Z--did-bid-6cc796b8d6e2fbebc9b3cf9e")
+	keyFileData, err := ioutil.ReadFile(testAddressFile)
 	if err != nil {
 		t.Error(err)
 		t.FailNow()
@@ -421,6 +429,7 @@ func TestSetProxy(t *testing.T) {
 	sysTxParams.Gas = 2000000
 	sysTxParams.Nonce = nonce.Uint64()
 	sysTxParams.ChainId = chainId
+	sysTxParams.Version = 1
 
 	elect := connection.System.NewElection()
 
@@ -437,7 +446,7 @@ func TestSetProxy(t *testing.T) {
 
 // 权益抵押
 func TestStake(t *testing.T) {
-	var connection = bif.NewBif(providers.NewHTTPProvider(resources.IP55+":"+resources.Port, 10, false))
+	var connection = bif.NewBif(providers.NewHTTPProvider(resources.IP+":"+resources.Port, 10, false))
 	chainId, err := connection.Core.GetChainId()
 	if err != nil {
 		t.Log(err)
@@ -451,7 +460,7 @@ func TestStake(t *testing.T) {
 	}
 
 	// keyFileData 还可以进一步校验
-	keyFileData, err := ioutil.ReadFile("../resources/superNodeKeyStore/UTC--2020-07-07T10-47-32.962000000Z--did-bid-6cc796b8d6e2fbebc9b3cf9e")
+	keyFileData, err := ioutil.ReadFile(testAddressFile)
 	if err != nil {
 		t.Error(err)
 		t.FailNow()
@@ -469,6 +478,7 @@ func TestStake(t *testing.T) {
 	sysTxParams.Gas = 2000000
 	sysTxParams.Nonce = nonce.Uint64()
 	sysTxParams.ChainId = chainId
+	sysTxParams.Version = 1
 
 	elect := connection.System.NewElection()
 
@@ -484,7 +494,7 @@ func TestStake(t *testing.T) {
 
 // 权益抵押撤销
 func TestUnStake(t *testing.T) {
-	var connection = bif.NewBif(providers.NewHTTPProvider(resources.IP55+":"+resources.Port, 10, false))
+	var connection = bif.NewBif(providers.NewHTTPProvider(resources.IP+":"+resources.Port, 10, false))
 	chainId, err := connection.Core.GetChainId()
 	if err != nil {
 		t.Log(err)
@@ -498,7 +508,7 @@ func TestUnStake(t *testing.T) {
 	}
 
 	// keyFileData 还可以进一步校验
-	keyFileData, err := ioutil.ReadFile("../resources/superNodeKeyStore/UTC--2020-07-07T10-47-32.962000000Z--did-bid-6cc796b8d6e2fbebc9b3cf9e")
+	keyFileData, err := ioutil.ReadFile(testAddressFile)
 	if err != nil {
 		t.Error(err)
 		t.FailNow()
@@ -516,6 +526,7 @@ func TestUnStake(t *testing.T) {
 	sysTxParams.Gas = 2000000
 	sysTxParams.Nonce = nonce.Uint64()
 	sysTxParams.ChainId = chainId
+	sysTxParams.Version = 1
 
 	elect := connection.System.NewElection()
 
@@ -531,8 +542,8 @@ func TestUnStake(t *testing.T) {
 
 // 获取某个地址的权益抵押信息
 func TestGetStake(t *testing.T) {
-	var connection = bif.NewBif(providers.NewHTTPProvider(resources.IP55+":"+resources.Port, 10, false))
-	_, err := connection.Core.GetCoinBase()
+	var connection = bif.NewBif(providers.NewHTTPProvider(resources.IP+":"+resources.Port, 10, false))
+	_, err := connection.Core.GetChainId()
 	if err != nil {
 		t.Error(err)
 		t.FailNow()
@@ -557,8 +568,8 @@ func TestGetStake(t *testing.T) {
 
 //  这个接口暂时不用测试，链的后台需要修改
 func TestGetRestBIFBounty(t *testing.T) {
-	var connection = bif.NewBif(providers.NewHTTPProvider(resources.IP55+":"+resources.Port, 10, false))
-	_, err := connection.Core.GetCoinBase()
+	var connection = bif.NewBif(providers.NewHTTPProvider(resources.IP+":"+resources.Port, 10, false))
+	_, err := connection.Core.GetChainId()
 	if err != nil {
 		t.Error(err)
 		t.FailNow()
@@ -577,7 +588,7 @@ func TestGetRestBIFBounty(t *testing.T) {
 }
 
 func TestElectionExtractOwnBounty(t *testing.T) {
-	var connection = bif.NewBif(providers.NewHTTPProvider(resources.IP55+":"+resources.Port, 10, false))
+	var connection = bif.NewBif(providers.NewHTTPProvider(resources.IP+":"+resources.Port, 10, false))
 	chainId, err := connection.Core.GetChainId()
 	if err != nil {
 		t.Log(err)
@@ -591,7 +602,7 @@ func TestElectionExtractOwnBounty(t *testing.T) {
 	}
 
 	// keyFileData 还可以进一步校验
-	keyFileData, err := ioutil.ReadFile("../resources/superNodeKeyStore/UTC--2020-07-07T10-47-32.962000000Z--did-bid-6cc796b8d6e2fbebc9b3cf9e")
+	keyFileData, err := ioutil.ReadFile(testAddressFile)
 	if err != nil {
 		t.Error(err)
 		t.FailNow()
@@ -609,6 +620,7 @@ func TestElectionExtractOwnBounty(t *testing.T) {
 	sysTxParams.Gas = 2000000
 	sysTxParams.Nonce = nonce.Uint64()
 	sysTxParams.ChainId = chainId
+	sysTxParams.Version = 1
 
 	elect := connection.System.NewElection()
 
@@ -623,7 +635,7 @@ func TestElectionExtractOwnBounty(t *testing.T) {
 }
 
 func TestIssueAdditionalBounty(t *testing.T) {
-	var connection = bif.NewBif(providers.NewHTTPProvider(resources.IP55+":"+resources.Port, 10, false))
+	var connection = bif.NewBif(providers.NewHTTPProvider(resources.IP+":"+resources.Port, 10, false))
 	chainId, err := connection.Core.GetChainId()
 	if err != nil {
 		t.Log(err)
@@ -637,7 +649,7 @@ func TestIssueAdditionalBounty(t *testing.T) {
 	}
 
 	// keyFileData 还可以进一步校验
-	keyFileData, err := ioutil.ReadFile("../resources/superNodeKeyStore/UTC--2020-07-07T10-47-32.962000000Z--did-bid-6cc796b8d6e2fbebc9b3cf9e")
+	keyFileData, err := ioutil.ReadFile(testAddressFile)
 	if err != nil {
 		t.Error(err)
 		t.FailNow()
@@ -655,6 +667,7 @@ func TestIssueAdditionalBounty(t *testing.T) {
 	sysTxParams.Gas = 2000000
 	sysTxParams.Nonce = nonce.Uint64()
 	sysTxParams.ChainId = chainId
+	sysTxParams.Version = 1
 
 	elect := connection.System.NewElection()
 
@@ -670,8 +683,8 @@ func TestIssueAdditionalBounty(t *testing.T) {
 
 // 获取指定候选者的基本信息
 func TestElectGetVoter(t *testing.T) {
-	var connection = bif.NewBif(providers.NewHTTPProvider(resources.IP55+":"+resources.Port, 10, false))
-	_ , err := connection.Core.GetCoinBase()
+	var connection = bif.NewBif(providers.NewHTTPProvider(resources.IP+":"+resources.Port, 10, false))
+	_, err := connection.Core.GetChainId()
 	if err != nil {
 		t.Error(err)
 		t.FailNow()
@@ -690,8 +703,8 @@ func TestElectGetVoter(t *testing.T) {
 
 // 获取指定的候选者的投票列表
 func TestGetVoterList(t *testing.T) {
-	var connection = bif.NewBif(providers.NewHTTPProvider(resources.IP55+":"+resources.Port, 10, false))
-	_, err := connection.Core.GetCoinBase()
+	var connection = bif.NewBif(providers.NewHTTPProvider(resources.IP+":"+resources.Port, 10, false))
+	_, err := connection.Core.GetChainId()
 	if err != nil {
 		t.Error(err)
 		t.FailNow()

@@ -9,7 +9,7 @@ import (
 )
 
 const (
-	CertificateContractAddr = "did:bid:00000000000000000000000b"
+	CertificateContractAddr = "did:bid:ZFTGU7MpkWsKp6CKemzx1TFbWvaZm7"
 )
 
 // 个人可信的AbiJson数据
@@ -245,9 +245,10 @@ func (cer *Certificate) GetActive(id string) (bool, error) {
 
   Call permissions:
 */
-func (cer *Certificate) GetCertificate(id string) (*dto.CertificateInfo, error) {
+func (cer *Certificate) GetCertificate(id string) (dto.CertificateInfo, error) {
+	var certificate dto.CertificateInfo
 	if !isValidHexAddress(id) {
-		return nil, errors.New("id is not valid bid")
+		return certificate, errors.New("id is not valid bid")
 	}
 
 	params := make([]string, 1)
@@ -257,10 +258,19 @@ func (cer *Certificate) GetCertificate(id string) (*dto.CertificateInfo, error) 
 
 	err := cer.super.provider.SendRequest(pointer, "certificate_certificate", params)
 	if err != nil {
-		return nil, err
+		return certificate, err
 	}
 
-	return pointer.ToCertificateInfo()
+	res, err := pointer.ToCertificateInfo()
+	if err != nil{
+		return certificate, err
+	}
+
+	if res.Id == ""{
+		return certificate, errors.New("可信证书不存在")
+	}
+
+	return *res, nil
 }
 
 /*
@@ -280,9 +290,10 @@ func (cer *Certificate) GetCertificate(id string) (*dto.CertificateInfo, error) 
 
   Call permissions: Anyone
 */
-func (cer *Certificate) GetIssuer(id string) (*dto.IssuerSignature, error) {
+func (cer *Certificate) GetIssuer(id string) (dto.IssuerSignature, error) {
+	var issuerSignature dto.IssuerSignature
 	if !isValidHexAddress(id) {
-		return nil, errors.New("id is not valid bid")
+		return issuerSignature, errors.New("id is not valid bid")
 	}
 
 	params := make([]string, 1)
@@ -292,10 +303,19 @@ func (cer *Certificate) GetIssuer(id string) (*dto.IssuerSignature, error) {
 
 	err := cer.super.provider.SendRequest(pointer, "certificate_issuer", params)
 	if err != nil {
-		return nil, err
+		return issuerSignature, err
 	}
 
-	return pointer.ToCertificateIssuerSignature()
+	res, err := pointer.ToCertificateIssuerSignature()
+	if err != nil{
+		return issuerSignature, err
+	}
+
+	if res.Id == ""{
+		return issuerSignature, errors.New("证书颁发者为空")
+	}
+
+	return *res, nil
 }
 
 /*
@@ -315,9 +335,10 @@ func (cer *Certificate) GetIssuer(id string) (*dto.IssuerSignature, error) {
 
   Call permissions: Anyone
 */
-func (cer *Certificate) GetSubject(id string) (*dto.SubjectSignature, error) {
+func (cer *Certificate) GetSubject(id string) (dto.SubjectSignature, error) {
+	var subjectSignature dto.SubjectSignature
 	if !isValidHexAddress(id) {
-		return nil, errors.New("id is not valid bid")
+		return subjectSignature, errors.New("id is not valid bid")
 	}
 
 	params := make([]string, 1)
@@ -327,8 +348,17 @@ func (cer *Certificate) GetSubject(id string) (*dto.SubjectSignature, error) {
 
 	err := cer.super.provider.SendRequest(pointer, "certificate_subject", params)
 	if err != nil {
-		return nil, err
+		return subjectSignature, err
 	}
 
-	return pointer.ToCertificateSubjectSignature()
+	res, err := pointer.ToCertificateSubjectSignature()
+	if err != nil{
+		return subjectSignature, err
+	}
+
+	if res.Id == ""{
+		return subjectSignature, errors.New("证书接收者为空")
+	}
+
+	return *res, nil
 }
