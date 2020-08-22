@@ -8,7 +8,7 @@ import (
 )
 
 func TestDumpBlock(t *testing.T) {
-	var connection = bif.NewBif(providers.NewHTTPProvider(resources.IP54+":"+resources.Port, 10, false))
+	var connection = bif.NewBif(providers.NewHTTPProvider(resources.IP+":"+resources.Port, 10, false))
 
 	_, err := connection.Core.GetBlockNumber()
 	if err != nil{
@@ -28,7 +28,7 @@ func TestDumpBlock(t *testing.T) {
 }
 
 func TestGetBlockRlp(t *testing.T) {
-	var connection = bif.NewBif(providers.NewHTTPProvider(resources.IP54+":"+resources.Port, 10, false))
+	var connection = bif.NewBif(providers.NewHTTPProvider(resources.IP+":"+resources.Port, 10, false))
 
 	_, err := connection.Core.GetBlockNumber()
 	if err != nil{
@@ -47,7 +47,7 @@ func TestGetBlockRlp(t *testing.T) {
 }
 
 func TestPrintBlock(t *testing.T) {
-	var connection = bif.NewBif(providers.NewHTTPProvider(resources.IP54+":"+resources.Port, 10, false))
+	var connection = bif.NewBif(providers.NewHTTPProvider(resources.IP+":"+resources.Port, 10, false))
 
 	_, err := connection.Core.GetBlockNumber()
 	if err != nil{

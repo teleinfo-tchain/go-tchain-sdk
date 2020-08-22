@@ -16,7 +16,6 @@ package test
 
 import (
 	"encoding/json"
-	"fmt"
 	"github.com/bif/bif-sdk-go"
 	Abi "github.com/bif/bif-sdk-go/abi"
 	"github.com/bif/bif-sdk-go/core/block"
@@ -92,7 +91,7 @@ func TestCoreSendTransactionDeployContract(t *testing.T) {
 	var connection = bif.NewBif(providers.NewHTTPProvider(resources.IP+":"+resources.Port, 10, false))
 	byteCode := unmarshalResponse.ByteCode
 	parsedAbi, err := Abi.JSON(strings.NewReader(unmarshalResponse.Abi))
-	if err != nil{
+	if err != nil {
 		t.Error(err)
 		t.FailNow()
 	}
@@ -133,7 +132,6 @@ func TestCoreSendTransactionDeployContract(t *testing.T) {
 	}
 	t.Log("transaction hash is ", txHash)
 
-
 	var receipt *dto.TransactionReceipt
 
 	for receipt == nil {
@@ -149,14 +147,6 @@ func TestCoreSendTransactionDeployContract(t *testing.T) {
 	// did:bid:ace45606ce7b19c7da1143cb
 	t.Log("contract Address is ", receipt.ContractAddress)
 
-}
-
-func TestGetReceipt(t *testing.T){
-	txHash := "0xa81f094844ccd8136f52203bbec20ca522f235a5767e722b0fdc22c8edfe8a2f"
-	var connection = bif.NewBif(providers.NewHTTPProvider(resources.IP+":"+resources.Port, 10, false))
-	receipt, err := connection.Core.GetTransactionReceipt(txHash)
-	fmt.Println("err", err)
-	fmt.Printf("txHash %#v", receipt)
 }
 
 // 测试合约的交互(只是为了测试合约交互，实际使用contract中的Call或者Send)
@@ -179,7 +169,7 @@ func TestCoreSendTransactionInteractContract(t *testing.T) {
 
 	var connection = bif.NewBif(providers.NewHTTPProvider(resources.IP+":"+resources.Port, 10, false))
 	parsedAbi, err := Abi.JSON(strings.NewReader(unmarshalResponse.Abi))
-	if err != nil{
+	if err != nil {
 		t.Error(err)
 		t.FailNow()
 	}
@@ -201,7 +191,7 @@ func TestCoreSendTransactionInteractContract(t *testing.T) {
 	transaction.From = fromAddress
 	// To is contract address
 	transaction.To = contractAddress
-	transaction.Data = types.ComplexString("0x"+utils.Bytes2Hex(inputEncode))
+	transaction.Data = types.ComplexString("0x" + utils.Bytes2Hex(inputEncode))
 	txHash, err := connection.Core.SendTransaction(transaction)
 
 	if err != nil {
@@ -225,4 +215,3 @@ func TestCoreSendTransactionInteractContract(t *testing.T) {
 
 	t.Log("receipt logs data is ", receipt.Logs[0].Data)
 }
-

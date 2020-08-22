@@ -18,5 +18,5 @@ func TestGetNodeInfo(t *testing.T) {
 		t.FailNow()
 	}
 
-	t.Log(nodeInfo)
+	t.Logf("%#v \n ", nodeInfo)
 }
