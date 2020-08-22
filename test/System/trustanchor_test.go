@@ -202,7 +202,7 @@ func TestIsBaseTrustAnchor(t *testing.T) {
 	}
 	anchor := connection.System.NewTrustAnchor()
 
-	baseAnchor, err := anchor.IsBaseTrustAnchor(ExtendAnchorAddr)
+	baseAnchor, err := anchor.IsBaseTrustAnchor(BaseAnchorAddr)
 	if err != nil {
 		t.Error(err)
 		t.FailNow()
@@ -336,7 +336,7 @@ func TestGetTrustAnchor(t *testing.T) {
 	}
 	anchor := connection.System.NewTrustAnchor()
 
-	trustAnchor, err := anchor.GetTrustAnchor(testAddressTrust)
+	trustAnchor, err := anchor.GetTrustAnchor(BaseAnchorAddr)
 	if err != nil {
 		t.Error(err)
 		t.FailNow()
@@ -492,7 +492,7 @@ func TestVoteElect(t *testing.T) {
 
 	anchor := connection.System.NewTrustAnchor()
 
-	transactionHash, err := anchor.VoteElect(sysTxParams, testAddressTrust)
+	transactionHash, err := anchor.VoteElect(sysTxParams, BaseAnchorAddr)
 	if err != nil {
 		t.Error(err)
 		t.FailNow()
@@ -552,7 +552,7 @@ func TestGetVoter(t *testing.T) {
 		t.FailNow()
 	}
 	anchor := connection.System.NewTrustAnchor()
-	trustAnchorVoterLi, err := anchor.GetVoter(testAddressTrust)
+	trustAnchorVoterLi, err := anchor.GetVoter(BaseAnchorAddr)
 	if err != nil {
 		t.Error(err)
 		t.FailNow()

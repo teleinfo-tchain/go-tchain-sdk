@@ -332,9 +332,10 @@ func (anc *Anchor) ExtractOwnBounty(signTxParams *SysTxParams) (string, error) {
 
   Call permissions: Anyone
 */
-func (anc *Anchor) GetTrustAnchor(anchor string) (*dto.TrustAnchor, error) {
+func (anc *Anchor) GetTrustAnchor(anchor string) (dto.TrustAnchor, error) {
+	var trustAnchor dto.TrustAnchor
 	if !isValidHexAddress(anchor) {
-		return nil, errors.New("anchor is not valid bid")
+		return trustAnchor, errors.New("anchor is not valid bid")
 	}
 
 	params := make([]string, 1)
@@ -344,10 +345,14 @@ func (anc *Anchor) GetTrustAnchor(anchor string) (*dto.TrustAnchor, error) {
 
 	err := anc.super.provider.SendRequest(pointer, "trustanchor_trustAnchor", params)
 	if err != nil {
-		return nil, err
+		return trustAnchor, err
 	}
 
-	return pointer.ToTrustAnchor()
+	res, err := pointer.ToTrustAnchor()
+	if err != nil{
+		return trustAnchor, err
+	}
+	return *res, nil
 }
 
 /*
@@ -600,7 +605,7 @@ func (anc *Anchor) CancelVote(signTxParams *SysTxParams, candidate string) (stri
 
   Call permissions: Anyone
 */
-func (anc *Anchor) GetVoter(voterAddress string) ([]*dto.TrustAnchorVoter, error) {
+func (anc *Anchor) GetVoter(voterAddress string) ([]dto.TrustAnchorVoter, error) {
 	if !isValidHexAddress(voterAddress) {
 		return nil, errors.New("voterAddress is not valid bid")
 	}

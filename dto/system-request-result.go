@@ -61,13 +61,17 @@ func (pointer *SystemRequestResult) ToTrustAnchor() (*TrustAnchor, error) {
 	if err := pointer.checkResponse(); err != nil {
 		return nil, err
 	}
-	// errors.New("该信任锚不存在")
 
 	result := (pointer).Result.(map[string]interface{})
 
 	if len(result) == 0 {
 		return nil, EMPTYRESPONSE
 	}
+
+	// fmt.Printf("%#v \n", result)
+	// for k,v := range result {
+	// 	fmt.Printf("%s %v %v \n", reflect.TypeOf(v), v, k)
+	// }
 
 	trustAnchor := &TrustAnchor{}
 
@@ -78,23 +82,17 @@ func (pointer *SystemRequestResult) ToTrustAnchor() (*TrustAnchor, error) {
 	}
 
 	err = json.Unmarshal(marshal, trustAnchor)
-
 	return trustAnchor, err
 }
 
-// 解析测试注意！！！
-func (pointer *SystemRequestResult) ToTrustAnchorVoter() ([]*TrustAnchorVoter, error) {
+func (pointer *SystemRequestResult) ToTrustAnchorVoter() ([]TrustAnchorVoter, error) {
 	if err := pointer.checkResponse(); err != nil {
 		return nil, err
 	}
 
 	resultLi := (pointer).Result.([]interface{})
 
-	if len(resultLi) == 0 {
-		return nil, errors.New("投票人信息列表为空")
-	}
-
-	trustAnchorVoterLi := make([]*TrustAnchorVoter, len(resultLi))
+	trustAnchorVoterLi := make([]TrustAnchorVoter, len(resultLi))
 
 	for i, v := range resultLi {
 		result := v.(map[string]interface{})
@@ -116,7 +114,7 @@ func (pointer *SystemRequestResult) ToTrustAnchorVoter() ([]*TrustAnchorVoter, e
 			return nil, UNPARSEABLEINTERFACE
 		}
 
-		trustAnchorVoterLi[i] = info
+		trustAnchorVoterLi[i] = *info
 	}
 
 	return trustAnchorVoterLi, nil

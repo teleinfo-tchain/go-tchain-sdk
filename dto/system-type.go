@@ -1,6 +1,7 @@
 package dto
 
 import (
+	"encoding/json"
 	"github.com/bif/bif-sdk-go/utils"
 	"github.com/bif/bif-sdk-go/utils/hexutil"
 	"math/big"
@@ -119,11 +120,26 @@ type TrustAnchor struct {
 	Active           bool     `json:"active"          gencodec:"required"`   // 是否是根信任锚
 	TotalBounty      *big.Int `json:"totalBounty"     gencodec:"required"`   // 总激励
 	ExtractedBounty  *big.Int `json:"extractedBounty" gencodec:"required"`   // 已提取激励
-	LastExtractTime  *big.Int `json:"lastExtractTime" gencodec:"required"`   // 上次提取时间
+	LastExtractTime  uint64   `json:"lastExtractTime" gencodec:"required"`   // 上次提取时间
 	VoteCount        *big.Int `json:"vote_count" gencodec:"required"`        // 得票数
 	Stake            *big.Int `json:"stake" gencodec:"required"`             // 抵押
-	CreateDate       *big.Int `json:"create_date" gencodec:"required"`       // 创建时间
+	CreateDate       uint64   `json:"create_date" gencodec:"required"`       // 创建时间
 	CertificateCount *big.Int `json:"certificate_count" gencodec:"required"` // 证书总数
+}
+
+func (trustAnchor *TrustAnchor) UnmarshalJSON(data []byte) error {
+	type Alias TrustAnchor
+
+	temp := &struct {
+		// TransactionIndex string `json:"transactionIndex"`
+		*Alias
+	}{
+		Alias: (*Alias)(trustAnchor),
+	}
+	if err := json.Unmarshal(data, &temp); err != nil {
+		return err
+	}
+	return nil
 }
 
 type TrustAnchorVoter struct {
