@@ -433,7 +433,7 @@ func TestSetProxy(t *testing.T) {
 
 	elect := connection.System.NewElection()
 
-	proxy := resources.Address51
+	proxy := resources.NewAddrZ
 	setProxyHash, err := elect.SetProxy(sysTxParams, proxy)
 
 	if err != nil {

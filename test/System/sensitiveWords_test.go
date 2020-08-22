@@ -18,53 +18,6 @@ const (
 	testAddressSenFile    = "../resources/superNodeKeyStore/UTC--2020-08-20T05-28-39.403642600Z--did-bid-EFTVcqqKyFR17jfPxqwEtpmRpbkvSs"
 )
 
-func TestAddWord(t *testing.T) {
-	var connection = bif.NewBif(providers.NewHTTPProvider(resources.IP+":"+resources.Port, 10, false))
-	chainId, err := connection.Core.GetChainId()
-	if err != nil {
-		t.Log(err)
-		t.FailNow()
-	}
-
-	nonce, err := connection.Core.GetTransactionCount(testAddressSen, block.LATEST)
-	if err != nil {
-		t.Log(err)
-		t.FailNow()
-	}
-
-	// keyFileData 还可以进一步校验
-	keyFileData, err := ioutil.ReadFile(testAddressSenFile)
-	if err != nil {
-		t.Error(err)
-		t.FailNow()
-	}
-	if len(keyFileData) == 0 {
-		t.Errorf("keyFileData can't be empty")
-		t.FailNow()
-	}
-
-	sysTxParams := new(system.SysTxParams)
-	sysTxParams.IsSM2 = isSM2Sen
-	sysTxParams.Password = passwordSen
-	sysTxParams.KeyFileData = keyFileData
-	sysTxParams.GasPrice = big.NewInt(55)
-	sysTxParams.Gas = 2000000
-	sysTxParams.Nonce = nonce.Uint64()
-	sysTxParams.ChainId = chainId
-	sysTxParams.Version = 1
-
-	sen := connection.System.NewSensitiveWord()
-
-	addWord := "北京"
-
-	txHash, err := sen.AddWord(sysTxParams, addWord)
-	if err != nil {
-		t.Error(err)
-		t.FailNow()
-	}
-	t.Log(txHash)
-}
-
 func TestAddWords(t *testing.T) {
 	var connection = bif.NewBif(providers.NewHTTPProvider(resources.IP+":"+resources.Port, 10, false))
 	chainId, err := connection.Core.GetChainId()

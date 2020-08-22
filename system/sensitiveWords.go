@@ -10,7 +10,6 @@ import (
 const (
 	SensitiveWordsContractAddr = "did:bid:ZFT2yHwKD7GQeBdiFsUy5gbPQqLMKPA"
 	SensitiveWordsAbiJSON      = `[
-{"constant": false,"name":"addWord","inputs":[{"name":"word","type":"string"}],"outputs":[],"type":"function"},
 {"constant": false,"name":"addWords","inputs":[{"name":"word","type":"string"}],"outputs":[],"type":"function"},
 {"constant": false,"name":"delWord","inputs":[{"name":"word","type":"string"}],"outputs":[],"type":"function"},
 {"anonymous":false,"inputs":[{"indexed":false,"name":"method_name","type":"string"},{"indexed":false,"name":"status","type":"uint32"},{"indexed":false,"name":"reason","type":"string"}],"name":"sensitiveEvent","type":"event"}
@@ -31,39 +30,6 @@ func (sys *System) NewSensitiveWord() *SensitiveWord {
 	sensitiveWord.super = sys
 	sensitiveWord.abi = parseAbi
 	return sensitiveWord
-}
-
-/*
-  AddWord:
-   	EN -
-	CN - 向合约中添加敏感词
-  Params:
-  	- signTxParams *SysTxParams 系统合约构造所需参数
-	- word: string，敏感词
-
-  Returns:
-  	- string, 交易哈希(transactionHash)，如果交易尚不可用，则为零哈希。
-	- error
-
-  Call permissions: 只有监管节点地址可以操作
-*/
-func (sen *SensitiveWord) AddWord(signTxParams *SysTxParams, word string) (string, error) {
-	if len(word) == 0 || isBlankCharacter(word) {
-		return "", errors.New("word can't be empty or blank character")
-	}
-
-	// encoding
-	inputEncode, err := sen.abi.Pack("addWord", word)
-	if err != nil {
-		return "", err
-	}
-
-	signedTx, err := sen.super.prePareSignTransaction(signTxParams, inputEncode, SensitiveWordsContractAddr)
-	if err != nil {
-		return "", err
-	}
-
-	return sen.super.sendRawTransaction(signedTx)
 }
 
 /*
