@@ -14,8 +14,8 @@ import (
 const (
 	isSM2Manager       = false
 	passwordManager    = "teleinfo"
-	testAddressManager = "did:bid:EFTTQWPMdtghuZByPsfQAUuPkWkWYb"
-	testAddressManagerFile    = "../resources/superNodeKeyStore/UTC--2020-08-19T05-48-46.004537900Z--did-bid-EFTTQWPMdtghuZByPsfQAUuPkWkWYb"
+	testAddressManager = "did:bid:EFTVcqqKyFR17jfPxqwEtpmRpbkvSs"
+	testAddressManagerFile    = "../resources/superNodeKeyStore/UTC--2020-08-20T05-28-39.403642600Z--did-bid-EFTVcqqKyFR17jfPxqwEtpmRpbkvSs"
 )
 
 func TestContractEnable(t *testing.T) {
@@ -51,10 +51,11 @@ func TestContractEnable(t *testing.T) {
 	sysTxParams.Gas = 2000000
 	sysTxParams.Nonce = nonce.Uint64()
 	sysTxParams.ChainId = chainId
+	sysTxParams.Version = 1
 
 	manager := connection.System.NewManager()
 
-	contractAddress := resources.TestAddr
+	contractAddress := resources.TestContractAddress
 
 	txHash, err := manager.Enable(sysTxParams, contractAddress)
 	if err != nil {
@@ -97,10 +98,11 @@ func TestContractDisable(t *testing.T) {
 	sysTxParams.Gas = 2000000
 	sysTxParams.Nonce = nonce.Uint64()
 	sysTxParams.ChainId = chainId
+	sysTxParams.Version = 1
 
 	manager := connection.System.NewManager()
 
-	contractAddress := resources.TestAddr
+	contractAddress := resources.TestContractAddress
 
 	txHash, err := manager.Disable(sysTxParams, contractAddress)
 	if err != nil {
@@ -143,6 +145,7 @@ func TestSetPower(t *testing.T) {
 	sysTxParams.Gas = 2000000
 	sysTxParams.Nonce = nonce.Uint64()
 	sysTxParams.ChainId = chainId
+	sysTxParams.Version = 1
 
 	manager := connection.System.NewManager()
 
@@ -190,7 +193,7 @@ func TestContractIsEnable(t *testing.T) {
 	}
 
 	manager := connection.System.NewManager()
-	contractAddress := resources.TestAddr
+	contractAddress := resources.TestContractAddress
 	isEnable, err := manager.IsEnable(contractAddress)
 	if err != nil {
 		t.Error(err)

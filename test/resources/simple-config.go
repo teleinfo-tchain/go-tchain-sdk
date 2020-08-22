@@ -13,4 +13,6 @@ const (
 	NewAddrEPri    string = "e4b4a35bee3d92a0b07f16e3253ae8459e817305514dcd0ed0c64342312b41d8"
 	TestAddr       string = "did:bid:EFTVcqqKyFR17jfPxqwEtpmRpbkvSs"
 	TestAddrPri    string = "41e46e858ea707453d8fc553805772165a4f66e6e18ca38220daa157534e0c0e"
+
+	TestContractAddress = "did:bid:EFT3zLGVg6PeULDZzHkTwKCuWwsc75m"
 )
