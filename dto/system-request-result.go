@@ -199,13 +199,11 @@ func (pointer *SystemRequestResult) ToDocument() (*Document, error) {
 	}
 
 	result := (pointer).Result.(map[string]interface{})
-
 	if len(result) == 0 {
 		return nil, EMPTYRESPONSE
 	}
 
 	document := &Document{}
-
 	marshal, err := json.Marshal(result)
 
 	if err != nil {

@@ -241,9 +241,9 @@ type Document struct {
 }
 
 type Service struct {
-	ServiceId string `json:"id"`
-	Type      string `json:"type"`
-	Endpoint  string `json:"serviceEndpoint"`
+	Id       string `json:"id"`
+	Type     string `json:"type"`
+	Endpoint string `json:"serviceEndpoint"`
 }
 
 type Proof struct {

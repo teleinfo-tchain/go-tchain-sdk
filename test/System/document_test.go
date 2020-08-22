@@ -111,7 +111,6 @@ func TestGetDocument(t *testing.T) {
 		t.Error(err)
 		t.FailNow()
 	}
-
 	doc := connection.System.NewDoc()
 
 	document, err := doc.GetDocument(testAddressDoc)
@@ -121,14 +120,19 @@ func TestGetDocument(t *testing.T) {
 	}
 
 	t.Logf("doc is %#v \n", document)
-	// t.Logf("doc  extra is %#v \n", document.Extra)
+	// t.Logf("doc name is %#v \n", document.Name)
+	t.Logf("doc  extra is %#v \n", document.Extra)
 	// t.Logf("doc Authentications len is %#v \n", len(document.Authentications))
 	// t.Logf("doc atuh is %#v \n", document.Authentications)
 	// t.Logf("doc publicKey len is %#v \n", len(document.PublicKeys))
-	// t.Logf("doc publicKey is %#v \n", document.PublicKeys[0])
+	// if len(document.PublicKeys) != 0{
+	// 	t.Logf("doc publicKey is %#v \n", document.PublicKeys[0])
+	// }
 	// t.Logf("doc Services len is %#v \n", len(document.Services))
-	// t.Logf("doc service is %#v \n", document.Services[0])
-	// t.Logf("doc service is %#v \n", document.Proof)
+	// if len(document.Services) != 0{
+	// 	t.Logf("doc service is %#v \n", document.Services[0])
+	// }
+	// t.Logf("doc Proof is %#v \n", document.Proof)
 
 }
 
@@ -168,6 +172,7 @@ func TestAddPublic(t *testing.T) {
 	sysTxParams.Version = 1
 
 	doc := connection.System.NewDoc()
+	// 0x043ee1708e4b431e71b1cc596c15425b8e889b80ec120840b6dd998a3a6397142405875eebe6b3488723e6ad3c5c7397c42c57696ac1e2fa925c0a1f6a61fc20a7
 	txHash, err := doc.AddPublic(sysTxParams, testAddressDoc, "secp256k1", "all", testAddressDocPublicKey)
 	if err != nil {
 		t.Error(err)
@@ -306,7 +311,7 @@ func TestDelAuth(t *testing.T) {
 
 	doc := connection.System.NewDoc()
 
-	txHash, err := doc.DelAuth(sysTxParams, testAddressDoc, "test")
+	txHash, err := doc.DelAuth(sysTxParams, testAddressDoc, "test1")
 	if err != nil {
 		t.Error(err)
 		t.FailNow()

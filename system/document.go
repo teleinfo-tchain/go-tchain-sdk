@@ -2,7 +2,6 @@ package system
 
 import (
 	"errors"
-	"fmt"
 	"github.com/bif/bif-sdk-go/abi"
 	"github.com/bif/bif-sdk-go/dto"
 	"github.com/bif/bif-sdk-go/utils"
@@ -160,7 +159,6 @@ func (doc *Doc) GetDocument(did string) (dto.Document, error) {
 	}
 
 	res, err := pointer.ToDocument()
-	fmt.Printf("doc is %#v \n", res)
 	if err != nil{
 		return document, err
 	}
