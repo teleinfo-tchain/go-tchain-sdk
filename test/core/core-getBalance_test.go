@@ -27,9 +27,9 @@ func TestCoreGetBalance(t *testing.T) {
 
 	var connection = bif.NewBif(providers.NewHTTPProvider(resources.IP+":"+resources.Port, 10, false))
 
-	coinBase, _ := connection.Core.GetCoinBase()
+	generator, _ := connection.Core.GetGenerator()
 
-	bal, err := connection.Core.GetBalance(coinBase, block.PENDING)
+	bal, err := connection.Core.GetBalance(generator, block.PENDING)
 
 	if err != nil {
 		t.Error(err)

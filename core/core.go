@@ -16,6 +16,7 @@ package core
 
 import (
 	"errors"
+	"fmt"
 	"github.com/bif/bif-sdk-go/core/block"
 	"github.com/bif/bif-sdk-go/dto"
 	"github.com/bif/bif-sdk-go/providers"
@@ -100,8 +101,8 @@ func (core *Core) IsSyncing() (*dto.SyncingResponse, error) {
 }
 
 /*
-  GetCoinBase:
-   	EN - Returns the client coinbase address
+  GetGenerator:
+   	EN - Returns the client generator address
  	CN - 返回客户端的出块奖励地址
   Params:
   	- None
@@ -112,11 +113,11 @@ func (core *Core) IsSyncing() (*dto.SyncingResponse, error) {
 
   Call permissions: Anyone
 */
-func (core *Core) GetCoinBase() (string, error) {
+func (core *Core) GetGenerator() (string, error) {
 
 	pointer := &dto.CoreRequestResult{}
 
-	err := core.provider.SendRequest(pointer, "core_coinbase", nil)
+	err := core.provider.SendRequest(pointer, "core_generator", nil)
 
 	if err != nil {
 		return "", err
@@ -461,7 +462,7 @@ func (core *Core) SendRawTransaction(encodedTx string) (string, error) {
 func (core *Core) SignTransaction(transaction *dto.TransactionParameters) (*dto.SignTransactionResponse, error) {
 	params := make([]*dto.RequestTransactionParameters, 1)
 	params[0] = transaction.Transform()
-
+	fmt.Printf("%#v \n", params[0])
 	pointer := &dto.CoreRequestResult{}
 
 	err := core.provider.SendRequest(&pointer, "core_signTransaction", params)
@@ -1093,7 +1094,7 @@ func (core *Core) GetTransactionByBlockNumberAndIndex(blockNumber string, index 
   	- index, *big.Int, 交易在区块中的索引
 
   Returns:
-  	- string
+  	- string (如果返回0x，则表示交易未执行或不存在)
  	- error
 
   Call permissions: Anyone

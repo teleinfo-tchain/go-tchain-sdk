@@ -18,7 +18,6 @@ import (
 	"fmt"
 	"github.com/bif/bif-sdk-go/dto"
 	"github.com/bif/bif-sdk-go/test/resources"
-	"github.com/bif/bif-sdk-go/utils/hexutil"
 	"testing"
 
 	"github.com/bif/bif-sdk-go"
@@ -26,53 +25,67 @@ import (
 )
 
 func TestCoreGetBlockByNumber(t *testing.T) {
-
 	var connection = bif.NewBif(providers.NewHTTPProvider(resources.IP+":"+resources.Port, 10, false))
-
-	const transactionDetails = true
-
-	blockNumber, err := connection.Core.GetBlockNumber()
-	if err != nil {
-		t.Error(err)
-		t.FailNow()
-	}
-
-	block, err := connection.Core.GetBlockByNumber(hexutil.EncodeBig(blockNumber), transactionDetails)
-
-	if err != nil {
-		t.Error(err)
-		t.FailNow()
-	}
-
-	if block == nil {
-		t.Error("Block returned is nil")
-		t.FailNow()
-	}
-
-	if transactionDetails {
-		fmt.Println("gasLimit:", block.(*dto.BlockDetails).GasLimit)
-		fmt.Println("extraData:", block.(*dto.BlockDetails).ExtraData)
-		fmt.Println("LogsBloom:", block.(*dto.BlockDetails).LogsBloom)
-		fmt.Println("MixHash:", block.(*dto.BlockDetails).MixHash)
-		fmt.Println("ReceiptsRoot:", block.(*dto.BlockDetails).ReceiptsRoot)
-		fmt.Println("StateRoot:", block.(*dto.BlockDetails).StateRoot)
-		for _, val := range block.(*dto.BlockDetails).Transactions {
-			fmt.Println("transactions:", val.Hash)
+	for _, test := range []struct {
+		transactionDetails bool
+	}{
+		{true},
+		// {false},
+	} {
+		_, err := connection.Core.GetBlockNumber()
+		if err != nil {
+			t.Error(err)
+			t.FailNow()
 		}
-		fmt.Println("transactionLen:", len(block.(*dto.BlockDetails).Transactions))
-		fmt.Println("TransactionsRoot:", block.(*dto.BlockDetails).TransactionsRoot)
-	} else {
-		fmt.Println("gasLimit:", block.(*dto.BlockNoDetails).GasLimit)
-		fmt.Println("extraData:", block.(*dto.BlockNoDetails).ExtraData)
-		fmt.Println("LogsBloom:", block.(*dto.BlockNoDetails).LogsBloom)
-		fmt.Println("MixHash:", block.(*dto.BlockNoDetails).MixHash)
-		fmt.Println("ReceiptsRoot:", block.(*dto.BlockNoDetails).ReceiptsRoot)
-		fmt.Println("StateRoot:", block.(*dto.BlockNoDetails).StateRoot)
-		for idx, val := range block.(*dto.BlockNoDetails).Transactions {
-			fmt.Println("transactions:[0]", val[idx])
+		block, err := connection.Core.GetBlockByNumber(fmt.Sprintf("0x%x", 5213), test.transactionDetails)
+
+		if err != nil {
+			t.Error(err)
+			t.FailNow()
 		}
-		fmt.Println("transactionLen:", len(block.(*dto.BlockNoDetails).Transactions))
-		fmt.Println("TransactionsRoot:", block.(*dto.BlockNoDetails).TransactionsRoot)
+
+		if block == nil {
+			t.Error("Block returned is nil")
+			t.FailNow()
+		}
+
+		if test.transactionDetails {
+			fmt.Println("this is detail ")
+			fmt.Println("Version:", block.(*dto.BlockDetails).Version)
+			fmt.Println("Number:", block.(*dto.BlockDetails).Number)
+			fmt.Println("Hash:", block.(*dto.BlockDetails).Hash)
+			fmt.Println("ParentHash:", block.(*dto.BlockDetails).ParentHash)
+			fmt.Println("LogsBloom:", block.(*dto.BlockDetails).LogsBloom)
+			fmt.Println("StateRoot:", block.(*dto.BlockDetails).StateRoot)
+			fmt.Println("Generator:", block.(*dto.BlockDetails).Generator)
+			fmt.Println("Regulatory:", block.(*dto.BlockDetails).Regulatory)
+			fmt.Println("ExtraData:", block.(*dto.BlockDetails).ExtraData)
+			fmt.Println("Size:", block.(*dto.BlockDetails).Size)
+			fmt.Println("Timestamp:", block.(*dto.BlockDetails).Timestamp)
+			fmt.Println("TransactionsRoot:", block.(*dto.BlockDetails).TransactionsRoot)
+			fmt.Println("ReceiptsRoot:", block.(*dto.BlockDetails).ReceiptsRoot)
+			for _, val := range block.(*dto.BlockDetails).Transactions {
+				fmt.Printf("transactions: %#v \n", val)
+			}
+		} else {
+			fmt.Println("this is no detail ")
+			fmt.Println("Version:", block.(*dto.BlockNoDetails).Version)
+			fmt.Println("Number:", block.(*dto.BlockNoDetails).Number)
+			fmt.Println("Hash:", block.(*dto.BlockNoDetails).Hash)
+			fmt.Println("ParentHash:", block.(*dto.BlockNoDetails).ParentHash)
+			fmt.Println("LogsBloom:", block.(*dto.BlockNoDetails).LogsBloom)
+			fmt.Println("StateRoot:", block.(*dto.BlockNoDetails).StateRoot)
+			fmt.Println("Generator:", block.(*dto.BlockNoDetails).Generator)
+			fmt.Println("Regulatory:", block.(*dto.BlockNoDetails).Regulatory)
+			fmt.Println("ExtraData:", block.(*dto.BlockNoDetails).ExtraData)
+			fmt.Println("Size:", block.(*dto.BlockNoDetails).Size)
+			fmt.Println("Timestamp:", block.(*dto.BlockNoDetails).Timestamp)
+			fmt.Println("TransactionsRoot:", block.(*dto.BlockNoDetails).TransactionsRoot)
+			fmt.Println("ReceiptsRoot:", block.(*dto.BlockNoDetails).ReceiptsRoot)
+			for idx, val := range block.(*dto.BlockNoDetails).Transactions {
+				fmt.Println("transactions:[0]", val[idx])
+			}
+		}
 	}
+
 }
-

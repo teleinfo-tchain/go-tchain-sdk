@@ -15,7 +15,7 @@ import (
 )
 
 // define some const
-const bifer string = "bifer"
+const bif string = "bif"
 const Sha3Null = "0xc5d2460186f7233c927e7db2dcc703c0e500b653ca82273b7bfad8045d85a470"
 
 // 现在的测试不能确保正确，因为没有一个100%确定正确的做对照
@@ -56,30 +56,19 @@ func NewUtils() *Utils {
 
 // bifer uints
 var biferUint = map[string]string{
-	"nobifer":    "0",
-	"wei":        "1",
-	"kwei":       "1000",
-	"babbage":    "1000",
-	"femtobifer": "1000",
-	"mwei":       "1000000",
-	"lovelace":   "1000000",
-	"picobifer":  "1000000",
-	"gwei":       "1000000000",
-	"shannon":    "1000000000",
-	"nanobifer":  "1000000000",
-	"nano":       "1000000000",
-	"szabo":      "1000000000000",
-	"microbifer": "1000000000000",
-	"micro":      "1000000000000",
-	"finney":     "1000000000000000",
-	"millibifer": "1000000000000000",
-	"milli":      "1000000000000000",
-	"bifer":      "1000000000000000000",
-	"kbifer":     "1000000000000000000000",
-	"grand":      "1000000000000000000000",
-	"mbifer":     "1000000000000000000000000",
-	"gbifer":     "1000000000000000000000000000",
-	"tbifer":     "1000000000000000000000000000000",
+	"nobif":    "0",
+	"wei":      "1",
+	"kwei":     "1000",
+	"Kwei":     "1000",
+	"mwei":     "1000000",
+	"Mwei":     "1000000",
+	"gwei":     "1000000000",
+	"Gwei":     "1000000000",
+	"microbif": "1000000000000",
+	"micro":    "1000000000000",
+	"millibif": "1000000000000000",
+	"milli":    "1000000000000000",
+	"bif":      "1000000000000000000",
 }
 
 /*
@@ -105,7 +94,7 @@ func (util *Utils) ToWei(balance string, uint ...string) (*big.Int, error) {
 		}
 		number = value
 	} else {
-		number = biferUint[bifer]
+		number = biferUint[bif]
 	}
 	value, _ := new(big.Int).SetString(number, 10)
 
@@ -186,7 +175,7 @@ func (util *Utils) FromWei(balance *big.Int, uint ...string) (string, error) {
 		}
 		number = value
 	} else {
-		number = biferUint[bifer]
+		number = biferUint[bif]
 	}
 	value, _ := new(big.Int).SetString(number, 10)
 	// 判断输入的正负

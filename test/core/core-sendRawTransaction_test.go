@@ -15,13 +15,13 @@ import (
 func TestCoreSendRawTransaction(t *testing.T) {
 	var connection = bif.NewBif(providers.NewHTTPProvider(resources.IP+":"+resources.Port, 10, false))
 
-	nonce, err := connection.Core.GetTransactionCount(resources.CoinBase, block.LATEST)
+	nonce, err := connection.Core.GetTransactionCount(resources.TestAddr, block.LATEST)
 	if err != nil {
 		t.Error(err)
 		t.FailNow()
 	}
 
-	privKey := resources.CoinBasePriKey
+	privKey := resources.TestAddrPri
 
 	chainId, err := connection.Core.GetChainId()
 	if err != nil {
@@ -30,7 +30,7 @@ func TestCoreSendRawTransaction(t *testing.T) {
 	}
 
 	tx := &account.SignTxParams{
-		To:       resources.AddressTwo,
+		To:       resources.NewAddrE,
 		Nonce:    nonce.Uint64(),
 		Gas:      2000000,
 		GasPrice: big.NewInt(30),

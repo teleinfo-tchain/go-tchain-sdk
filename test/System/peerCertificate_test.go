@@ -23,7 +23,7 @@ const (
 
 func TestPeerRegisterCertificate(t *testing.T) {
 	var connection = bif.NewBif(providers.NewHTTPProvider(resources.IP55+":"+resources.Port, 10, false))
-	_, err := connection.Core.GetCoinBase()
+	_, err := connection.Core.GetGenerator()
 	if err != nil {
 		t.Error(err)
 		t.FailNow()
@@ -129,7 +129,7 @@ func TestPeerRevokedCertificate(t *testing.T) {
 
 func TestPeerGetPeriod(t *testing.T) {
 	var connection = bif.NewBif(providers.NewHTTPProvider(resources.IP55+":"+resources.Port, 10, false))
-	_, err := connection.Core.GetCoinBase()
+	_, err := connection.Core.GetGenerator()
 	if err != nil {
 		t.Error(err)
 		t.FailNow()
@@ -147,7 +147,7 @@ func TestPeerGetPeriod(t *testing.T) {
 
 func TestPeerGetActive(t *testing.T) {
 	var connection = bif.NewBif(providers.NewHTTPProvider(resources.IP55+":"+resources.Port, 10, false))
-	_, err := connection.Core.GetCoinBase()
+	_, err := connection.Core.GetGenerator()
 
 	if err != nil {
 		t.Error(err)
@@ -166,7 +166,7 @@ func TestPeerGetActive(t *testing.T) {
 
 func TestGetPeerCertificate(t *testing.T) {
 	var connection = bif.NewBif(providers.NewHTTPProvider(resources.IP55+":"+resources.Port, 10, false))
-	_, err := connection.Core.GetCoinBase()
+	_, err := connection.Core.GetGenerator()
 
 	if err != nil {
 		t.Error(err)
@@ -185,7 +185,7 @@ func TestGetPeerCertificate(t *testing.T) {
 
 func TestGetPeerCertificateIdList(t *testing.T) {
 	var connection = bif.NewBif(providers.NewHTTPProvider(resources.IP55+":"+resources.Port, 10, false))
-	_, err := connection.Core.GetCoinBase()
+	_, err := connection.Core.GetGenerator()
 
 	if err != nil {
 		t.Error(err)

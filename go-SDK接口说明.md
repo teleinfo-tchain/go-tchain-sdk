@@ -134,7 +134,7 @@ dpos_test.go            | dpos属性单元测试
     // 测试系统合约的执行结果
     func TestSystemLogDecode(t *testing.T) {
     	var connection = bif.NewBif(providers.NewHTTPProvider(resources.IP+":"+resources.Port, 10, false))
-    	_, err := connection.Core.GetCoinBase()
+    	_, err := connection.Core.GetGenerator()
     	if err != nil {
     		t.Error(err)
     		t.FailNow()
@@ -172,8 +172,8 @@ dpos_test.go            | dpos属性单元测试
         func TestGetPeriod(t *testing.T) {
             // 初始化bif
             var connection = bif.NewBif(providers.NewHTTPProvider(resources.IP+":"+resources.Port, 10, false))
-            // 获取coinBase
-            coinBase, err := connection.Core.GetCoinBase()
+            // 获取generator
+            generator, err := connection.Core.GetGenerator()
             // 错误判断
             if err != nil {
                 t.Error(err)
@@ -184,7 +184,7 @@ dpos_test.go            | dpos属性单元测试
             cer := connection.System.NewCertificate()
             
             // 查询个人证书的有效期
-            period, err := cer.GetPeriod(coinBase)
+            period, err := cer.GetPeriod(generator)
             if err != nil {
                 t.Error(err)
                 t.FailNow()

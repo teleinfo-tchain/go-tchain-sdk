@@ -27,16 +27,16 @@ import (
 func TestCoreGetTransactionReceipt(t *testing.T) {
 
 	var connection = bif.NewBif(providers.NewHTTPProvider(resources.IP+":"+resources.Port, 10, false))
-	coinBase, err := connection.Core.GetCoinBase()
+	generator, err := connection.Core.GetGenerator()
 	if err != nil {
 		t.Error(err)
 		t.FailNow()
 	}
 
-	toAddress := resources.AddressTwo
+	toAddress := resources.NewAddrE
 
 	transaction := new(dto.TransactionParameters)
-	transaction.From = coinBase
+	transaction.From = generator
 	transaction.To = toAddress
 	transaction.Value = big.NewInt(0).Mul(big.NewInt(1), big.NewInt(1e17))
 	transaction.Gas = big.NewInt(40000)
@@ -53,6 +53,10 @@ func TestCoreGetTransactionReceipt(t *testing.T) {
 	for receipt == nil {
 		time.Sleep(time.Second)
 		receipt, err = connection.Core.GetTransactionReceipt(txID)
+	}
+	if err != nil{
+		t.Error(err)
+		t.FailNow()
 	}
 
 	if len(receipt.ContractAddress) == 0 {
@@ -87,5 +91,4 @@ func TestCoreGetTransactionReceipt(t *testing.T) {
 		t.Error("False status")
 		t.FailNow()
 	}
-
 }

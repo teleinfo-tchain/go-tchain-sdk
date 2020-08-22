@@ -28,7 +28,7 @@ func TestCoreEstimateGas(t *testing.T) {
 
 	var connection = bif.NewBif(providers.NewHTTPProvider(resources.IP+":"+resources.Port, 10, false))
 
-	coinBase, err := connection.Core.GetCoinBase()
+	generator, err := connection.Core.GetGenerator()
 
 	if err != nil {
 		t.Error(err)
@@ -37,8 +37,8 @@ func TestCoreEstimateGas(t *testing.T) {
 
 	transaction := new(dto.TransactionParameters)
 	transaction.Data = "test"
-	transaction.From = coinBase
-	transaction.To = coinBase
+	transaction.From = generator
+	transaction.To = generator
 	transaction.Value = big.NewInt(10)
 	transaction.Gas = big.NewInt(40000)
 

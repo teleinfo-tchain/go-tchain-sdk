@@ -7,17 +7,17 @@ import (
 	"testing"
 )
 
-func TestGetCoinBase(t *testing.T) {
+func TestGetGenerator(t *testing.T) {
 
 	var connection = bif.NewBif(providers.NewHTTPProvider(resources.IP+":"+resources.Port, 10, false))
 
-	coinBase, err := connection.Core.GetCoinBase()
+	generator, err := connection.Core.GetGenerator()
 
 	if err != nil {
 		t.Error(err)
 		t.FailNow()
 	}
 
-	t.Log(coinBase)
+	t.Log(generator)
 }
 

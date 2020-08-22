@@ -36,12 +36,12 @@ import (
 func TestCoreSendTransaction(t *testing.T) {
 
 	var connection = bif.NewBif(providers.NewHTTPProvider(resources.IP+":"+resources.Port, 10, false))
-	// coinBase, err := connection.Core.GetCoinBase()
+	// generator, err := connection.Core.GetGenerator()
 	// if err != nil {
 	// 	t.Error(err)
 	// 	t.FailNow()
 	// }
-	coinBase := resources.TestAddr
+	generator := resources.TestAddr
 	toAddress := resources.NewAddrE
 	balance, err := connection.Core.GetBalance(resources.NewAddrE, block.LATEST)
 	if err == nil {
@@ -51,7 +51,7 @@ func TestCoreSendTransaction(t *testing.T) {
 	}
 
 	transaction := new(dto.TransactionParameters)
-	transaction.From = coinBase
+	transaction.From = generator
 	transaction.To = toAddress
 	transaction.Value = big.NewInt(0).Mul(big.NewInt(1), big.NewInt(1e17))
 	transaction.Gas = big.NewInt(40000)
@@ -105,7 +105,7 @@ func TestCoreSendTransactionDeployContract(t *testing.T) {
 
 	transaction := new(dto.TransactionParameters)
 
-	// coinBase, err := connection.Core.GetCoinBase()
+	// generator, err := connection.Core.GetGenerator()
 	// if err != nil {
 	// 	t.Error(err)
 	// 	t.FailNow()
@@ -152,7 +152,7 @@ func TestCoreSendTransactionDeployContract(t *testing.T) {
 }
 
 func TestGetReceipt(t *testing.T){
-	txHash := "0x24d339d9d55ddc86041ecc8a5ca52e50800d81b94956d2b57b97092a2b750de6"
+	txHash := "0xa81f094844ccd8136f52203bbec20ca522f235a5767e722b0fdc22c8edfe8a2f"
 	var connection = bif.NewBif(providers.NewHTTPProvider(resources.IP+":"+resources.Port, 10, false))
 	receipt, err := connection.Core.GetTransactionReceipt(txHash)
 	fmt.Println("err", err)
@@ -190,7 +190,7 @@ func TestCoreSendTransactionInteractContract(t *testing.T) {
 		t.FailNow()
 	}
 
-	// fromAddress, err := connection.Core.GetCoinBase()
+	// fromAddress, err := connection.Core.GetGenerator()
 	// if err != nil {
 	// 	t.Error(err)
 	// 	t.FailNow()

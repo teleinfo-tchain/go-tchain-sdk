@@ -207,4 +207,3 @@ func (pointer *RequestResult) checkResponse() error {
 	return nil
 
 }
-

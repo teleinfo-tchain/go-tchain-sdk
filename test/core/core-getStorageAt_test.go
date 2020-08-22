@@ -13,9 +13,9 @@ func TestCoreGetStorageAt(t *testing.T) {
 
 	var connection = bif.NewBif(providers.NewHTTPProvider(resources.IP+":"+resources.Port, 10, false))
 
-	coinBase, _ := connection.Core.GetCoinBase()
+	generator, _ := connection.Core.GetGenerator()
 
-	value, err := connection.Core.GetStorageAt(coinBase, big.NewInt(0), block.LATEST)
+	value, err := connection.Core.GetStorageAt(generator, big.NewInt(0), block.LATEST)
 
 	if err != nil {
 		t.Error(err)

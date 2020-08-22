@@ -44,7 +44,7 @@ func TestGetBlockTransactionCountByHash(t *testing.T) {
 	t.Log("txCount:", txCount)
 
 	// submit a transaction, wait for the block and there should be 1 tx.
-	coinBase, err := connection.Core.GetCoinBase()
+	generator, err := connection.Core.GetGenerator()
 
 	if err != nil {
 		t.Error(err)
@@ -52,8 +52,8 @@ func TestGetBlockTransactionCountByHash(t *testing.T) {
 	}
 
 	transaction := new(dto.TransactionParameters)
-	transaction.From = coinBase
-	transaction.To = coinBase
+	transaction.From = generator
+	transaction.To = generator
 	transaction.Value = big.NewInt(200000)
 	transaction.Gas = big.NewInt(40000)
 

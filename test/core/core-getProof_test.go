@@ -12,9 +12,9 @@ func TestCoreGetProof(t *testing.T) {
 
 	var connection = bif.NewBif(providers.NewHTTPProvider(resources.IP+":"+resources.Port, 10, false))
 
-	coinBase, _ := connection.Core.GetCoinBase()
+	generator, _ := connection.Core.GetGenerator()
 
-	proof, err := connection.Core.GetProof(coinBase, []string{"0", "1"}, block.LATEST)
+	proof, err := connection.Core.GetProof(generator, []string{"0", "1"}, block.LATEST)
 
 	if err != nil {
 		t.Error(err)

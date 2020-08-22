@@ -15,15 +15,15 @@ func TestCoreGetPendingTransactions(t *testing.T) {
 
 
 
-	coinBase, err := connection.Core.GetCoinBase()
+	generator, err := connection.Core.GetGenerator()
 	if err != nil{
 		t.Error(err)
 		t.FailNow()
 	}
 
 	transaction := new(dto.TransactionParameters)
-	transaction.From = coinBase
-	transaction.To = resources.Address51
+	transaction.From = generator
+	transaction.To = resources.NewAddrE
 	transaction.Value = big.NewInt(0).Mul(big.NewInt(1), big.NewInt(1e15))
 	transaction.Gas = big.NewInt(40000)
 	transaction.Data = "Transfer test"

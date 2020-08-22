@@ -18,8 +18,10 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"github.com/bif/bif-sdk-go/crypto"
 	"github.com/bif/bif-sdk-go/utils/types"
 	"math/big"
+	"strconv"
 )
 
 // TransactionParameters GO transaction to make more easy controll the parameters
@@ -89,31 +91,112 @@ type SignTransactionResponse struct {
 }
 
 type SignedTransactionParams struct {
-	Gas      *big.Int `json:gas`
-	GasPrice *big.Int `json:gasPrice`
-	Hash     string   `json:hash`
-	Input    string   `json:input`
-	Nonce    *big.Int `json:nonce`
-	S        string   `json:s`
-	R        string   `json:r`
-	V        *big.Int `json:v`
-	To       string   `json:to`
-	Value    *big.Int `json:value`
+	Gas      *big.Int `json:"gas"`
+	GasPrice *big.Int `json:"gasPrice"`
+	Hash     string   `json:"hash"`
+	Input    string   `json:"input"`
+	Nonce    *big.Int `json:"nonce"`
+	S        string   `json:"s"`
+	R        string   `json:"r"`
+	V        *big.Int `json:"v"`
+	To       string   `json:"to"`
+	Value    *big.Int `json:"value"`
 }
 
 type TransactionResponse struct {
-	Hash             string              `json:"hash"`
-	Nonce            *big.Int            `json:"nonce"`
+	Version          uint64              `json:"version"`
+	ChainId          uint64              `json:"chainId"`
 	BlockHash        string              `json:"blockHash"`
 	BlockNumber      *big.Int            `json:"blockNumber"`
-	TransactionIndex *big.Int            `json:"transactionIndex"`
 	From             string              `json:"from"`
 	To               string              `json:"to"`
+	Gas              uint64              `json:"gas,omitempty"`
+	GasPrice         *big.Int            `json:"gasPrice,omitempty"`
+	Nonce            uint64              `json:"nonce"`
+	Hash             string              `json:"hash"`
+	TransactionIndex *big.Int              `json:"transactionIndex"`
 	Input            string              `json:"input"`
 	Value            *big.Int            `json:"value"`
-	GasPrice         *big.Int            `json:"gasPrice,omitempty"`
-	Gas              *big.Int            `json:"gas,omitempty"`
-	Data             types.ComplexString `json:"data,omitempty"`
+	SignNode         *crypto.Signature   `json:"signNode"`
+	SignUser         []*crypto.Signature `json:"singUser"`
+}
+
+func (t *TransactionResponse) UnmarshalJSON(data []byte) error {
+	type Alias TransactionResponse
+	temp := &struct {
+		Version          string `json:"version"`
+		ChainId          string `json:"chainId"`
+		BlockNumber      string `json:"blockNumber"`
+		Gas              string `json:"gas,omitempty"`
+		GasPrice         string `json:"gasPrice,omitempty"`
+		Nonce            string `json:"nonce"`
+		TransactionIndex string `json:"transactionIndex"`
+		Value            string `json:"value"`
+		*Alias
+	}{
+		Alias: (*Alias)(t),
+	}
+
+	if err := json.Unmarshal(data, &temp); err != nil {
+		return err
+	}
+
+	version, err := strconv.ParseUint(temp.Version, 0, 64)
+	if err != nil {
+		return errors.New(fmt.Sprintf("Error converting %s to uint64", temp.Version))
+	}
+
+	chainId, err := strconv.ParseUint(temp.ChainId, 0, 64)
+	if err != nil {
+		return errors.New(fmt.Sprintf("Error converting %s to uint64", temp.ChainId))
+	}
+
+	if len(temp.BlockNumber) == 0 {
+		temp.BlockNumber = "0x0"
+	}
+	blockNum, success := big.NewInt(0).SetString(temp.BlockNumber[2:], 16)
+	if !success {
+		return errors.New(fmt.Sprintf("Error converting %s to BigInt", temp.BlockNumber))
+	}
+
+	gas, err := strconv.ParseUint(temp.Gas, 0, 64)
+	if err != nil {
+		return errors.New(fmt.Sprintf("Error converting %s to uint64", temp.Gas))
+	}
+
+	gasPrice, success := big.NewInt(0).SetString(temp.GasPrice[2:], 16)
+	if !success {
+		return errors.New(fmt.Sprintf("Error converting %s to BigInt", temp.GasPrice))
+	}
+
+	nonce, err := strconv.ParseUint(temp.Nonce, 0, 64)
+	if err != nil {
+		return errors.New(fmt.Sprintf("Error converting %s to uint64", temp.Nonce))
+	}
+
+	if len(temp.TransactionIndex) == 0 {
+		temp.TransactionIndex = "0x0"
+	}
+	txIndex, success := big.NewInt(0).SetString(temp.TransactionIndex[2:], 16)
+	if !success {
+		return errors.New(fmt.Sprintf("Error converting %s to BigInt", temp.TransactionIndex))
+	}
+
+	value, success := big.NewInt(0).SetString(temp.Value[2:], 16)
+	if !success {
+		return errors.New(fmt.Sprintf("Error converting %s to BigInt", temp.Value))
+	}
+
+	t.Version = version
+	t.ChainId = chainId
+	t.BlockNumber = blockNum
+	t.Gas = gas
+	t.GasPrice = gasPrice
+	t.Nonce = nonce
+	t.TransactionIndex = txIndex
+	t.Value = value
+
+	return nil
 }
 
 type TransactionReceipt struct {
@@ -123,12 +206,72 @@ type TransactionReceipt struct {
 	BlockNumber       *big.Int          `json:"blockNumber"`
 	From              string            `json:"from"`
 	To                string            `json:"to"`
-	CumulativeGasUsed *big.Int          `json:"cumulativeGasUsed"`
-	GasUsed           *big.Int          `json:"gasUsed"`
+	CumulativeGasUsed uint64            `json:"cumulativeGasUsed"`
+	GasUsed           uint64            `json:"gasUsed"`
 	ContractAddress   string            `json:"contractAddress"`
 	Logs              []TransactionLogs `json:"logs"`
 	LogsBloom         string            `json:"logsBloom"`
 	Status            bool              `json:"status"`
+}
+
+func (r *TransactionReceipt) UnmarshalJSON(data []byte) error {
+	type Alias TransactionReceipt
+
+	temp := &struct {
+		TransactionIndex  string `json:"transactionIndex"`
+		BlockNumber       string `json:"blockNumber"`
+		CumulativeGasUsed string `json:"cumulativeGasUsed"`
+		GasUsed           string `json:"gasUsed"`
+		Status            string `json:"status"`
+		*Alias
+	}{
+		Alias: (*Alias)(r),
+	}
+
+	if err := json.Unmarshal(data, &temp); err != nil {
+		return err
+	}
+
+	blockNum, success := big.NewInt(0).SetString(temp.BlockNumber[2:], 16)
+
+	if !success {
+		return errors.New(fmt.Sprintf("Error converting %s to BigInt", temp.BlockNumber))
+	}
+
+	if len(temp.TransactionIndex) == 0 {
+		temp.TransactionIndex = "0x0"
+	}
+	txIndex, success := big.NewInt(0).SetString(temp.TransactionIndex[2:], 16)
+	if !success {
+		return errors.New(fmt.Sprintf("Error converting %s to BigInt", temp.TransactionIndex))
+	}
+
+	gasUsed, err := strconv.ParseUint(temp.GasUsed, 0, 64)
+	if err != nil {
+		return errors.New(fmt.Sprintf("Error converting %s to uint64", temp.GasUsed))
+	}
+
+	cumulativeGas, err := strconv.ParseUint(temp.CumulativeGasUsed, 0, 64)
+
+	if err != nil {
+		return errors.New(fmt.Sprintf("Error converting %s to uint64", temp.CumulativeGasUsed))
+	}
+
+	status, success := big.NewInt(0).SetString(temp.Status[2:], 16)
+	if !success {
+		return errors.New(fmt.Sprintf("Error converting %s to BigInt", temp.Status))
+	}
+
+	r.TransactionIndex = txIndex
+	r.BlockNumber = blockNum
+	r.CumulativeGasUsed = cumulativeGas
+	r.GasUsed = gasUsed
+	r.Status = false
+	if status.Cmp(big.NewInt(1)) == 0 {
+		r.Status = true
+	}
+
+	return nil
 }
 
 type TransactionLogs struct {
@@ -141,6 +284,50 @@ type TransactionLogs struct {
 	BlockHash        string   `json:"blockHash"`
 	LogIndex         *big.Int `json:"logIndex"`
 	Removed          bool     `json:"removed"`
+}
+
+func (r *TransactionLogs) UnmarshalJSON(data []byte) error {
+	type Alias TransactionLogs
+
+	log := &struct {
+		TransactionIndex string `json:"transactionIndex"`
+		BlockNumber      string `json:"blockNumber"`
+		LogIndex         string `json:"logIndex"`
+		*Alias
+	}{
+		Alias: (*Alias)(r),
+	}
+
+	if err := json.Unmarshal(data, &log); err != nil {
+		return err
+	}
+
+	blockNumLog, success := big.NewInt(0).SetString(log.BlockNumber[2:], 16)
+
+	if !success {
+		return errors.New(fmt.Sprintf("Error converting %s to BigInt", log.BlockNumber))
+	}
+
+	if len(log.TransactionIndex) == 0 {
+		log.TransactionIndex = "0x0"
+	}
+	txIndexLogs, success := big.NewInt(0).SetString(log.TransactionIndex[2:], 16)
+
+	if !success {
+		return errors.New(fmt.Sprintf("Error converting %s to BigInt", log.TransactionIndex))
+	}
+
+	logIndex, success := big.NewInt(0).SetString(log.LogIndex[2:], 16)
+
+	if !success {
+		return errors.New(fmt.Sprintf("Error converting %s to BigInt", log.LogIndex))
+	}
+
+	r.BlockNumber = blockNumLog
+	r.TransactionIndex = txIndexLogs
+	r.LogIndex = logIndex
+	return nil
+
 }
 
 type CandidateResponse struct {
@@ -171,178 +358,6 @@ type StakeResponse struct {
 	Owner              string `json:"owner"`              // 抵押代币的所有人
 	StakeCount         int64  `json:"stakeCount"`         // 抵押的代币数量
 	LastStakeTimeStamp int64  `json:"lastStakeTimeStamp"` // 上次抵押时间戳
-}
-
-func (t *TransactionResponse) UnmarshalJSON(data []byte) error {
-	type Alias TransactionResponse
-	temp := &struct {
-		Nonce            string `json:"nonce"`
-		BlockNumber      string `json:"blockNumber"`
-		TransactionIndex string `json:"transactionIndex"`
-		Value            string `json:"value"`
-		GasPrice         string `json:"gasPrice,omitempty"`
-		Gas              string `json:"gas,omitempty"`
-		*Alias
-	}{
-		Alias: (*Alias)(t),
-	}
-
-	if err := json.Unmarshal(data, &temp); err != nil {
-		return err
-	}
-
-	nonce, success := big.NewInt(0).SetString(temp.Nonce[2:], 16)
-
-	if !success {
-		return errors.New(fmt.Sprintf("Error converting %s to BigInt", temp.Nonce))
-	}
-
-	if len(temp.BlockNumber) == 0 {
-		temp.BlockNumber = "0x0"
-	}
-
-	blockNum, success := big.NewInt(0).SetString(temp.BlockNumber[2:], 16)
-
-	if !success {
-		return errors.New(fmt.Sprintf("Error converting %s to BigInt", temp.BlockNumber))
-	}
-
-	if len(temp.TransactionIndex) == 0 {
-		temp.TransactionIndex = "0x0"
-	}
-
-	txIndex, success := big.NewInt(0).SetString(temp.TransactionIndex[2:], 16)
-
-	if !success {
-		return errors.New(fmt.Sprintf("Error converting %s to BigInt", temp.TransactionIndex))
-	}
-
-	gas, success := big.NewInt(0).SetString(temp.Gas[2:], 16)
-
-	if !success {
-		return errors.New(fmt.Sprintf("Error converting %s to BigInt", temp.Gas))
-	}
-
-	gasPrice, success := big.NewInt(0).SetString(temp.GasPrice[2:], 16)
-
-	if !success {
-		return errors.New(fmt.Sprintf("Error converting %s to BigInt", temp.GasPrice))
-	}
-
-	value, success := big.NewInt(0).SetString(temp.Value[2:], 16)
-
-	if !success {
-		return errors.New(fmt.Sprintf("Error converting %s to BigInt", temp.Value))
-	}
-
-	t.Nonce = nonce
-	t.BlockNumber = blockNum
-	t.TransactionIndex = txIndex
-	t.Gas = gas
-	t.GasPrice = gasPrice
-	t.Value = value
-
-	return nil
-}
-
-func (r *TransactionLogs) UnmarshalJSON(data []byte) error {
-	type Alias TransactionLogs
-
-	log := &struct {
-		TransactionIndex string `json:"transactionIndex"`
-		BlockNumber      string `json:"blockNumber"`
-		LogIndex         string `json:"logIndex"`
-		*Alias
-	}{
-		Alias: (*Alias)(r),
-	}
-
-	if err := json.Unmarshal(data, &log); err != nil {
-		return err
-	}
-
-	blockNumLog, success := big.NewInt(0).SetString(log.BlockNumber[2:], 16)
-
-	if !success {
-		return errors.New(fmt.Sprintf("Error converting %s to BigInt", log.BlockNumber))
-	}
-
-	txIndexLogs, success := big.NewInt(0).SetString(log.TransactionIndex[2:], 16)
-
-	if !success {
-		return errors.New(fmt.Sprintf("Error converting %s to BigInt", log.TransactionIndex))
-	}
-
-	logIndex, success := big.NewInt(0).SetString(log.LogIndex[2:], 16)
-
-	if !success {
-		return errors.New(fmt.Sprintf("Error converting %s to BigInt", log.LogIndex))
-	}
-
-	r.BlockNumber = blockNumLog
-	r.TransactionIndex = txIndexLogs
-	r.LogIndex = logIndex
-	return nil
-
-}
-
-func (r *TransactionReceipt) UnmarshalJSON(data []byte) error {
-	type Alias TransactionReceipt
-
-	temp := &struct {
-		TransactionIndex  string `json:"transactionIndex"`
-		BlockNumber       string `json:"blockNumber"`
-		CumulativeGasUsed string `json:"cumulativeGasUsed"`
-		GasUsed           string `json:"gasUsed"`
-		Status            string `json:"status"`
-		*Alias
-	}{
-		Alias: (*Alias)(r),
-	}
-
-	if err := json.Unmarshal(data, &temp); err != nil {
-		return err
-	}
-
-	blockNum, success := big.NewInt(0).SetString(temp.BlockNumber[2:], 16)
-
-	if !success {
-		return errors.New(fmt.Sprintf("Error converting %s to BigInt", temp.BlockNumber))
-	}
-
-	txIndex, success := big.NewInt(0).SetString(temp.TransactionIndex[2:], 16)
-
-	if !success {
-		return errors.New(fmt.Sprintf("Error converting %s to BigInt", temp.TransactionIndex))
-	}
-
-	gasUsed, success := big.NewInt(0).SetString(temp.GasUsed[2:], 16)
-
-	if !success {
-		return errors.New(fmt.Sprintf("Error converting %s to BigInt", temp.GasUsed))
-	}
-
-	cumulativeGas, success := big.NewInt(0).SetString(temp.CumulativeGasUsed[2:], 16)
-
-	if !success {
-		return errors.New(fmt.Sprintf("Error converting %s to BigInt", temp.CumulativeGasUsed))
-	}
-
-	status, success := big.NewInt(0).SetString(temp.Status[2:], 16)
-	if !success {
-		return errors.New(fmt.Sprintf("Error converting %s to BigInt", temp.Status))
-	}
-
-	r.TransactionIndex = txIndex
-	r.BlockNumber = blockNum
-	r.CumulativeGasUsed = cumulativeGas
-	r.GasUsed = gasUsed
-	r.Status = false
-	if status.Cmp(big.NewInt(1)) == 0 {
-		r.Status = true
-	}
-
-	return nil
 }
 
 func (sp *SignedTransactionParams) UnmarshalJSON(data []byte) error {

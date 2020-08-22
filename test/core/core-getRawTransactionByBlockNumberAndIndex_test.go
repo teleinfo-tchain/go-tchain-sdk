@@ -15,7 +15,7 @@ func TestGetRawTransactionByBlockNumberAndIndex(t *testing.T) {
 
 	var connection = bif.NewBif(providers.NewHTTPProvider(resources.IP+":"+resources.Port, 10, false))
 
-	coinBase, err := connection.Core.GetCoinBase()
+	generator, err := connection.Core.GetGenerator()
 
 	if err != nil {
 		t.Error(err)
@@ -25,8 +25,8 @@ func TestGetRawTransactionByBlockNumberAndIndex(t *testing.T) {
 	txVal := big.NewInt(2000000)
 
 	transaction := new(dto.TransactionParameters)
-	transaction.From = coinBase
-	transaction.To = coinBase
+	transaction.From = generator
+	transaction.To = generator
 	transaction.Value = big.NewInt(0).Mul(big.NewInt(500), big.NewInt(1E18))
 	transaction.Value = txVal
 	transaction.Gas = big.NewInt(40000)
@@ -50,7 +50,6 @@ func TestGetRawTransactionByBlockNumberAndIndex(t *testing.T) {
 		t.Error(err)
 		t.FailNow()
 	}
-
 	// if it fails, it may be that the time is too short and the transaction has not been executed
 	tx, err := connection.Core.GetRawTransactionByBlockNumberAndIndex(hexutil.EncodeBig(txFromHash.BlockNumber), txFromHash.TransactionIndex)
 

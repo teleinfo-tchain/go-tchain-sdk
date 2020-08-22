@@ -31,8 +31,8 @@ func TestCoreSignTransaction(t *testing.T) {
 
 	transaction := new(dto.TransactionParameters)
 	transaction.Nonce = big.NewInt(2)
-	transaction.From = resources.CoinBase
-	transaction.To = resources.AddressTwo
+	transaction.From = resources.TestAddr
+	transaction.To = resources.NewAddrE
 	transaction.Value = big.NewInt(0).Mul(big.NewInt(5), big.NewInt(1e17))
 	transaction.Gas = big.NewInt(50000)
 	transaction.GasPrice = big.NewInt(1)
@@ -46,7 +46,7 @@ func TestCoreSignTransaction(t *testing.T) {
 	}
 
 	t.Log(txID.Raw)
-	addressTwoHex := hexutil.Encode(utils.FromHex(resources.AddressTwo))
+	addressTwoHex := hexutil.Encode(utils.FromHex(resources.NewAddrE))
 
 	if txID.Transaction.To != addressTwoHex {
 		t.Errorf(fmt.Sprintf("Expected %s | Got: %s", addressTwoHex, txID.Transaction.To))

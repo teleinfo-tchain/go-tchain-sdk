@@ -54,13 +54,13 @@ func TestCoreContract(t *testing.T) {
 	}
 
 	transaction := new(dto.TransactionParameters)
-	coinBase, err := connection.Core.GetCoinBase()
+	generator, err := connection.Core.GetGenerator()
 	if err != nil {
 		t.Error(err)
 		t.FailNow()
 	}
 
-	transaction.From = coinBase
+	transaction.From = generator
 	transaction.Gas = big.NewInt(4000000)
 
 	hash, err := contract.Deploy(transaction, byteCode)
@@ -131,7 +131,7 @@ func TestCoreContract(t *testing.T) {
 		}
 	}
 
-	result, err = contract.Call(transaction, "balanceOf", coinBase)
+	result, err = contract.Call(transaction, "balanceOf", generator)
 	if result != nil && err == nil {
 		balance, _ := result.ToBigInt()
 		if balance.Cmp(bigInt) != 0 {
@@ -140,7 +140,7 @@ func TestCoreContract(t *testing.T) {
 		}
 	}
 
-	hash, err = contract.Send(transaction, "approve", utils.StringToAddress(coinBase), big.NewInt(10))
+	hash, err = contract.Send(transaction, "approve", utils.StringToAddress(generator), big.NewInt(10))
 	if err != nil {
 		t.Log(err)
 		t.Errorf("Can't send approve transaction")
@@ -157,7 +157,7 @@ func TestCoreContract(t *testing.T) {
 	t.Log(receipt.Logs[0].Data)
 
 	reallyBigInt, _ := big.NewInt(0).SetString("20", 16)
-	_, err = contract.Send(transaction, "approve", utils.StringToAddress(coinBase), reallyBigInt)
+	_, err = contract.Send(transaction, "approve", utils.StringToAddress(generator), reallyBigInt)
 	if err != nil {
 		t.Errorf("Can't send approve transaction")
 		t.FailNow()

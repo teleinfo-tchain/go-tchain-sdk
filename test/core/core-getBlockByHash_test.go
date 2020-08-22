@@ -45,7 +45,6 @@ func TestCoreGetBlockByHash(t *testing.T) {
 
 	// Ensure it's the same block
 	if (blockByNumber.(*dto.BlockNoDetails).Number.Cmp(blockByHash.(*dto.BlockNoDetails).Number)) != 0 ||
-		(blockByNumber.(*dto.BlockNoDetails).Miner != blockByHash.(*dto.BlockNoDetails).Miner) ||
 		(blockByNumber.(*dto.BlockNoDetails).Hash != blockByHash.(*dto.BlockNoDetails).Hash) {
 		t.Errorf("Not same block returned")
 		t.FailNow()

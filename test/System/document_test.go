@@ -685,7 +685,7 @@ func TestDisable(t *testing.T) {
 
 func TestIsEnable(t *testing.T) {
 	var connection = bif.NewBif(providers.NewHTTPProvider(resources.IP+":"+resources.Port, 10, false))
-	_, err := connection.Core.GetCoinBase()
+	_, err := connection.Core.GetGenerator()
 	if err != nil {
 		t.Error(err)
 		t.FailNow()

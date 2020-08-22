@@ -64,14 +64,14 @@ func TestCoreGetCode(t *testing.T) {
 	}
 
 	transaction := new(dto.TransactionParameters)
-	coinBase, err := connection.Core.GetCoinBase()
+	generator, err := connection.Core.GetGenerator()
 
 	if err != nil {
 		t.Error(err)
 		t.FailNow()
 	}
 
-	transaction.From = coinBase
+	transaction.From = generator
 	transaction.Gas = big.NewInt(4000000)
 	hash, err := contract.Deploy(transaction, byteCode)
 

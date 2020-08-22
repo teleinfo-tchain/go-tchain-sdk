@@ -9,8 +9,8 @@ import (
 
 func TestCoreGetTrustNumber(t *testing.T) {
 
-	var connection = bif.NewBif(providers.NewHTTPProvider(resources.IP52+":"+resources.Port, 10, false))
-	address, err := connection.Core.GetCoinBase()
+	var connection = bif.NewBif(providers.NewHTTPProvider(resources.IP+":"+resources.Port, 10, false))
+	address, err := connection.Core.GetGenerator()
 	if err != nil {
 		t.Error(err)
 		t.FailNow()

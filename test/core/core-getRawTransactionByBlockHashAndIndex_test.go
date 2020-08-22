@@ -14,7 +14,7 @@ func TestGetRawTransactionByBlockHashAndIndex(t *testing.T) {
 
 	var connection = bif.NewBif(providers.NewHTTPProvider(resources.IP+":"+resources.Port, 10, false))
 
-	coinBase, err := connection.Core.GetCoinBase()
+	generator, err := connection.Core.GetGenerator()
 
 	if err != nil {
 		t.Error(err)
@@ -24,8 +24,8 @@ func TestGetRawTransactionByBlockHashAndIndex(t *testing.T) {
 	txVal := big.NewInt(2000000)
 
 	transaction := new(dto.TransactionParameters)
-	transaction.From = coinBase
-	transaction.To = coinBase
+	transaction.From = generator
+	transaction.To = generator
 	transaction.Value = big.NewInt(0).Mul(big.NewInt(500), big.NewInt(1E18))
 	transaction.Value = txVal
 	transaction.Gas = big.NewInt(40000)

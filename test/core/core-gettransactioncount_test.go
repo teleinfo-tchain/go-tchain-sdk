@@ -26,16 +26,16 @@ func TestCoreGetTransactionCount(t *testing.T) {
 
 	var connection = bif.NewBif(providers.NewHTTPProvider(resources.IP+":"+resources.Port, 10, false))
 
-	coinBase, _ := connection.Core.GetCoinBase()
+	generator, _ := connection.Core.GetGenerator()
 
-	count, err := connection.Core.GetTransactionCount(coinBase, block.LATEST)
+	count, err := connection.Core.GetTransactionCount(generator, block.LATEST)
 
 	if err != nil {
 		t.Error(err)
 		t.FailNow()
 	}
 
-	countTwo, err := connection.Core.GetTransactionCount(coinBase, block.LATEST)
+	countTwo, err := connection.Core.GetTransactionCount(generator, block.LATEST)
 
 	if err != nil {
 		t.Error(err)
