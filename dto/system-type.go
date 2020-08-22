@@ -161,14 +161,29 @@ type RegisterCertificate struct {
 }
 
 type CertificateInfo struct {
-	Id             string   // 凭证的hash
-	Context        string   // 证书所属上下文环境
-	Issuer         string   // 信任锚的bid
-	Subject        string   // 证书拥有者地址
-	IssuedTime     *big.Int // 颁发时间
-	Period         uint64   // 有效期
-	IsEnable       bool     // true 凭证有效，false 凭证已撤销
-	RevocationTime *big.Int // 吊销时间
+	Id             string // 凭证的hash
+	Context        string // 证书所属上下文环境
+	Issuer         string // 信任锚的bid
+	Subject        string // 证书拥有者地址
+	IssuedTime     uint64 // 颁发时间
+	Period         uint64 // 有效期
+	IsEnable       bool   // true 凭证有效，false 凭证已撤销
+	RevocationTime uint64 // 吊销时间
+}
+
+func (certificateInfo *CertificateInfo) UnmarshalJSON(data []byte) error {
+	type Alias CertificateInfo
+
+	temp := &struct {
+		// TransactionIndex string `json:"transactionIndex"`
+		*Alias
+	}{
+		Alias: (*Alias)(certificateInfo),
+	}
+	if err := json.Unmarshal(data, &temp); err != nil {
+		return err
+	}
+	return nil
 }
 
 type IssuerSignature struct {

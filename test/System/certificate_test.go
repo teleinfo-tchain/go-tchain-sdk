@@ -65,11 +65,11 @@ func TestRegisterCertificate(t *testing.T) {
 	registerCertificate.Context = "test context"
 	registerCertificate.Subject = personCertificate
 	registerCertificate.Period = 1
-	registerCertificate.IssuerAlgorithm = ""
-	registerCertificate.IssuerSignature = ""
+	registerCertificate.IssuerAlgorithm = "test"
+	registerCertificate.IssuerSignature = "test"
 	registerCertificate.SubjectPublicKey = personCertificatePublicKey
-	registerCertificate.SubjectAlgorithm = ""
-	registerCertificate.SubjectSignature = ""
+	registerCertificate.SubjectAlgorithm = "test"
+	registerCertificate.SubjectSignature = "test"
 	// registerCertificate
 	registerCertificateHash, err := cer.RegisterCertificate(sysTxParams, registerCertificate)
 	if err != nil {
@@ -117,7 +117,7 @@ func TestRevokedCertificate(t *testing.T) {
 
 	cer := connection.System.NewCertificate()
 
-	transactionHash, err := cer.RevokedCertificate(sysTxParams, testAddressCertificate)
+	transactionHash, err := cer.RevokedCertificate(sysTxParams, personCertificate)
 	if err != nil {
 		t.Error(err)
 		t.FailNow()

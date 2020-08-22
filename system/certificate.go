@@ -5,6 +5,7 @@ import (
 	"github.com/bif/bif-sdk-go/abi"
 	"github.com/bif/bif-sdk-go/account"
 	"github.com/bif/bif-sdk-go/dto"
+	"github.com/bif/bif-sdk-go/utils"
 	"strings"
 )
 
@@ -37,7 +38,7 @@ func (sys *System) NewCertificate() *Certificate {
 }
 
 // TODO: 后续需要加上 IssuerAlgorithm  IssuerSignature SubjectAlgorithm  SubjectSignature 的检测
-func (cer *Certificate) registerCertificatePreCheck(registerCertificate *dto.RegisterCertificate) (bool, error) {
+func (cer *Certificate) registerCertificatePreCheck(registerCertificate dto.RegisterCertificate) (bool, error) {
 	if !isValidHexAddress(registerCertificate.Id) {
 		return false, errors.New("registerCertificate Id is not valid bid")
 	}
@@ -56,6 +57,22 @@ func (cer *Certificate) registerCertificatePreCheck(registerCertificate *dto.Reg
 		return false, err
 	}
 
+
+	if len(registerCertificate.IssuerAlgorithm) == 0 || isBlankCharacter(registerCertificate.IssuerAlgorithm) {
+		return false, errors.New("registerCertificate IssuerAlgorithm can't be empty")
+	}
+
+	if len(registerCertificate.IssuerSignature) == 0 || isBlankCharacter(registerCertificate.IssuerSignature) {
+		return false, errors.New("registerCertificate IssuerSignature can't be empty")
+	}
+
+	if len(registerCertificate.SubjectAlgorithm) == 0 || isBlankCharacter(registerCertificate.SubjectAlgorithm) {
+		return false, errors.New("registerCertificate SubjectAlgorithm can't be empty")
+	}
+
+	if len(registerCertificate.SubjectSignature) == 0 || isBlankCharacter(registerCertificate.SubjectSignature) {
+		return false, errors.New("registerCertificate SubjectSignature can't be empty")
+	}
 	return true, nil
 }
 
@@ -83,9 +100,13 @@ func (cer *Certificate) registerCertificatePreCheck(registerCertificate *dto.Reg
   Call permissions: 只有信任锚地址可以调用
 */
 func (cer *Certificate) RegisterCertificate(signTxParams *SysTxParams, registerCertificate *dto.RegisterCertificate) (string, error) {
-	ok, err := cer.registerCertificatePreCheck(registerCertificate)
+	ok, err := cer.registerCertificatePreCheck(*registerCertificate)
 	if !ok {
 		return "", err
+	}
+
+	if utils.Has0xPrefix(registerCertificate.SubjectPublicKey){
+		registerCertificate.SubjectPublicKey = registerCertificate.SubjectPublicKey[2:]
 	}
 
 	// registerCertificate is a struct we need to use the components.

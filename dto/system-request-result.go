@@ -135,6 +135,9 @@ func (pointer *SystemRequestResult) ToCertificateInfo() (*CertificateInfo, error
 
 	marshal, err := json.Marshal(result)
 
+	// for k,v := range result{
+	// 	fmt.Printf("%s , %v , %s \n", k, v, reflect.TypeOf(v))
+	// }
 	if err != nil {
 		return nil, err
 	}
