@@ -13,16 +13,17 @@ import (
 )
 
 const (
-	bid = "did:bid:c117c1794fc7a27bd301ae52"
+	bid = "did:bid:EFTVcqqKyFR17jfPxqwEtpmRpbkvSs"
 	// 53位的字符
-	publicKeyTest              = "16Uiu2HAmT5Fb81HeCsZGU4rRzNQR8YDtuGMuhacdRcYsxqRrEhFt"
+	publicKeyTest              = "16Uiu2HAkwviNXPoPHBkZxpg8nURQPiNVeCB9HrocfhXTRCs8j34z"
 	isSM2PeerCertificate       = false
 	passwordPeerCertificate    = "teleinfo"
-	testAddressPeerCertificate = "did:bid:6cc796b8d6e2fbebc9b3cf9e"
+	testAddressPeerCertificate = "did:bid:EFTVcqqKyFR17jfPxqwEtpmRpbkvSs"
+	testAddressPeerCertificateFile = "../resources/superNodeKeyStore/UTC--2020-08-20T05-28-39.403642600Z--did-bid-EFTVcqqKyFR17jfPxqwEtpmRpbkvSs"
 )
 
 func TestPeerRegisterCertificate(t *testing.T) {
-	var connection = bif.NewBif(providers.NewHTTPProvider(resources.IP55+":"+resources.Port, 10, false))
+	var connection = bif.NewBif(providers.NewHTTPProvider(resources.IP+":"+resources.Port, 10, false))
 	_, err := connection.Core.GetGenerator()
 	if err != nil {
 		t.Error(err)
@@ -30,7 +31,7 @@ func TestPeerRegisterCertificate(t *testing.T) {
 	}
 
 	// keyFileData 还可以进一步校验
-	keyFileData, err := ioutil.ReadFile("../resources/superNodeKeyStore/UTC--2020-07-07T10-47-32.962000000Z--did-bid-6cc796b8d6e2fbebc9b3cf9e")
+	keyFileData, err := ioutil.ReadFile(testAddressPeerCertificateFile)
 	if err != nil {
 		t.Error(err)
 		t.FailNow()
@@ -46,11 +47,15 @@ func TestPeerRegisterCertificate(t *testing.T) {
 	sysTxParams.KeyFileData = keyFileData
 	sysTxParams.GasPrice = big.NewInt(35)
 	sysTxParams.Gas = 2000000
+	sysTxParams.Version = 1
+
+
 	peerCer := connection.System.NewPeerCertificate()
 
 	registerCertificateInfo := new(dto.RegisterCertificateInfo)
 	registerCertificateInfo.Id = bid
-	registerCertificateInfo.Apply = bid
+	// todo: 这个链是有问题的，因为其判断条件的问题
+	registerCertificateInfo.Apply = "did:bid:590ed37615bdfefa496224c7"
 	registerCertificateInfo.PublicKey = publicKeyTest
 	registerCertificateInfo.NodeName = "testTELE"
 	registerCertificateInfo.NodeType = 0
@@ -63,7 +68,7 @@ func TestPeerRegisterCertificate(t *testing.T) {
 	// 注册的ID（地址） 对应的keystore文件的密码
 	idPassword := "teleinfo"
 	// 注册的ID（地址）对应的keystore文件
-	idKeyFileData, err := ioutil.ReadFile("../resources/superNodeKeyStore/UTC--2020-07-07T10-47-38.717000000Z--did-bid-c117c1794fc7a27bd301ae52")
+	idKeyFileData, err := ioutil.ReadFile(testAddressPeerCertificateFile)
 	if err != nil {
 		t.Error(err)
 		t.FailNow()
@@ -85,7 +90,7 @@ func TestPeerRegisterCertificate(t *testing.T) {
 }
 
 func TestPeerRevokedCertificate(t *testing.T) {
-	var connection = bif.NewBif(providers.NewHTTPProvider(resources.IP55+":"+resources.Port, 10, false))
+	var connection = bif.NewBif(providers.NewHTTPProvider(resources.IP+":"+resources.Port, 10, false))
 	chainId, err := connection.Core.GetChainId()
 	if err != nil {
 		t.Log(err)
@@ -99,7 +104,7 @@ func TestPeerRevokedCertificate(t *testing.T) {
 	}
 
 	// keyFileData 还可以进一步校验
-	keyFileData, err := ioutil.ReadFile("../resources/superNodeKeyStore/UTC--2020-07-07T10-47-32.962000000Z--did-bid-6cc796b8d6e2fbebc9b3cf9e")
+	keyFileData, err := ioutil.ReadFile(testAddressPeerCertificateFile)
 	if err != nil {
 		t.Error(err)
 		t.FailNow()
@@ -117,6 +122,7 @@ func TestPeerRevokedCertificate(t *testing.T) {
 	sysTxParams.Gas = 2000000
 	sysTxParams.Nonce = nonce.Uint64()
 	sysTxParams.ChainId = chainId
+	sysTxParams.Version = 1
 
 	peerCer := connection.System.NewPeerCertificate()
 	transactionHash, err := peerCer.RevokedCertificate(sysTxParams, bid)
@@ -128,7 +134,7 @@ func TestPeerRevokedCertificate(t *testing.T) {
 }
 
 func TestPeerGetPeriod(t *testing.T) {
-	var connection = bif.NewBif(providers.NewHTTPProvider(resources.IP55+":"+resources.Port, 10, false))
+	var connection = bif.NewBif(providers.NewHTTPProvider(resources.IP+":"+resources.Port, 10, false))
 	_, err := connection.Core.GetGenerator()
 	if err != nil {
 		t.Error(err)
@@ -146,7 +152,7 @@ func TestPeerGetPeriod(t *testing.T) {
 }
 
 func TestPeerGetActive(t *testing.T) {
-	var connection = bif.NewBif(providers.NewHTTPProvider(resources.IP55+":"+resources.Port, 10, false))
+	var connection = bif.NewBif(providers.NewHTTPProvider(resources.IP+":"+resources.Port, 10, false))
 	_, err := connection.Core.GetGenerator()
 
 	if err != nil {
@@ -165,7 +171,7 @@ func TestPeerGetActive(t *testing.T) {
 }
 
 func TestGetPeerCertificate(t *testing.T) {
-	var connection = bif.NewBif(providers.NewHTTPProvider(resources.IP55+":"+resources.Port, 10, false))
+	var connection = bif.NewBif(providers.NewHTTPProvider(resources.IP+":"+resources.Port, 10, false))
 	_, err := connection.Core.GetGenerator()
 
 	if err != nil {
@@ -184,7 +190,7 @@ func TestGetPeerCertificate(t *testing.T) {
 }
 
 func TestGetPeerCertificateIdList(t *testing.T) {
-	var connection = bif.NewBif(providers.NewHTTPProvider(resources.IP55+":"+resources.Port, 10, false))
+	var connection = bif.NewBif(providers.NewHTTPProvider(resources.IP+":"+resources.Port, 10, false))
 	_, err := connection.Core.GetGenerator()
 
 	if err != nil {
