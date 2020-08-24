@@ -1,4 +1,4 @@
-** bif-go-SDK接口说明**
+**bif-go-SDK接口说明**
 
 **简介**：bif-go-SDK系统合约说明
 
