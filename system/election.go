@@ -10,12 +10,6 @@ import (
 
 const (
 	ElectionContractAddr = "did:bid:ZFT6dswwQWN63BF8pup729HuxLTRhy"
-	// OneDay            = int64(24) * 3600
-	// VoteOrProxyOneDay = OneDay
-	// VoteOrProxyOneDay = 60
-	// oneWeek = OneDay * 7
-	// OneYear = OneDay * 365 //代币增发周期 一年
-	// year    = 1559318400   // 2019-06-01 00:00:00
 )
 
 // todo:这几种错误对应的判断，需要填入前置判断
@@ -163,7 +157,7 @@ func (e *Election) UnRegisterWitness(signTxParams *SysTxParams) (string, error) 
   	- candidateAddress: string，候选人的地址
 
   Returns:
-  	- *dto.Candidate
+  	- dto.Candidate
 		Owner           string       `json:"owner"`           // 候选人地址
 		Name            string       `json:"name"`            // 候选人名称
 		Active          bool         `json:"active"`          // 当前是否是候选人
@@ -171,7 +165,7 @@ func (e *Election) UnRegisterWitness(signTxParams *SysTxParams) (string, error) 
 		VoteCount       *hexutil.Big `json:"voteCount"`       // 收到的票数
 		TotalBounty     *hexutil.Big `json:"totalBounty"`     // 总奖励金额
 		ExtractedBounty *hexutil.Big `json:"extractedBounty"` // 已提取奖励金额
-		LastExtractTime *hexutil.Big `json:"lastExtractTime"` // 上次提权时间
+		LastExtractTime uint64       `json:"lastExtractTime"` // 上次提权时间
 		Website         string       `json:"website"`         // 见证人网站
 	- error
 
@@ -370,18 +364,18 @@ func (e *Election) CancelProxy(signTxParams *SysTxParams) (string, error) {
 	CN - 设置代理
   Params:
   	- signTxParams *SysTxParams 系统合约构造所需参数
-	- proxy: string，???
+	- proxy: string，是个did的地址
 
   Returns:
   	- string, 交易哈希(transactionHash)，如果交易尚不可用，则为零哈希。
 	- error
 
   Call permissions: ？？？
-  todo:需要前置判断proxy的合法性，proxy的特点
 */
 func (e *Election) SetProxy(signTxParams *SysTxParams, proxy string) (string, error) {
-	if len(proxy) == 0 || isBlankCharacter(proxy) {
-		return "", errors.New("proxy can't be empty or blank character")
+	// todo:加上proxy是否与签名方或者发送方的地址是否相同的判断
+	if !isValidHexAddress(proxy) {
+		return "", errors.New("proxy is not valid bid")
 	}
 
 	// encoding

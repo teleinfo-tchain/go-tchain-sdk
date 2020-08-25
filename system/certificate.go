@@ -37,7 +37,6 @@ func (sys *System) NewCertificate() *Certificate {
 	return cer
 }
 
-// TODO: 后续需要加上 IssuerAlgorithm  IssuerSignature SubjectAlgorithm  SubjectSignature 的检测
 func (cer *Certificate) registerCertificatePreCheck(registerCertificate dto.RegisterCertificate) (bool, error) {
 	if !isValidHexAddress(registerCertificate.Id) {
 		return false, errors.New("registerCertificate Id is not valid bid")
@@ -83,15 +82,15 @@ func (cer *Certificate) registerCertificatePreCheck(registerCertificate dto.Regi
   Params:
   	- signTxParams *SysTxParams 系统合约构造所需参数
 	- registerCertificate:  The registerCertificate object(*dto.RegisterCertificate)
-		Id               string //个人可信证书bid
-		Context          string //证书上下文环境，随便一个字符串，不验证
-		Subject          string //证书接收者的bid，证书是颁给谁的
-		Period           uint64 //证书有效期，以年为单位的整型
+		Id               string // 个人可信证书bid
+		Context          string // 证书上下文环境，随便一个字符串，不验证
+		Subject          string // 证书接收者的bid，证书是颁给谁的
+		Period           uint64 // 证书有效期，以年为单位的整型
 		IssuerAlgorithm  string // 颁发者签名算法，字符串
-		IssuerSignature  string //颁发者签名值，16进制字符串
+		IssuerSignature  string // 颁发者签名值，16进制字符串
 		SubjectPublicKey string // 接收者公钥，16进制字符串
-		SubjectAlgorithm string //接收者签名算法，字符串
-		SubjectSignature string //接收者签名值，16进制字符串
+		SubjectAlgorithm string // 接收者签名算法，字符串
+		SubjectSignature string // 接收者签名值，16进制字符串
 
   Returns:
   	- string, 交易哈希(transactionHash)，如果交易尚不可用，则为零哈希。
@@ -253,15 +252,15 @@ func (cer *Certificate) GetActive(id string) (bool, error) {
   	- id: string,个人可信证书bid
 
   Returns:
-  	- *dto.CertificateInfo
-		Id             string   //凭证的hash
-		Context        string   //证书所属上下文环境
-		Issuer         string   //信任锚的bid
-		Subject        string   //证书拥有者地址
-		IssuedTime     *big.Int //颁发时间
-		Period         uint64   //有效期
-		IsEnable       bool     //true 凭证有效，false 凭证已撤销
-		RevocationTime *big.Int //吊销时间
+  	- dto.CertificateInfo
+		Id             string // 凭证的hash
+		Context        string // 证书所属上下文环境
+		Issuer         string // 信任锚的bid
+		Subject        string // 证书拥有者地址
+		IssuedTime     uint64 // 颁发时间
+		Period         uint64 // 有效期
+		IsEnable       bool   // true 凭证有效，false 凭证已撤销
+		RevocationTime uint64 // 吊销时间
 	- error
 
   Call permissions:
@@ -302,11 +301,11 @@ func (cer *Certificate) GetCertificate(id string) (dto.CertificateInfo, error) {
   	- id: string,个人可信证书bid
 
   Returns:
-  	- *dto.IssuerSignature
-		Id        string //凭证ID
+  	- dto.IssuerSignature
+		Id        string // 凭证ID
 		PublicKey string // 签名公钥
-		Algorithm string //签名算法
-		Signature string //签名内容
+		Algorithm string // 签名算法
+		Signature string // 签名内容
 	- error
 
   Call permissions: Anyone
@@ -347,7 +346,7 @@ func (cer *Certificate) GetIssuer(id string) (dto.IssuerSignature, error) {
   	- id: string,个人可信证书bid
 
   Returns:
-  	- *dto.SubjectSignature
+  	- dto.SubjectSignature
 		Id        string //凭证ID
 		PublicKey string // 签名公钥
 		Algorithm string //签名算法

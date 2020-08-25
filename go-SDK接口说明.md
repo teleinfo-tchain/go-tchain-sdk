@@ -42,26 +42,30 @@ dpos_test.go            | dpos属性单元测试
     1 (解密keyStore) -->2(本地构造交易并签署) -->3(发送链上) -->4(获取交易hash) -->5(根据hash判断执行结果)
     
     type SysTxParams struct {
-    	IsSM2       bool     // 私钥生成是否使用国密，true为国密；false为非国密
-    	Password    string   // 解密私钥的密码
-    	KeyFileData []byte   // keystore文件内容
-    	GasPrice    *big.Int // 交易的gas价格，默认是网络gas价格的平均值
-    	Gas         uint64   // 交易可使用的gas，未使用的gas会退回
-    	Nonce       uint64   // 从该账户发起交易的Nonce值
-    	ChainId     *big.Int // 链的ChainId
+    	From        string   // 交易的发起方，与私钥对应的地址可以相同也可不同(选填，如果为空则填写与私钥对应的地址)
+        IsSM2       bool     // 私钥生成是否使用国密，true为国密；false为非国密
+        Password    string   // 解密私钥的密码
+        KeyFileData []byte   // keystore文件内容
+        GasPrice    *big.Int // 交易的gas价格，默认是网络gas价格的平均值
+        Gas         uint64   // 交易可使用的gas，未使用的gas会退回
+        Nonce       uint64   // 从该账户发起交易的Nonce值
+        ChainId     uint64   // 链的ChainId
+        Version     uint64
     }
     
     结构体构造（传参）说明
     
-    | 参数名称      | 类型      | 是否必填描述   | 描述                                               |
+    | 参数名称     | 类型      | 是否必填描述   | 描述                                               |
     | ------------| ---------| -------------| ---------------------------------------------------|
+    | From        | string   | 否           | （选填）交易的发起方，与私钥对应的地址可以相同也可不同 |
     | IsSM2       | bool     | 是           | 私钥生成是否使用国密，true为国密；false为非国密；用于解密私钥 |
     | Password    | string   | 是           | 解密私钥的密码（keyStore文件生成时的加密密码）|
     | KeyFileData | []byte   | 是           | keyStore的内容 |
     | GasPrice    | *big.Int | 否           | （选填）交易的gas价格，默认是网络gas价格的平均值   |
     | Gas         | uint64   | 是           | 交易可使用的gas，未使用的gas会退回 |
     | Nonce       | uint64   | 否           | （选填）从该账户发起交易的Nonce值   |
-    | ChainId     | *big.Int | 否           | （选填）链的ChainId |
+    | ChainId     | uint64   | 否           | （选填）链的ChainId |
+    | Version     | uint64   | 否           | 暂定为1 |
  
 ### 3) 请求示例
   
@@ -74,18 +78,28 @@ dpos_test.go            | dpos属性单元测试
     func TestRegisterCertificate(t *testing.T) {
         // 初始化bif
     	var connection = bif.NewBif(providers.NewHTTPProvider(resources.IP+":"+resources.Port, 10, false))
-    	// 获取chainId
-    	chainId, err := connection.Core.GetChainId()
-    	if err != nil {
-    		t.Log(err)
-    		t.FailNow()
-    	}
-        // 获取nonce
-    	nonce, err := connection.Core.GetTransactionCount(testAddress, block.LATEST)
-    	if err != nil {
-    		t.Log(err)
-    		t.FailNow()
-    	}
+        	chainId, err := connection.Core.GetChainId()
+        	if err != nil {
+        		t.Log(err)
+        		t.FailNow()
+        	}
+        
+        nonce, err := connection.Core.GetTransactionCount(testAddressCertificate, block.LATEST)
+        if err != nil {
+            t.Log(err)
+            t.FailNow()
+        }
+    
+        // keyFileData 还可以进一步校验
+        keyFileData, err := ioutil.ReadFile(testAddressCertificateFile)
+        if err != nil {
+            t.Error(err)
+            t.FailNow()
+        }
+        if len(keyFileData) == 0 {
+            t.Errorf("keyFileData can't be empty")
+            t.FailNow()
+        }
         
         // sysTxParams构造
     	sysTxParams := new(system.SysTxParams)
@@ -103,20 +117,21 @@ dpos_test.go            | dpos属性单元测试
     	sysTxParams.Nonce = nonce.Uint64()
     	// （选填）链的ChainId，可以不写
     	sysTxParams.ChainId = chainId
+    	sysTxParams.Version = 1
     
     	cer := connection.System.NewCertificate()
         
         // 证书注册由于参数很多，构造一个结构体，参数内容不太清楚
     	registerCertificate := new(dto.RegisterCertificate)
-    	registerCertificate.Id = utils.StringToAddress(testAddress).String()
-    	registerCertificate.Context = "context_test"
-    	registerCertificate.Subject = "did:bid:6cc796b8d6e2fbebc9b3cf9e"
-    	registerCertificate.Period = 3
-    	registerCertificate.IssuerAlgorithm = ""
-    	registerCertificate.IssuerSignature = ""
-    	registerCertificate.SubjectPublicKey = ""
-    	registerCertificate.SubjectAlgorithm = ""
-    	registerCertificate.SubjectSignature = ""
+    	registerCertificate.Id = personCertificate
+        registerCertificate.Context = "test context"
+        registerCertificate.Subject = personCertificate
+        registerCertificate.Period = 1
+        registerCertificate.IssuerAlgorithm = "test"
+        registerCertificate.IssuerSignature = "test"
+        registerCertificate.SubjectPublicKey = personCertificatePublicKey
+        registerCertificate.SubjectAlgorithm = "test"
+        registerCertificate.SubjectSignature = "test"
     	// registerCertificate
     	registerCertificateHash, err := cer.RegisterCertificate(sysTxParams, registerCertificate)
     	if err != nil {
@@ -223,49 +238,51 @@ dpos_test.go            | dpos属性单元测试
 
 ##### 1） 如果是core的接口，参考core模块，其单元测试在 ../src/bif-sdk-go/test/core
 
-##### 2） 涉及到账户生成和解密的参照account模块，其单元测试在 ../src/bif-sdk-go/test/account
-
+##### 2） 涉及到账户生成和解密的参照account模块，其单元测试在 ../src/bif-sdk-go/test/account,  
+    账户相关的操作在keyManager.go, 如果需要生成keyStore文件，用GenerateKeyStore;GetPrivateKeyFromFile可以从文件导出私钥；
+    PrivateKeyToKeyStoreFile可以将私钥变为keyStore文件存储；  GetPublicKeyFromFile从keyStore文件中获取公钥；  CheckPublicKeyToAccount查看公钥是否与账户匹配
+ 
 ## 1. 节点可信合约
 ### 1)  GetActive(id string) (bool, error)
 ```
-  GetActive:
-   	EN -
-	CN - 查看证书是否有效
-  Params:
-  	- id: string，节点证书的bid
-
-  Returns:
-  	- bool，true可用，false不可用
-	- error
-
-  Call permissions: Anyone
+   GetActive:
+    EN -
+  	CN - 查看证书是否有效
+    Params:
+    	- id: string，节点证书的bid
+  
+    Returns:
+    	- bool，true可用，false不可用
+  	- error
+  
+    Call permissions: Anyone
 ```
 
 ### 2)  GetPeerCertificate(id string) (*dto.PeerCertificate, error)
 ```
   GetPeerCertificate:
-   	EN -
-	CN - 查看证书的信息
-  Params:
-  	- id: string，节点证书的bid
-
-  Returns:
-  	- *dto.PeerCertificate
-		Id          string   `json:"id"`          //唯一索引
-		Issuer      string   `json:"issuer"`      //颁发者地址
-		Apply       string   `json:"apply"`       // 申请人bid
-		PublicKey   string   `json:"publicKey"`   //节点公钥
-		NodeName    string   `json:"nodeName"`    //节点名称
-		Signature   string   `json:"signature"`   //节点签名内容
-		NodeType    uint64   `json:"nodeType"`    //节点类型0企业，1个人
-		CompanyName string   `json:"companyName"` //公司名称
-		CompanyCode string   `json:"companyCode"` //公司信用代码
-		IssuedTime  *big.Int `json:"issuedTime"`  //颁发时间
-		Period      uint64   `json:"period"`      //有效期
-		IsEnable    bool     `json:"isEnable"`    //true 凭证有效，false 凭证已撤销
-	- error
-
-  Call permissions: Anyone
+    EN -
+  	CN - 查看证书的信息
+    Params:
+    	- id: string，节点证书的bid
+  
+    Returns:
+    	- *dto.PeerCertificate
+  		Id          string   `json:"id"`          //唯一索引
+  		Issuer      string   `json:"issuer"`      //颁发者地址
+  		Apply       string   `json:"apply"`       //申请人bid
+  		PublicKey   string   `json:"publicKey"`   //节点公钥
+  		NodeName    string   `json:"nodeName"`    //节点名称
+  		Signature   string   `json:"signature"`   //节点签名内容
+  		NodeType    uint64   `json:"nodeType"`    //节点类型0企业，1个人
+  		CompanyName string   `json:"companyName"` //公司名称
+  		CompanyCode string   `json:"companyCode"` //公司信用代码
+  		IssuedTime  *big.Int `json:"issuedTime"`  //颁发时间
+  		Period      uint64   `json:"period"`      //有效期
+  		IsEnable    bool     `json:"isEnable"`    //true 凭证有效，false 凭证已撤销
+  	- error
+  
+    Call permissions: Anyone
 ```
 
 ### 3)  GetPeerCertificateIdList(id string) ([]string, error)
@@ -274,7 +291,7 @@ dpos_test.go            | dpos属性单元测试
   	EN - Get applied certificates by bid
 	CN - 根据节点可信证书申请人的bid获取申请的证书列表
  Params:
- 	- id: string，节点证书的bid
+ 	- id: string，节点可信证书申请人（Apply）bid
 
  Returns:
  	- []string, 申请人申请的证书列表
@@ -306,18 +323,18 @@ dpos_test.go            | dpos属性单元测试
   Params:
   	- signTxParams *SysTxParams 系统合约构造所需参数
 	- registerCertificate:  *dto.RegisterCertificateInfo，包含可信证书的信息
-		Id          string //节点证书的bid,，必须和public_key对应
-		Apply       string
-		PublicKey   string // 53个字符的公钥
+		Id          string // 节点证书的bid，必须和public_key对应，索引
+		Apply       string // 申请人的bid（与Id可以相同，可以不同）
+		PublicKey   string // 53个字符的公钥，也就是p2p节点id的形式
 		NodeName    string // 节点名称，不含敏感词的字符串
-		MessageSha3 string // 消息sha3后的16进制字符串
+		MessageSha3 string // 消息sha3后的16进制字符串，用于本地签名和链上验证签名，该字段不会被链保存
 		Signature   string // 对上一个字段消息的签名，16进制字符串
 		NodeType    uint64 // 节点类型，0企业，1个人
 		Period      uint64 // 证书有效期，以年为单位的整型
-		IP          string // ip
-		Port        uint64 // port
-		CompanyName string // 公司名（如果是个人，则是个人姓名）
-		CompanyCode string // 公司代码
+		IP          string // 节点间互连的ip
+		Port        uint64 // 节点间互连的端口
+		CompanyName string // 公司名（如果是个人，则是个人姓名），不含敏感词的字符串
+		CompanyCode string // 公司代码，不含敏感词的字符串
 
   Returns:
   	- string, 交易哈希(transactionHash)，如果交易尚不可用，则为零哈希。
@@ -345,89 +362,93 @@ dpos_test.go            | dpos属性单元测试
 ## 2. did文档合约
 ### 1)   AddAuth(signTxParams *SysTxParams, id string, auth string) (string, error)
 ```
-AddAuth:
+  AddAuth:
    	EN -
 	CN -
   Params:
-  	-
-  	-
+  	- signTxParams *SysTxParams 系统合约构造所需参数
+	- id: string      bid
+	- auth: string,  权限(随机字符串)
 
   Returns:
-  	-
+	- string, transactionHash，32 Bytes，交易哈希，如果交易尚不可用，则为零哈希
 	- error
 
-  Call permissions: ??
+  Call permissions: 权限为all、update
 ```
 
 ### 2)   AddExtra(signTxParams *SysTxParams, id string, extra string) (string, error)
 ```
-AddExtra:
+  AddExtra:
    	EN -
 	CN - 添加用户的基本信息
   Params:
   	- signTxParams *SysTxParams 系统合约构造所需参数
 	- id: string, bid
-	- extra: string, ??
+	- extra: string, 随机字符串
 
   Returns:
   	- string, transactionHash，32 Bytes，交易哈希，如果交易尚不可用，则为零哈希
 	- error
 
-  Call permissions: ??
+  Call permissions: publicAuth权限为all、update
 ```
 
 ### 3)   AddProof(signTxParams *SysTxParams, id string, proofType string, proofCreator string, proofSign string) (string, error)
 ```
- AddProof:
+  AddProof:
    	EN -
 	CN - 增加证明
   Params:
   	- signTxParams *SysTxParams 系统合约构造所需参数
 	- id: string      bid
-	- proofType: string, ??
-	- proofCreator: string, ??
-	- proofSign: string, ??
+	- proofType: string, 证书类型（随机字符串）
+	- proofCreator: string, 证书创建人（随机字符串）
+	- proofSign: string, 证书的签名（随机字符串）
 
   Returns:
   	- string, transactionHash，32 Bytes，交易哈希，如果交易尚不可用，则为零哈希
 	- error
 
-  Call permissions: ??
+  Call permissions: 权限为all、update
 ```
 
 ### 4)   AddPublic(signTxParams *SysTxParams, id string, publicType string, publicAuth string, publicKey string) (string, error)
 ```
- AddPublic:
+  AddPublic:
    	EN -
 	CN - 增加用户did身份认证
   Params:
   	- signTxParams *SysTxParams 系统合约构造所需参数
 	- id: string      bid
-	- publicType: string, 公钥类型（secp256k1、SM2）
-	- publicAuth: string, 公钥权限（all、update、ban）
-	- publicKey: string,  公钥（十六进制的字符串）
+	- publicType: string, 公钥类型（随机字符串）
+	- publicAuth: string, 公钥权限（通常用all, update, ban）
+	- publicKey: string,  公钥（十六进制的字符串(130或带0x前缀的132)）
 
   Returns:
   	- string, transactionHash，32 Bytes，交易哈希，如果交易尚不可用，则为零哈希
 	- error
 
-  Call permissions: ？？
+  Call permissions: 权限为`all`
 ```
 
 ### 5)   AddService(signTxParams *SysTxParams, id string, serviceId string, serviceType string, serviceEndpoint string) (string, error)
 ```
- AddService:
+  AddService:
    	EN -
 	CN -
   Params:
-  	-
-  	-
+  	- signTxParams *SysTxParams 系统合约构造所需参数
+	- id: string             bid地址
+	- serviceId: string		 bid地址
+	- serviceType: string,  服务类型(随机字符串)
+	- serviceEndpoint: string, 服务url(随机字符串)
 
   Returns:
-  	-
+  	- string, transactionHash，32 Bytes，交易哈希，如果交易尚不可用，则为零哈希
 	- error
 
-  Call permissions: Anyone
+  Call permissions: 权限为all、update
 ```
 
 ### 6)   DelAuth(signTxParams *SysTxParams, id string, auth string) (string, error)
@@ -436,14 +457,15 @@ AddExtra:
    	EN -
 	CN -
   Params:
-  	-
-  	-
+  	- signTxParams *SysTxParams 系统合约构造所需参数
+	- id: string      bid
+	- auth: string,  权限(随机字符串)
 
   Returns:
-  	-
+  	- string, transactionHash，32 Bytes，交易哈希，如果交易尚不可用，则为零哈希
 	- error
 
-  Call permissions: ??
+  Call permissions: 权限为all、update
 ```
 
 ### 7)   DelExtra(signTxParams *SysTxParams, id string) (string, error)
@@ -459,7 +481,7 @@ AddExtra:
   	- string, transactionHash，32 Bytes，交易哈希，如果交易尚不可用，则为零哈希
 	- error
 
-  Call permissions: Anyone
+  Call permissions: publicAuth权限为all、update
 ```
 
 ### 8)   DelProof(signTxParams *SysTxParams, id string) (string, error)
@@ -475,7 +497,7 @@ AddExtra:
   	- string, transactionHash，32 Bytes，交易哈希，如果交易尚不可用，则为零哈希
 	- error
 
-  Call permissions: ？？
+  Call permissions: 权限为all、update
 ```
 
 ### 9)   DelPublic(signTxParams *SysTxParams, id string, publicKey string) (string, error)
@@ -486,13 +508,13 @@ AddExtra:
   Params:
   	- signTxParams *SysTxParams 系统合约构造所需参数
 	- id: string      bid
-	- publicKey: string,   公钥
+	- publicKey: string,   公钥（十六进制的字符串(130或带0x前缀的132)）
 
   Returns:
   	- string, transactionHash，32 Bytes，交易哈希，如果交易尚不可用，则为零哈希
 	- error
 
-  Call permissions: ??
+  Call permissions: 权限为`all`
 ```
 
 ### 10)  DelService(signTxParams *SysTxParams, id string, serviceId string) (string, error)
@@ -501,14 +523,15 @@ AddExtra:
    	EN -
 	CN -
   Params:
-  	-
-  	-
+  	- signTxParams *SysTxParams 系统合约构造所需参数
+	- id: string             bid地址
+	- serviceId: string		 bid地址
 
   Returns:
-  	-
+  	- string, transactionHash，32 Bytes，交易哈希，如果交易尚不可用，则为零哈希
 	- error
 
-  Call permissions: Anyone
+  Call permissions: 权限为all、update
 ```
 
 ### 11)  Disable(signTxParams *SysTxParams, id string) (string, error)
@@ -524,7 +547,7 @@ AddExtra:
   	- string, transactionHash，32 Bytes，交易哈希，如果交易尚不可用，则为零哈希
 	- error
 
-  Call permissions: ??
+  Call permissions: 自身调用或者拥有相关权限的其他地址
 ```
 
 ### 12)  Enable(signTxParams *SysTxParams, id string) (string, error)
@@ -540,7 +563,7 @@ AddExtra:
   	- string, transactionHash，32 Bytes，交易哈希，如果交易尚不可用，则为零哈希
 	- error
 
-  Call permissions: ??
+  Call permissions: 自身调用或者拥有相关权限的其他地址
 ```
 
 ### 13)  GetDocument(did string) (*dto.Document, error)
@@ -552,20 +575,22 @@ AddExtra:
 	- did: string，did文档的地址或bidName
 
   Returns:
-  	- *dto.Document
-		Id              utils.Address `json:"id"` // bid
-		Contexts        []byte        `json:"context"`
-		Name            []byte        `json:"name"`            // bid标识符昵称
-		Type            []byte        `json:"type"`            // bid的类型，包括0: 普通用户,1:智能合约以及设备，2: 企业或者组织，BID类型一经设置，永不能变
-		PublicKeys      []byte        `json:"publicKeys"`      // 用户用于身份认证的公钥信息
-		Authentications []byte        `json:"authentications"` // 用户身份认证列表信息
-		Attributes      []byte        `json:"attributes"`      // 用户填写的个人信息值
-		IsEnable        []byte        `json:"is_enable"`       // 该BID是否启用
-		CreateTime      time.Time     `json:"createTime"`
-		UpdateTime      time.Time     `json:"updateTime"`
+  	- dto.Document
+		Id              string       `json:"id"` // bid
+		Contexts        string       `json:"context"`
+		Name            string       `json:"name"`           // bid标识符昵称
+		Type            uint64       `json:"type"`           // bid的类型，包括0：普通用户,1:智能合约以及设备，2：企业或者组织，BID类型一经设置，永不能变
+		PublicKeys      []*PublicKey `json:"publicKey"`      // 用户用于身份认证的公钥信息
+		Authentications []string     `json:"authentication"` // 用户身份认证列表信息
+		Services        []*Service   `json:"service"`        // 用户填写的服务端点信息
+		Proof           *Proof       `json:"proof"`          // 用户填写的证明信息值
+		Extra           string       `json:"extra"`          // 用户填写的备注
+		IsEnable        bool         `json:"isEnable"`       // 该BID是否启用
+		CreateTime      string       `json:"created"`
+		UpdateTime      string       `json:"updated"`
 	- error
 
-  Call permissions: ？？
+  Call permissions: Anyone
 ```
 
 ### 14)  Init(signTxParams *SysTxParams, bidType uint64) (string, error)
@@ -581,7 +606,7 @@ AddExtra:
   	- string, 交易哈希(transactionHash)，如果交易尚不可用，则为零哈希。
 	- error
 
-  Call permissions: ？？
+  Call permissions: 只能初始自己的文档，且只能初始化一次
 ```
 
 ### 15)  IsEnable(did string) (bool, error)
@@ -590,7 +615,7 @@ AddExtra:
    	EN -
 	CN - 查询文档是否可用
   Params:
-  	- did: string，did文档的地址或bidName
+	- did: string，did文档的地址或bidName
 
   Returns:
   	- bool, true可用，false不可用
@@ -613,7 +638,7 @@ AddExtra:
   	- string, 交易哈希(transactionHash)，如果交易尚不可用，则为零哈希。
 	- error
 
-  Call permissions: ？？
+  Call permissions: 权限为`all`
 ```
 
 ## 3. DPoS投票合约
@@ -634,7 +659,7 @@ AddExtra:
 
 ### 2)   CancelVote(signTxParams *SysTxParams) (string, error)
 ```
- CancelVote:
+  CancelVote:
    	EN -
 	CN - 撤销投票
   Params:
@@ -686,7 +711,7 @@ AddExtra:
   	- candidateAddress: string，候选人的地址
 
   Returns:
-  	- *dto.Candidate
+  	- dto.Candidate
 		Owner           string       `json:"owner"`           // 候选人地址
 		Name            string       `json:"name"`            // 候选人名称
 		Active          bool         `json:"active"`          // 当前是否是候选人
@@ -694,7 +719,7 @@ AddExtra:
 		VoteCount       *hexutil.Big `json:"voteCount"`       // 收到的票数
 		TotalBounty     *hexutil.Big `json:"totalBounty"`     // 总奖励金额
 		ExtractedBounty *hexutil.Big `json:"extractedBounty"` // 已提取奖励金额
-		LastExtractTime *hexutil.Big `json:"lastExtractTime"` // 上次提权时间
+		LastExtractTime uint64       `json:"lastExtractTime"` // 上次提权时间
 		Website         string       `json:"website"`         // 见证人网站
 	- error
 
@@ -813,7 +838,7 @@ AddExtra:
 	CN - 设置代理
   Params:
   	- signTxParams *SysTxParams 系统合约构造所需参数
-	- proxy: string，???
+	- proxy: string，是个did的地址
 
   Returns:
   	- string, 交易哈希(transactionHash)，如果交易尚不可用，则为零哈希。
@@ -1106,26 +1131,26 @@ Call permissions: Anyone
   	- anchor: string，信任锚bid
 
   Returns:
-  	- *dto.TrustAnchor
-		Id               string   `json:"id"              gencodec:"required"`   //信任锚BID地址
-		Name             string   `json:"name"            gencodec:"required"`   //信任锚名称
-		Company          string   `json:"company"         gencodec:"required"`   //信任锚所属公司
-		CompanyUrl       string   `json:"company_url"     gencodec:"required"`   //公司网址
-		Website          string   `json:"website"         gencodec:"required"`   //信任锚网址
-		ServerUrl        string   `json:"server_url"      gencodec:"required"`   //服务链接
-		DocumentUrl      string   `json:"document_url"    gencodec:"required"`   //信任锚接口字段文档
-		Email            string   `json:"email"           gencodec:"required"`   //信任锚客服邮箱
-		Desc             string   `json:"desc" gencodec:"required"`              //描述
-		TrustAnchorType  uint64   `json:"type"            gencodec:"required"`   //信任锚类型
-		Status           uint64   `json:"status"          gencodec:"required"`   //服务状态
-		Active           bool     `json:"active"          gencodec:"required"`   //是否是根信任锚
-		TotalBounty      *big.Int `json:"totalBounty"     gencodec:"required"`   //总激励
-		ExtractedBounty  *big.Int `json:"extractedBounty" gencodec:"required"`   //已提取激励
-		LastExtractTime  *big.Int `json:"lastExtractTime" gencodec:"required"`   //上次提取时间
-		VoteCount        *big.Int `json:"vote_count" gencodec:"required"`        //得票数
-		Stake            *big.Int `json:"stake" gencodec:"required"`             //抵押
-		CreateDate       *big.Int `json:"create_date" gencodec:"required"`       //创建时间
-		CertificateCount *big.Int `json:"certificate_count" gencodec:"required"` //证书总数
+  	- dto.TrustAnchor
+		Id               string   `json:"id"              gencodec:"required"`   // 信任锚BID地址
+		Name             string   `json:"name"            gencodec:"required"`   // 信任锚名称
+		Company          string   `json:"company"         gencodec:"required"`   // 信任锚所属公司
+		CompanyUrl       string   `json:"company_url"     gencodec:"required"`   // 公司网址
+		Website          string   `json:"website"         gencodec:"required"`   // 信任锚网址
+		ServerUrl        string   `json:"server_url"      gencodec:"required"`   // 服务链接
+		DocumentUrl      string   `json:"document_url"    gencodec:"required"`   // 信任锚接口字段文档
+		Email            string   `json:"email"           gencodec:"required"`   // 信任锚客服邮箱
+		Desc             string   `json:"desc" gencodec:"required"`              // 描述
+		TrustAnchorType  uint64   `json:"type"            gencodec:"required"`   // 信任锚类型
+		Status           uint64   `json:"status"          gencodec:"required"`   // 服务状态
+		Active           bool     `json:"active"          gencodec:"required"`   // 是否是根信任锚
+		TotalBounty      *big.Int `json:"totalBounty"     gencodec:"required"`   // 总激励
+		ExtractedBounty  *big.Int `json:"extractedBounty" gencodec:"required"`   // 已提取激励
+		LastExtractTime  uint64   `json:"lastExtractTime" gencodec:"required"`   // 上次提取时间
+		VoteCount        *big.Int `json:"vote_count" gencodec:"required"`        // 得票数
+		Stake            *big.Int `json:"stake" gencodec:"required"`             // 抵押
+		CreateDate       uint64   `json:"create_date" gencodec:"required"`       // 创建时间
+		CertificateCount *big.Int `json:"certificate_count" gencodec:"required"` // 证书总数
 	- error
 
   Call permissions: Anyone
@@ -1282,22 +1307,22 @@ GetActive:
 
 ### 2) GetCertificate(id string) (*dto.CertificateInfo, error)
 ```
-GetCertificate:
+  GetCertificate:
    	EN -
 	CN -  查询证书的信息，period和active没有进行逻辑判断
   Params:
   	- id: string,个人可信证书bid
 
   Returns:
-  	- *dto.CertificateInfo
-		Id             string   //凭证的hash
-		Context        string   //证书所属上下文环境
-		Issuer         string   //信任锚的bid
-		Subject        string   //证书拥有者地址
-		IssuedTime     *big.Int //颁发时间
-		Period         uint64   //有效期
-		IsEnable       bool     //true 凭证有效，false 凭证已撤销
-		RevocationTime *big.Int //吊销时间
+  	- dto.CertificateInfo
+		Id             string // 凭证的hash
+		Context        string // 证书所属上下文环境
+		Issuer         string // 信任锚的bid
+		Subject        string // 证书拥有者地址
+		IssuedTime     uint64 // 颁发时间
+		Period         uint64 // 有效期
+		IsEnable       bool   // true 凭证有效，false 凭证已撤销
+		RevocationTime uint64 // 吊销时间
 	- error
 
   Call permissions:
@@ -1305,18 +1330,18 @@ GetCertificate:
 
 ### 3) GetIssuer(id string) (*dto.IssuerSignature, error)
 ```
-GetIssuer:
+  GetIssuer:
    	EN -
 	CN - 查询信任锚信息，证书颁发者的信息
   Params:
   	- id: string,个人可信证书bid
 
   Returns:
-  	- *dto.IssuerSignature
-		Id        string //凭证ID
+  	- dto.IssuerSignature
+		Id        string // 凭证ID
 		PublicKey string // 签名公钥
-		Algorithm string //签名算法
-		Signature string //签名内容
+		Algorithm string // 签名算法
+		Signature string // 签名内容
 	- error
 
   Call permissions: Anyone
@@ -1324,7 +1349,7 @@ GetIssuer:
 
 ### 4) GetPeriod(id string) (uint64, error)
 ```
- GetPeriod:
+  GetPeriod:
    	EN -
 	CN -  查询个人证书的有效期
   Params:
@@ -1339,14 +1364,14 @@ GetIssuer:
 
 ### 5) GetSubject(id string) (*dto.SubjectSignature, error)
 ```
-GetSubject:
+  GetSubject:
    	EN -
 	CN - 查询个人(证书注册的接收者)信息，证书接收者的信息
   Params:
   	- id: string,个人可信证书bid
 
   Returns:
-  	- *dto.SubjectSignature
+  	- dto.SubjectSignature
 		Id        string //凭证ID
 		PublicKey string // 签名公钥
 		Algorithm string //签名算法
@@ -1358,21 +1383,21 @@ GetSubject:
 
 ### 6) RegisterCertificate(signTxParams *SysTxParams, registerCertificate *dto.RegisterCertificate) (string, error)
 ```
-RegisterCertificate:
+  RegisterCertificate:
    	EN -
 	CN - 信任锚颁发证书，如果是根信任锚颁发的证书，则证书接收者可以进行部署合约和大额转账操作
   Params:
   	- signTxParams *SysTxParams 系统合约构造所需参数
 	- registerCertificate:  The registerCertificate object(*dto.RegisterCertificate)
-		Id               string //个人可信证书bid
-		Context          string //证书上下文环境，随便一个字符串，不验证
-		Subject          string //证书接收者的bid，证书是颁给谁的
-		Period           uint64 //证书有效期，以年为单位的整型
+		Id               string // 个人可信证书bid
+		Context          string // 证书上下文环境，随便一个字符串，不验证
+		Subject          string // 证书接收者的bid，证书是颁给谁的
+		Period           uint64 // 证书有效期，以年为单位的整型
 		IssuerAlgorithm  string // 颁发者签名算法，字符串
-		IssuerSignature  string //颁发者签名值，16进制字符串
+		IssuerSignature  string // 颁发者签名值，16进制字符串
 		SubjectPublicKey string // 接收者公钥，16进制字符串
-		SubjectAlgorithm string //接收者签名算法，字符串
-		SubjectSignature string //接收者签名值，16进制字符串
+		SubjectAlgorithm string // 接收者签名算法，字符串
+		SubjectSignature string // 接收者签名值，16进制字符串
 
   Returns:
   	- string, 交易哈希(transactionHash)，如果交易尚不可用，则为零哈希。
@@ -1383,7 +1408,7 @@ RegisterCertificate:
 
 ### 7) RevokedCertificate(signTxParams *SysTxParams, id string) (string, error)
 ```
- RevokedCertificate:
+  RevokedCertificate:
    	EN -
 	CN - 信任锚吊销个人证书
   Params:
@@ -1399,7 +1424,7 @@ RegisterCertificate:
 
 ### 8) RevokedCertificates(signTxParams *SysTxParams) (string, error)
 ```
- RevokedCertificates:
+  RevokedCertificates:
    	EN -
 	CN - 信任锚批量吊销个人证书，把自己颁发的证书全部吊销
   Params:
@@ -1408,27 +1433,13 @@ RegisterCertificate:
   Returns:
   	- string, 交易哈希(transactionHash)，如果交易尚不可用，则为零哈希。
 	- error
+
+  Call permissions: 只有证书颁发者可以调用
 ```
 
 ## 7. 敏感词合约
-### 1) AddWord(signTxParams *SysTxParams, word string) (string, error)
-```
-  AddWord:
-   	EN -
-	CN - 向合约中添加敏感词
-  Params:
-  	- signTxParams *SysTxParams 系统合约构造所需参数
-	- word: string，敏感词
 
-  Returns:
-  	- string, 交易哈希(transactionHash)，如果交易尚不可用，则为零哈希。
-	- error
-
-  Call permissions: 只有监管节点地址可以操作
-```
-
-
-### 2) AddWords(signTxParams *SysTxParams, wordsLi []string) (string, error)
+### 1) AddWords(signTxParams *SysTxParams, wordsLi []string) (string, error)
 ```
   AddWords:
    	EN -
@@ -1444,7 +1455,7 @@ RegisterCertificate:
   Call permissions: 只有监管节点地址可以操作
 ```
 
-### 3) DelWord(signTxParams *SysTxParams, word string) (string, error)
+### 2) DelWord(signTxParams *SysTxParams, word string) (string, error)
 ```
   DelWord:
    	EN -
@@ -1460,7 +1471,7 @@ RegisterCertificate:
   Call permissions: 只有监管节点地址可以操作
 ```
 
-### 4) GetAllWords() ([]string, error)
+### 3) GetAllWords() ([]string, error)
 ```
   GetAllWords:
    	EN -
@@ -1475,7 +1486,7 @@ RegisterCertificate:
   Call permissions: Anyone
 ```
 
-### 5) IsContainWord(word string) (bool, error)
+### 4) IsContainWord(word string) (bool, error)
 ```
   IsContainWord:
    	EN -

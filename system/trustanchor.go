@@ -308,26 +308,26 @@ func (anc *Anchor) ExtractOwnBounty(signTxParams *SysTxParams) (string, error) {
   	- anchor: string，信任锚bid
 
   Returns:
-  	- *dto.TrustAnchor
-		Id               string   `json:"id"              gencodec:"required"`   //信任锚BID地址
-		Name             string   `json:"name"            gencodec:"required"`   //信任锚名称
-		Company          string   `json:"company"         gencodec:"required"`   //信任锚所属公司
-		CompanyUrl       string   `json:"company_url"     gencodec:"required"`   //公司网址
-		Website          string   `json:"website"         gencodec:"required"`   //信任锚网址
-		ServerUrl        string   `json:"server_url"      gencodec:"required"`   //服务链接
-		DocumentUrl      string   `json:"document_url"    gencodec:"required"`   //信任锚接口字段文档
-		Email            string   `json:"email"           gencodec:"required"`   //信任锚客服邮箱
-		Desc             string   `json:"desc" gencodec:"required"`              //描述
-		TrustAnchorType  uint64   `json:"type"            gencodec:"required"`   //信任锚类型
-		Status           uint64   `json:"status"          gencodec:"required"`   //服务状态
-		Active           bool     `json:"active"          gencodec:"required"`   //是否是根信任锚
-		TotalBounty      *big.Int `json:"totalBounty"     gencodec:"required"`   //总激励
-		ExtractedBounty  *big.Int `json:"extractedBounty" gencodec:"required"`   //已提取激励
-		LastExtractTime  *big.Int `json:"lastExtractTime" gencodec:"required"`   //上次提取时间
-		VoteCount        *big.Int `json:"vote_count" gencodec:"required"`        //得票数
-		Stake            *big.Int `json:"stake" gencodec:"required"`             //抵押
-		CreateDate       *big.Int `json:"create_date" gencodec:"required"`       //创建时间
-		CertificateCount *big.Int `json:"certificate_count" gencodec:"required"` //证书总数
+  	- dto.TrustAnchor
+		Id               string   `json:"id"              gencodec:"required"`   // 信任锚BID地址
+		Name             string   `json:"name"            gencodec:"required"`   // 信任锚名称
+		Company          string   `json:"company"         gencodec:"required"`   // 信任锚所属公司
+		CompanyUrl       string   `json:"company_url"     gencodec:"required"`   // 公司网址
+		Website          string   `json:"website"         gencodec:"required"`   // 信任锚网址
+		ServerUrl        string   `json:"server_url"      gencodec:"required"`   // 服务链接
+		DocumentUrl      string   `json:"document_url"    gencodec:"required"`   // 信任锚接口字段文档
+		Email            string   `json:"email"           gencodec:"required"`   // 信任锚客服邮箱
+		Desc             string   `json:"desc" gencodec:"required"`              // 描述
+		TrustAnchorType  uint64   `json:"type"            gencodec:"required"`   // 信任锚类型
+		Status           uint64   `json:"status"          gencodec:"required"`   // 服务状态
+		Active           bool     `json:"active"          gencodec:"required"`   // 是否是根信任锚
+		TotalBounty      *big.Int `json:"totalBounty"     gencodec:"required"`   // 总激励
+		ExtractedBounty  *big.Int `json:"extractedBounty" gencodec:"required"`   // 已提取激励
+		LastExtractTime  uint64   `json:"lastExtractTime" gencodec:"required"`   // 上次提取时间
+		VoteCount        *big.Int `json:"vote_count" gencodec:"required"`        // 得票数
+		Stake            *big.Int `json:"stake" gencodec:"required"`             // 抵押
+		CreateDate       uint64   `json:"create_date" gencodec:"required"`       // 创建时间
+		CertificateCount *big.Int `json:"certificate_count" gencodec:"required"` // 证书总数
 	- error
 
   Call permissions: Anyone
