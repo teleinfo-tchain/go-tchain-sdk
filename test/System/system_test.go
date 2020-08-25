@@ -17,7 +17,7 @@ func TestSystemLogDecode(t *testing.T) {
 	}
 
 	// 0x25b5c30ecb5a089e02c419b71a4d5b9aa50e683f6b7dce6da33b380ba5a10ba6
-	log, err := connection.System.SystemLogDecode("0x869595d3a65598bc997566782a07a8ab5d4b0d59ff754130129cd28531cbb29b")
+	log, err := connection.System.SystemLogDecode("0x8c9f161df23011c0eed343530271e4884f3c8aa58fbcc4c25c08167f19180c2c")
 
 	if err != nil {
 		t.Errorf("err log : %v ", err)

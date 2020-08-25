@@ -11,7 +11,7 @@ import (
 )
 
 func TestGetValidators(t *testing.T) {
-	var connection = bif.NewBif(providers.NewHTTPProvider(resources.IP55+":"+resources.Port, 10, false))
+	var connection = bif.NewBif(providers.NewHTTPProvider(resources.IP+":"+resources.Port, 10, false))
 	// 距离最新区块间隔数超过126会报错，因此测试最新区块
 	blockNumber, err := connection.Core.GetBlockNumber()
 	// fmt.Println("blockNumber is ", blockNumber)
@@ -33,7 +33,7 @@ func TestGetValidators(t *testing.T) {
 }
 
 func TestGetValidatorsAtHash(t *testing.T) {
-	var connection = bif.NewBif(providers.NewHTTPProvider(resources.IP55+":"+resources.Port, 10, false))
+	var connection = bif.NewBif(providers.NewHTTPProvider(resources.IP+":"+resources.Port, 10, false))
 
 	// 距离最新区块间隔数超过126会报错，因此测试最新区块
 	blockNumber, err := connection.Core.GetBlockNumber()
@@ -60,7 +60,7 @@ func TestGetValidatorsAtHash(t *testing.T) {
 }
 
 func TestRoundStateInfo(t *testing.T) {
-	var connection = bif.NewBif(providers.NewHTTPProvider(resources.IP55+":"+resources.Port, 10, false))
+	var connection = bif.NewBif(providers.NewHTTPProvider(resources.IP+":"+resources.Port, 10, false))
 
 	DPoS := connection.System.NewDPoS()
 	roundStateInfo, err := DPoS.RoundStateInfo()
@@ -73,7 +73,7 @@ func TestRoundStateInfo(t *testing.T) {
 }
 
 func TestRoundChangeSetInfo(t *testing.T) {
-	var connection = bif.NewBif(providers.NewHTTPProvider(resources.IP55+":"+resources.Port, 10, false))
+	var connection = bif.NewBif(providers.NewHTTPProvider(resources.IP+":"+resources.Port, 10, false))
 
 	DPoS := connection.System.NewDPoS()
 	roundChangeSetInfo, err := DPoS.RoundChangeSetInfo()
@@ -86,7 +86,7 @@ func TestRoundChangeSetInfo(t *testing.T) {
 }
 
 func TestBacklogs(t *testing.T) {
-	var connection = bif.NewBif(providers.NewHTTPProvider(resources.IP55+":"+resources.Port, 10, false))
+	var connection = bif.NewBif(providers.NewHTTPProvider(resources.IP+":"+resources.Port, 10, false))
 	DPoS := connection.System.NewDPoS()
 	backlogs, err := DPoS.Backlogs()
 

@@ -219,9 +219,7 @@ func (e *Election) GetAllCandidates() ([]dto.Candidate, error) {
 	}
 
 	res, err := pointer.ToElectionCandidates()
-	if err == dto.EMPTYRESPONSE{
-		return nil, errors.New("候选者列表为空")
-	}
+
 	return res,nil
 }
 
@@ -606,7 +604,7 @@ func (e *Election) GetVoter(voterAddress string) (*dto.Voter, error) {
 
   Call permissions: Anyone
 */
-func (e *Election) GetVoterList(voterAddress string) ([]*dto.Voter, error) {
+func (e *Election) GetVoterList(voterAddress string) ([]dto.Voter, error) {
 	if !isValidHexAddress(voterAddress) {
 		return nil, errors.New("voterAddress is not valid bid")
 	}

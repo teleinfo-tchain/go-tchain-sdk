@@ -312,22 +312,18 @@ func (pointer *SystemRequestResult) ToElectionVoter() (*Voter, error) {
 	return voter, err
 }
 
-func (pointer *SystemRequestResult) ToElectionVoterList() ([]*Voter, error) {
+func (pointer *SystemRequestResult) ToElectionVoterList() ([]Voter, error) {
 	if err := pointer.checkResponse(); err != nil {
 		return nil, err
 	}
 
 	resultVoters := (pointer).Result.([]interface{})
-	if len(resultVoters) == 0 {
-		return nil, errors.New("投票人列表为空")
-	}
 
-	voters := make([]*Voter, len(resultVoters))
+	voters := make([]Voter, len(resultVoters))
 
 	for i, v := range resultVoters {
 
 		result := v.(map[string]interface{})
-		fmt.Println(result)
 		if len(result) == 0 {
 			return nil, EMPTYRESPONSE
 		}
@@ -345,7 +341,7 @@ func (pointer *SystemRequestResult) ToElectionVoterList() ([]*Voter, error) {
 			return nil, UNPARSEABLEINTERFACE
 		}
 
-		voters[i] = info
+		voters[i] = *info
 
 	}
 

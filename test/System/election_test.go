@@ -59,7 +59,7 @@ func TestRegisterWitness(t *testing.T) {
 
 	registerWitness := new(dto.RegisterWitness)
 	// 但是需要
-	registerWitness.NodeUrl = "/ip4/172.17.6.55/tcp/44031/p2p/16Uiu2HAm3vYMiiZmikcmGBUaQqX6g74ozASwfT2VPZVMbBRdnFET"
+	registerWitness.NodeUrl = "/ip4/169.254.187.66/tcp/30303/p2p/16Uiu2HAkwviNXPoPHBkZxpg8nURQPiNVeCB9HrocfhXTRCs8j34z"
 	registerWitness.Website = "https://www.tele.com"
 	registerWitness.Name = "test"
 
@@ -157,7 +157,6 @@ func TestGetAllCandidates(t *testing.T) {
 	}
 
 	t.Logf("%#v \n", allCandidates)
-	// t.Logf("%#v \n", allCandidates[0])
 }
 
 func TestVoteWitnesses(t *testing.T) {
@@ -720,5 +719,4 @@ func TestGetVoterList(t *testing.T) {
 	}
 
 	t.Logf("%#v \n", voterList)
-	// t.Logf("%#v \n", voterList[0])
 }
