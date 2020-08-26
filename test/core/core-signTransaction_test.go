@@ -46,10 +46,11 @@ func TestCoreSignTransaction(t *testing.T) {
 	}
 
 	t.Log(txID.Raw)
-	addressTwoHex := hexutil.Encode(utils.FromHex(resources.NewAddrE))
+	// t.Logf("%#v \n", txID.Transaction)
 
-	if txID.Transaction.To != addressTwoHex {
-		t.Errorf(fmt.Sprintf("Expected %s | Got: %s", addressTwoHex, txID.Transaction.To))
+	toAddress := utils.StringToAddress(transaction.To)
+	if txID.Transaction.To != hexutil.Encode(toAddress[:]) {
+		t.Errorf(fmt.Sprintf("Expected %s | Got: %s", transaction.To, txID.Transaction.To))
 		t.FailNow()
 	}
 

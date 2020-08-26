@@ -49,7 +49,7 @@ func (sys *System) NewManager() *Manager {
 */
 func (manager *Manager) Enable(signTxParams *SysTxParams, contractAddress string) (string, error) {
 	if !isValidHexAddress(contractAddress) {
-		return "", errors.New("contractAddress is not valid hex address")
+		return "", errors.New("contractAddress is not valid address")
 	}
 
 	// encoding
@@ -82,7 +82,7 @@ func (manager *Manager) Enable(signTxParams *SysTxParams, contractAddress string
 */
 func (manager *Manager) Disable(signTxParams *SysTxParams, contractAddress string) (string, error) {
 	if !isValidHexAddress(contractAddress) {
-		return "", errors.New("contractAddress is not valid hex address")
+		return "", errors.New("contractAddress is not valid address")
 	}
 
 	// encoding
@@ -116,7 +116,7 @@ func (manager *Manager) Disable(signTxParams *SysTxParams, contractAddress strin
 */
 func (manager *Manager) SetPower(signTxParams *SysTxParams, userAddress string, power uint64) (string, error) {
 	if !isValidHexAddress(userAddress) {
-		return "", errors.New("userAddress is not valid hex address")
+		return "", errors.New("userAddress is not valid address")
 	}
 	if power != 1 && power != 2 && power != 3 && power != 4 && power != 5 && power != 6 {
 		return "", errors.New("power is not illegal")
@@ -175,7 +175,7 @@ func (manager *Manager) GetAllContracts() ([]dto.AllContract, error) {
 */
 func (manager *Manager) IsEnable(contractAddress string) (bool, error) {
 	if !isValidHexAddress(contractAddress) {
-		return false, errors.New("contractAddress is not valid hex address")
+		return false, errors.New("contractAddress is not valid address")
 	}
 
 	params := make([]string, 1)
@@ -206,7 +206,7 @@ func (manager *Manager) IsEnable(contractAddress string) (bool, error) {
 */
 func (manager *Manager) GetPower(userAddress string) (uint64, error) {
 	if !isValidHexAddress(userAddress) {
-		return 0, errors.New("userAddress is not valid hex address")
+		return 0, errors.New("userAddress is not valid address")
 	}
 
 	params := make([]string, 1)

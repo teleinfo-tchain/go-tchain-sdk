@@ -286,10 +286,6 @@ func (cer *Certificate) GetCertificate(id string) (dto.CertificateInfo, error) {
 		return certificate, err
 	}
 
-	if res.Id == ""{
-		return certificate, errors.New("可信证书不存在")
-	}
-
 	return *res, nil
 }
 
@@ -331,10 +327,6 @@ func (cer *Certificate) GetIssuer(id string) (dto.IssuerSignature, error) {
 		return issuerSignature, err
 	}
 
-	if res.Id == ""{
-		return issuerSignature, errors.New("证书颁发者为空")
-	}
-
 	return *res, nil
 }
 
@@ -374,10 +366,6 @@ func (cer *Certificate) GetSubject(id string) (dto.SubjectSignature, error) {
 	res, err := pointer.ToCertificateSubjectSignature()
 	if err != nil{
 		return subjectSignature, err
-	}
-
-	if res.Id == ""{
-		return subjectSignature, errors.New("证书接收者为空")
 	}
 
 	return *res, nil

@@ -2,8 +2,9 @@ package dto
 
 import (
 	"encoding/json"
+	"errors"
+	"fmt"
 	"github.com/bif/bif-sdk-go/utils"
-	"github.com/bif/bif-sdk-go/utils/hexutil"
 	"math/big"
 )
 
@@ -119,7 +120,7 @@ type TrustAnchor struct {
 	Status           uint64   `json:"status"          gencodec:"required"`   // 服务状态
 	Active           bool     `json:"active"          gencodec:"required"`   // 是否是根信任锚
 	TotalBounty      *big.Int `json:"totalBounty"     gencodec:"required"`   // 总激励
-	ExtractedBounty  *big.Int `json:"extractedBounty" gencodec:"required"`   // 已提取激励
+	ExtractedBounty  *big.Int `json:"ExtractedBounty" gencodec:"required"`   // 已提取激励
 	LastExtractTime  uint64   `json:"lastExtractTime" gencodec:"required"`   // 上次提取时间
 	VoteCount        *big.Int `json:"vote_count" gencodec:"required"`        // 得票数
 	Stake            *big.Int `json:"stake" gencodec:"required"`             // 抵押
@@ -131,7 +132,11 @@ func (trustAnchor *TrustAnchor) UnmarshalJSON(data []byte) error {
 	type Alias TrustAnchor
 
 	temp := &struct {
-		// TransactionIndex string `json:"transactionIndex"`
+		TotalBounty      string `json:"totalBounty"`
+		ExtractedBounty  string `json:"extractedBounty"`
+		VoteCount        string `json:"vote_count"`
+		Stake            string `json:"stake"`
+		CertificateCount string `json:"certificate_count"`
 		*Alias
 	}{
 		Alias: (*Alias)(trustAnchor),
@@ -139,6 +144,38 @@ func (trustAnchor *TrustAnchor) UnmarshalJSON(data []byte) error {
 	if err := json.Unmarshal(data, &temp); err != nil {
 		return err
 	}
+
+	totalBounty, success := big.NewInt(0).SetString(temp.TotalBounty[2:], 16)
+	if !success {
+		return errors.New(fmt.Sprintf("Error converting %s to BigInt", temp.TotalBounty))
+	}
+
+	extractedBounty, success := big.NewInt(0).SetString(temp.ExtractedBounty[2:], 16)
+	if !success {
+		return errors.New(fmt.Sprintf("Error converting %s to BigInt", temp.ExtractedBounty))
+	}
+
+	voteCount, success := big.NewInt(0).SetString(temp.VoteCount[2:], 16)
+	if !success {
+		return errors.New(fmt.Sprintf("Error converting %s to BigInt", temp.VoteCount))
+	}
+
+	stake, success := big.NewInt(0).SetString(temp.Stake[2:], 16)
+	if !success {
+		return errors.New(fmt.Sprintf("Error converting %s to BigInt", temp.Stake))
+	}
+
+	certificateCount, success := big.NewInt(0).SetString(temp.CertificateCount[2:], 16)
+	if !success {
+		return errors.New(fmt.Sprintf("Error converting %s to BigInt", temp.CertificateCount))
+	}
+
+	trustAnchor.TotalBounty = totalBounty
+	trustAnchor.ExtractedBounty = extractedBounty
+	trustAnchor.VoteCount = voteCount
+	trustAnchor.Stake = stake
+	trustAnchor.CertificateCount = certificateCount
+
 	return nil
 }
 
@@ -247,7 +284,6 @@ type Service struct {
 }
 
 type Proof struct {
-	// Id         string   `json:"id"`
 	Type       string `json:"type"`
 	CreateTime string `json:"created"`
 	Creator    string `json:"creator"`
@@ -265,13 +301,124 @@ type RegisterWitness struct {
 }
 
 type Candidate struct {
-	Owner           string       `json:"owner"`           // 候选人地址
-	Name            string       `json:"name"`            // 候选人名称
-	Active          bool         `json:"active"`          // 当前是否是候选人
-	Url             string       `json:"url"`             // 节点的URL
-	VoteCount       *hexutil.Big `json:"voteCount"`       // 收到的票数
-	TotalBounty     *hexutil.Big `json:"totalBounty"`     // 总奖励金额
-	ExtractedBounty *hexutil.Big `json:"extractedBounty"` // 已提取奖励金额
-	LastExtractTime uint64       `json:"lastExtractTime"` // 上次提权时间
-	Website         string       `json:"website"`         // 见证人网站
+	Owner           string   `json:"owner"`           // 候选人地址
+	Name            string   `json:"name"`            // 候选人名称
+	Active          bool     `json:"active"`          // 当前是否是候选人
+	Url             string   `json:"url"`             // 节点的URL
+	VoteCount       *big.Int `json:"voteCount"`       // 收到的票数
+	TotalBounty     *big.Int `json:"totalBounty"`     // 总奖励金额
+	ExtractedBounty *big.Int `json:"extractedBounty"` // 已提取奖励金额
+	LastExtractTime uint64   `json:"lastExtractTime"` // 上次提权时间
+	Website         string   `json:"website"`         // 见证人网站
+}
+
+func (candidate *Candidate) UnmarshalJSON(data []byte) error {
+	type Alias Candidate
+
+	temp := &struct {
+		VoteCount       string `json:"voteCount"`
+		TotalBounty     string `json:"totalBounty"`
+		ExtractedBounty string `json:"extractedBounty"`
+		*Alias
+	}{
+		Alias: (*Alias)(candidate),
+	}
+	if err := json.Unmarshal(data, &temp); err != nil {
+		return err
+	}
+
+	totalBounty, success := big.NewInt(0).SetString(temp.TotalBounty[2:], 16)
+	if !success {
+		return errors.New(fmt.Sprintf("Error converting %s to BigInt", temp.TotalBounty))
+	}
+
+	extractedBounty, success := big.NewInt(0).SetString(temp.ExtractedBounty[2:], 16)
+	if !success {
+		return errors.New(fmt.Sprintf("Error converting %s to BigInt", temp.ExtractedBounty))
+	}
+
+	voteCount, success := big.NewInt(0).SetString(temp.VoteCount[2:], 16)
+	if !success {
+		return errors.New(fmt.Sprintf("Error converting %s to BigInt", temp.VoteCount))
+	}
+
+	candidate.VoteCount = voteCount
+	candidate.TotalBounty = totalBounty
+	candidate.ExtractedBounty = extractedBounty
+
+	return nil
+}
+
+type Voter struct {
+	Owner             string   `json:"owner"`             // 投票人的地址
+	IsProxy           bool     `json:"isProxy"`           // 是否是代理人
+	ProxyVoteCount    *big.Int `json:"proxyVoteCount"`    // 收到的代理的票数
+	Proxy             string   `json:"proxy"`             // 该节点设置的代理人
+	LastVoteCount     *big.Int `json:"lastVoteCount"`     // 上次投的票数
+	LastVoteTimeStamp uint64   `json:"lastVoteTimeStamp"` // 上次投票时间戳
+	VoteCandidates    []string `json:"voteCandidates"`    // 投了哪些人
+}
+
+func (voter *Voter) UnmarshalJSON(data []byte) error {
+	type Alias Voter
+
+	temp := &struct {
+		ProxyVoteCount string `json:"proxyVoteCount"`
+		LastVoteCount  string `json:"lastVoteCount"`
+		*Alias
+	}{
+		Alias: (*Alias)(voter),
+	}
+	if err := json.Unmarshal(data, &temp); err != nil {
+		return err
+	}
+
+	proxyVoteCount, success := big.NewInt(0).SetString(temp.ProxyVoteCount[2:], 16)
+	if !success {
+		return errors.New(fmt.Sprintf("Error converting %s to BigInt", temp.ProxyVoteCount))
+	}
+
+	lastVoteCount, success := big.NewInt(0).SetString(temp.LastVoteCount[2:], 16)
+	if !success {
+		return errors.New(fmt.Sprintf("Error converting %s to BigInt", temp.LastVoteCount))
+	}
+
+	voter.ProxyVoteCount = proxyVoteCount
+	voter.LastVoteCount = lastVoteCount
+
+	return nil
+}
+
+type Stake struct {
+	Owner              string   `json:"owner"`              // 抵押代币的所有人
+	StakeCount         *big.Int `json:"stakeCount"`         // 抵押的代币数量
+	LastStakeTimeStamp uint64   `json:"lastStakeTimeStamp"` // 上次抵押时间戳
+}
+
+func (stake *Stake) UnmarshalJSON(data []byte) error {
+	type Alias Stake
+
+	temp := &struct {
+		StakeCount string `json:"stakeCount"`
+		*Alias
+	}{
+		Alias: (*Alias)(stake),
+	}
+	if err := json.Unmarshal(data, &temp); err != nil {
+		return err
+	}
+
+	stakeCount, success := big.NewInt(0).SetString(temp.StakeCount[2:], 16)
+	if !success {
+		return errors.New(fmt.Sprintf("Error converting %s to BigInt", temp.StakeCount))
+	}
+
+	stake.StakeCount = stakeCount
+
+	return nil
+}
+
+type AllContract struct {
+	ContractName string `json:"contractName"` // 用户地址
+	IsEnable     bool   `json:"isEnable"`     // 用户权限,1启用合约，2禁用合约，4授权  // 3=1+2, 5=1+4, 6=2+4, 7=1+2+4 类linux权限管理
 }

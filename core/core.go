@@ -16,7 +16,6 @@ package core
 
 import (
 	"errors"
-	"fmt"
 	"github.com/bif/bif-sdk-go/core/block"
 	"github.com/bif/bif-sdk-go/dto"
 	"github.com/bif/bif-sdk-go/providers"
@@ -462,7 +461,7 @@ func (core *Core) SendRawTransaction(encodedTx string) (string, error) {
 func (core *Core) SignTransaction(transaction *dto.TransactionParameters) (*dto.SignTransactionResponse, error) {
 	params := make([]*dto.RequestTransactionParameters, 1)
 	params[0] = transaction.Transform()
-	fmt.Printf("%#v \n", params[0])
+
 	pointer := &dto.CoreRequestResult{}
 
 	err := core.provider.SendRequest(&pointer, "core_signTransaction", params)

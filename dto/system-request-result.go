@@ -11,30 +11,12 @@ type SystemRequestResult struct {
 	RequestResult
 }
 
-type Voter struct {
-	Owner             string   `json:"owner"`             // 投票人的地址
-	IsProxy           bool     `json:"isProxy"`           // 是否是代理人
-	ProxyVoteCount    *big.Int `json:"proxyVoteCount"`    // 收到的代理的票数
-	Proxy             string   `json:"proxy"`             // 该节点设置的代理人
-	LastVoteCount     *big.Int `json:"lastVoteCount"`     // 上次投的票数
-	LastVoteTimeStamp *big.Int `json:"lastVoteTimeStamp"` // 上次投票时间戳
-	VoteCandidates    []string `json:"voteCandidates"`    // 投了哪些人
-}
-
-type Stake struct {
-	Owner              string   `json:"owner"`              // 抵押代币的所有人
-	StakeCount         *big.Int `json:"stakeCount"`         // 抵押的代币数量
-	LastStakeTimeStamp *big.Int `json:"lastStakeTimeStamp"` // 上次抵押时间戳
-}
-
-type AllContract struct {
-	ContractName string `json:"contractName"` // 用户地址
-	IsEnable     bool   `json:"isEnable"`     // 用户权限,1启用合约，2禁用合约，4授权  // 3=1+2, 5=1+4, 6=2+4, 7=1+2+4 类linux权限管理
-}
-
+// todo: 结果返回为空值，为方便开发者debug，返回具体的错误
 func (pointer *SystemRequestResult) ToPeerCertificate() (*PeerCertificate, error) {
-
 	if err := pointer.checkResponse(); err != nil {
+		if err == EMPTYRESPONSE {
+			return nil, errors.New("节点可信证书不存在")
+		}
 		return nil, err
 	}
 
@@ -57,8 +39,12 @@ func (pointer *SystemRequestResult) ToPeerCertificate() (*PeerCertificate, error
 	return peerCertificate, err
 }
 
+// todo: 结果返回为空值，为方便开发者debug，返回具体的错误
 func (pointer *SystemRequestResult) ToTrustAnchor() (*TrustAnchor, error) {
 	if err := pointer.checkResponse(); err != nil {
+		if err == EMPTYRESPONSE {
+			return nil, errors.New("信任锚信息不存在")
+		}
 		return nil, err
 	}
 
@@ -67,11 +53,6 @@ func (pointer *SystemRequestResult) ToTrustAnchor() (*TrustAnchor, error) {
 	if len(result) == 0 {
 		return nil, EMPTYRESPONSE
 	}
-
-	// fmt.Printf("%#v \n", result)
-	// for k,v := range result {
-	// 	fmt.Printf("%s %v %v \n", reflect.TypeOf(v), v, k)
-	// }
 
 	trustAnchor := &TrustAnchor{}
 
@@ -120,8 +101,12 @@ func (pointer *SystemRequestResult) ToTrustAnchorVoter() ([]TrustAnchorVoter, er
 	return trustAnchorVoterLi, nil
 }
 
+// todo: 结果返回为空值，为方便开发者debug，返回具体的错误
 func (pointer *SystemRequestResult) ToCertificateInfo() (*CertificateInfo, error) {
 	if err := pointer.checkResponse(); err != nil {
+		if err == EMPTYRESPONSE {
+			return nil, errors.New("可信证书不存在")
+		}
 		return nil, err
 	}
 
@@ -135,9 +120,6 @@ func (pointer *SystemRequestResult) ToCertificateInfo() (*CertificateInfo, error
 
 	marshal, err := json.Marshal(result)
 
-	// for k,v := range result{
-	// 	fmt.Printf("%s , %v , %s \n", k, v, reflect.TypeOf(v))
-	// }
 	if err != nil {
 		return nil, err
 	}
@@ -146,8 +128,12 @@ func (pointer *SystemRequestResult) ToCertificateInfo() (*CertificateInfo, error
 	return certificateInfo, err
 }
 
+// todo: 结果返回为空值，为方便开发者debug，返回具体的错误
 func (pointer *SystemRequestResult) ToCertificateIssuerSignature() (*IssuerSignature, error) {
 	if err := pointer.checkResponse(); err != nil {
+		if err == EMPTYRESPONSE {
+			return nil, errors.New("证书颁发者为空")
+		}
 		return nil, err
 	}
 
@@ -169,11 +155,14 @@ func (pointer *SystemRequestResult) ToCertificateIssuerSignature() (*IssuerSigna
 	return issuerSignature, err
 }
 
+// todo: 结果返回为空值，为方便开发者debug，返回具体的错误
 func (pointer *SystemRequestResult) ToCertificateSubjectSignature() (*SubjectSignature, error) {
 	if err := pointer.checkResponse(); err != nil {
+		if err == EMPTYRESPONSE {
+			return nil, errors.New("证书接收者为空")
+		}
 		return nil, err
 	}
-	// return nil, errors.New("证书接收者为空")
 
 	result := (pointer).Result.(map[string]interface{})
 
@@ -193,8 +182,13 @@ func (pointer *SystemRequestResult) ToCertificateSubjectSignature() (*SubjectSig
 	return subjectSignature, err
 }
 
+// todo: 结果返回为空值，为方便开发者debug，返回具体的错误
 func (pointer *SystemRequestResult) ToDocument() (*Document, error) {
-	if err := pointer.checkResponse(); err != nil {
+	err := pointer.checkResponse()
+	if err != nil {
+		if err == EMPTYRESPONSE {
+			return nil, errors.New("did 文档未初始化")
+		}
 		return nil, err
 	}
 

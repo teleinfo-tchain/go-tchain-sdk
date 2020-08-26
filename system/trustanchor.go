@@ -71,7 +71,7 @@ func registerTrustPreCheck(registerAnchor *dto.RegisterAnchor) (bool, error) {
 		return false, errors.New("registerAnchor ServerUrl can't be empty or blank character")
 	}
 
-	// 后期可能会开启检查
+	// todo:后期可能会开启检查
 	// if !verifyEmailFormat(registerAnchor.Email) {
 	// 	return false, errors.New("registerAnchor Email is not valid  e-mail")
 	// }
@@ -352,6 +352,7 @@ func (anc *Anchor) GetTrustAnchor(anchor string) (dto.TrustAnchor, error) {
 	if err != nil{
 		return trustAnchor, err
 	}
+
 	return *res, nil
 }
 

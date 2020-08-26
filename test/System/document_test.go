@@ -121,17 +121,17 @@ func TestGetDocument(t *testing.T) {
 
 	t.Logf("doc is %#v \n", document)
 	// t.Logf("doc name is %#v \n", document.Name)
-	t.Logf("doc  extra is %#v \n", document.Extra)
+	// t.Logf("doc  extra is %#v \n", document.Extra)
 	// t.Logf("doc Authentications len is %#v \n", len(document.Authentications))
 	// t.Logf("doc atuh is %#v \n", document.Authentications)
 	// t.Logf("doc publicKey len is %#v \n", len(document.PublicKeys))
 	// if len(document.PublicKeys) != 0{
 	// 	t.Logf("doc publicKey is %#v \n", document.PublicKeys[0])
 	// }
-	// t.Logf("doc Services len is %#v \n", len(document.Services))
-	// if len(document.Services) != 0{
-	// 	t.Logf("doc service is %#v \n", document.Services[0])
-	// }
+	t.Logf("doc Services len is %#v \n", len(document.Services))
+	if len(document.Services) != 0{
+		t.Logf("doc service is %#v \n", document.Services[0])
+	}
 	// t.Logf("doc Proof is %#v \n", document.Proof)
 
 }

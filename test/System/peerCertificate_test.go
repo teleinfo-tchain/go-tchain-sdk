@@ -13,9 +13,10 @@ import (
 )
 
 const (
-	bid = "did:bid:EFTVcqqKyFR17jfPxqwEtpmRpbkvSs"
+	bid = "did:bid:EFT2sg3AMmuU525jFhSqLBkSxgEk8sZ"
 	// 53位的字符
-	publicKeyTest              = "16Uiu2HAkwviNXPoPHBkZxpg8nURQPiNVeCB9HrocfhXTRCs8j34z"
+	// publicKeyTest              = "16Uiu2HAkwviNXPoPHBkZxpg8nURQPiNVeCB9HrocfhXTRCs8j34z"
+	publicKeyTest              = "16Uiu2HAkw7Dj1Qcs7hQ3j6h8fM9hXeVs5PeHWzBbM9SwbbPTQiwy"
 	isSM2PeerCertificate       = false
 	passwordPeerCertificate    = "teleinfo"
 	testAddressPeerCertificate = "did:bid:EFTVcqqKyFR17jfPxqwEtpmRpbkvSs"
@@ -54,8 +55,7 @@ func TestPeerRegisterCertificate(t *testing.T) {
 
 	registerCertificateInfo := new(dto.RegisterCertificateInfo)
 	registerCertificateInfo.Id = bid
-	// todo: 这个链是有问题的，因为其判断条件的问题
-	registerCertificateInfo.Apply = "did:bid:590ed37615bdfefa496224c7"
+	registerCertificateInfo.Apply = bid
 	registerCertificateInfo.PublicKey = publicKeyTest
 	registerCertificateInfo.NodeName = "testTELE"
 	registerCertificateInfo.NodeType = 0
@@ -161,7 +161,7 @@ func TestPeerGetActive(t *testing.T) {
 	}
 
 	peerCer := connection.System.NewPeerCertificate()
-	isEnable, err := peerCer.GetActive(bid)
+	isEnable, err := peerCer.GetActive("did:bid:EFT2sg3AMmuU525jFhSqLBkSxgEk8sZ")
 	if err != nil {
 		t.Error(err)
 		t.FailNow()
@@ -186,7 +186,7 @@ func TestGetPeerCertificate(t *testing.T) {
 		t.FailNow()
 	}
 
-	t.Logf("detail info is %#v \n", peerCertificate)
+	t.Logf("%#v \n", peerCertificate)
 }
 
 func TestGetPeerCertificateIdList(t *testing.T) {

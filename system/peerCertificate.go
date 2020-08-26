@@ -291,9 +291,10 @@ func (peerCer *PeerCertificate) GetActive(id string) (bool, error) {
 
   Call permissions: Anyone
 */
-func (peerCer *PeerCertificate) GetPeerCertificate(id string) (*dto.PeerCertificate, error) {
+func (peerCer *PeerCertificate) GetPeerCertificate(id string) (dto.PeerCertificate, error) {
+	var peerCertificate dto.PeerCertificate
 	if !isValidHexAddress(id) {
-		return nil, errors.New("id is not valid bid address")
+		return peerCertificate, errors.New("id is not valid bid address")
 	}
 
 	params := make([]string, 1)
@@ -303,10 +304,14 @@ func (peerCer *PeerCertificate) GetPeerCertificate(id string) (*dto.PeerCertific
 
 	err := peerCer.super.provider.SendRequest(pointer, "peercertificate_peerCertificate", params)
 	if err != nil {
-		return nil, err
+		return peerCertificate, err
 	}
 
-	return pointer.ToPeerCertificate()
+	res, err := pointer.ToPeerCertificate()
+	if err != nil{
+		return peerCertificate, err
+	}
+	return *res, nil
 }
 
 /*

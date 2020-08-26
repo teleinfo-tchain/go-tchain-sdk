@@ -336,13 +336,13 @@ func TestGetTrustAnchor(t *testing.T) {
 	}
 	anchor := connection.System.NewTrustAnchor()
 
-	trustAnchor, err := anchor.GetTrustAnchor(BaseAnchorAddr)
+	trustAnchor, err := anchor.GetTrustAnchor("did:bid:ZFT4CziA2ktCNgfQPqSm1GpQxSck5q4")
 	if err != nil {
 		t.Error(err)
 		t.FailNow()
 	}
 
-	t.Log(trustAnchor)
+	t.Logf("%#v \n", trustAnchor)
 }
 
 func TestGetTrustAnchorStatus(t *testing.T) {

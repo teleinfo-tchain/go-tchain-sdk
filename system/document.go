@@ -143,6 +143,7 @@ func (doc *Doc) SetBidName(signTxParams *SysTxParams, id string, bidName string)
 	- error
 
   Call permissions: Anyone
+  todo:文档初始化的时间采用的是0时区的，所以时间会差8小时，这个后期根据需要再修改
 */
 func (doc *Doc) GetDocument(did string) (dto.Document, error) {
 	var document dto.Document
@@ -163,10 +164,6 @@ func (doc *Doc) GetDocument(did string) (dto.Document, error) {
 	res, err := pointer.ToDocument()
 	if err != nil{
 		return document, err
-	}
-
-	if res.Id == ""{
-		return document, errors.New("did 文档为空")
 	}
 
 	return *res, nil

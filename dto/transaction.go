@@ -91,16 +91,76 @@ type SignTransactionResponse struct {
 }
 
 type SignedTransactionParams struct {
-	Gas      *big.Int `json:"gas"`
-	GasPrice *big.Int `json:"gasPrice"`
-	Hash     string   `json:"hash"`
-	Input    string   `json:"input"`
-	Nonce    *big.Int `json:"nonce"`
-	S        string   `json:"s"`
-	R        string   `json:"r"`
-	V        *big.Int `json:"v"`
-	To       string   `json:"to"`
-	Value    *big.Int `json:"value"`
+	Version  uint64              `json:"version"`
+	ChainId  uint64              `json:"chainId"`
+	Gas      *big.Int            `json:"gas"`
+	GasPrice *big.Int            `json:"gasPrice"`
+	Hash     string              `json:"hash"`
+	Input    string              `json:"input"`
+	Nonce    *big.Int            `json:"nonce"`
+	To       string              `json:"to"`
+	Value    *big.Int            `json:"value"`
+	SignNode *crypto.Signature   `json:"signNode"`
+	SignUser []*crypto.Signature `json:"singUser"`
+}
+
+func (sp *SignedTransactionParams) UnmarshalJSON(data []byte) error {
+	type Alias SignedTransactionParams
+
+	temp := &struct {
+		Version  string `json:"version"`
+		ChainId  string `json:"chainId"`
+		Gas      string `json:"gas"`
+		GasPrice string `json:"gasPrice"`
+		Nonce    string `json:"nonce"`
+		Value    string `json:"value"`
+		*Alias
+	}{
+		Alias: (*Alias)(sp),
+	}
+
+	if err := json.Unmarshal(data, &temp); err != nil {
+		return err
+	}
+
+	version, err := strconv.ParseUint(temp.Version, 0, 64)
+	if err != nil {
+		return errors.New(fmt.Sprintf("Error converting %s to uint64", temp.Version))
+	}
+
+	chainId, err := strconv.ParseUint(temp.Version, 0, 64)
+	if err != nil {
+		return errors.New(fmt.Sprintf("Error converting %s to uint64", temp.ChainId))
+	}
+
+	gas, success := big.NewInt(0).SetString(temp.Gas[2:], 16)
+	if !success {
+		return errors.New(fmt.Sprintf("Error converting %s to BigInt", temp.Gas))
+	}
+
+	gasPrice, success := big.NewInt(0).SetString(temp.GasPrice[2:], 16)
+	if !success {
+		return errors.New(fmt.Sprintf("Error converting %s to BigInt", temp.GasPrice))
+	}
+
+	nonce, success := big.NewInt(0).SetString(temp.Nonce[2:], 16)
+	if !success {
+		return errors.New(fmt.Sprintf("Error converting %s to BigInt", temp.Nonce))
+	}
+
+	val, success := big.NewInt(0).SetString(temp.Value[2:], 16)
+	if !success {
+		return errors.New(fmt.Sprintf("Error converting %s to BigInt", temp.Value))
+	}
+
+	sp.Version = version
+	sp.ChainId = chainId
+	sp.Gas = gas
+	sp.GasPrice = gasPrice
+	sp.Nonce = nonce
+	sp.Value = val
+
+	return nil
 }
 
 type TransactionResponse struct {
@@ -114,7 +174,7 @@ type TransactionResponse struct {
 	GasPrice         *big.Int            `json:"gasPrice,omitempty"`
 	Nonce            uint64              `json:"nonce"`
 	Hash             string              `json:"hash"`
-	TransactionIndex *big.Int              `json:"transactionIndex"`
+	TransactionIndex *big.Int            `json:"transactionIndex"`
 	Input            string              `json:"input"`
 	Value            *big.Int            `json:"value"`
 	SignNode         *crypto.Signature   `json:"signNode"`
@@ -358,60 +418,4 @@ type StakeResponse struct {
 	Owner              string `json:"owner"`              // 抵押代币的所有人
 	StakeCount         int64  `json:"stakeCount"`         // 抵押的代币数量
 	LastStakeTimeStamp int64  `json:"lastStakeTimeStamp"` // 上次抵押时间戳
-}
-
-func (sp *SignedTransactionParams) UnmarshalJSON(data []byte) error {
-	type Alias SignedTransactionParams
-
-	temp := &struct {
-		Gas      string `json:gas`
-		GasPrice string `json:gasPrice`
-		Nonce    string `json:nonce`
-		V        string `json:v`
-		Value    string `json:value`
-		*Alias
-	}{
-		Alias: (*Alias)(sp),
-	}
-
-	if err := json.Unmarshal(data, &temp); err != nil {
-		return err
-	}
-
-	gas, success := big.NewInt(0).SetString(temp.Gas[2:], 16)
-
-	if !success {
-		return errors.New(fmt.Sprintf("Error converting %s to BigInt", temp.Gas))
-	}
-
-	gasPrice, success := big.NewInt(0).SetString(temp.GasPrice[2:], 16)
-
-	if !success {
-		return errors.New(fmt.Sprintf("Error converting %s to BigInt", temp.GasPrice))
-	}
-
-	nonce, success := big.NewInt(0).SetString(temp.Nonce[2:], 16)
-
-	if !success {
-		return errors.New(fmt.Sprintf("Error converting %s to BigInt", temp.Nonce))
-	}
-
-	v, success := big.NewInt(0).SetString(temp.V[2:], 16)
-
-	if !success {
-		return errors.New(fmt.Sprintf("Error converting %s to BigInt", temp.V))
-	}
-
-	val, success := big.NewInt(0).SetString(temp.Value[2:], 16)
-	if !success {
-		return errors.New(fmt.Sprintf("Error converting %s to BigInt", temp.Value))
-	}
-
-	sp.Gas = gas
-	sp.GasPrice = gasPrice
-	sp.Nonce = nonce
-	sp.V = v
-	sp.Value = val
-
-	return nil
 }
