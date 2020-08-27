@@ -11,7 +11,7 @@ type SystemRequestResult struct {
 	RequestResult
 }
 
-// todo: 结果返回为空值，为方便开发者debug，返回具体的错误
+// todo: 结果返回为双nil，为方便开发者debug，返回具体的错误
 func (pointer *SystemRequestResult) ToPeerCertificate() (*PeerCertificate, error) {
 	if err := pointer.checkResponse(); err != nil {
 		if err == EMPTYRESPONSE {
@@ -39,7 +39,7 @@ func (pointer *SystemRequestResult) ToPeerCertificate() (*PeerCertificate, error
 	return peerCertificate, err
 }
 
-// todo: 结果返回为空值，为方便开发者debug，返回具体的错误
+// todo: 结果返回为双nil，为方便开发者debug，返回具体的错误
 func (pointer *SystemRequestResult) ToTrustAnchor() (*TrustAnchor, error) {
 	if err := pointer.checkResponse(); err != nil {
 		if err == EMPTYRESPONSE {
@@ -101,7 +101,7 @@ func (pointer *SystemRequestResult) ToTrustAnchorVoter() ([]TrustAnchorVoter, er
 	return trustAnchorVoterLi, nil
 }
 
-// todo: 结果返回为空值，为方便开发者debug，返回具体的错误
+// todo: 结果返回为双nil，为方便开发者debug，返回具体的错误
 func (pointer *SystemRequestResult) ToCertificateInfo() (*CertificateInfo, error) {
 	if err := pointer.checkResponse(); err != nil {
 		if err == EMPTYRESPONSE {
@@ -128,7 +128,7 @@ func (pointer *SystemRequestResult) ToCertificateInfo() (*CertificateInfo, error
 	return certificateInfo, err
 }
 
-// todo: 结果返回为空值，为方便开发者debug，返回具体的错误
+// todo: 结果返回为双nil，为方便开发者debug，返回具体的错误
 func (pointer *SystemRequestResult) ToCertificateIssuerSignature() (*IssuerSignature, error) {
 	if err := pointer.checkResponse(); err != nil {
 		if err == EMPTYRESPONSE {
@@ -155,7 +155,7 @@ func (pointer *SystemRequestResult) ToCertificateIssuerSignature() (*IssuerSigna
 	return issuerSignature, err
 }
 
-// todo: 结果返回为空值，为方便开发者debug，返回具体的错误
+// todo: 结果返回为双nil，为方便开发者debug，返回具体的错误
 func (pointer *SystemRequestResult) ToCertificateSubjectSignature() (*SubjectSignature, error) {
 	if err := pointer.checkResponse(); err != nil {
 		if err == EMPTYRESPONSE {
@@ -182,10 +182,9 @@ func (pointer *SystemRequestResult) ToCertificateSubjectSignature() (*SubjectSig
 	return subjectSignature, err
 }
 
-// todo: 结果返回为空值，为方便开发者debug，返回具体的错误
+// todo: 结果返回为双nil，为方便开发者debug，返回具体的错误
 func (pointer *SystemRequestResult) ToDocument() (*Document, error) {
-	err := pointer.checkResponse()
-	if err != nil {
+	if err := pointer.checkResponse(); err != nil {
 		if err == EMPTYRESPONSE {
 			return nil, errors.New("did 文档未初始化")
 		}
@@ -230,7 +229,7 @@ func (pointer *SystemRequestResult) ToElectionCandidate() (*Candidate, error) {
 
 	result := (pointer).Result.(map[string]interface{})
 
-	if len(result) == 0 {
+	if result["owner"] == ""{
 		return nil, errors.New("无候选者")
 	}
 
@@ -342,15 +341,16 @@ func (pointer *SystemRequestResult) ToElectionVoterList() ([]Voter, error) {
 	return voters, nil
 }
 
+// todo: 结果返回为双nil，为方便开发者debug，返回具体的错误
 func (pointer *SystemRequestResult) ToElectionStake() (*Stake, error) {
 	if err := pointer.checkResponse(); err != nil {
+		if err == EMPTYRESPONSE {
+			return nil, errors.New("地址无抵押权益")
+		}
 		return nil, err
 	}
 
 	result := (pointer).Result.(map[string]interface{})
-	if len(result) == 0 {
-		return nil, errors.New("该地址无抵押权益")
-	}
 
 	stake := &Stake{}
 

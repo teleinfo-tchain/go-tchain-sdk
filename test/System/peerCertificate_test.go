@@ -13,9 +13,9 @@ import (
 )
 
 const (
-	bid = "did:bid:EFT2sg3AMmuU525jFhSqLBkSxgEk8sZ"
 	// 53位的字符
 	// publicKeyTest              = "16Uiu2HAkwviNXPoPHBkZxpg8nURQPiNVeCB9HrocfhXTRCs8j34z"
+	bid = "did:bid:EFT2sg3AMmuU525jFhSqLBkSxgEk8sZ"
 	publicKeyTest              = "16Uiu2HAkw7Dj1Qcs7hQ3j6h8fM9hXeVs5PeHWzBbM9SwbbPTQiwy"
 	isSM2PeerCertificate       = false
 	passwordPeerCertificate    = "teleinfo"

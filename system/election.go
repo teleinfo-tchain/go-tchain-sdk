@@ -2,6 +2,7 @@ package system
 
 import (
 	"errors"
+	"fmt"
 	"github.com/bif/bif-sdk-go/abi"
 	"github.com/bif/bif-sdk-go/dto"
 	"math/big"
@@ -109,6 +110,7 @@ func (e *Election) RegisterWitness(signTxParams *SysTxParams, witness *dto.Regis
 	// encode
 	// witness is a struct we need to use the components.
 	var values []interface{}
+	fmt.Printf("%#v \n", witness)
 	values = e.super.structToInterface(*witness, values)
 	inputEncode, err := e.abi.Pack("registerWitness", values...)
 
@@ -191,9 +193,7 @@ func (e *Election) GetCandidate(candidateAddress string) (dto.Candidate, error) 
 	if err != nil{
 		return candidate, err
 	}
-	if res.Owner == ""{
-		return candidate, errors.New("无候选者")
-	}
+
 	return *res,nil
 }
 

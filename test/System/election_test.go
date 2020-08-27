@@ -59,7 +59,7 @@ func TestRegisterWitness(t *testing.T) {
 
 	registerWitness := new(dto.RegisterWitness)
 	// 但是需要
-	registerWitness.NodeUrl = "/ip4/169.254.187.66/tcp/30303/p2p/16Uiu2HAkwviNXPoPHBkZxpg8nURQPiNVeCB9HrocfhXTRCs8j34z"
+	registerWitness.NodeUrl = "/ip4/169.254.187.66/tcp/30303/p2p/16Uiu2HAkw7Dj1Qcs7hQ3j6h8fM9hXeVs5PeHWzBbM9SwbbPTQiwy"
 	registerWitness.Website = "https://www.tele.com"
 	registerWitness.Name = "test"
 

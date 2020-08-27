@@ -336,7 +336,7 @@ func TestGetTrustAnchor(t *testing.T) {
 	}
 	anchor := connection.System.NewTrustAnchor()
 
-	trustAnchor, err := anchor.GetTrustAnchor("did:bid:ZFT4CziA2ktCNgfQPqSm1GpQxSck5q4")
+	trustAnchor, err := anchor.GetTrustAnchor(BaseAnchorAddr)
 	if err != nil {
 		t.Error(err)
 		t.FailNow()

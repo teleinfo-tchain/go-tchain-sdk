@@ -357,7 +357,7 @@ func TestAddService(t *testing.T) {
 
 	doc := connection.System.NewDoc()
 
-	txHash, err := doc.AddService(sysTxParams, testAddressDoc, "did:bid:590ed37615bdfefa496224c7", "2", "123")
+	txHash, err := doc.AddService(sysTxParams, testAddressDoc, "did:bid:EFTTQWPMdtghuZByPsfQAUuPkWkWYb", "2", "123")
 	if err != nil {
 		t.Error(err)
 		t.FailNow()
@@ -403,7 +403,7 @@ func TestDelService(t *testing.T) {
 
 	doc := connection.System.NewDoc()
 
-	txHash, err := doc.DelService(sysTxParams, testAddressDoc, "did:bid:590ed37615bdfefa496224c7")
+	txHash, err := doc.DelService(sysTxParams, testAddressDoc, "did:bid:EFTTQWPMdtghuZByPsfQAUuPkWkWYb")
 	if err != nil {
 		t.Error(err)
 		t.FailNow()

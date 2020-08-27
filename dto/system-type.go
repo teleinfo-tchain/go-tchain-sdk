@@ -120,7 +120,7 @@ type TrustAnchor struct {
 	Status           uint64   `json:"status"          gencodec:"required"`   // 服务状态
 	Active           bool     `json:"active"          gencodec:"required"`   // 是否是根信任锚
 	TotalBounty      *big.Int `json:"totalBounty"     gencodec:"required"`   // 总激励
-	ExtractedBounty  *big.Int `json:"ExtractedBounty" gencodec:"required"`   // 已提取激励
+	ExtractedBounty  *big.Int `json:"extractedBounty" gencodec:"required"`   // 已提取激励
 	LastExtractTime  uint64   `json:"lastExtractTime" gencodec:"required"`   // 上次提取时间
 	VoteCount        *big.Int `json:"vote_count" gencodec:"required"`        // 得票数
 	Stake            *big.Int `json:"stake" gencodec:"required"`             // 抵押
