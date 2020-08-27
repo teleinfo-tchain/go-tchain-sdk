@@ -301,7 +301,7 @@ type RegisterWitness struct {
 }
 
 type Candidate struct {
-	Owner           string   `json:"owner"`           // 候选人地址
+	Id              string   `json:"owner"`           // 候选人地址
 	Name            string   `json:"name"`            // 候选人名称
 	Active          bool     `json:"active"`          // 当前是否是候选人
 	Url             string   `json:"url"`             // 节点的URL
@@ -350,7 +350,7 @@ func (candidate *Candidate) UnmarshalJSON(data []byte) error {
 }
 
 type Voter struct {
-	Owner             string   `json:"owner"`             // 投票人的地址
+	Id                string   `json:"owner"`             // 投票人的地址
 	IsProxy           bool     `json:"isProxy"`           // 是否是代理人
 	ProxyVoteCount    *big.Int `json:"proxyVoteCount"`    // 收到的代理的票数
 	Proxy             string   `json:"proxy"`             // 该节点设置的代理人
@@ -390,7 +390,7 @@ func (voter *Voter) UnmarshalJSON(data []byte) error {
 }
 
 type Stake struct {
-	Owner              string   `json:"owner"`              // 抵押代币的所有人
+	Id                 string   `json:"owner"`              // 抵押代币的所有人
 	StakeCount         *big.Int `json:"stakeCount"`         // 抵押的代币数量
 	LastStakeTimeStamp uint64   `json:"lastStakeTimeStamp"` // 上次抵押时间戳
 }

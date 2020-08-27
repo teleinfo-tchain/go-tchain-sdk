@@ -15,8 +15,8 @@ import (
 const (
 	isSM2Elect       = false
 	passwordElect    = "teleinfo"
-	testAddressElect = "did:bid:EFTTQWPMdtghuZByPsfQAUuPkWkWYb"
-	testAddressFile  = "../resources/superNodeKeyStore/UTC--2020-08-19T05-48-46.004537900Z--did-bid-EFTTQWPMdtghuZByPsfQAUuPkWkWYb"
+	testAddressElect = "did:bid:EFTVcqqKyFR17jfPxqwEtpmRpbkvSs"
+	testAddressFile  = "../resources/superNodeKeyStore/UTC--2020-08-20T05-28-39.403642600Z--did-bid-EFTVcqqKyFR17jfPxqwEtpmRpbkvSs"
 )
 
 // 注册成为候选者节点
@@ -59,7 +59,7 @@ func TestRegisterWitness(t *testing.T) {
 
 	registerWitness := new(dto.RegisterWitness)
 	// 但是需要
-	registerWitness.NodeUrl = "/ip4/169.254.187.66/tcp/30303/p2p/16Uiu2HAkw7Dj1Qcs7hQ3j6h8fM9hXeVs5PeHWzBbM9SwbbPTQiwy"
+	registerWitness.NodeUrl = "/ip4/169.254.187.66/tcp/30303/p2p/16Uiu2HAkwviNXPoPHBkZxpg8nURQPiNVeCB9HrocfhXTRCs8j34z"
 	registerWitness.Website = "https://www.tele.com"
 	registerWitness.Name = "test"
 
@@ -188,7 +188,6 @@ func TestVoteWitnesses(t *testing.T) {
 	sysTxParams.IsSM2 = isSM2Elect
 	sysTxParams.Password = passwordElect
 	sysTxParams.KeyFileData = keyFileData
-	sysTxParams.GasPrice = big.NewInt(35)
 	sysTxParams.Gas = 2000000
 	sysTxParams.Nonce = nonce.Uint64()
 	sysTxParams.ChainId = chainId
@@ -196,7 +195,7 @@ func TestVoteWitnesses(t *testing.T) {
 
 	elect := connection.System.NewElection()
 
-	candidate := "did:bid:6cc796b8d6e2fbebc9b3cf9e"
+	candidate := "did:bid:EFTVcqqKyFR17jfPxqwEtpmRpbkvSs"
 	voteWitnessHash, err := elect.VoteWitnesses(sysTxParams, candidate)
 	if err != nil {
 		t.Error(err)
@@ -565,7 +564,6 @@ func TestGetStake(t *testing.T) {
 	// {Owner:"did:bid:c117c1794fc7a27bd301ae52", StakeCount:0xea60, Timestamp:0x5ef5b619}
 }
 
-//  这个接口暂时不用测试，链的后台需要修改
 func TestGetRestBIFBounty(t *testing.T) {
 	var connection = bif.NewBif(providers.NewHTTPProvider(resources.IP+":"+resources.Port, 10, false))
 	_, err := connection.Core.GetChainId()

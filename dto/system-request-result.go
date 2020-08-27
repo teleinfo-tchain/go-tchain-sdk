@@ -282,14 +282,16 @@ func (pointer *SystemRequestResult) ToElectionCandidates() ([]Candidate, error) 
 	return candidates, nil
 }
 
+// todo: 结果返回为双nil，为方便开发者debug，返回具体的错误
 func (pointer *SystemRequestResult) ToElectionVoter() (*Voter, error) {
 	if err := pointer.checkResponse(); err != nil {
+		if err == EMPTYRESPONSE {
+			return nil, errors.New("投票人信息为空")
+		}
 		return nil, err
 	}
-	// return nil, errors.New("投票人信息为空")
 
 	result := (pointer).Result.(map[string]interface{})
-
 	if len(result) == 0 {
 		return nil, EMPTYRESPONSE
 	}
@@ -351,7 +353,6 @@ func (pointer *SystemRequestResult) ToElectionStake() (*Stake, error) {
 	}
 
 	result := (pointer).Result.(map[string]interface{})
-
 	stake := &Stake{}
 
 	marshal, err := json.Marshal(result)

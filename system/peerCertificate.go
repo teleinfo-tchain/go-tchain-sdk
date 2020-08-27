@@ -166,8 +166,6 @@ func (peerCer *PeerCertificate) RegisterCertificate(signTxParams *SysTxParams, r
 		return "", err
 	}
 
-	// fmt.Println("signedTx is ", signedTx)
-	// return "", err
 	return peerCer.super.sendRawTransaction(signedTx)
 }
 

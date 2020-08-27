@@ -2,7 +2,6 @@ package system
 
 import (
 	"errors"
-	"fmt"
 	"github.com/bif/bif-sdk-go/abi"
 	"github.com/bif/bif-sdk-go/dto"
 	"math/big"
@@ -110,7 +109,6 @@ func (e *Election) RegisterWitness(signTxParams *SysTxParams, witness *dto.Regis
 	// encode
 	// witness is a struct we need to use the components.
 	var values []interface{}
-	fmt.Printf("%#v \n", witness)
 	values = e.super.structToInterface(*witness, values)
 	inputEncode, err := e.abi.Pack("registerWitness", values...)
 
@@ -460,9 +458,10 @@ func (e *Election) UnStake(signTxParams *SysTxParams) (string, error) {
 
   Call permissions: Anyone
 */
-func (e *Election) GetStake(voterAddress string) (*dto.Stake, error) {
+func (e *Election) GetStake(voterAddress string) (dto.Stake, error) {
+	var stake dto.Stake
 	if !isValidHexAddress(voterAddress) {
-		return nil, errors.New("voterAddress is not valid bid")
+		return stake, errors.New("voterAddress is not valid bid")
 	}
 
 	params := make([]string, 1)
@@ -472,10 +471,15 @@ func (e *Election) GetStake(voterAddress string) (*dto.Stake, error) {
 
 	err := e.super.provider.SendRequest(pointer, "election_stake", params)
 	if err != nil {
-		return nil, err
+		return stake, err
 	}
 
-	return pointer.ToElectionStake()
+	res, err := pointer.ToElectionStake()
+	if err != nil{
+		return stake, err
+	}
+
+	return *res, nil
 }
 
 /*
@@ -561,7 +565,7 @@ func (e *Election) IssueAdditionalBounty(signTxParams *SysTxParams) (string, err
   	- voterAddress: string，投票者的地址
 
   Returns:
-  	- *dto.Voter
+  	- dto.Voter
 		Owner             common.Address   `json:"owner"`             // 投票人的地址
 		IsProxy           bool             `json:"isProxy"`           // 是否是代理人
 		ProxyVoteCount    *big.Int         `json:"proxyVoteCount"`    // 收到的代理的票数
@@ -573,9 +577,10 @@ func (e *Election) IssueAdditionalBounty(signTxParams *SysTxParams) (string, err
 
   Call permissions: Anyone
 */
-func (e *Election) GetVoter(voterAddress string) (*dto.Voter, error) {
+func (e *Election) GetVoter(voterAddress string) (dto.Voter, error) {
+	var voter dto.Voter
 	if !isValidHexAddress(voterAddress) {
-		return nil, errors.New("voterAddress is not valid bid")
+		return voter, errors.New("voterAddress is not valid bid")
 	}
 
 	params := make([]string, 1)
@@ -585,10 +590,15 @@ func (e *Election) GetVoter(voterAddress string) (*dto.Voter, error) {
 
 	err := e.super.provider.SendRequest(pointer, "election_voter", params)
 	if err != nil {
-		return nil, err
+		return voter, err
 	}
 
-	return pointer.ToElectionVoter()
+	res, err := pointer.ToElectionVoter()
+	if err != nil{
+		return voter, err
+	}
+
+	return *res, nil
 }
 
 /*
