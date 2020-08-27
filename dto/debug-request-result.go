@@ -2,8 +2,6 @@ package dto
 
 import (
 	"encoding/json"
-	"fmt"
-	"reflect"
 )
 
 type DebugRequestResult struct {
@@ -33,10 +31,7 @@ func (pointer *DebugRequestResult) ToDumpBlock() (*Dump, error) {
 	if len(result) == 0 {
 		return nil, EMPTYRESPONSE
 	}
-	fmt.Printf("%#v \n", result)
-	for k,v := range result{
-		fmt.Printf("%s ,%s, %#v \n", k,reflect.TypeOf(v), v)
-	}
+
 	dump := &Dump{}
 
 	marshal, err := json.Marshal(result)
