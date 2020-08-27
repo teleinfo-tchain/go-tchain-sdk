@@ -450,7 +450,7 @@ func (e *Election) UnStake(signTxParams *SysTxParams) (string, error) {
   	- voterAddress: string，投票者的地址
 
   Returns:
-  	- *dto.Stake
+  	- dto.Stake
 		Owner              common.Address `json:"owner"`              // 抵押代币的所有人
 		StakeCount         *big.Int       `json:"stakeCount"`         // 抵押的代币数量
 		LastStakeTimeStamp *big.Int       `json:"lastStakeTimeStamp"` // 上次抵押时间戳

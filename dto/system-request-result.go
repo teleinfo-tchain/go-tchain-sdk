@@ -229,7 +229,7 @@ func (pointer *SystemRequestResult) ToElectionCandidate() (*Candidate, error) {
 
 	result := (pointer).Result.(map[string]interface{})
 
-	if result["owner"] == ""{
+	if result["owner"] == "" {
 		return nil, errors.New("无候选者")
 	}
 

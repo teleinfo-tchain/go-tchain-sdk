@@ -23,8 +23,8 @@ func TestDumpBlock(t *testing.T) {
 		t.FailNow()
 	}
 
-	t.Log(dumpBlock)
-	// fmt.Printf("%#v \n", dumpBlock)
+	t.Logf("%#v \n", dumpBlock)
+	// t.Logf("%#v \n", dumpBlock.Accounts)
 }
 
 func TestGetBlockRlp(t *testing.T) {

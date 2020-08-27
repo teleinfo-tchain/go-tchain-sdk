@@ -43,7 +43,6 @@ func (pointer *NetRequestResult) ToPeerInfo() ([]*PeerInfo, error) {
 	}
 
 	resultLi := (pointer).Result.([]interface{})
-
 	peerInfoLi := make([]*PeerInfo, len(resultLi))
 
 	for i, v := range resultLi {

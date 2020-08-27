@@ -5,6 +5,8 @@ import (
 	"errors"
 	"fmt"
 	"github.com/bif/bif-sdk-go/utils"
+	"github.com/bif/bif-sdk-go/utils/rlp"
+	"io"
 	"math/big"
 )
 
@@ -20,8 +22,8 @@ type Message struct {
 }
 
 type View struct {
-	Round    *big.Int `json:"round"`
-	Sequence *big.Int `json:"sequence"`
+	Round    uint64 `json:"round"`
+	Sequence uint64 `json:"sequence"`
 }
 
 type MessageSet struct {
@@ -30,15 +32,65 @@ type MessageSet struct {
 	Messages []*Message `json:"messages"`
 }
 
+type Preprepare struct {
+	View     *View    `json:"view"` // 序列和round
+	Proposal Proposal `json:"proposal"`
+}
+
+// Proposal supports retrieving height and serialized block to be used during Istanbul consensus.
+type Proposal interface {
+	// Number retrieves the sequence number of this proposal.
+	Number() *big.Int
+
+	// Hash retrieves the hash of this proposal.
+	Hash() utils.Hash
+
+	EncodeRLP(w io.Writer) error
+
+	DecodeRLP(s *rlp.Stream) error
+
+	String() string
+}
+
 // RoundStateInfoResponse is the information of RoundState
 type RoundStateInfo struct {
-	Commits    *MessageSet `json:"commits"`
-	LockedHash utils.Hash  `json:"lockedHash"`
-	Prepares   *MessageSet `json:"prepares"`
-	Proposer   string      `json:"proposer"`
-	Round      *big.Int    `json:"round"`
-	Sequence   *big.Int    `json:"sequence"`
-	View       *View       `json:"view"`
+	Commits     *MessageSet `json:"commits"`
+	LockedHash  string      `json:"lockedHash"`
+	Prepares    *MessageSet `json:"prepares"`
+	Proposer    string      `json:"proposer"`
+	Round       *big.Int    `json:"round"`
+	Sequence    *big.Int    `json:"sequence"`
+	PrePrepares *Preprepare `json:"preprepares"`
+}
+
+func (roundStateInfo *RoundStateInfo) UnmarshalJSON(data []byte) error {
+	type Alias RoundStateInfo
+
+	temp := &struct {
+		Round    string `json:"round"`
+		Sequence string `json:"sequence"`
+		*Alias
+	}{
+		Alias: (*Alias)(roundStateInfo),
+	}
+	if err := json.Unmarshal(data, &temp); err != nil {
+		return err
+	}
+
+	round, success := big.NewInt(0).SetString(temp.Round[2:], 16)
+	if !success {
+		return errors.New(fmt.Sprintf("Error converting %s to BigInt", temp.Round))
+	}
+
+	sequence, success := big.NewInt(0).SetString(temp.Sequence[2:], 16)
+	if !success {
+		return errors.New(fmt.Sprintf("Error converting %s to BigInt", temp.Sequence))
+	}
+
+	roundStateInfo.Round = round
+	roundStateInfo.Sequence = sequence
+
+	return nil
 }
 
 type RoundChangeSetInfo struct {

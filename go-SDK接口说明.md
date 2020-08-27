@@ -258,7 +258,7 @@ dpos_test.go            | dpos属性单元测试
     Call permissions: Anyone
 ```
 
-### 2)  GetPeerCertificate(id string) (*dto.PeerCertificate, error)
+### 2)  GetPeerCertificate(id string) (dto.PeerCertificate, error)
 ```
   GetPeerCertificate:
     EN -
@@ -267,7 +267,7 @@ dpos_test.go            | dpos属性单元测试
     	- id: string，节点证书的bid
   
     Returns:
-    	- *dto.PeerCertificate
+    	- dto.PeerCertificate
   		Id          string   `json:"id"`          //唯一索引
   		Issuer      string   `json:"issuer"`      //颁发者地址
   		Apply       string   `json:"apply"`       //申请人bid
@@ -566,7 +566,7 @@ dpos_test.go            | dpos属性单元测试
   Call permissions: 自身调用或者拥有相关权限的其他地址
 ```
 
-### 13)  GetDocument(did string) (*dto.Document, error)
+### 13)  GetDocument(did string) (dto.Document, error)
 ```
   GetDocument:
    	EN -
@@ -702,7 +702,7 @@ dpos_test.go            | dpos属性单元测试
   Call permissions: Anyone
 ```
 
-### 5)   GetCandidate(candidateAddress string) (*dto.Candidate, error)
+### 5)   GetCandidate(candidateAddress string) (dto.Candidate, error)
 ```
   GetCandidate:
    	EN -
@@ -726,7 +726,6 @@ dpos_test.go            | dpos属性单元测试
   Call permissions: Anyone
 ```
 
-//  这个接口暂时不用测试，链的后台需要修改！！！！！！
 ### 6)   GetRestBIFBounty() (*big.Int, error)
 ```
   GetRestBIFBounty:
@@ -742,7 +741,7 @@ dpos_test.go            | dpos属性单元测试
   Call permissions: Anyone
 ```
 
-### 7)   GetStake(voterAddress string) (*dto.Stake, error)
+### 7)   GetStake(voterAddress string) (dto.Stake, error)
 ```
   GetStake:
    	EN -
@@ -751,7 +750,7 @@ dpos_test.go            | dpos属性单元测试
   	- voterAddress: string，投票者的地址
 
   Returns:
-  	- *dto.Stake
+  	- dto.Stake
 		Owner              common.Address `json:"owner"`              // 抵押代币的所有人
 		StakeCount         *big.Int       `json:"stakeCount"`         // 抵押的代币数量
 		LastStakeTimeStamp *big.Int       `json:"lastStakeTimeStamp"` // 上次抵押时间戳
@@ -760,7 +759,7 @@ dpos_test.go            | dpos属性单元测试
   Call permissions: Anyone
 ```
 
-### 8)   GetVoter(voterAddress string) (*dto.Voter, error)
+### 8)   GetVoter(voterAddress string) (dto.Voter, error)
 ```
   GetVoter:
    	EN -
@@ -769,7 +768,7 @@ dpos_test.go            | dpos属性单元测试
   	- voterAddress: string，投票者的地址
 
   Returns:
-  	- *dto.Voter
+  	- dto.Voter
 		Owner             common.Address   `json:"owner"`             // 投票人的地址
 		IsProxy           bool             `json:"isProxy"`           // 是否是代理人
 		ProxyVoteCount    *big.Int         `json:"proxyVoteCount"`    // 收到的代理的票数
@@ -1122,7 +1121,7 @@ Call permissions: Anyone
   Call permissions: Anyone
 ```
 
-### 8)   GetTrustAnchor(anchor string) (*dto.TrustAnchor, error)
+### 8)   GetTrustAnchor(anchor string) (dto.TrustAnchor, error)
 ```
   GetTrustAnchor:
    	EN -
@@ -1305,7 +1304,7 @@ GetActive:
   Call permissions: Anyone
 ```
 
-### 2) GetCertificate(id string) (*dto.CertificateInfo, error)
+### 2) GetCertificate(id string) (dto.CertificateInfo, error)
 ```
   GetCertificate:
    	EN -
@@ -1328,7 +1327,7 @@ GetActive:
   Call permissions:
 ```
 
-### 3) GetIssuer(id string) (*dto.IssuerSignature, error)
+### 3) GetIssuer(id string) (dto.IssuerSignature, error)
 ```
   GetIssuer:
    	EN -
@@ -1362,7 +1361,7 @@ GetActive:
   Call permissions: Anyone
 ```
 
-### 5) GetSubject(id string) (*dto.SubjectSignature, error)
+### 5) GetSubject(id string) (dto.SubjectSignature, error)
 ```
   GetSubject:
    	EN -
@@ -1534,7 +1533,7 @@ GetActive:
   Call permissions: 监管节点地址，权限包含1的地址
 ```
 
-### 3) GetAllContracts() ([]*dto.AllContract, error)
+### 3) GetAllContracts() ([]dto.AllContract, error)
 ```
   GetAllContracts:
    	EN -
@@ -1543,7 +1542,7 @@ GetActive:
   	- None
 
   Returns:
-  	- []*dto.AllContract
+  	- []dto.AllContract
 	- error
 
   Call permissions: Anyone

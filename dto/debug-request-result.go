@@ -2,6 +2,8 @@ package dto
 
 import (
 	"encoding/json"
+	"fmt"
+	"reflect"
 )
 
 type DebugRequestResult struct {
@@ -10,14 +12,14 @@ type DebugRequestResult struct {
 
 type Dump struct {
 	Root     string                 `json:"root"`
-	Accounts map[string]DumpAccount `json:"accounts"`
+	Accounts map[string]DumpAccount `json:"wallet"`
 }
 
 type DumpAccount struct {
 	Balance  string            `json:"balance"`
 	Nonce    uint64            `json:"nonce"`
 	Root     string            `json:"root"`
-	CodeHash string            `json:"code_hash"`
+	CodeHash string            `json:"codeHash"`
 	Code     string            `json:"code"`
 	Storage  map[string]string `json:"storage"`
 }
@@ -31,7 +33,10 @@ func (pointer *DebugRequestResult) ToDumpBlock() (*Dump, error) {
 	if len(result) == 0 {
 		return nil, EMPTYRESPONSE
 	}
-
+	fmt.Printf("%#v \n", result)
+	for k,v := range result{
+		fmt.Printf("%s ,%s, %#v \n", k,reflect.TypeOf(v), v)
+	}
 	dump := &Dump{}
 
 	marshal, err := json.Marshal(result)

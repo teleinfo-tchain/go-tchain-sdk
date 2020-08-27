@@ -144,7 +144,7 @@ func (manager *Manager) SetPower(signTxParams *SysTxParams, userAddress string, 
   	- None
 
   Returns:
-  	- []*dto.AllContract
+  	- []dto.AllContract
 	- error
 
   Call permissions: Anyone

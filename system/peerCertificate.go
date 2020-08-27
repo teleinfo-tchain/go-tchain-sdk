@@ -272,7 +272,7 @@ func (peerCer *PeerCertificate) GetActive(id string) (bool, error) {
   	- id: string，节点证书的bid
 
   Returns:
-  	- *dto.PeerCertificate
+  	- dto.PeerCertificate
 		Id          string   `json:"id"`          //唯一索引
 		Issuer      string   `json:"issuer"`      //颁发者地址
 		Apply       string   `json:"apply"`       //申请人bid

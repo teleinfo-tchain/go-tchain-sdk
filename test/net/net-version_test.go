@@ -16,6 +16,7 @@ package test
 
 import (
 	"errors"
+	"fmt"
 	"github.com/bif/bif-sdk-go/test/resources"
 	"sort"
 	"testing"
@@ -32,12 +33,12 @@ func TestNetVersion(t *testing.T) {
 	po := []string{"1", "2", "3", "4", "42", "333"}
 
 	version, err := connection.Net.GetVersion()
-
 	if err != nil {
 		t.Error(err)
 		t.FailNow()
 	}
 
+	fmt.Printf("version is %s \n", version)
 	sort.Strings(po)
 	if found := sort.SearchStrings(po, version); found < len(po) && po[found] != version {
 		t.Error(errors.New("invalid network"))
