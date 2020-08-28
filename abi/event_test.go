@@ -72,8 +72,8 @@ var jsonEventMixedCase = []byte(`{
 // 1000000
 var transferData1 = "00000000000000000000000000000000000000000000000000000000000f4240"
 
-// "0x00Ce0d46d924CC8437c806721496599FC3FFA268", 2218516807680, "usd"
-var pledgeData1 = "00000000000000000000000000ce0d46d924cc8437c806721496599fc3ffa2680000000000000000000000000000000000000000000000000000020489e800007573640000000000000000000000000000000000000000000000000000000000"
+// "006469643a6269643a454654236aa844ae1d491613886ce846e98197c329fc88", 2218516807680, "usd"
+var pledgeData1 = "006469643a6269643a454654236aa844ae1d491613886ce846e98197c329fc880000000000000000000000000000000000000000000000000000020489e800007573640000000000000000000000000000000000000000000000000000000000"
 
 // 1000000,2218516807680,1000001
 var mixedCaseData1 = "00000000000000000000000000000000000000000000000000000000000f42400000000000000000000000000000000000000000000000000000020489e8000000000000000000000000000000000000000000000000000000000000000f4241"
@@ -171,7 +171,7 @@ func TestEventTupleUnpack(t *testing.T) {
 	type EventTransferWithTag struct {
 		// this is valid because `value` is not exportable,
 		// so value is only unmarshalled into `Value1`.
-		value  *big.Int //lint:ignore U1000 unused field is part of test
+		value  *big.Int // lint:ignore U1000 unused field is part of test
 		Value1 *big.Int `abi:"value"`
 	}
 
@@ -211,7 +211,7 @@ func TestEventTupleUnpack(t *testing.T) {
 	bigintExpected := big.NewInt(1000000)
 	bigintExpected2 := big.NewInt(2218516807680)
 	bigintExpected3 := big.NewInt(1000001)
-	addr := utils.HexToAddress("0x00Ce0d46d924CC8437c806721496599FC3FFA268")
+	addr := utils.StringToAddress("did:bid:EFTVcqqKyFR17jfPxqwEtpmRpbkvSs")
 	var testCases = []struct {
 		data     string
 		dest     interface{}
@@ -296,14 +296,14 @@ func TestEventTupleUnpack(t *testing.T) {
 		&[]interface{}{new(int), 0, 0},
 		&[]interface{}{},
 		jsonEventPledge,
-		"abi: cannot unmarshal common.Address in to int",
+		"abi: cannot unmarshal utils.Address in to int",
 		"Can not unpack Pledge event into slice with wrong types",
 	}, {
 		pledgeData1,
 		&BadEventPledge{},
 		&BadEventPledge{},
 		jsonEventPledge,
-		"abi: cannot unmarshal common.Address in to string",
+		"abi: cannot unmarshal utils.Address in to string",
 		"Can not unpack Pledge event into struct with wrong filed types",
 	}, {
 		pledgeData1,

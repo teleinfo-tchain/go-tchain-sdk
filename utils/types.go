@@ -18,18 +18,15 @@ package utils
 
 import (
 	"bytes"
-	"database/sql/driver"
 	"encoding/hex"
 	"fmt"
 	"github.com/btcsuite/btcutil/base58"
 	"golang.org/x/crypto/sha3"
 	"math/big"
-	"math/rand"
 	"reflect"
 	"strings"
 
 	"github.com/bif/bif-sdk-go/utils/hexutil"
-	// "golang.org/x/crypto/sha3"
 )
 
 // todo: 需要置于加密模块中
@@ -132,79 +129,17 @@ func EmptyHash(h Hash) bool {
 	return h == Hash{}
 }
 
-// Generate implements testing/quick.Generator.
-func (h Hash) Generate(rand *rand.Rand, size int) reflect.Value {
-	m := rand.Intn(len(h))
-	for i := len(h) - 1; i > m; i-- {
-		h[i] = byte(rand.Uint32())
-	}
-	return reflect.ValueOf(h)
-}
-
-// Scan implements Scanner for database/sql.
-func (h *Hash) Scan(src interface{}) error {
-	srcB, ok := src.([]byte)
-	if !ok {
-		return fmt.Errorf("can't scan %T into Hash", src)
-	}
-	if len(srcB) != HashLength {
-		return fmt.Errorf("can't scan []byte of len %d into Hash, want %d", len(srcB), HashLength)
-	}
-	copy(h[:], srcB)
-	return nil
-}
-
-// Value implements valuer for database/sql.
-func (h Hash) Value() (driver.Value, error) {
-	return h[:], nil
-}
-
-// ImplementsGraphQLType returns true if Hash implements the specified GraphQL type.
-func (_ Hash) ImplementsGraphQLType(name string) bool { return name == "Bytes32" }
-
-// UnmarshalGraphQL unmarshals the provided GraphQL query data.
-func (h *Hash) UnmarshalGraphQL(input interface{}) error {
-	var err error
-	switch input := input.(type) {
-	case string:
-		*h = HexToHash(input)
-	default:
-		err = fmt.Errorf("Unexpected type for Bytes32: %v", input)
-	}
-	return err
-}
-
-// UnprefixedHash allows marshaling a Hash without 0x prefix.
-type UnprefixedHash Hash
-
-// UnmarshalText decodes the hash from hex. The 0x prefix is optional.
-func (h *UnprefixedHash) UnmarshalText(input []byte) error {
-	return hexutil.UnmarshalFixedUnprefixedText("UnprefixedHash", input, h[:])
-}
-
-// MarshalText encodes the hash as hex.
-func (h UnprefixedHash) MarshalText() ([]byte, error) {
-	return []byte(hex.EncodeToString(h[:])), nil
-}
-
 // BytesToAddress returns Address with value b.
 // If b is larger than len(h), b will be cropped from the left.
 func BytesToAddress(b []byte) Address {
-	if !bytes.HasPrefix(b, AddressPrefixByte) {
-		return Address{}
-	}
+	// abi编解码要用这个函数，加上这个判断会报错，unpack.go
+	// if !bytes.HasPrefix(b, AddressPrefixByte) {
+	// 	return Address{}
+	// }
 	var a Address
 	a.SetBytes(b)
 	return a
 }
-
-func BytesToAddressWithoutPre(b []byte) Address {
-	var a Address
-	a.SetBytesWithoutPre(b)
-	return a
-}
-
-func StringToAddressWithoutPre(s string) Address { return BytesToAddressWithoutPre([]byte(s)) }
 
 func StringToAddress(s string) Address {
 	s = strings.TrimSpace(s)
@@ -233,7 +168,39 @@ func BigToAddress(b *big.Int) Address { return BytesToAddress(b.Bytes()) }
 
 // HexToAddress returns Address with byte values of s.
 // If s is larger than len(h), s will be cropped from the left.
-func HexToAddress(s string) Address { return BytesToAddress(FromHex(s)) }
+func HexToAddress(s string) Address {
+	return Address{}
+	// var buffer bytes.Buffer
+	//
+	// if Has0xPrefix(s) {
+	// 	s = s[2:]
+	// } else if HasDidBidPrefix(s) {
+	// 	s = s[8:]
+	// 	buffer.Write([]byte("did:bid:"))
+	// }
+	//
+	// if len(s)%2 == 1 {
+	// 	s = "0" + s
+	// }
+	//
+	// length := HashLength
+	// var prefix strings.Builder
+	// prefix.WriteString(AddressPrefixString)
+	// prefix.WriteString(string(crypto.SECP256K1_Prefix))
+	//
+	// hashLength := len(hash)
+	// if hashLength < length {
+	// 	length = hashLength
+	// }
+	// h := hash[hashLength-length:]
+	//
+	// var encode string
+	// encode = base58.Encode(h)
+	// prefix.WriteString(string(crypto.BASE58_Prefix))
+	// prefix.WriteString(string(crypto.HashLength20))
+	//
+	// return StringToAddress(prefix.String() + encode)
+}
 
 // IsHexAddress verifies whether a string can represent a valid hex-encoded address or not.
 func IsHexAddress(s string) bool {

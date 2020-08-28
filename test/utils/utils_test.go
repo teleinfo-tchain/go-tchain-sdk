@@ -192,61 +192,6 @@ func TestSha3Raw(t *testing.T) {
 	}
 }
 
-func TestCheckBidChecksum(t *testing.T) {
-	for _, test := range []struct {
-		input  string
-		expect bool
-	}{
-		{"0x6469643a6269643ab9A09F33669435E7ef1bEaEd", true},
-		{"0x6469643a6269643ab9A09F33669435E7ef1bEaEd", true},
-		{"0x6469643a6269643AC117c1794Fc7a27Bd301AE52", true},
-		{"0x6469643a6269643AC117c1794Fc7a27Bd301Ae52", false},
-	} {
-		res := util.CheckBidChecksum(test.input)
-		if res != test.expect {
-			t.Errorf("input %s: value mismatch: got %t, want %t", test.input, res, test.expect)
-			continue
-		}
-	}
-}
-
-func TestIsBid(t *testing.T) {
-	for _, test := range []struct {
-		bidAddress string
-		expect     bool
-	}{
-		{"did:bid:590ed37615bdfefa496224c7", true},
-		{"0x6469643a6269643a590ed37615bdfefa496224c7", true},
-		{"6469643a6269643a590ed37615bdfefa496224c7", false},
-		{"6469643a6269643A590ed37615bdfefa496224c7", false},
-	} {
-		isBid := util.IsBid(test.bidAddress)
-
-		if isBid != test.expect {
-			t.Errorf("bidAddress is  %s, got %t, want %t", test.bidAddress, isBid, test.expect)
-			continue
-		}
-	}
-}
-
-func TestToChecksumBid(t *testing.T) {
-	for _, test := range []struct {
-		input  string
-		expect string
-	}{
-		{"did:bid:590ed37615bdfefa496224c7", "0x6469643A6269643A590eD37615BDFeFA496224C7"},
-		{"did:bid:c935bd29a90fbeea87badf3e", "0x6469643a6269643AC935BD29A90fbEea87baDF3e"},
-		{"0x6469643a6269643AC935BD29A90fbEea87baDF3e", "0x6469643a6269643AC935BD29A90fbEea87baDF3e"},
-		{"6469643a6269643aC935BD29A90fbEea87baDF3e", "0x6469643a6269643AC935BD29A90fbEea87baDF3e"},
-	} {
-		res := util.ToChecksumBid(test.input)
-		if res != test.expect {
-			t.Errorf("input %v: value mismatch: got %s, want %s", test.input, res, test.expect)
-			continue
-		}
-	}
-}
-
 func TestPadLeft(t *testing.T) {
 	for _, test := range []struct {
 		slice  []byte

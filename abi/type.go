@@ -141,7 +141,7 @@ func NewType(t string, internalType string, components []ArgumentMarshaling) (ty
 	case "bool":
 		typ.T = BoolTy
 	case "address":
-		typ.Size = 20
+		typ.Size = utils.AddressLength
 		typ.T = AddressTy
 	case "string":
 		typ.T = StringTy

@@ -48,7 +48,7 @@ func TestMakeTopics(t *testing.T) {
 		{
 			"support address types in topics",
 			args{[][]interface{}{{utils.Address{1, 2, 3, 4, 5}}}},
-			[][]utils.Hash{{utils.Hash{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 2, 3, 4, 5}}},
+			[][]utils.Hash{{utils.Hash{0, 1, 2, 3, 4, 5}}},
 			false,
 		},
 		{

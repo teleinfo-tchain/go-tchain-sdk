@@ -9,7 +9,6 @@ import (
 	"github.com/teleinfo-bif/bit-gmsm/sm3"
 	"golang.org/x/crypto/sha3"
 	"math/big"
-	"regexp"
 	"strings"
 	"sync"
 )
@@ -307,89 +306,6 @@ func (util *Utils) Sha3Raw(str string) string {
 	}
 	resStr := util.ByteToHex(keccak256(1, hexBytes))
 	return resStr
-}
-
-/*
-  CheckBidChecksum:
-   	EN - bid string with "0x", Checks the checksum of a given Bid
-	CN - bid字符串(必须带有0x前缀，否则一直返回false)，检查给定bid的校验和
-  Params:
-  	- bid string
-
-  Returns:
-  	- bool,如果地址的校验和有效则为true，否则为false
-
-  Call permissions: Anyone
-*/
-func (util *Utils) CheckBidChecksum(bid string) bool {
-	unCheckBid := HexToAddress(bid).Hex()
-	return bid == unCheckBid
-}
-
-/*
-  IsBid:
-   	EN - Checks if a given string is a valid Bif bid. It will also check the checksum, if the bid has upper and lowercase letters.
-	CN - 检查给定的字符串是否为有效的Bid。 如果Bid包含大小写字母，它还将检查校验和。(如果全是hex表示，则必须带有0x前缀)
-  Params:
-  	- bid string
-
-  Returns:
-  	- bool,如果为有效的bid则返回true，否则为false
-
-  Call permissions: Anyone
-*/
-func (util *Utils) IsBid(bid string) bool {
-	if Has0xPrefix(bid) {
-		bid = bid[2:]
-		return longBidCheck(bid)
-	} else if HasDidBidPrefix(bid) {
-		bid = bid[8:]
-		return shortBidCheck(bid)
-	}
-	return false
-}
-
-func longBidCheck(bid string) bool {
-	res1, _ := regexp.Compile("^[A-F, a-f0-9]{40}$")
-	res2, _ := regexp.Compile("^[a-f, 0-9]{40}$")
-	res3, _ := regexp.Compile("^[A-F, 0-9]{40}$")
-	if !res1.MatchString(bid) {
-		return false
-	} else if res2.MatchString(bid) || res3.MatchString(bid) {
-		return true
-	} else {
-		return bid == HexToAddress(bid).Hex()
-	}
-}
-
-func shortBidCheck(bid string) bool {
-	res1, _ := regexp.Compile("^[A-F, a-f0-9]{24}$")
-	res2, _ := regexp.Compile("^[a-f, 0-9]{24}$")
-	res3, _ := regexp.Compile("^[A-F, 0-9]{24}$")
-	if !res1.MatchString(bid) {
-		return false
-	} else if res2.MatchString(bid) || res3.MatchString(bid) {
-		return true
-	} else {
-		bid = "0x6469643A6269643A" + bid
-		return bid == HexToAddress(bid).Hex()
-	}
-}
-
-/*
-  ToChecksumBid:
-   	EN - convert bid to a checksum bid
-	CN - 将bid转换为校验和bid
-  Params:
-  	- bid string
-
-  Returns:
-  	- string 校验和bid
-
-  Call permissions: Anyone
-*/
-func (util *Utils) ToChecksumBid(bid string) string {
-	return HexToAddress(bid).Hex()
 }
 
 /*
