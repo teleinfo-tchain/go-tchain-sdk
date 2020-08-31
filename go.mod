@@ -17,4 +17,5 @@ require (
 	golang.org/x/sys v0.0.0-20200219091948-cb0a6d8edb6c
 	google.golang.org/genproto v0.0.0-20200218151345-dad8c97a84f5
 	gopkg.in/check.v1 v1.0.0-20200227125254-8fa46927fb4f
+	github.com/libp2p/go-libp2p-core v0.5.2
 )

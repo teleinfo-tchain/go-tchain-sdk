@@ -88,7 +88,7 @@ func TestGetPublicKeyFromPrivate(t *testing.T) {
 	for _, test := range []struct {
 		privateKey string
 		isSM2      bool
-		want               string
+		want       string
 	}{
 		{"89b9c1cfc8ab8937cfda96393d4cf2f9789b824c75ff8eaeeeebd572193bec38", true, "0x0102d53a8080379bb6499966687a9fccd3ac0641010eb53c983b9dd7f6a0c860b1665275b26d616eecee10d7bd03755c31c4e1ab7ca45e3b7b266442f7f64efa03"},
 		{"e4b4a35bee3d92a0b07f16e3253ae8459e817305514dcd0ed0c64342312b41d8", false, "0x043ee1708e4b431e71b1cc596c15425b8e889b80ec120840b6dd998a3a6397142405875eebe6b3488723e6ad3c5c7397c42c57696ac1e2fa925c0a1f6a61fc20a7"},
@@ -99,7 +99,7 @@ func TestGetPublicKeyFromPrivate(t *testing.T) {
 			t.FailNow()
 		}
 		// t.Log("publicKey len is ", len(publicKey[2:]))
-		if publicKey != test.want{
+		if publicKey != test.want {
 			t.Logf("want publicKey is : %s , result is %s \n", test.want, publicKey)
 		}
 	}
@@ -123,9 +123,31 @@ func TestGetGetPublicKeyFromFile(t *testing.T) {
 			t.FailNow()
 		}
 		// t.Log("publicKey len is ", len(publicKey[2:]))
-		if publicKey != test.want{
+		if publicKey != test.want {
 			t.Logf("want publicKey is : %s , result is %s \n", test.want, publicKey)
 		}
+	}
+
+}
+
+// keyStorePath, password, host string, isSM2 bool, port uint64
+func TestGenerateNodeUrl(t *testing.T) {
+	for _, test := range []struct {
+		storeKeyDir string
+		isSm2       bool
+		password    string
+		host        string
+		port        uint64
+	}{
+		{"./keystore/UTC--2020-08-19T05-48-46.004537900Z--did-bid-EFTTQWPMdtghuZByPsfQAUuPkWkWYb", true, "teleinfo", "127.0.0.1", 55555},
+		{"./keystore/UTC--2020-08-19T05-48-46.004537900Z--did-bid-EFTTQWPMdtghuZByPsfQAUuPkWkWYb", false, "teleinfo", "127.0.0.1", 55555},
+	} {
+		nodeUrl, err := account.GenerateNodeUrl(test.storeKeyDir, test.password, test.host, test.isSm2, test.port)
+		if err != nil {
+			t.Error(err)
+			t.FailNow()
+		}
+		t.Logf("nodeUrl is : %s \n",nodeUrl)
 	}
 
 }
