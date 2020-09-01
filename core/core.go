@@ -16,6 +16,7 @@ package core
 
 import (
 	"errors"
+	"fmt"
 	"github.com/bif/bif-sdk-go/core/block"
 	"github.com/bif/bif-sdk-go/dto"
 	"github.com/bif/bif-sdk-go/providers"
@@ -629,7 +630,7 @@ func (core *Core) GetBlockTransactionCountByNumber(blockNumber string) (uint64, 
  	CN - 根据区块号返回区块的信息
   Params:
 	- blockNumber, string, options are:
-	 (1) HEX String - an integer block number
+	 (1) String - an integer block number
 	 (2) String "latest" - for the latest mined block
 	 (3) String "pending" - for the pending state/transactions
   	- transactionDetails,bool, 如果为True，返回区块内详细的交易信息和其他信息；如果为false则仅返回区块内交易hash和其他信息
@@ -643,7 +644,21 @@ func (core *Core) GetBlockTransactionCountByNumber(blockNumber string) (uint64, 
 func (core *Core) GetBlockByNumber(blockNumber string, transactionDetails bool) (interface{}, error) {
 
 	params := make([]interface{}, 2)
-	params[0] = blockNumber
+
+	switch blockNumber {
+	case "latest":
+		params[0] = blockNumber
+	case "pending":
+		params[0] = blockNumber
+	default:
+		number := new(big.Int)
+		_, ok := number.SetString(blockNumber, 0)
+		if ok {
+			params[0] = fmt.Sprintf("0x%x", number)
+		}else{
+			return nil, errors.New("invalid blockNumber")
+		}
+	}
 	params[1] = transactionDetails
 
 	pointer := &dto.CoreRequestResult{}
@@ -884,7 +899,6 @@ func (core *Core) GetPendingTransactions() ([]*dto.TransactionResponse, error) {
 
 	return pointer.ToPendingTransactions()
 }
-
 
 /*
   GetTransactionByHash:

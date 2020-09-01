@@ -37,7 +37,7 @@ func TestCoreGetBlockByNumber(t *testing.T) {
 			t.Error(err)
 			t.FailNow()
 		}
-		block, err := connection.Core.GetBlockByNumber(fmt.Sprintf("0x%x", 5213), test.transactionDetails)
+		block, err := connection.Core.GetBlockByNumber("pending", test.transactionDetails)
 
 		if err != nil {
 			t.Error(err)
