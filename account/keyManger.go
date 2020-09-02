@@ -328,7 +328,8 @@ func CheckPublicKeyToAccount(account, publicKey string) (bool, error) {
 	return true, nil
 }
 
-func GenerateNodeUrlFromKeyStore(keyStorePath, password, host string, isSM2 bool, port uint64) (string, error) {
+// 节点的私钥全部是采用SECP256K1的方式生成的，解密也是按照这个方式
+func GenerateNodeUrlFromKeyStore(nodePrivateKeyPath, password, host string, port uint64) (string, error) {
 	if !isLegalIP(host) {
 		return "", errors.New("host is illegal")
 	}
@@ -336,18 +337,12 @@ func GenerateNodeUrlFromKeyStore(keyStorePath, password, host string, isSM2 bool
 		return "", errors.New("port should be in range 0 to 65535")
 	}
 
-	keyJson, err := ioutil.ReadFile(keyStorePath)
+	keyJson, err := ioutil.ReadFile(nodePrivateKeyPath)
 	if err != nil {
 		return "", err
 	}
 
-	var key *keystore.Key
-
-	if isSM2 {
-		key, err = keystore.DecryptKey(keyJson, password, crypto.SM2)
-	} else {
-		key, err = keystore.DecryptKey(keyJson, password, crypto.SECP256K1)
-	}
+	key, err := keystore.DecryptKey(keyJson, password, crypto.SECP256K1)
 
 	if err != nil {
 		return "", err

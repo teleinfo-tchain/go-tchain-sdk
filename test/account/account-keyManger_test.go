@@ -133,16 +133,14 @@ func TestGetGetPublicKeyFromFile(t *testing.T) {
 // keyStorePath, password, host string, isSM2 bool, port uint64
 func TestGenerateNodeUrlFromKeyStore(t *testing.T) {
 	for _, test := range []struct {
-		storeKeyDir string
-		isSm2       bool
-		password    string
-		host        string
-		port        uint64
+		nodePrivateKeyPath string
+		password           string
+		host               string
+		port               uint64
 	}{
-		{"./keystore/UTC--2020-08-19T05-48-44.625362500Z--did-bid-ZFT4CziA2ktCNgfQPqSm1GpQxSck5q4", true, "teleinfo", "127.0.0.1", 55555},
-		{"./keystore/UTC--2020-08-19T05-48-46.004537900Z--did-bid-EFTTQWPMdtghuZByPsfQAUuPkWkWYb", false, "teleinfo", "127.0.0.1", 55555},
+		{"./keystore/UTC--2020-08-19T05-48-46.004537900Z--did-bid-EFTTQWPMdtghuZByPsfQAUuPkWkWYb", "teleinfo", "127.0.0.1", 55555},
 	} {
-		nodeUrl, err := account.GenerateNodeUrlFromKeyStore(test.storeKeyDir, test.password, test.host, test.isSm2, test.port)
+		nodeUrl, err := account.GenerateNodeUrlFromKeyStore(test.nodePrivateKeyPath, test.password, test.host, test.port)
 		if err != nil {
 			t.Error(err)
 			t.FailNow()
