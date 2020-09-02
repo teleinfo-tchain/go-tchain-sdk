@@ -328,7 +328,7 @@ func CheckPublicKeyToAccount(account, publicKey string) (bool, error) {
 	return true, nil
 }
 
-func GenerateNodeUrl(keyStorePath, password, host string, isSM2 bool, port uint64) (string, error) {
+func GenerateNodeUrlFromKeyStore(keyStorePath, password, host string, isSM2 bool, port uint64) (string, error) {
 	if !isLegalIP(host) {
 		return "", errors.New("host is illegal")
 	}
@@ -370,4 +370,32 @@ func isLegalIP(ip string) bool {
 	reg, _ := regexp.Compile(ipRegEx)
 	// Matcher
 	return reg.MatchString(ip)
+}
+
+func GenerateNodeUrlFromPrivateKey(privateKey, host string, port uint64) (string, error) {
+	if !isLegalIP(host) {
+		return "", errors.New("host is illegal")
+	}
+	if port > 65535 {
+		return "", errors.New("port should be in range 0 to 65535")
+	}
+
+	if utils.Has0xPrefix(privateKey) {
+		privateKey = privateKey[2:]
+	}
+
+	if !utils.IsHex(privateKey) || len(privateKey) != 64 {
+		return "", errors.New("privateKey is not hex string or not 32 Bytes")
+	}
+
+	privateKeyN, err := crypto.HexToECDSA(privateKey, crypto.SECP256K1)
+	if err != nil {
+		return "", err
+	}
+	var peerId libp2pcorepeer.ID
+	if peerId, err = libp2pcorepeer.IDFromPrivateKey((*libp2pcorecrypto.Secp256k1PrivateKey)(privateKeyN)); err != nil {
+		return "", err
+	}
+
+	return fmt.Sprintf("/ip4/%s/tcp/%d/p2p/%s", host, port, peerId.String()), nil
 }

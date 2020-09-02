@@ -131,7 +131,7 @@ func TestGetGetPublicKeyFromFile(t *testing.T) {
 }
 
 // keyStorePath, password, host string, isSM2 bool, port uint64
-func TestGenerateNodeUrl(t *testing.T) {
+func TestGenerateNodeUrlFromKeyStore(t *testing.T) {
 	for _, test := range []struct {
 		storeKeyDir string
 		isSm2       bool
@@ -139,15 +139,34 @@ func TestGenerateNodeUrl(t *testing.T) {
 		host        string
 		port        uint64
 	}{
-		{"./keystore/UTC--2020-08-19T05-48-46.004537900Z--did-bid-EFTTQWPMdtghuZByPsfQAUuPkWkWYb", true, "teleinfo", "127.0.0.1", 55555},
+		{"./keystore/UTC--2020-08-19T05-48-44.625362500Z--did-bid-ZFT4CziA2ktCNgfQPqSm1GpQxSck5q4", true, "teleinfo", "127.0.0.1", 55555},
 		{"./keystore/UTC--2020-08-19T05-48-46.004537900Z--did-bid-EFTTQWPMdtghuZByPsfQAUuPkWkWYb", false, "teleinfo", "127.0.0.1", 55555},
 	} {
-		nodeUrl, err := account.GenerateNodeUrl(test.storeKeyDir, test.password, test.host, test.isSm2, test.port)
+		nodeUrl, err := account.GenerateNodeUrlFromKeyStore(test.storeKeyDir, test.password, test.host, test.isSm2, test.port)
 		if err != nil {
 			t.Error(err)
 			t.FailNow()
 		}
-		t.Logf("nodeUrl is : %s \n",nodeUrl)
+		t.Logf("nodeUrl is : %s \n", nodeUrl)
+	}
+
+}
+
+func TestGenerateNodeUrlFromPrivateKey(t *testing.T) {
+	for _, test := range []struct {
+		privateKey string
+		host       string
+		port       uint64
+	}{
+		{"6fc71b424542603b40732a1cff4504318cd0625f1e1b3553cc4ed3d385c3c463", "127.0.0.1", 55555},
+		{"d4b8727f468ecd8c2a809b99658f243b268ef2b36d3e0e7f9d9bac9fc8fa78e9", "127.0.0.1", 55555},
+	} {
+		nodeUrl, err := account.GenerateNodeUrlFromPrivateKey(test.privateKey, test.host, test.port)
+		if err != nil {
+			t.Error(err)
+			t.FailNow()
+		}
+		t.Logf("nodeUrl is : %s \n", nodeUrl)
 	}
 
 }
