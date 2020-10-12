@@ -24,14 +24,28 @@ type personal struct {
 }
 
 type wallet struct {
-	Status    string    `json:"status"`
-	TimeStamp uint64    `json:"timestamp"`
-	Accounts  []account `json:"wallet"`
+	Status     string    `json:"status"`
+	WalletInfo string    `json:"walletInfo"`
+	Accounts   []account `json:"wallet"`
 }
 
 type account struct {
-	Address   string `json:"address"`
-	TimeStamp uint64 `json:"timestamp"`
+	Address string `json:"address"`
+}
+
+func (acc *account) UnmarshalJSON(data []byte) error {
+	type Alias account
+	temp := &struct {
+		*Alias
+	}{
+		Alias: (*Alias)(acc),
+	}
+
+	if err := json.Unmarshal(data, &temp); err != nil {
+		return err
+	}
+
+	return nil
 }
 
 func checkResponse(pointer *dto.RequestResult) error {
@@ -166,11 +180,12 @@ func (p *personal) personalUnLockAccount(address, password string, duration uint
 	return pointer.ToBoolean()
 }
 
-func (p *personal) personalExportToFile(address string) (bool, error) {
+func (p *personal) personalExportToFile(address, pathDir string) (bool, error) {
 	pointer := &dto.RequestResult{}
 
-	params := make([]string, 1)
+	params := make([]string, 2)
 	params[0] = address
+	params[1] = pathDir
 
 	err := p.provider.SendRequest(pointer, "personal_exportToFile", params)
 	if err != nil {
@@ -180,10 +195,13 @@ func (p *personal) personalExportToFile(address string) (bool, error) {
 	return pointer.ToBoolean()
 }
 
-func (p *personal) personalBatchExportToFiles() (bool, error) {
+func (p *personal) personalBatchExportToFiles(pathDir string) (bool, error) {
 	pointer := &dto.RequestResult{}
 
-	err := p.provider.SendRequest(pointer, "personal_batchExportToFiles", nil)
+	params := make([]string, 1)
+	params[0] = pathDir
+
+	err := p.provider.SendRequest(pointer, "personal_batchExportToFiles", params)
 	if err != nil {
 		return false, err
 	}
@@ -191,11 +209,12 @@ func (p *personal) personalBatchExportToFiles() (bool, error) {
 	return pointer.ToBoolean()
 }
 
-func (p *personal) personalImportByFile(fileName string) (string, error) {
+func (p *personal) personalImportByFile(fileName, pathDir string) (string, error) {
 	pointer := &dto.RequestResult{}
 
-	params := make([]string, 1)
+	params := make([]string, 2)
 	params[0] = fileName
+	params[1] = pathDir
 
 	err := p.provider.SendRequest(pointer, "personal_importByFile", params)
 	if err != nil {
@@ -205,10 +224,13 @@ func (p *personal) personalImportByFile(fileName string) (string, error) {
 	return pointer.ToString()
 }
 
-func (p *personal) personaBatchImportByFiles() (string, error) {
+func (p *personal) personaBatchImportByFiles(pathDir string) (string, error) {
 	pointer := &dto.RequestResult{}
 
-	err := p.provider.SendRequest(pointer, "personal_batchImportByFiles", nil)
+	params := make([]string, 1)
+	params[0] = pathDir
+
+	err := p.provider.SendRequest(pointer, "personal_batchImportByFiles", params)
 	if err != nil {
 		return "", err
 	}
@@ -234,6 +256,7 @@ func TestPersonalListWallets(t *testing.T) {
 	var connection = newPersonal(providers.NewHTTPProvider(resources.IP+":"+resources.Port, 10, false))
 
 	res, err := connection.personalListWallets()
+
 	if err != nil {
 		t.Logf("errr is %s ", err)
 	}
@@ -268,14 +291,13 @@ func TestPersonalImportRawKey(t *testing.T) {
 		cryptoTypeNumber uint64
 	}{
 		{"41e46e858ea707453d8fc553805772165a4f66e6e18ca38220daa157534e0c0e", "teleinfo", 1},
-		{"e4b4a35bee3d92a0b07f16e3253ae8459e817305514dcd0ed0c64342312b41d8", "teleinfo", 1},
 	} {
 		res, err := connection.personalImportRawKey(test.privateKey, test.password, test.cryptoTypeNumber)
 		if err != nil {
 			t.Logf("error is %s ", err)
 			t.Fail()
 		}
-		fmt.Println(res)
+		t.Log(res)
 	}
 
 }
@@ -287,7 +309,7 @@ func TestPersonalLockAccount(t *testing.T) {
 	for _, test := range []struct {
 		address string
 	}{
-		{"did:bid:EFT2suqPzBNXn4UQgZqnMrm5wVUeSHZ"},
+		{"did:bid:ZFT4Y87Xdg83GEDDbiNknHLWs3Hfq58"},
 	} {
 		res, err := connection.personalLockAccount(test.address)
 		if err != nil {
@@ -295,13 +317,6 @@ func TestPersonalLockAccount(t *testing.T) {
 		}
 		fmt.Println(res)
 	}
-	// var s = "did:bid:EFTTQWPMdtghuZByPsfQAUuPkWkWYb"
-	// fmt.Print(utils.StringToAddress(s))
-	// var s = "did:bid:EFTVcqqKyFR17jfPxqwEtpmRpbkvSs"
-	// fmt.Print(utils.StringToAddress(s))
-	// var s = "0x6469643a6269643a454654236aa844ae1d491613886ce846e98197c329fc88"
-	// fmt.Print(utils.BytesToAddress(utils.FromHex(s)).String())
-
 }
 
 // unlock账户
@@ -314,7 +329,7 @@ func TestPersonalUnLockAccount(t *testing.T) {
 		password string
 		duration uint64
 	}{
-		{"did:bid:EFT2suqPzBNXn4UQgZqnMrm5wVUeSHZ", "node", 500},
+		{"did:bid:ZFT4Y87Xdg83GEDDbiNknHLWs3Hfq58", "node", 50},
 	} {
 		res, err := connection.personalUnLockAccount(test.address, test.password, test.duration)
 		if err != nil {
@@ -322,13 +337,6 @@ func TestPersonalUnLockAccount(t *testing.T) {
 		}
 		t.Log(res)
 	}
-	// s := "did:bid:EFTVcqqKyFR17jfPxqwEtpmRpbkvSs"
-	// t.Log(utils.StringToAddress(s))
-	// s1 := "0x6469643a6269643a45465420ada4b72b3566dde0997be1886c8621823fe224"
-	// s2 := "0x6469643a6269643a5a46541fac425516f570594e0928a858622aa63dca9a0a"
-	// fmt.Println(utils.BytesToAddress(utils.FromHex(s1)).String())
-	// fmt.Println(utils.BytesToAddress(utils.FromHex(s2)).String())
-	// [did:bid:EFTTQWPMdtghuZByPsfQAUuPkWkWYb did:bid:EFTVcqqKyFR17jfPxqwEtpmRpbkvSs did:bid:ZFTSbPT23z4rQk5nQemFi2Yh33hjJh]
 }
 
 func TestPersonalExportToFile(t *testing.T) {
@@ -336,44 +344,26 @@ func TestPersonalExportToFile(t *testing.T) {
 	for _, test := range []struct {
 		address string
 	}{
-		{"did:bid:EFT2Nb2XxXbTakeif5MXKbGR2bXcNL3"},
-		{"did:bid:EFT2azch7FkdT2YwE5JdsANm33itrha"},
-		{"did:bid:ZFTExsofuzLndNueEhtiStL8QAUVcU"},
 		{"did:bid:EFTVcqqKyFR17jfPxqwEtpmRpbkvSs"},
 	} {
-		res, err := connection.personalExportToFile(test.address)
+		pathDir := "keyStoreTest"
+		res, err := connection.personalExportToFile(test.address, pathDir)
 		if err != nil {
 			t.Logf("error is %s ", err)
 		}
-		fmt.Println(res)
+		t.Log(res)
 	}
 }
 
-// {"publicKey":"P374SgrSYmCLNCMty7EBvcRoNfwd9e7geH5yXnz96XuL",
-// "crypto":{"cipher":"aes-128-ctr","cipherText":"a9368f1eb1b0c9f30dcc8f62ecd2ecea301114d35581a3ac58142ee67884698f",
-// "cipherParams":{"iv":"124f975eeeb63bf3d0b2deaab63b0971"},"kdf":"scrypt",
-// "kdfParams":{"dklen":32,"n":262144,"p":1,"r":8,
-// "salt":"d1fe77152ea600576430a93408c6c846b94460208a1d3fb124bfded3737ef3ba"},
-// "mac":"4d00be8a5449afa7e923b1fa948422081b368e2cb7804e479921091a11107278"},
-// "id":"6be1704e-ba3e-430e-bdd1-3eab0eb0a57c",
-// "version":3}
-
-// {"publicKey":"P374SgrSYmCLNCMty7EBvcRoNfwd9e7geH5yXnz96XuL",
-// "crypto":{"cipher":"aes-128-ctr","cipherText":"a9368f1eb1b0c9f30dcc8f62ecd2ecea301114d35581a3ac58142ee67884698f",
-// "cipherParams":{"iv":"124f975eeeb63bf3d0b2deaab63b0971"},"kdf":"scrypt",
-// "kdfParams":{"dklen":32,"n":262144,"p":1,"r":8,
-// "salt":"d1fe77152ea600576430a93408c6c846b94460208a1d3fb124bfded3737ef3ba"},
-// "mac":"4d00be8a5449afa7e923b1fa948422081b368e2cb7804e479921091a11107278"},
-// "id":"6be1704e-ba3e-430e-bdd1-3eab0eb0a57c","version":3}d7-42ca-92ba-7a3771152e19","version":3}
 func TestPersonalBatchExportToFiles(t *testing.T) {
 	var connection = newPersonal(providers.NewHTTPProvider(resources.IP+":"+resources.Port, 10, false))
 
-	res, err := connection.personalBatchExportToFiles()
+	pathDir := "keyStoreTest"
+	res, err := connection.personalBatchExportToFiles(pathDir)
 	if err != nil {
 		t.Logf("error is %s ", err)
 	}
 	t.Log(res)
-	// 	did:bid:ZFTExsofuzLndNueEhtiStL8QAUVcU
 }
 
 func TestPersonalImportByFile(t *testing.T) {
@@ -381,9 +371,10 @@ func TestPersonalImportByFile(t *testing.T) {
 	for _, test := range []struct {
 		fileName string
 	}{
-		{"did-bid-EFTrtGAgTG8ja5MgRMMXohtkSq66Nb"},
+		{"did-bid-ZFT2PCJNq86pLGrsmHzSYewTxrGHPKq"},
 	} {
-		address, err := connection.personalImportByFile(test.fileName)
+		pathDir := "keyStoreTest"
+		address, err := connection.personalImportByFile(test.fileName, pathDir)
 		if err != nil {
 			t.Logf("error is %s ", err)
 		}
@@ -394,7 +385,8 @@ func TestPersonalImportByFile(t *testing.T) {
 func TestPersonaBatchImportByFiles(t *testing.T) {
 	var connection = newPersonal(providers.NewHTTPProvider(resources.IP+":"+resources.Port, 10, false))
 
-	res, err := connection.personaBatchImportByFiles()
+	pathDir := "keyStoreTest"
+	res, err := connection.personaBatchImportByFiles(pathDir)
 	if err != nil {
 		t.Logf("error is %s ", err)
 	}
@@ -413,6 +405,7 @@ func TestCoreSendTransaction(t *testing.T) {
 	}
 
 	t.Log(generator)
+	generator = "did:bid:EFTVcqqKyFR17jfPxqwEtpmRpbkvSs"
 	fmt.Println(connection.Core.GetBlockNumber())
 
 	balanceFrom, err := connection.Core.GetBalance(generator, block.LATEST)
@@ -422,36 +415,35 @@ func TestCoreSendTransaction(t *testing.T) {
 		t.Log("fromAddress balance is ", balBif)
 	}
 
-	toAddress := "did:bid:EFTrtGAgTG8ja5MgRMMXohtkSq66Nb"
+	toAddress := "did:bid:ZFT4Y87Xdg83GEDDbiNknHLWs3Hfq58"
 	balanceTo, err := connection.Core.GetBalance(toAddress, block.LATEST)
 	if err == nil {
 		util := utils.NewUtils()
 		balBif, _ := util.FromWei(balanceTo)
 		t.Log("toAddress balance is ", balBif)
 	}
-	//
-	// transaction := new(dto.TransactionParameters)
-	// transaction.From = generator
-	// transaction.To = toAddress
-	// transaction.Value = big.NewInt(0).Mul(big.NewInt(1), big.NewInt(1e17))
-	// transaction.Gas = big.NewInt(40000)
-	// transaction.Data = "Transfer test"
-	//
-	// txID, err := connection.Core.SendTransaction(transaction)
-	//
-	// // Wait for a block
-	// time.Sleep(time.Second)
-	//
-	// if err != nil {
-	// 	t.Errorf("Failed SendTransaction")
-	// 	t.Error(err)
-	// 	t.FailNow()
-	// }
-	//
-	// // if success, get transaction hash
-	// t.Log(txID)
-}
 
+	transaction := new(dto.TransactionParameters)
+	transaction.From = generator
+	transaction.To = toAddress
+	transaction.Value = big.NewInt(0).Mul(big.NewInt(1), big.NewInt(1e17))
+	transaction.Gas = big.NewInt(40000)
+	transaction.Data = "Transfer test"
+
+	txID, err := connection.Core.SendTransaction(transaction)
+
+	// Wait for a block
+	time.Sleep(time.Second)
+
+	if err != nil {
+		t.Errorf("Failed SendTransaction")
+		t.Error(err)
+		t.FailNow()
+	}
+
+	// if success, get transaction hash
+	t.Log(txID)
+}
 
 // 测试部署合约(只是为了测试部署合约，实际使用contract中的Deploy)
 func TestCoreSendTransactionDeployContract(t *testing.T) {
