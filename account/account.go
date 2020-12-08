@@ -89,9 +89,6 @@ func (account *Account) getTransactionCount(publicAddr string) (uint64, error) {
 }
 
 func (account *Account) preCheckTx(signData *SignTxParams, privateKey string, isSM2 bool) (*txData, error) {
-	if signData.Version == 0{
-		return nil, errors.New("version should be greater than 0")
-	}
 
 	var recipient utils.Address
 	// 校验地址
@@ -152,7 +149,6 @@ func (account *Account) preCheckTx(signData *SignTxParams, privateKey string, is
 	}
 
 	tx := &txData{
-		Version:      signData.Version,
 		ChainId:      signData.ChainId,
 		AccountNonce: signData.Nonce,
 		Price:        signData.GasPrice,

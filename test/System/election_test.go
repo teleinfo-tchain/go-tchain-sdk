@@ -53,7 +53,6 @@ func TestRegisterWitness(t *testing.T) {
 	sysTxParams.Gas = 2000000
 	sysTxParams.Nonce = nonce.Uint64()
 	sysTxParams.ChainId = chainId
-	sysTxParams.Version = 1
 
 	elect := connection.System.NewElection()
 
@@ -75,7 +74,7 @@ func TestRegisterWitness(t *testing.T) {
 // 取消成为候选者节点
 func TestUnRegisterWitness(t *testing.T) {
 	var connection = bif.NewBif(providers.NewHTTPProvider(resources.IP+":"+resources.Port, 10, false))
-	chainId, err := connection.Core.GetChainId()
+	_, err := connection.Core.GetChainId()
 	if err != nil {
 		t.Log(err)
 		t.FailNow()
@@ -105,8 +104,6 @@ func TestUnRegisterWitness(t *testing.T) {
 	sysTxParams.GasPrice = big.NewInt(35)
 	sysTxParams.Gas = 2000000
 	sysTxParams.Nonce = nonce.Uint64()
-	sysTxParams.ChainId = chainId
-	sysTxParams.Version = 1
 
 	elect := connection.System.NewElection()
 
@@ -191,7 +188,6 @@ func TestVoteWitnesses(t *testing.T) {
 	sysTxParams.Gas = 2000000
 	sysTxParams.Nonce = nonce.Uint64()
 	sysTxParams.ChainId = chainId
-	sysTxParams.Version = 1
 
 	elect := connection.System.NewElection()
 
@@ -237,7 +233,6 @@ func TestElectCancelVote(t *testing.T) {
 	sysTxParams.Gas = 2000000
 	sysTxParams.Nonce = nonce.Uint64()
 	sysTxParams.ChainId = chainId
-	sysTxParams.Version = 1
 
 	elect := connection.System.NewElection()
 
@@ -284,7 +279,6 @@ func TestStartProxy(t *testing.T) {
 	sysTxParams.Gas = 2000000
 	sysTxParams.Nonce = nonce.Uint64()
 	sysTxParams.ChainId = chainId
-	sysTxParams.Version = 1
 
 	elect := connection.System.NewElection()
 
@@ -331,7 +325,6 @@ func TestStopProxy(t *testing.T) {
 	sysTxParams.Gas = 2000000
 	sysTxParams.Nonce = nonce.Uint64()
 	sysTxParams.ChainId = chainId
-	sysTxParams.Version = 1
 
 	elect := connection.System.NewElection()
 
@@ -379,7 +372,6 @@ func TestCancelProxy(t *testing.T) {
 	sysTxParams.Gas = 2000000
 	sysTxParams.Nonce = nonce.Uint64()
 	sysTxParams.ChainId = chainId
-	sysTxParams.Version = 1
 
 	elect := connection.System.NewElection()
 
@@ -427,8 +419,6 @@ func TestSetProxy(t *testing.T) {
 	sysTxParams.Gas = 2000000
 	sysTxParams.Nonce = nonce.Uint64()
 	sysTxParams.ChainId = chainId
-	sysTxParams.Version = 1
-
 	elect := connection.System.NewElection()
 
 	proxy := resources.NewAddrZ
@@ -476,7 +466,6 @@ func TestStake(t *testing.T) {
 	sysTxParams.Gas = 2000000
 	sysTxParams.Nonce = nonce.Uint64()
 	sysTxParams.ChainId = chainId
-	sysTxParams.Version = 1
 
 	elect := connection.System.NewElection()
 
@@ -524,7 +513,6 @@ func TestUnStake(t *testing.T) {
 	sysTxParams.Gas = 2000000
 	sysTxParams.Nonce = nonce.Uint64()
 	sysTxParams.ChainId = chainId
-	sysTxParams.Version = 1
 
 	elect := connection.System.NewElection()
 
@@ -617,7 +605,6 @@ func TestElectionExtractOwnBounty(t *testing.T) {
 	sysTxParams.Gas = 2000000
 	sysTxParams.Nonce = nonce.Uint64()
 	sysTxParams.ChainId = chainId
-	sysTxParams.Version = 1
 
 	elect := connection.System.NewElection()
 
@@ -664,7 +651,6 @@ func TestIssueAdditionalBounty(t *testing.T) {
 	sysTxParams.Gas = 2000000
 	sysTxParams.Nonce = nonce.Uint64()
 	sysTxParams.ChainId = chainId
-	sysTxParams.Version = 1
 
 	elect := connection.System.NewElection()
 

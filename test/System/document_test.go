@@ -45,7 +45,6 @@ func TestInit(t *testing.T) {
 	sysTxParams.GasPrice = big.NewInt(35)
 	sysTxParams.Gas = 2000000
 	sysTxParams.ChainId = chainId
-	sysTxParams.Version = 1
 
 	doc := connection.System.NewDoc()
 
@@ -91,7 +90,6 @@ func TestSetBidName(t *testing.T) {
 	sysTxParams.Gas = 2000000
 	sysTxParams.Nonce = nonce.Uint64()
 	sysTxParams.ChainId = chainId
-	sysTxParams.Version = 1
 
 	doc := connection.System.NewDoc()
 
@@ -169,7 +167,6 @@ func TestAddPublic(t *testing.T) {
 	sysTxParams.Gas = 2000000
 	sysTxParams.Nonce = nonce.Uint64()
 	sysTxParams.ChainId = chainId
-	sysTxParams.Version = 1
 
 	doc := connection.System.NewDoc()
 	// 0x043ee1708e4b431e71b1cc596c15425b8e889b80ec120840b6dd998a3a6397142405875eebe6b3488723e6ad3c5c7397c42c57696ac1e2fa925c0a1f6a61fc20a7
@@ -215,7 +212,6 @@ func TestDelPublic(t *testing.T) {
 	sysTxParams.Gas = 2000000
 	sysTxParams.Nonce = nonce.Uint64()
 	sysTxParams.ChainId = chainId
-	sysTxParams.Version = 1
 
 	doc := connection.System.NewDoc()
 
@@ -261,7 +257,6 @@ func TestAddAuth(t *testing.T) {
 	sysTxParams.Gas = 2000000
 	sysTxParams.Nonce = nonce.Uint64()
 	sysTxParams.ChainId = chainId
-	sysTxParams.Version = 1
 
 	doc := connection.System.NewDoc()
 
@@ -307,7 +302,6 @@ func TestDelAuth(t *testing.T) {
 	sysTxParams.Gas = 2000000
 	sysTxParams.Nonce = nonce.Uint64()
 	sysTxParams.ChainId = chainId
-	sysTxParams.Version = 1
 
 	doc := connection.System.NewDoc()
 
@@ -353,7 +347,6 @@ func TestAddService(t *testing.T) {
 	sysTxParams.Gas = 2000000
 	sysTxParams.Nonce = nonce.Uint64()
 	sysTxParams.ChainId = chainId
-	sysTxParams.Version = 1
 
 	doc := connection.System.NewDoc()
 
@@ -399,7 +392,6 @@ func TestDelService(t *testing.T) {
 	sysTxParams.Gas = 2000000
 	sysTxParams.Nonce = nonce.Uint64()
 	sysTxParams.ChainId = chainId
-	sysTxParams.Version = 1
 
 	doc := connection.System.NewDoc()
 
@@ -445,7 +437,6 @@ func TestAddProof(t *testing.T) {
 	sysTxParams.Gas = 2000000
 	sysTxParams.Nonce = nonce.Uint64()
 	sysTxParams.ChainId = chainId
-	sysTxParams.Version = 1
 
 	doc := connection.System.NewDoc()
 
@@ -491,7 +482,6 @@ func TestDelProof(t *testing.T) {
 	sysTxParams.Gas = 2000000
 	sysTxParams.Nonce = nonce.Uint64()
 	sysTxParams.ChainId = chainId
-	sysTxParams.Version = 1
 
 	doc := connection.System.NewDoc()
 
@@ -537,7 +527,6 @@ func TestAddExtra(t *testing.T) {
 	sysTxParams.Gas = 2000000
 	sysTxParams.Nonce = nonce.Uint64()
 	sysTxParams.ChainId = chainId
-	sysTxParams.Version = 1
 
 	doc := connection.System.NewDoc()
 
@@ -583,7 +572,6 @@ func TestDelExtra(t *testing.T) {
 	sysTxParams.Gas = 2000000
 	sysTxParams.Nonce = nonce.Uint64()
 	sysTxParams.ChainId = chainId
-	sysTxParams.Version = 1
 
 	doc := connection.System.NewDoc()
 
@@ -629,7 +617,6 @@ func TestEnable(t *testing.T) {
 	sysTxParams.Gas = 2000000
 	sysTxParams.Nonce = nonce.Uint64()
 	sysTxParams.ChainId = chainId
-	sysTxParams.Version = 1
 
 	doc := connection.System.NewDoc()
 
@@ -675,7 +662,6 @@ func TestDisable(t *testing.T) {
 	sysTxParams.Gas = 2000000
 	sysTxParams.Nonce = nonce.Uint64()
 	sysTxParams.ChainId = chainId
-	sysTxParams.Version = 1
 
 	doc := connection.System.NewDoc()
 

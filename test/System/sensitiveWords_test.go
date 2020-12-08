@@ -51,7 +51,6 @@ func TestAddWords(t *testing.T) {
 	sysTxParams.Gas = 2000000
 	sysTxParams.Nonce = nonce.Uint64()
 	sysTxParams.ChainId = chainId
-	sysTxParams.Version = 1
 
 	sen := connection.System.NewSensitiveWord()
 
@@ -98,7 +97,6 @@ func TestDelWord(t *testing.T) {
 	sysTxParams.Gas = 2000000
 	sysTxParams.Nonce = nonce.Uint64()
 	sysTxParams.ChainId = chainId
-	sysTxParams.Version = 1
 
 	sen := connection.System.NewSensitiveWord()
 

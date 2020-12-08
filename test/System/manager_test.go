@@ -51,7 +51,6 @@ func TestContractEnable(t *testing.T) {
 	sysTxParams.Gas = 2000000
 	sysTxParams.Nonce = nonce.Uint64()
 	sysTxParams.ChainId = chainId
-	sysTxParams.Version = 1
 
 	manager := connection.System.NewManager()
 
@@ -98,7 +97,6 @@ func TestContractDisable(t *testing.T) {
 	sysTxParams.Gas = 2000000
 	sysTxParams.Nonce = nonce.Uint64()
 	sysTxParams.ChainId = chainId
-	sysTxParams.Version = 1
 
 	manager := connection.System.NewManager()
 
@@ -145,7 +143,6 @@ func TestSetPower(t *testing.T) {
 	sysTxParams.Gas = 2000000
 	sysTxParams.Nonce = nonce.Uint64()
 	sysTxParams.ChainId = chainId
-	sysTxParams.Version = 1
 
 	manager := connection.System.NewManager()
 

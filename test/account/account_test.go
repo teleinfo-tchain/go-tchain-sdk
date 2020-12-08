@@ -160,7 +160,6 @@ func TestSignTransaction(t *testing.T) {
 			Value:    big.NewInt(50000000000),
 			Data:     nil,
 			ChainId:  0,
-			Version: 1,
 		}
 		res, err := connection.Account.SignTransaction(tx, test.privateKey, test.isSM2)
 

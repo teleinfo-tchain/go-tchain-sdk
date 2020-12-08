@@ -48,8 +48,6 @@ func TestPeerRegisterCertificate(t *testing.T) {
 	sysTxParams.KeyFileData = keyFileData
 	sysTxParams.GasPrice = big.NewInt(35)
 	sysTxParams.Gas = 2000000
-	sysTxParams.Version = 1
-
 
 	peerCer := connection.System.NewPeerCertificate()
 
@@ -122,7 +120,6 @@ func TestPeerRevokedCertificate(t *testing.T) {
 	sysTxParams.Gas = 2000000
 	sysTxParams.Nonce = nonce.Uint64()
 	sysTxParams.ChainId = chainId
-	sysTxParams.Version = 1
 
 	peerCer := connection.System.NewPeerCertificate()
 	transactionHash, err := peerCer.RevokedCertificate(sysTxParams, bid)

@@ -56,7 +56,6 @@ func TestRegisterCertificate(t *testing.T) {
 	sysTxParams.Gas = 2000000
 	sysTxParams.Nonce = nonce.Uint64()
 	sysTxParams.ChainId = chainId
-	sysTxParams.Version = 1
 
 	cer := connection.System.NewCertificate()
 
@@ -113,7 +112,6 @@ func TestRevokedCertificate(t *testing.T) {
 	sysTxParams.KeyFileData = keyFileData
 	sysTxParams.GasPrice = nil
 	sysTxParams.Gas = 2000000
-	sysTxParams.Version = 1
 
 	cer := connection.System.NewCertificate()
 
@@ -158,7 +156,6 @@ func TestRevokedCertificates(t *testing.T) {
 	sysTxParams.Gas = 2000000
 	sysTxParams.Nonce = nonce.Uint64()
 	sysTxParams.ChainId = chainId
-	sysTxParams.Version = 1
 
 	cer := connection.System.NewCertificate()
 

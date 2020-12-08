@@ -20,12 +20,10 @@ type SignTxParams struct {
 	Value    *big.Int
 	Data     []byte
 	ChainId  uint64
-	Version  uint64
 }
 
 type txData struct {
 	// todo：暂时默认Version为1，用于升级所用
-	Version      uint64         `json:"version"    gencodec:"required"`
 	ChainId      uint64         `json:"chainId"    gencodec:"required"`
 	AccountNonce uint64         `json:"nonce"    gencodec:"required"`
 	Price        *big.Int       `json:"gasPrice" gencodec:"required"`
@@ -60,7 +58,6 @@ type BIFSigner struct{}
 // It does not uniquely identify the transaction.
 func (bfs BIFSigner) Hash(tx *txData) utils.Hash {
 	return rlpHash([]interface{}{
-		tx.Version,
 		tx.ChainId,
 		tx.AccountNonce,
 		tx.Price,

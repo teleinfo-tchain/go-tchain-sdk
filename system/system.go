@@ -68,7 +68,6 @@ func (sys *System) prePareSignTransaction(signTxParams *SysTxParams, payLoad []b
 		Value:    nil,
 		Data:     payLoad,
 		ChainId:  signTxParams.ChainId,
-		Version:  signTxParams.Version,
 	}
 	signResult, err := sys.acc.SignTransaction(signTx, privateKey, signTxParams.IsSM2)
 	if err != nil {

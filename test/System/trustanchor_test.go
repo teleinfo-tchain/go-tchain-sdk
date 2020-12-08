@@ -36,7 +36,7 @@ const (
 
 func TestRegisterBaseTrustAnchor(t *testing.T) {
 	var connection = bif.NewBif(providers.NewHTTPProvider(resources.IP+":"+resources.Port, 10, false))
-	chainId, err := connection.Core.GetChainId()
+	_, err := connection.Core.GetChainId()
 	if err != nil {
 		t.Log(err)
 		t.FailNow()
@@ -66,8 +66,6 @@ func TestRegisterBaseTrustAnchor(t *testing.T) {
 	sysTxParams.GasPrice = big.NewInt(35)
 	sysTxParams.Gas = 2000000
 	sysTxParams.Nonce = nonce.Uint64()
-	sysTxParams.ChainId = chainId
-	sysTxParams.Version = 1
 
 	anchor := connection.System.NewTrustAnchor()
 
@@ -124,7 +122,6 @@ func TestRegisterExtendTrustAnchor(t *testing.T) {
 	sysTxParams.Gas = 2000000
 	sysTxParams.Nonce = nonce.Uint64()
 	sysTxParams.ChainId = chainId
-	sysTxParams.Version = 1
 
 	anchor := connection.System.NewTrustAnchor()
 
@@ -181,7 +178,6 @@ func TestUnRegisterTrustAnchor(t *testing.T) {
 	sysTxParams.Gas = 2000000
 	sysTxParams.Nonce = nonce.Uint64()
 	sysTxParams.ChainId = chainId
-	sysTxParams.Version = 1
 
 	anchor := connection.System.NewTrustAnchor()
 
@@ -262,7 +258,6 @@ func TestUpdateAnchorInfo(t *testing.T) {
 	sysTxParams.Gas = 2000000
 	sysTxParams.Nonce = nonce.Uint64()
 	sysTxParams.ChainId = chainId
-	sysTxParams.Version = 1
 
 	anchor := connection.System.NewTrustAnchor()
 
@@ -315,7 +310,6 @@ func TestExtractOwnBounty(t *testing.T) {
 	sysTxParams.Gas = 2000000
 	sysTxParams.Nonce = nonce.Uint64()
 	sysTxParams.ChainId = chainId
-	sysTxParams.Version = 1
 
 	anchor := connection.System.NewTrustAnchor()
 
@@ -488,7 +482,6 @@ func TestVoteElect(t *testing.T) {
 	sysTxParams.Gas = 2000000
 	sysTxParams.Nonce = nonce.Uint64()
 	sysTxParams.ChainId = chainId
-	sysTxParams.Version = 1
 
 	anchor := connection.System.NewTrustAnchor()
 
@@ -533,7 +526,6 @@ func TestCancelVote(t *testing.T) {
 	sysTxParams.Gas = 2000000
 	sysTxParams.Nonce = nonce.Uint64()
 	sysTxParams.ChainId = chainId
-	sysTxParams.Version = 1
 
 	anchor := connection.System.NewTrustAnchor()
 	transactionHash, err := anchor.CancelVote(sysTxParams, testAddressTrust)

@@ -30,7 +30,6 @@ func TestCoreSendRawTransaction(t *testing.T) {
 	}
 
 	tx := &account.SignTxParams{
-		Version: 1,
 		To:       resources.NewAddrE,
 		Nonce:    nonce.Uint64(),
 		Gas:      2000000,
