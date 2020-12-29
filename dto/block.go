@@ -23,7 +23,6 @@ import (
 )
 
 type BlockDetails struct {
-	Version          uint64                `json:"version"`
 	Number           *big.Int              `json:"number"`
 	Hash             string                `json:"hash"`
 	ParentHash       string                `json:"parentHash"`
@@ -40,7 +39,6 @@ type BlockDetails struct {
 }
 
 type BlockNoDetails struct {
-	Version          uint64   `json:"version"`
 	Number           *big.Int `json:"number"`
 	Hash             string   `json:"hash"`
 	ParentHash       string   `json:"parentHash"`
@@ -63,7 +61,6 @@ type BlockNoDetails struct {
 func (b *BlockDetails) UnmarshalJSON(data []byte) error {
 	type Alias BlockDetails
 	temp := &struct {
-		Version   string `json:"version"`
 		Number    string `json:"number"`
 		Size      string `json:"size"`
 		Timestamp string `json:"timestamp"`
@@ -73,12 +70,6 @@ func (b *BlockDetails) UnmarshalJSON(data []byte) error {
 	}
 	if err := json.Unmarshal(data, &temp); err != nil {
 		return err
-	}
-
-	version, err := strconv.ParseUint(temp.Version, 0, 64)
-
-	if err != nil {
-		return errors.New(fmt.Sprintf("Error converting %s to uint64", temp.Version))
 	}
 
 	num, success := big.NewInt(0).SetString(temp.Number[2:], 16)
@@ -99,7 +90,6 @@ func (b *BlockDetails) UnmarshalJSON(data []byte) error {
 		return errors.New(fmt.Sprintf("Error converting %s to uint64", temp.Timestamp))
 	}
 
-	b.Version = version
 	b.Number = num
 	b.Size = size
 	b.Timestamp = timestamp
@@ -110,7 +100,6 @@ func (b *BlockDetails) UnmarshalJSON(data []byte) error {
 func (b *BlockNoDetails) UnmarshalJSON(data []byte) error {
 	type Alias BlockNoDetails
 	temp := &struct {
-		Version   string `json:"version"`
 		Number    string `json:"number"`
 		Size      string `json:"size"`
 		Timestamp string `json:"timestamp"`
@@ -121,12 +110,6 @@ func (b *BlockNoDetails) UnmarshalJSON(data []byte) error {
 
 	if err := json.Unmarshal(data, &temp); err != nil {
 		return err
-	}
-
-	version, err := strconv.ParseUint(temp.Version, 0, 64)
-
-	if err != nil {
-		return errors.New(fmt.Sprintf("Error converting %s to uint64", temp.Version))
 	}
 
 	num, success := big.NewInt(0).SetString(temp.Number[2:], 16)
@@ -147,7 +130,6 @@ func (b *BlockNoDetails) UnmarshalJSON(data []byte) error {
 		return errors.New(fmt.Sprintf("Error converting %s to uint64", temp.Timestamp))
 	}
 
-	b.Version = version
 	b.Number = num
 	b.Size = size
 	b.Timestamp = timestamp

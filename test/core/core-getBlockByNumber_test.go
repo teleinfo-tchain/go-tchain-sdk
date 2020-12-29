@@ -51,7 +51,6 @@ func TestCoreGetBlockByNumber(t *testing.T) {
 
 		if test.transactionDetails {
 			fmt.Println("this is detail ")
-			fmt.Println("Version:", block.(*dto.BlockDetails).Version)
 			fmt.Println("Number:", block.(*dto.BlockDetails).Number)
 			fmt.Println("Hash:", block.(*dto.BlockDetails).Hash)
 			fmt.Println("ParentHash:", block.(*dto.BlockDetails).ParentHash)
@@ -69,7 +68,6 @@ func TestCoreGetBlockByNumber(t *testing.T) {
 			}
 		} else {
 			fmt.Println("this is no detail ")
-			fmt.Println("Version:", block.(*dto.BlockNoDetails).Version)
 			fmt.Println("Number:", block.(*dto.BlockNoDetails).Number)
 			fmt.Println("Hash:", block.(*dto.BlockNoDetails).Hash)
 			fmt.Println("ParentHash:", block.(*dto.BlockNoDetails).ParentHash)
