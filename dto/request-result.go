@@ -15,6 +15,7 @@
 package dto
 
 import (
+	"encoding/base64"
 	"errors"
 	"strconv"
 	"strings"
@@ -121,6 +122,8 @@ func (pointer *RequestResult) ToBigInt() (*big.Int, error) {
 
 	res := (pointer).Result.(interface{})
 
+	//ret, success := big.NewInt(0).SetString(string(res.([]uint8))[2:], 16)
+	res = strings.Replace(res.(string), "\"", "", -1)
 	ret, success := big.NewInt(0).SetString(res.(string)[2:], 16)
 
 	if !success {
@@ -173,15 +176,15 @@ func (pointer *RequestResult) ToTransactionReceipt() (*TransactionReceipt, error
 		return nil, err
 	}
 
-	result := (pointer).Result.(map[string]interface{})
+	//result := (pointer).Result.(map[string]interface{})
 
-	if len(result) == 0 {
-		return nil, EMPTYRESPONSE
-	}
+	//if len(result) == 0 {
+	//	return nil, EMPTYRESPONSE
+	//}
 
 	transactionReceipt := &TransactionReceipt{}
 
-	marshal, err := json.Marshal(result)
+	marshal, err := json.Marshal((pointer).Result)
 
 	if err != nil {
 		return nil, UNPARSEABLEINTERFACE
@@ -202,6 +205,12 @@ func (pointer *RequestResult) checkResponse() error {
 
 	if pointer.Result == nil {
 		return EMPTYRESPONSE
+	}
+
+	if value, ok := pointer.Result.(string); ok {
+		if rvalue, err := base64.StdEncoding.DecodeString(value); err == nil {
+			pointer.Result = string(rvalue)
+		}
 	}
 
 	return nil

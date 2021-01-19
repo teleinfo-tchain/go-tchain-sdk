@@ -73,22 +73,28 @@ func (pointer *CoreRequestResult) ToTransactionResponse() (*TransactionResponse,
 	if err := pointer.checkResponse(); err != nil {
 		return nil, err
 	}
+	var data []byte
+	var err error
+	if value, ok := pointer.Result.(string); ok {
+		//come from websock
+		data = []byte(value)
+	} else {
+		//come from http
+		result := (pointer).Result.(map[string]interface{})
 
-	result := (pointer).Result.(map[string]interface{})
+		if len(result) == 0 {
+			return nil, EMPTYRESPONSE
+		}
+		data, err = json.Marshal(result)
 
-	if len(result) == 0 {
-		return nil, EMPTYRESPONSE
+		if err != nil {
+			return nil, UNPARSEABLEINTERFACE
+		}
 	}
 
 	transactionResponse := &TransactionResponse{}
 
-	marshal, err := json.Marshal(result)
-
-	if err != nil {
-		return nil, UNPARSEABLEINTERFACE
-	}
-
-	err = json.Unmarshal(marshal, transactionResponse)
+	err = json.Unmarshal(data, transactionResponse)
 
 	return transactionResponse, err
 
@@ -99,21 +105,27 @@ func (pointer *CoreRequestResult) ToSignTransactionResponse() (*SignTransactionR
 		return nil, err
 	}
 
-	result := (pointer).Result.(map[string]interface{})
+	var data []byte
+	var err error
+	if value, ok := pointer.Result.(string); ok {
+		//come from websock
+		data = []byte(value)
+	} else {
+		//come from http
+		result := (pointer).Result.(map[string]interface{})
 
-	if len(result) == 0 {
-		return nil, EMPTYRESPONSE
+		if len(result) == 0 {
+			return nil, EMPTYRESPONSE
+		}
+		data, err = json.Marshal(result)
+		if err != nil {
+			return nil, UNPARSEABLEINTERFACE
+		}
 	}
 
 	signTransactionResponse := &SignTransactionResponse{}
 
-	marshal, err := json.Marshal(result)
-
-	if err != nil {
-		return nil, UNPARSEABLEINTERFACE
-	}
-
-	err = json.Unmarshal(marshal, signTransactionResponse)
+	err = json.Unmarshal(data, signTransactionResponse)
 
 	return signTransactionResponse, err
 }
@@ -124,13 +136,20 @@ func (pointer *CoreRequestResult) ToBlock(transactionDetails bool) (interface{},
 		return nil, err
 	}
 
-	result := (pointer).Result.(map[string]interface{})
+	var data []byte
+	var err error
+	if value, ok := pointer.Result.(string); ok {
+		//come from websock
+		data = []byte(value)
+	} else {
+		//come from http
+		result := (pointer).Result.(map[string]interface{})
 
-	if len(result) == 0 {
-		return nil, EMPTYRESPONSE
+		if len(result) == 0 {
+			return nil, EMPTYRESPONSE
+		}
+		data, err = json.Marshal(result)
 	}
-
-	marshal, err := json.Marshal(result)
 
 	if err != nil {
 		return nil, UNPARSEABLEINTERFACE
@@ -139,16 +158,15 @@ func (pointer *CoreRequestResult) ToBlock(transactionDetails bool) (interface{},
 	var block interface{}
 	if transactionDetails {
 		block = &BlockDetails{}
-		err = json.Unmarshal(marshal, block)
+		err = json.Unmarshal(data, block)
 	} else {
 		block = &BlockNoDetails{}
-		err = json.Unmarshal(marshal, block)
+		err = json.Unmarshal(data, block)
 	}
 	return block, err
 }
 
 func (pointer *CoreRequestResult) ToPendingTransactions() ([]*TransactionResponse, error) {
-
 	if err := pointer.checkResponse(); err != nil {
 		return nil, err
 	}
@@ -187,26 +205,32 @@ func (pointer *CoreRequestResult) ToPendingTransactions() ([]*TransactionRespons
 }
 
 func (pointer *CoreRequestResult) ToProof() (*AccountResult, error) {
-
 	if err := pointer.checkResponse(); err != nil {
 		return nil, err
 	}
 
-	result := (pointer).Result.(map[string]interface{})
+	var data []byte
+	var err error
+	if value, ok := pointer.Result.(string); ok {
+		//come from websock
+		data = []byte(value)
+	} else {
+		//come from http
+		result := (pointer).Result.(map[string]interface{})
 
-	if len(result) == 0 {
-		return nil, EMPTYRESPONSE
+		if len(result) == 0 {
+			return nil, EMPTYRESPONSE
+		}
+		data, err = json.Marshal(result)
 	}
-
-	accountResult := &AccountResult{}
-
-	marshal, err := json.Marshal(result)
 
 	if err != nil {
 		return nil, UNPARSEABLEINTERFACE
 	}
 
-	err = json.Unmarshal(marshal, accountResult)
+	accountResult := &AccountResult{}
+
+	err = json.Unmarshal(data, accountResult)
 
 	return accountResult, err
 
