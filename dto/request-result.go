@@ -208,6 +208,10 @@ func (pointer *RequestResult) checkResponse() error {
 	}
 
 	if value, ok := pointer.Result.(string); ok {
+		if strings.Index(value, "0x") == 0 {
+			return nil
+		}
+
 		if rvalue, err := base64.StdEncoding.DecodeString(value); err == nil {
 			pointer.Result = string(rvalue)
 		}
