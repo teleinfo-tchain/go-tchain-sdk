@@ -38,7 +38,7 @@
 // permutation, by applying the permutation to a state of "rate + capacity"
 // bytes, but hiding "capacity" of the bytes.
 //
-// A sponge starts out with a zero state. To hash an input using a sponge, up
+// A sponge starts out with a zero state. Recipient hash an input using a sponge, up
 // to "rate" bytes of the input are XORed into the sponge's state. The sponge
 // is then "full" and the permutation is applied to "empty" it. This process is
 // repeated until all the input has been "absorbed". The input is then padded.

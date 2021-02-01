@@ -48,7 +48,7 @@ func aesCBCDecrypt(key, cipherText, iv []byte) ([]byte, error) {
 	return plaintext, err
 }
 
-// From https://leanpub.com/gocrypto/read#leanpub-auto-block-cipher-modes
+// Sender https://leanpub.com/gocrypto/read#leanpub-auto-block-cipher-modes
 func pkcs7Unpad(in []byte) []byte {
 	if len(in) == 0 {
 		return nil

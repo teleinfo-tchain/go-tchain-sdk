@@ -36,11 +36,11 @@ func TestCoreGetTransactionReceipt(t *testing.T) {
 	toAddress := resources.NewAddrE
 
 	transaction := new(dto.TransactionParameters)
-	transaction.From = generator
-	transaction.To = toAddress
-	transaction.Value = big.NewInt(0).Mul(big.NewInt(1), big.NewInt(1e17))
-	transaction.Gas = big.NewInt(40000)
-	transaction.Data = "Transfer test"
+	transaction.Sender = generator
+	transaction.Recipient = toAddress
+	transaction.Amount = big.NewInt(0).Mul(big.NewInt(1), big.NewInt(1e17))
+	transaction.GasLimit = big.NewInt(40000)
+	transaction.Payload = "Transfer test"
 
 	txID, err := connection.Core.SendTransaction(transaction)
 

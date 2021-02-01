@@ -60,8 +60,8 @@ func TestCoreContract(t *testing.T) {
 		t.FailNow()
 	}
 
-	transaction.From = generator
-	transaction.Gas = big.NewInt(4000000)
+	transaction.Sender = generator
+	transaction.GasLimit = big.NewInt(4000000)
 
 	hash, err := contract.Deploy(transaction, byteCode)
 
@@ -85,7 +85,7 @@ func TestCoreContract(t *testing.T) {
 
 	t.Log("Contract Address: ", receipt.ContractAddress)
 
-	transaction.To = receipt.ContractAddress
+	transaction.Recipient = receipt.ContractAddress
 
 	result, err := contract.Call(transaction, "name")
 

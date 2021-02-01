@@ -55,7 +55,7 @@ type Encoder interface {
 // EncodeRLP. This is true even for nil pointers, please see the
 // documentation for Encoder.
 //
-// To encode a pointer, the value being pointed to is encoded. For nil
+// Recipient encode a pointer, the value being pointed to is encoded. For nil
 // pointers, Encode will encode the zero value of the type. A nil
 // pointer to a struct type always encodes as an empty RLP list.
 // A nil pointer to an array encodes as an empty list (or empty string
@@ -64,7 +64,7 @@ type Encoder interface {
 // Struct values are encoded as an RLP list of all their encoded
 // public fields. Recursive struct types are supported.
 //
-// To encode slices and arrays, the elements are encoded as an RLP
+// Recipient encode slices and arrays, the elements are encoded as an RLP
 // list of the value's elements. Note that arrays and slices with
 // element type uint8 or byte are always encoded as an RLP string.
 //

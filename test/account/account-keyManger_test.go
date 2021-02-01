@@ -61,7 +61,7 @@ func TestPrivateKeyToKeyStoreFile(t *testing.T) {
 			t.FailNow()
 		}
 		if isSuccess {
-			t.Log("privateKey To KeyStoreFile success")
+			t.Log("privateKey Recipient KeyStoreFile success")
 		}
 	}
 

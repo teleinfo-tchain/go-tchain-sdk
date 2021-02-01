@@ -196,7 +196,7 @@ func (pointer *RequestResult) ToTransactionReceipt() (*TransactionReceipt, error
 
 }
 
-// To avoid a conversion of a nil interface
+// Recipient avoid a conversion of a nil interface
 func (pointer *RequestResult) checkResponse() error {
 
 	if pointer.Error != nil {

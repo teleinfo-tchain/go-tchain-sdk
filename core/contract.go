@@ -47,7 +47,7 @@ func (contract *Contract) prepareTransaction(transaction *dto.TransactionParamet
 	if err != nil {
 		return nil, err
 	}
-	transaction.Data = types.ComplexString("0x"+utils.Bytes2Hex(inputEncode))
+	transaction.Payload = types.ComplexString("0x"+utils.Bytes2Hex(inputEncode))
 	return transaction, nil
 
 }
@@ -79,7 +79,7 @@ func (contract *Contract) Deploy(transaction *dto.TransactionParameters, byteCod
 	if err != nil {
 		return "", err
 	}
-	transaction.Data = types.ComplexString(byteCode) + types.ComplexString(utils.Bytes2Hex(inputEncode))
+	transaction.Payload = types.ComplexString(byteCode) + types.ComplexString(utils.Bytes2Hex(inputEncode))
 	return contract.super.SendTransaction(transaction)
 }
 

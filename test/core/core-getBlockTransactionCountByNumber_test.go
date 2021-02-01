@@ -40,10 +40,10 @@ func TestGetBlockTransactionCountByNumber(t *testing.T) {
 	}
 
 	transaction := new(dto.TransactionParameters)
-	transaction.From = generator
-	transaction.To = generator
-	transaction.Value = big.NewInt(200000)
-	transaction.Gas = big.NewInt(40000)
+	transaction.Sender = generator
+	transaction.Recipient = generator
+	transaction.Amount = big.NewInt(200000)
+	transaction.GasLimit = big.NewInt(40000)
 
 	txID, err := connection.Core.SendTransaction(transaction)
 

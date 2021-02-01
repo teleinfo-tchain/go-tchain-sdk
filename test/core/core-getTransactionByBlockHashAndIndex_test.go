@@ -39,11 +39,11 @@ func TestGetTransactionByBlockHashAndIndex(t *testing.T) {
 	txVal := big.NewInt(2000000)
 
 	transaction := new(dto.TransactionParameters)
-	transaction.From = generator
-	transaction.To = generator
-	transaction.Value = big.NewInt(0).Mul(big.NewInt(500), big.NewInt(1E18))
-	transaction.Value = txVal
-	transaction.Gas = big.NewInt(40000)
+	transaction.Sender = generator
+	transaction.Recipient = generator
+	transaction.Amount = big.NewInt(0).Mul(big.NewInt(500), big.NewInt(1E18))
+	transaction.Amount = txVal
+	transaction.GasLimit = big.NewInt(40000)
 
 	txID, err := connection.Core.SendTransaction(transaction)
 

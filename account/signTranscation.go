@@ -12,21 +12,20 @@ import (
 )
 
 type SignTxParams struct {
-	From     string
-	To       string
-	Nonce    uint64
-	Gas      uint64
-	GasPrice *big.Int
-	Value    *big.Int
-	Data     []byte
-	ChainId  uint64
+	ChainId      uint64
+	Sender       string
+	Recipient    string
+	AccountNonce uint64
+	GasPrice     *big.Int
+	GasLimit     uint64
+	Amount       *big.Int
+	Payload      []byte
 }
 
 type txData struct {
-	// todo：暂时默认Version为1，用于升级所用
 	ChainId      uint64         `json:"chainId"    gencodec:"required"`
 	AccountNonce uint64         `json:"nonce"    gencodec:"required"`
-	Price        *big.Int       `json:"gasPrice" gencodec:"required"`
+	GasPrice     *big.Int       `json:"gasPrice" gencodec:"required"`
 	GasLimit     uint64         `json:"gas"      gencodec:"required"`
 	Sender       *utils.Address `json:"from"     rlp:"nil"` // nil means contract creation
 	Recipient    *utils.Address `json:"to"       rlp:"nil"` // nil means contract creation
@@ -60,7 +59,7 @@ func (bfs BIFSigner) Hash(tx *txData) utils.Hash {
 	return rlpHash([]interface{}{
 		tx.ChainId,
 		tx.AccountNonce,
-		tx.Price,
+		tx.GasPrice,
 		tx.GasLimit,
 		tx.Sender,
 		tx.Recipient,

@@ -36,11 +36,11 @@ func TestCoreEstimateGas(t *testing.T) {
 	}
 
 	transaction := new(dto.TransactionParameters)
-	transaction.Data = "test"
-	transaction.From = generator
-	transaction.To = generator
-	transaction.Value = big.NewInt(10)
-	transaction.Gas = big.NewInt(40000)
+	transaction.Payload = "test"
+	transaction.Sender = generator
+	transaction.Recipient = generator
+	transaction.Amount = big.NewInt(10)
+	transaction.GasLimit = big.NewInt(40000)
 
 	gas, err := connection.Core.EstimateGas(transaction)
 

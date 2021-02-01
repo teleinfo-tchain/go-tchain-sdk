@@ -143,23 +143,23 @@ func TestSignTransaction(t *testing.T) {
 		}
 
 		// tx := &account.SignTxParams{
-		// 	To:       test.to,
-		// 	Nonce:    nonce.Uint64(),
-		// 	Gas:      2000000,
-		// 	GasPrice: big.NewInt(30),
-		// 	Value:    big.NewInt(50000000000),
-		// 	Data:     nil,
+		// 	Recipient:       test.to,
+		// 	AccountNonce:    nonce.Uint64(),
+		// 	GasPrice:      2000000,
+		// 	GasLimit: big.NewInt(30),
+		// 	Amount:    big.NewInt(50000000000),
+		// 	Payload:     nil,
 		// 	ChainId:  chainId,
 		// }
 		t.Log("nonce is ", nonce, " chainId is ", chainId)
 		tx := &account.SignTxParams{
-			To:       test.to,
-			Nonce:    0,
-			Gas:      21000,
-			GasPrice: nil,
-			Value:    big.NewInt(50000000000),
-			Data:     nil,
-			ChainId:  0,
+			Recipient:    test.to,
+			AccountNonce: 0,
+			GasPrice:     21000,
+			GasLimit:     nil,
+			Amount:       big.NewInt(50000000000),
+			Payload:      nil,
+			ChainId:      0,
 		}
 		res, err := connection.Account.SignTransaction(tx, test.privateKey, test.isSM2)
 

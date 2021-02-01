@@ -71,8 +71,8 @@ func TestCoreGetCode(t *testing.T) {
 		t.FailNow()
 	}
 
-	transaction.From = generator
-	transaction.Gas = big.NewInt(4000000)
+	transaction.Sender = generator
+	transaction.GasLimit = big.NewInt(4000000)
 	hash, err := contract.Deploy(transaction, byteCode)
 
 	if err != nil {

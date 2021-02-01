@@ -26,63 +26,71 @@ import (
 
 // TransactionParameters GO transaction to make more easy controll the parameters
 type TransactionParameters struct {
-	From     string
-	To       string
-	Nonce    *big.Int
-	Gas      *big.Int
-	GasPrice *big.Int
-	Value    *big.Int
-	Data     types.ComplexString
+	ChainId      uint64
+	Sender       string
+	Recipient    string
+	AccountNonce uint64
+	GasPrice     *big.Int
+	GasLimit     uint64
+	Amount       *big.Int
+	Payload      types.ComplexString
 }
 
 type TransactionCallParameters struct {
-	From     string
-	To       string
-	Gas      *big.Int
-	GasPrice *big.Int
-	Value    *big.Int
-	Data     types.ComplexString
+	ChainId      uint64
+	Sender       string
+	Recipient    string
+	AccountNonce uint64
+	GasPrice     *big.Int
+	GasLimit     uint64
+
+	Amount  *big.Int
+	Payload types.ComplexString
 }
 
 // RequestTransactionParameters JSON
 type RequestTransactionParameters struct {
-	From     string `json:"from"`
-	To       string `json:"to,omitempty"`
-	Nonce    string `json:"nonce,omitempty"`
-	Gas      string `json:"gas,omitempty"`
-	GasPrice string `json:"gasPrice,omitempty"`
-	Value    string `json:"value,omitempty"`
-	Data     string `json:"data,omitempty"`
+	ChainId      string `json:"chainId"`
+	Sender       string `json:"from"`
+	Recipient    string `json:"to,omitempty"`
+	AccountNonce string `json:"nonce,omitempty"`
+	GasPrice     string `json:"gasPrice,omitempty"`
+	GasLimit     string `json:"gas,omitempty"`
+	Amount       string `json:"value,omitempty"`
+	Payload      string `json:"data,omitempty"`
 }
 
 // Transform the GO transactions parameters to json style
 func (params *TransactionParameters) Transform() *RequestTransactionParameters {
 	request := new(RequestTransactionParameters)
-	request.From = params.From
-	if params.To != "" {
-		request.To = params.To
+	if params.ChainId != 0 {
+		request.ChainId = fmt.Sprintf("0x%x", params.ChainId)
 	}
-	if params.Nonce != nil {
-		request.Nonce = "0x" + params.Nonce.Text(16)
+	request.Sender = params.Sender
+	if params.Recipient != "" {
+		request.Recipient = params.Recipient
 	}
-	if params.Gas != nil {
-		request.Gas = "0x" + params.Gas.Text(16)
+	if params.AccountNonce != 0 {
+		request.AccountNonce = fmt.Sprintf("0x%x", params.AccountNonce)
+	}
+	if params.GasLimit != 0 {
+		request.GasLimit = fmt.Sprintf("0x%x", params.GasLimit)
 	}
 	if params.GasPrice != nil {
 		request.GasPrice = "0x" + params.GasPrice.Text(16)
 	}
-	if params.Value != nil {
-		request.Value = "0x" + params.Value.Text(16)
+	if params.Amount != nil {
+		request.Amount = "0x" + params.Amount.Text(16)
 	}
-	if params.Data != "" {
-		request.Data = params.Data.ToHex()
+	if params.Payload != "" {
+		request.Payload = params.Payload.ToHex()
 	}
 	return request
 }
 
 func (params *TransactionParameters) String() string {
-	return fmt.Sprintf("From: %s, To: %s, Value:%d, Gas: %d, GasPrice: %d, Nonce: %d, Data: %s",
-		params.From, params.To, params.Value, params.Gas, params.GasPrice, params.Nonce, params.Data)
+	return fmt.Sprintf("Sender: %s, Recipient: %s, Amount:%d, GasPrice: %d, GasLimit: %d, AccountNonce: %d, Payload: %s",
+		params.Sender, params.Recipient, params.Amount, params.GasLimit, params.GasPrice, params.AccountNonce, params.Payload)
 }
 
 type SignTransactionResponse struct {
@@ -91,10 +99,9 @@ type SignTransactionResponse struct {
 }
 
 type SignedTransactionParams struct {
-	Version  uint64              `json:"version"`
 	ChainId  uint64              `json:"chainId"`
-	Gas      *big.Int            `json:"gas"`
 	GasPrice *big.Int            `json:"gasPrice"`
+	GasLimit uint64              `json:"gas"`
 	Hash     string              `json:"hash"`
 	Input    string              `json:"input"`
 	Nonce    *big.Int            `json:"nonce"`
@@ -108,12 +115,11 @@ func (sp *SignedTransactionParams) UnmarshalJSON(data []byte) error {
 	type Alias SignedTransactionParams
 
 	temp := &struct {
-		Version  string `json:"version"`
 		ChainId  string `json:"chainId"`
-		Gas      string `json:"gas"`
 		GasPrice string `json:"gasPrice"`
+		GasLimit string `json:"gas"`
 		Nonce    string `json:"nonce"`
-		Value    string `json:"value"`
+		Value    string `json:"amount"`
 		*Alias
 	}{
 		Alias: (*Alias)(sp),
@@ -123,19 +129,19 @@ func (sp *SignedTransactionParams) UnmarshalJSON(data []byte) error {
 		return err
 	}
 
-	version, err := strconv.ParseUint(temp.Version, 0, 64)
-	if err != nil {
-		return errors.New(fmt.Sprintf("Error converting %s to uint64", temp.Version))
-	}
+	//version, err := strconv.ParseUint(temp.Version, 0, 64)
+	//if err != nil {
+	//	return errors.New(fmt.Sprintf("Error converting %s to uint64", temp.Version))
+	//}
 
-	chainId, err := strconv.ParseUint(temp.Version, 0, 64)
+	chainId, err := strconv.ParseUint(temp.ChainId, 0, 64)
 	if err != nil {
 		return errors.New(fmt.Sprintf("Error converting %s to uint64", temp.ChainId))
 	}
 
-	gas, success := big.NewInt(0).SetString(temp.Gas[2:], 16)
-	if !success {
-		return errors.New(fmt.Sprintf("Error converting %s to BigInt", temp.Gas))
+	gas, err := strconv.ParseUint(temp.GasLimit, 0, 64)
+	if err != nil {
+		return errors.New(fmt.Sprintf("Error converting %s to BigInt", temp.GasLimit))
 	}
 
 	gasPrice, success := big.NewInt(0).SetString(temp.GasPrice[2:], 16)
@@ -153,9 +159,8 @@ func (sp *SignedTransactionParams) UnmarshalJSON(data []byte) error {
 		return errors.New(fmt.Sprintf("Error converting %s to BigInt", temp.Value))
 	}
 
-	sp.Version = version
 	sp.ChainId = chainId
-	sp.Gas = gas
+	sp.GasLimit = gas
 	sp.GasPrice = gasPrice
 	sp.Nonce = nonce
 	sp.Value = val

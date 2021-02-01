@@ -30,13 +30,13 @@ func TestCoreSendRawTransaction(t *testing.T) {
 	}
 
 	tx := &account.SignTxParams{
-		To:       resources.NewAddrE,
-		Nonce:    nonce.Uint64(),
-		Gas:      2000000,
-		GasPrice: big.NewInt(30),
-		Value:    big.NewInt(50000000000),
-		Data:     nil,
-		ChainId:  chainId,
+		Recipient:    resources.NewAddrE,
+		AccountNonce: nonce.Uint64(),
+		GasPrice:     2000000,
+		GasLimit:     big.NewInt(30),
+		Amount:       big.NewInt(50000000000),
+		Payload:      nil,
+		ChainId:      chainId,
 	}
 
 	res, err := connection.Account.SignTransaction(tx, privKey, false)

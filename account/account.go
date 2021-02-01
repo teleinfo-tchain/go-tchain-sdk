@@ -92,8 +92,8 @@ func (account *Account) preCheckTx(signData *SignTxParams, privateKey string, is
 
 	var recipient utils.Address
 	// 校验地址
-	if signData.To != "" {
-		recipient = utils.StringToAddress(signData.To)
+	if signData.Recipient != "" {
+		recipient = utils.StringToAddress(signData.Recipient)
 	}
 
 	publicAddr, err := GetAddressFromPrivate(privateKey, isSM2)
@@ -102,29 +102,29 @@ func (account *Account) preCheckTx(signData *SignTxParams, privateKey string, is
 	}
 	// 校验地址
 	var sender utils.Address
-	if signData.From != "" {
-		sender = utils.StringToAddress(signData.From)
+	if signData.Sender != "" {
+		sender = utils.StringToAddress(signData.Sender)
 	} else {
 		sender = utils.StringToAddress(publicAddr)
 	}
 
 	// 校验Nonce(谁签名就取谁的Nonce)
-	if signData.Nonce == 0 {
-		signData.Nonce, err = account.getTransactionCount(publicAddr)
+	if signData.AccountNonce == 0 {
+		signData.AccountNonce, err = account.getTransactionCount(publicAddr)
 		if err != nil {
 			return nil, err
 		}
 	}
 
 	// 校验gas
-	if signData.Gas < 21000 {
+	if signData.GasLimit < 21000 {
 		return nil, errors.New("gas should be at least 21000")
 	}
 
 	// 校验gasPrice
 	if signData.GasPrice == nil {
 		signData.GasPrice, err = account.getGasPrice()
-		// fmt.Println("gas ", signData.GasPrice)
+		// fmt.Println("gas ", signData.GasLimit)
 		// 20000000000
 		if err != nil {
 			return nil, err
@@ -134,7 +134,7 @@ func (account *Account) preCheckTx(signData *SignTxParams, privateKey string, is
 	}
 
 	// 校验Value
-	if signData.Value != nil && signData.Value.Cmp(big.NewInt(0)) != 1 {
+	if signData.Amount != nil && signData.Amount.Cmp(big.NewInt(0)) != 1 {
 		return nil, errors.New("value should be greater than 0")
 	}
 
@@ -150,13 +150,13 @@ func (account *Account) preCheckTx(signData *SignTxParams, privateKey string, is
 
 	tx := &txData{
 		ChainId:      signData.ChainId,
-		AccountNonce: signData.Nonce,
-		Price:        signData.GasPrice,
-		GasLimit:     signData.Gas,
+		AccountNonce: signData.AccountNonce,
+		GasPrice:     signData.GasPrice,
+		GasLimit:     signData.GasLimit,
 		Sender:       &sender,
 		Recipient:    &recipient,
-		Amount:       signData.Value,
-		Payload:      signData.Data,
+		Amount:       signData.Amount,
+		Payload:      signData.Payload,
 		SignUser:     nil,
 	}
 	return tx, nil
@@ -286,12 +286,12 @@ func (account *Account) Decrypt(keystoreJson []byte, isSM2 bool, password string
  	CN - 使用地址私钥给指定的交易签名，返回签名结果
   Params:
   	- transaction: *SignTxParams 指定的交易信息
-		- To        string    （可选）交易的接收方，如果是部署合约，则为空
-		- Nonce     uint64    （可选）整数，可以允许你覆盖你自己的相同nonce的，待pending中的交易；默认是Core.GetTransactionCount()
-		- Gas       uint64     交易可使用的gas，未使用的gas会退回。
-		- GasPrice  *big.Int  （可选）默认是自动确定，交易的gas价格，默认是 Core.GetGasPrice()
-		- Value     *big.Int  （可选）交易转移的bifer，以wei为单位
-		- Data      []byte    （可选）合约函数交互中调用的数据的ABI字节字符串或者合约创建时初始的字节码
+		- Recipient        string    （可选）交易的接收方，如果是部署合约，则为空
+		- AccountNonce     uint64    （可选）整数，可以允许你覆盖你自己的相同nonce的，待pending中的交易；默认是Core.GetTransactionCount()
+		- GasPrice       uint64     交易可使用的gas，未使用的gas会退回。
+		- GasLimit  *big.Int  （可选）默认是自动确定，交易的gas价格，默认是 Core.GetGasPrice()
+		- Amount     *big.Int  （可选）交易转移的bifer，以wei为单位
+		- Payload      []byte    （可选）合约函数交互中调用的数据的ABI字节字符串或者合约创建时初始的字节码
 		- ChainId   *big.Int   签署此交易时要使用的链ID，默认是Core.GetChainId
  	- privateKey: string, 私钥（transaction中的from地址对应的私钥）
  	- isSM2: bool,  私钥生成是否采用国密，是的话为True，否则为false

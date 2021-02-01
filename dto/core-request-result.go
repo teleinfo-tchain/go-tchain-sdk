@@ -138,7 +138,7 @@ func (pointer *CoreRequestResult) ToBlock(transactionDetails bool) (interface{},
 
 	var data []byte
 	var err error
-	if value, ok := pointer.Result.(string); ok {
+	if value, ok := pointer.Result.([]byte); ok {
 		//come from websock
 		data = []byte(value)
 	} else {

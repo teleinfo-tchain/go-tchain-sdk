@@ -60,14 +60,14 @@ func (sys *System) prePareSignTransaction(signTxParams *SysTxParams, payLoad []b
 	}
 
 	signTx := &account.SignTxParams{
-		From:     signTxParams.From,
-		To:       contractAddr,
-		Nonce:    signTxParams.Nonce,
-		Gas:      signTxParams.Gas,
-		GasPrice: signTxParams.GasPrice,
-		Value:    nil,
-		Data:     payLoad,
-		ChainId:  signTxParams.ChainId,
+		Sender:       signTxParams.From,
+		Recipient:    contractAddr,
+		AccountNonce: signTxParams.Nonce,
+		GasPrice:     signTxParams.GasPrice,
+		GasLimit:     signTxParams.Gas,
+		Amount:       nil,
+		Payload:      payLoad,
+		ChainId:      signTxParams.ChainId,
 	}
 	signResult, err := sys.acc.SignTransaction(signTx, privateKey, signTxParams.IsSM2)
 	if err != nil {
@@ -94,7 +94,7 @@ func (sys *System) structToInterface(convert interface{}, values []interface{}) 
 /*
   sendRawTransaction:
    	EN - Add the signed transaction to the transaction pool.The sender is responsible for signing the transaction and using the correct nonce
- 	CN - 将已签名的交易添加到交易池中。交易发送方负责签署交易并使用正确的随机数（Nonce）
+ 	CN - 将已签名的交易添加到交易池中。交易发送方负责签署交易并使用正确的随机数（AccountNonce）
   Params:
   	- encodedTx: string, 已签名的交易数据
 

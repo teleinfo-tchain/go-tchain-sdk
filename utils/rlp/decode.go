@@ -74,12 +74,12 @@ type Decoder interface {
 // If the type implements the Decoder common, decode calls
 // DecodeRLP.
 //
-// To decode into a pointer, Decode will decode into the value pointed
+// Recipient decode into a pointer, Decode will decode into the value pointed
 // to. If the pointer is nil, a new value of the pointer's element
 // type is allocated. If the pointer is non-nil, the existing value
 // will be reused.
 //
-// To decode into a struct, Decode expects the input to be an RLP
+// Recipient decode into a struct, Decode expects the input to be an RLP
 // list. The decoded elements of the list are assigned to each public
 // field in the order given by the struct's definition. The input list
 // must contain an element for each decoded field. Decode returns an
@@ -100,22 +100,22 @@ type Decoder interface {
 //         Foo *[20]byte `rlp:"nil"`
 //     }
 //
-// To decode into a slice, the input must be a list and the resulting
+// Recipient decode into a slice, the input must be a list and the resulting
 // slice will contain the input elements in order. For byte slices,
 // the input must be an RLP string. Array types decode similarly, with
 // the additional restriction that the number of input elements (or
 // bytes) must match the array's length.
 //
-// To decode into a Go string, the input must be an RLP string. The
+// Recipient decode into a Go string, the input must be an RLP string. The
 // input bytes are taken as-is and will not necessarily be valid UTF-8.
 //
-// To decode into an unsigned integer type, the input must also be an RLP
+// Recipient decode into an unsigned integer type, the input must also be an RLP
 // string. The bytes are interpreted as a big endian representation of
 // the integer. If the RLP string is larger than the bit size of the
 // type, Decode will return an error. Decode also supports *big.Int.
 // There is no size limit for big integers.
 //
-// To decode into an common value, Decode stores one of these
+// Recipient decode into an common value, Decode stores one of these
 // in the value:
 //
 //	  []common{}, for RLP lists

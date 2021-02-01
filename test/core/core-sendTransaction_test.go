@@ -50,11 +50,11 @@ func TestCoreSendTransaction(t *testing.T) {
 	}
 
 	transaction := new(dto.TransactionParameters)
-	transaction.From = generator
-	transaction.To = toAddress
-	transaction.Value = big.NewInt(0).Mul(big.NewInt(1), big.NewInt(1e17))
-	transaction.Gas = big.NewInt(40000)
-	transaction.Data = "Transfer test"
+	transaction.Sender = generator
+	transaction.Recipient = toAddress
+	transaction.Amount = big.NewInt(0).Mul(big.NewInt(1), big.NewInt(1e17))
+	transaction.GasLimit = big.NewInt(40000)
+	transaction.Payload = "Transfer test"
 
 	txID, err := connection.Core.SendTransaction(transaction)
 
@@ -110,8 +110,8 @@ func TestCoreSendTransactionDeployContract(t *testing.T) {
 	// 	t.FailNow()
 	// }
 
-	transaction.From = resources.TestAddr
-	transaction.Data = types.ComplexString(byteCode) + types.ComplexString(utils.Bytes2Hex(inputEncode))
+	transaction.Sender = resources.TestAddr
+	transaction.Payload = types.ComplexString(byteCode) + types.ComplexString(utils.Bytes2Hex(inputEncode))
 	// estimate the gas required to deploy the contract
 	gas, err := connection.Core.EstimateGas(transaction)
 	if err != nil {
@@ -121,8 +121,8 @@ func TestCoreSendTransactionDeployContract(t *testing.T) {
 	}
 	t.Log("Estimate gas is ", gas)
 
-	// transaction.Gas = big.NewInt(1000000)
-	transaction.Gas = gas
+	// transaction.GasPrice = big.NewInt(1000000)
+	transaction.GasLimit = gas
 	txHash, err := connection.Core.SendTransaction(transaction)
 
 	if err != nil {
@@ -188,10 +188,10 @@ func TestCoreSendTransactionInteractContract(t *testing.T) {
 	fromAddress := resources.TestAddr
 
 	transaction := new(dto.TransactionParameters)
-	transaction.From = fromAddress
-	// To is contract address
-	transaction.To = contractAddress
-	transaction.Data = types.ComplexString("0x" + utils.Bytes2Hex(inputEncode))
+	transaction.Sender = fromAddress
+	// Recipient is contract address
+	transaction.Recipient = contractAddress
+	transaction.Payload = types.ComplexString("0x" + utils.Bytes2Hex(inputEncode))
 	txHash, err := connection.Core.SendTransaction(transaction)
 
 	if err != nil {

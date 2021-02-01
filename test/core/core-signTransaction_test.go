@@ -30,13 +30,13 @@ func TestCoreSignTransaction(t *testing.T) {
 	var connection = bif.NewBif(providers.NewHTTPProvider(resources.IP+":"+resources.Port, 10, false))
 
 	transaction := new(dto.TransactionParameters)
-	transaction.Nonce = big.NewInt(2)
-	transaction.From = resources.TestAddr
-	transaction.To = resources.NewAddrE
-	transaction.Value = big.NewInt(0).Mul(big.NewInt(5), big.NewInt(1e17))
-	transaction.Gas = big.NewInt(50000)
+	transaction.AccountNonce = big.NewInt(2)
+	transaction.Sender = resources.TestAddr
+	transaction.Recipient = resources.NewAddrE
+	transaction.Amount = big.NewInt(0).Mul(big.NewInt(5), big.NewInt(1e17))
+	transaction.GasLimit = big.NewInt(50000)
 	transaction.GasPrice = big.NewInt(1)
-	transaction.Data = "Sign Transfer bif test"
+	transaction.Payload = "Sign Transfer bif test"
 
 	txID, err := connection.Core.SignTransaction(transaction)
 
@@ -48,19 +48,19 @@ func TestCoreSignTransaction(t *testing.T) {
 	t.Log(txID.Raw)
 	// t.Logf("%#v \n", txID.Transaction)
 
-	toAddress := utils.StringToAddress(transaction.To)
+	toAddress := utils.StringToAddress(transaction.Recipient)
 	if txID.Transaction.To != hexutil.Encode(toAddress[:]) {
-		t.Errorf(fmt.Sprintf("Expected %s | Got: %s", transaction.To, txID.Transaction.To))
+		t.Errorf(fmt.Sprintf("Expected %s | Got: %s", transaction.Recipient, txID.Transaction.To))
 		t.FailNow()
 	}
 
-	if txID.Transaction.Value.Cmp(transaction.Value) != 0 {
-		t.Errorf(fmt.Sprintf("Expected %d | Got: %d", transaction.Value.Uint64(), txID.Transaction.Value.Uint64()))
+	if txID.Transaction.Value.Cmp(transaction.Amount) != 0 {
+		t.Errorf(fmt.Sprintf("Expected %d | Got: %d", transaction.Amount.Uint64(), txID.Transaction.Value.Uint64()))
 		t.FailNow()
 	}
 
-	if txID.Transaction.Gas.Cmp(transaction.Gas) != 0 {
-		t.Errorf(fmt.Sprintf("Expected %d | Got: %d", transaction.Gas.Uint64(), txID.Transaction.Gas.Uint64()))
+	if txID.Transaction.GasLimit.Cmp(transaction.GasLimit) != 0 {
+		t.Errorf(fmt.Sprintf("Expected %d | Got: %d", transaction.GasLimit.Uint64(), txID.Transaction.GasLimit.Uint64()))
 		t.FailNow()
 	}
 	if txID.Transaction.GasPrice.Cmp(transaction.GasPrice) != 0 {

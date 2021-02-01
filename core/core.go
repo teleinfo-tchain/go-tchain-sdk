@@ -399,7 +399,7 @@ func (core *Core) SendTransaction(transaction *dto.TransactionParameters) (strin
 /*
   SendRawTransaction:
    	EN - Add the signed transaction to the transaction pool.The sender is responsible for signing the transaction and using the correct nonce
- 	CN - 将已签名的交易添加到交易池中。交易发送方负责签署交易并使用正确的随机数（Nonce）
+ 	CN - 将已签名的交易添加到交易池中。交易发送方负责签署交易并使用正确的随机数（AccountNonce）
   Params:
   	- encodedTx: string, 已签名的交易数据
 
@@ -432,28 +432,28 @@ func (core *Core) SendRawTransaction(encodedTx string) (string, error) {
  	CN - 使用交易发起方的帐户（地址）签署给定的交易
   Params:
   	- transaction，*dto.TransactionParameters，交易构造的对象
-	  - From     string                    交易的发起方
-	  - To       string                    交易的接收方
-	  - Nonce    *big.Int                  （可选）整数，使用此值，可以允许你覆盖你自己的相同nonce的，待pending中的交易
-	  - Gas      *big.Int                  （可选）默认是自动，交易可使用的gas，未使用的gas会退回。
-	  - GasPrice *big.Int                  （可选）默认是自动确定，交易的gas价格，默认是网络gas价格的平均值 。
-	  - Value    *big.Int                  （可选）交易携带的货币量，以bifer为单位。如果合约创建交易，则为初始的基金
-	  - Data     types.ComplexString       （可选）或者包含相关数据的字节字符串，如果是合约创建，则是初始化要用到的代码。
+	  - Sender     string                    交易的发起方
+	  - Recipient       string                    交易的接收方
+	  - AccountNonce    *big.Int                  （可选）整数，使用此值，可以允许你覆盖你自己的相同nonce的，待pending中的交易
+	  - GasPrice      *big.Int                  （可选）默认是自动，交易可使用的gas，未使用的gas会退回。
+	  - GasLimit *big.Int                  （可选）默认是自动确定，交易的gas价格，默认是网络gas价格的平均值 。
+	  - Amount    *big.Int                  （可选）交易携带的货币量，以bifer为单位。如果合约创建交易，则为初始的基金
+	  - Payload     types.ComplexString       （可选）或者包含相关数据的字节字符串，如果是合约创建，则是初始化要用到的代码。
 
   Returns:
   	- *dto.SignTransactionResponse，
 		Raw         string                   已签名的RLP编码的交易
 		Transaction SignedTransactionParams  transaction object
-		  - Gas      *big.Int                交易发起方约定的gas
-		  - GasPrice *big.Int                交易发起方约定的gasPrice
+		  - GasPrice      *big.Int                交易发起方约定的gas
+		  - GasLimit *big.Int                交易发起方约定的gasPrice
 		  - Hash     string  			     交易哈希
 		  - Input    string   				 随交易发送的数据
-		  - Nonce    *big.Int                交易发起者之前发起交易的次数
+		  - AccountNonce    *big.Int                交易发起者之前发起交易的次数
 		  - S        string                  ？？？
 		  - R        string                  ？？？
 		  - V        *big.Int                ？？？
-		  - To       string                  交易的接收方，如果是合约创建则为空
-		  - Value    *big.Int                转移的bif数量
+		  - Recipient       string                  交易的接收方，如果是合约创建则为空
+		  - Amount    *big.Int                转移的bif数量
  	- error
 
   Call permissions: 交易的发起方的账户处于解锁状态
@@ -480,13 +480,13 @@ func (core *Core) SignTransaction(transaction *dto.TransactionParameters) (*dto.
  	CN - 执行新的消息调用，而无需在区块链上创建交易，它不会改变区块链的状态，一般用于检索。
   Params:
 	- transaction，*dto.TransactionParameters，交易Call的对象
- 	  - From     string                    交易的发起方
- 	  - To       string                    交易的接收方
- 	  - Nonce    *big.Int                  （可选）整数，使用此值，可以允许你覆盖你自己的相同nonce的，待pending中的交易
- 	  - Gas      *big.Int                  （可选）默认是自动，交易可使用的gas，未使用的gas会退回。
- 	  - GasPrice *big.Int                  （可选）默认是自动确定，交易的gas价格，默认是网络gas价格的平均值 。
- 	  - Value    *big.Int                  （可选）交易携带的货币量，以bifer为单位。如果合约创建交易，则为初始的基金
- 	  - Data     types.ComplexString       （可选）或者包含相关数据的字节字符串，如果是合约创建，则是初始化要用到的代码。
+ 	  - Sender     string                    交易的发起方
+ 	  - Recipient       string                    交易的接收方
+ 	  - AccountNonce    *big.Int                  （可选）整数，使用此值，可以允许你覆盖你自己的相同nonce的，待pending中的交易
+ 	  - GasPrice      *big.Int                  （可选）默认是自动，交易可使用的gas，未使用的gas会退回。
+ 	  - GasLimit *big.Int                  （可选）默认是自动确定，交易的gas价格，默认是网络gas价格的平均值 。
+ 	  - Amount    *big.Int                  （可选）交易携带的货币量，以bifer为单位。如果合约创建交易，则为初始的基金
+ 	  - Payload     types.ComplexString       （可选）或者包含相关数据的字节字符串，如果是合约创建，则是初始化要用到的代码。
 
   Returns:
   	- 已执行合约的返回值
@@ -526,8 +526,8 @@ func (core *Core) Call(transaction *dto.TransactionParameters) (*dto.RequestResu
 	  - TransactionIndex  *big.Int          交易在区块中的索引（位置）
 	  - BlockHash         string            区块哈希
 	  - BlockNumber       *big.Int          区块
-	  - From              string            交易发起方
-	  - To                string            交易接收方
+	  - Sender              string            交易发起方
+	  - Recipient                string            交易接收方
 	  - CumulativeGasUsed *big.Int          在区块中执行此交易时使用的gas总量。
 	  - GasUsed           *big.Int          仅此特定交易使用的gas量。
 	  - ContractAddress   string            如果交易是合约创建，则为创建的合约地址，否则为空
@@ -910,17 +910,17 @@ func (core *Core) GetPendingTransactions() ([]*dto.TransactionResponse, error) {
   Returns:
   	- *dto.TransactionResponse
 		Hash             string              交易哈希
-		Nonce            *big.Int            交易发送方从该节点发送的交易数
+		AccountNonce            *big.Int            交易发送方从该节点发送的交易数
 		BlockHash        string              交易所在的区块的哈希，如果交易待处理，则为0x0000000000000000000000000000000000000000000000000000000000000000
 		BlockNumber      *big.Int            交易所在的区块，如果交易待处理，则为0
 		TransactionIndex *big.Int            交易在区块中的位置（索引），如果交易待处理，则为0
-		From             string              交易发送方
-		To               string              交易接收方，如果为合约创建则为空
+		Sender             string              交易发送方
+		Recipient               string              交易接收方，如果为合约创建则为空
 		Input            string              随交易发送的数据
-		Value            *big.Int            交易转移的bif数量，单位为bif
-		GasPrice         *big.Int            发送方提供的GasPrice，单位为bif
-		Gas              *big.Int            发送方提供的Gas
-		Data             types.ComplexString ？？？？
+		Amount            *big.Int            交易转移的bif数量，单位为bif
+		GasLimit         *big.Int            发送方提供的GasPrice，单位为bif
+		GasPrice              *big.Int            发送方提供的Gas
+		Payload             types.ComplexString ？？？？
  	- error
 
   Call permissions: Anyone
