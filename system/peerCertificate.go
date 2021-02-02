@@ -5,6 +5,7 @@ import (
 	"errors"
 	"github.com/bif/bif-sdk-go/abi"
 	"github.com/bif/bif-sdk-go/crypto"
+	"github.com/bif/bif-sdk-go/crypto/config"
 	"github.com/bif/bif-sdk-go/dto"
 	"github.com/bif/bif-sdk-go/utils"
 	"strings"
@@ -38,7 +39,7 @@ func (peerCer *PeerCertificate) peerRegisterPreCheck(registerCertificate *dto.Re
 	if !isValidHexAddress(registerCertificate.Apply) {
 		return false, errors.New("registerCertificate Apply is not valid bid")
 	}
-	if len(registerCertificate.PublicKey) != 53  || isBlankCharacter(registerCertificate.PublicKey) {
+	if len(registerCertificate.PublicKey) != 53 || isBlankCharacter(registerCertificate.PublicKey) {
 		return false, errors.New("registerCertificate publicKey's len should be 53")
 	}
 	if len(registerCertificate.NodeName) == 0 || isBlankCharacter(registerCertificate.NodeName) {
@@ -77,18 +78,18 @@ func (peerCer *PeerCertificate) messageSignature(message, password string, keyFi
 	messageSha3 := utils.NewUtils().Sha3Raw(message)
 
 	_, privateKey, err := peerCer.super.acc.Decrypt(keyFileData, isSM2, password)
-	privKey, err := crypto.HexToECDSA(privateKey, crypto.SECP256K1)
+	privKey, err := crypto.HexToECDSA(privateKey, config.SECP256K1)
 	if err != nil {
 		return "", "", err
 	}
 
-	var cryptoType crypto.CryptoType
+	var cryptoType config.CryptoType
 	var t string
 	if isSM2 {
 		t = "00"
-		cryptoType = crypto.SM2
+		cryptoType = config.SM2
 	} else {
-		cryptoType = crypto.SECP256K1
+		cryptoType = config.SECP256K1
 		t = "01"
 	}
 
@@ -306,7 +307,7 @@ func (peerCer *PeerCertificate) GetPeerCertificate(id string) (dto.PeerCertifica
 	}
 
 	res, err := pointer.ToPeerCertificate()
-	if err != nil{
+	if err != nil {
 		return peerCertificate, err
 	}
 	return *res, nil

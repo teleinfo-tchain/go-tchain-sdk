@@ -22,6 +22,7 @@ import (
 	"crypto/elliptic"
 	"errors"
 	"fmt"
+	"github.com/bif/bif-sdk-go/crypto/config"
 	"github.com/bif/bif-sdk-go/utils"
 	"github.com/prometheus/common/log"
 	"time"
@@ -33,7 +34,7 @@ type Signature struct {
 	Signature  []byte `json:"signature"    gencodec:"required"`  // 签名，64字字，前32字节是r，后32字节是s
 }
 
-func GenSignature(hash []byte, prv *ecdsa.PrivateKey, cryptoType CryptoType) (*Signature, error) {
+func GenSignature(hash []byte, prv *ecdsa.PrivateKey, cryptoType config.CryptoType) (*Signature, error) {
 	signature := &Signature{
 		PublicKey:  make([]byte, 0, 33),
 		CryptoType: make([]byte, 0, 1),
@@ -48,10 +49,10 @@ func GenSignature(hash []byte, prv *ecdsa.PrivateKey, cryptoType CryptoType) (*S
 	var ct []byte
 
 	switch cryptoType {
-	case SM2:
+	case config.SM2:
 		pubkey = CompressPubkeySm2(&prv.PublicKey)
 		ct = []byte{0}
-	case SECP256K1:
+	case config.SECP256K1:
 		pubkey = CompressPubkeyBtc(&prv.PublicKey)
 		ct = []byte{1}
 	default:
@@ -66,13 +67,13 @@ func GenSignature(hash []byte, prv *ecdsa.PrivateKey, cryptoType CryptoType) (*S
 	return signature, nil
 }
 
-func sign(hash []byte, prv *ecdsa.PrivateKey, cryptoType CryptoType) (sig []byte, err error) {
+func sign(hash []byte, prv *ecdsa.PrivateKey, cryptoType config.CryptoType) (sig []byte, err error) {
 	switch cryptoType {
-	case SM2:
+	case config.SM2:
 		// start := time.Now()
 		sig, err = SignSm2(hash, prv)
 		// log.Debug("Sign SM2", "nanoseconds", common.PrettyDuration(time.Since(start)))
-	case SECP256K1:
+	case config.SECP256K1:
 		// start := time.Now()
 		sig, err = SignBtc(hash, prv)
 		// log.Debug("Sign SECP256K1", "nanoseconds", common.PrettyDuration(time.Since(start)))
@@ -162,13 +163,13 @@ func SigToPub(hash, sig []byte) (*ecdsa.PublicKey, error) {
 //
 // The produced signature is in the [R || S || V] format where V is 0 or 1.
 // hash = Hash(M) 32  hash = Hash(M) + uid + 标志位
-func Sign(hash []byte, prv *ecdsa.PrivateKey, cryptoType CryptoType) (sig []byte, err error) {
+func Sign(hash []byte, prv *ecdsa.PrivateKey, cryptoType config.CryptoType) (sig []byte, err error) {
 	switch cryptoType {
-	case SM2:
+	case config.SM2:
 		start := time.Now()
 		sig, err = SignSm2(hash, prv)
 		fmt.Println("Sign SM2", "nanoseconds", utils.PrettyDuration(time.Since(start)))
-	case SECP256K1:
+	case config.SECP256K1:
 		start := time.Now()
 		sig, err = SignBtc(hash, prv)
 		fmt.Println("Sign SECP256K1", "nanoseconds", utils.PrettyDuration(time.Since(start)))
@@ -192,11 +193,11 @@ func Sign(hash []byte, prv *ecdsa.PrivateKey, cryptoType CryptoType) (sig []byte
 }
 
 // S256 returns an instance of the secp256k1 curve.
-func S256(cryptoType CryptoType) elliptic.Curve {
+func S256(cryptoType config.CryptoType) elliptic.Curve {
 	switch cryptoType {
-	case SM2:
+	case config.SM2:
 		return S256Sm2()
-	case SECP256K1:
+	case config.SECP256K1:
 		return S256Btc()
 	default:
 		return S256Sm2()

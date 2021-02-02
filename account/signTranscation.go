@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"crypto/ecdsa"
 	"github.com/bif/bif-sdk-go/crypto"
+	"github.com/bif/bif-sdk-go/crypto/config"
 	"github.com/bif/bif-sdk-go/utils"
 	"github.com/bif/bif-sdk-go/utils/hexutil"
 	"github.com/bif/bif-sdk-go/utils/rlp"
@@ -13,11 +14,11 @@ import (
 
 type SignTxParams struct {
 	ChainId      uint64
-	Sender       string
-	Recipient    string
 	AccountNonce uint64
 	GasPrice     *big.Int
 	GasLimit     uint64
+	Sender       *utils.Address
+	Recipient    *utils.Address
 	Amount       *big.Int
 	Payload      []byte
 }
@@ -69,7 +70,7 @@ func (bfs BIFSigner) Hash(tx *txData) utils.Hash {
 }
 
 // SignTx signs the transaction using the given signer and private key
-func SignTx(tx *txData, s BIFSigner, prv *ecdsa.PrivateKey, cryptoType crypto.CryptoType) (*txData, error) {
+func SignTx(tx *txData, s BIFSigner, prv *ecdsa.PrivateKey, cryptoType config.CryptoType) (*txData, error) {
 	h := s.Hash(tx)
 	var err error
 	Signature, err := crypto.GenSignature(h[:], prv, cryptoType)

@@ -18,6 +18,7 @@ import (
 	"bytes"
 	"encoding/hex"
 	"encoding/json"
+	"github.com/bif/bif-sdk-go/crypto/config"
 	"github.com/bif/bif-sdk-go/utils"
 	"math/big"
 	"reflect"
@@ -89,8 +90,8 @@ func TestEventId(t *testing.T) {
 			{ "type" : "event", "name" : "Check", "inputs": [{ "name" : "t", "type": "address" }, { "name": "b", "type": "uint256" }] }
 			]`,
 			expectations: map[string]utils.Hash{
-				"Balance": crypto.Keccak256Hash(crypto.SECP256K1, []byte("Balance(uint256)")),
-				"Check":   crypto.Keccak256Hash(crypto.SECP256K1, []byte("Check(address,uint256)")),
+				"Balance": crypto.Keccak256Hash(config.SECP256K1, []byte("Balance(uint256)")),
+				"Check":   crypto.Keccak256Hash(config.SECP256K1, []byte("Check(address,uint256)")),
 			},
 		},
 	}

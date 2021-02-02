@@ -18,6 +18,7 @@ import (
 	"encoding/binary"
 	"errors"
 	"fmt"
+	"github.com/bif/bif-sdk-go/crypto/config"
 	"github.com/bif/bif-sdk-go/utils"
 	"math/big"
 	"reflect"
@@ -66,10 +67,10 @@ func MakeTopics(query ...[]interface{}) ([][]utils.Hash, error) {
 				blob := new(big.Int).SetUint64(rule).Bytes()
 				copy(topic[utils.HashLength-len(blob):], blob)
 			case string:
-				hash := crypto.Keccak256Hash(crypto.SECP256K1, []byte(rule))
+				hash := crypto.Keccak256Hash(config.SECP256K1, []byte(rule))
 				copy(topic[:], hash[:])
 			case []byte:
-				hash := crypto.Keccak256Hash(crypto.SECP256K1, rule)
+				hash := crypto.Keccak256Hash(config.SECP256K1, rule)
 				copy(topic[:], hash[:])
 
 			default:

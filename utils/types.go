@@ -18,12 +18,12 @@ package utils
 
 import (
 	"bytes"
-	"encoding/hex"
 	"fmt"
+	"github.com/bif/bif-sdk-go/crypto/config"
 	"github.com/btcsuite/btcutil/base58"
-	"golang.org/x/crypto/sha3"
 	"math/big"
 	"reflect"
+	"regexp"
 	"strings"
 
 	"github.com/bif/bif-sdk-go/utils/hexutil"
@@ -40,14 +40,17 @@ const (
 	// HashLength is the expected length of the hash
 	HashLength = 32
 	// AddressLength is the expected length of the address
-	AddressLength       = 31
+	AddressLength       = 24
 	AddressPrefixString = "did:bid:"
+	AddressSplit        = ":"
 )
 
 var (
 	hashT             = reflect.TypeOf(Hash{})
 	addressT          = reflect.TypeOf(Address{})
 	AddressPrefixByte = []byte(AddressPrefixString)
+	AddressRegexp     = regexp.MustCompile(`^(did:bid:(([a-z0-9]{4}):)?)?([zes][sft])([1-9a-km-zA-HJ-NP-Z]+)$`)
+	ChainCodeRegexp   = regexp.MustCompile(`^[a-z0-9]{4}$`)
 )
 
 // Hash represents the 32 byte Keccak256 hash of arbitrary data.
@@ -129,15 +132,74 @@ func EmptyHash(h Hash) bool {
 	return h == Hash{}
 }
 
+/////////// Address
+
+// Address represents the 20 byte address of an Ethereum account.
+type Address [AddressLength]byte
+
+func (a *Address) MarshalText() ([]byte, error) {
+	return hexutil.Bytes(a[:]).MarshalText()
+	//return a.Bytes(), nil
+}
+
+func (a *Address) UnmarshalText(input []byte) error {
+	return a.unmarshalAddress(input)
+}
+
+func (a *Address) UnmarshalJSON(input []byte) error {
+	return a.unmarshalAddress(input)
+}
+
+func (a *Address) unmarshalAddress(input []byte) error {
+	inputLength := len(input)
+	if inputLength < 32 {
+		return fmt.Errorf("input address's length is short")
+	}
+
+	// 删除前后引号
+	if input[inputLength-1] == 34 {
+		input = input[:inputLength-1]
+	}
+	if input[0] == 34 {
+		input = input[1:]
+	}
+
+	s := string(input)
+	if !AddressRegexp.MatchString(s) {
+		return fmt.Errorf("input address is error, addr=%s", s)
+	}
+
+	subString := AddressRegexp.FindStringSubmatch(s)
+
+	save := subString[4]
+	suf := subString[5]
+
+	decode := base58.Decode(suf)
+	if len(decode) != config.HashLength {
+		return fmt.Errorf("input address's length is error, len=%d", len(decode))
+	}
+
+	var addr bytes.Buffer
+	addr.WriteString(save)
+	addr.Write(decode)
+
+	copy(a[:], addr.Bytes())
+
+	return nil
+}
+
 // BytesToAddress returns Address with value b.
 // If b is larger than len(h), b will be cropped from the left.
 func BytesToAddress(b []byte) Address {
-	// abi编解码要用这个函数，加上这个判断会报错，unpack.go
-	// if !bytes.HasPrefix(b, AddressPrefixByte) {
-	// 	return Address{}
-	// }
+	//if !bytes.HasPrefix(b, AddressPrefixByte) {
+	//	return Address{}
+	//}
+
 	var a Address
-	a.SetBytes(b)
+	if len(b) > len(a) {
+		b = b[len(b)-AddressLength:]
+	}
+	copy(a[:], b)
 	return a
 }
 
@@ -146,162 +208,101 @@ func StringToAddress(s string) Address {
 	if s == "" {
 		return Address{}
 	}
-	// todo:Base58的长度在一定范围内，参展base58的实现修改
-	if len(s) < 32 {
+	if len(s) < 24 {
 		return Address{}
 	}
 
-	if !strings.HasPrefix(s, AddressPrefixString) {
+	if !AddressRegexp.MatchString(s) {
 		return Address{}
 	}
-	var b bytes.Buffer
-	b.Write([]byte(s[:11]))
-	// todo: is always Base58??
-	b.Write(base58.Decode(s[11:]))
 
-	return BytesToAddress(b.Bytes())
+	subString := AddressRegexp.FindStringSubmatch(s)
+
+	//code := subString[2]
+	save := subString[4]
+	suf := subString[5]
+
+	decode := base58.Decode(suf)
+	if len(decode) != config.HashLength {
+		return Address{}
+	}
+
+	var addr bytes.Buffer
+	addr.WriteString(save)
+	addr.Write(decode)
+
+	return BytesToAddress(addr.Bytes())
+}
+
+func HashToAddress(hash []byte) Address {
+	length := config.HashLength
+	var prefix strings.Builder
+	//prefix.WriteString(AddressPrefixString)
+	prefix.WriteString(string(config.SECP256K1_Prefix))
+
+	hashLength := len(hash)
+	if hashLength < length {
+		length = hashLength
+	}
+	h := hash[hashLength-length:]
+
+	var encode string
+	encode = base58.Encode(h)
+	prefix.WriteString(string(config.BASE58_Prefix))
+	//prefix.WriteString(string(config.HashLength20))
+
+	return StringToAddress(prefix.String() + encode)
 }
 
 // BigToAddress returns Address with byte values of b.
 // If b is larger than len(h), b will be cropped from the left.
 func BigToAddress(b *big.Int) Address { return BytesToAddress(b.Bytes()) }
 
-// HexToAddress returns Address with byte values of s.
-// If s is larger than len(h), s will be cropped from the left.
-func HexToAddress(s string) Address {
-	return Address{}
-	// var buffer bytes.Buffer
-	//
-	// if Has0xPrefix(s) {
-	// 	s = s[2:]
-	// } else if HasDidBidPrefix(s) {
-	// 	s = s[8:]
-	// 	buffer.Write([]byte("did:bid:"))
-	// }
-	//
-	// if len(s)%2 == 1 {
-	// 	s = "0" + s
-	// }
-	//
-	// length := HashLength
-	// var prefix strings.Builder
-	// prefix.WriteString(AddressPrefixString)
-	// prefix.WriteString(string(crypto.SECP256K1_Prefix))
-	//
-	// hashLength := len(hash)
-	// if hashLength < length {
-	// 	length = hashLength
-	// }
-	// h := hash[hashLength-length:]
-	//
-	// var encode string
-	// encode = base58.Encode(h)
-	// prefix.WriteString(string(crypto.BASE58_Prefix))
-	// prefix.WriteString(string(crypto.HashLength20))
-	//
-	// return StringToAddress(prefix.String() + encode)
+// Bytes gets the string representation of the underlying address.
+func (a Address) Bytes() []byte { return a[:] }
+
+func (a Address) ValidBytes() []byte { return a[0:] }
+
+func (a Address) CryptoType() config.CryptoType {
+	if bytes.HasPrefix(a.Bytes(), []byte(config.SM2_Prefix)) {
+		return config.SM2
+	} else if bytes.HasPrefix(a.Bytes(), []byte(config.SECP256K1_Prefix)) {
+		return config.SECP256K1
+	} else {
+		return config.SECP256K1
+	}
 }
 
-// IsHexAddress verifies whether a string can represent a valid hex-encoded address or not.
-func IsHexAddress(s string) bool {
-	// 暂时值判断前缀，后面等格式确定，再增加额外的判断
-	if HasDidBidPrefix(s) {
+// String implements fmt.Stringer.
+func (a Address) String(chainCode string) string {
+	var addressString strings.Builder
+	if a == (Address{}) {
+		return ""
+	}
+	addr := a.Bytes()
+	addrLen := len(addr)
+
+	addressString.WriteString(AddressPrefixString)
+	if chainCode != "" {
+		addressString.WriteString(chainCode)
+		addressString.WriteString(AddressSplit)
+	}
+	addressString.Write(addr[:addrLen-config.HashLength])
+	addressString.WriteString(base58.Encode(addr[addrLen-config.HashLength:]))
+
+	return addressString.String()
+}
+
+func (a Address) Equal(addr Address) bool {
+	if a.String("") == addr.String("") {
 		return true
 	}
 	return false
 }
 
-// ///////// Address
-
-// Address represents the 31 byte address of an Bif account.
-type Address [AddressLength]byte
-
-// Bytes gets the string representation of the underlying address.
-func (a Address) Bytes() []byte { return a[:] }
-
-// 判断加密是否采用国密
-func (a Address) IsSM2() bool {
-	if bytes.HasPrefix(a.Bytes(), []byte(AddressPrefixString)) && a[8] == 90 {
+func (a Address) EqualString(addr string) bool {
+	if a.String("") == StringToAddress(addr).String("") {
 		return true
-	} else {
-		return false
 	}
-}
-
-// Hash converts an address to a hash by left-padding it with zeros.
-func (a Address) Hash() Hash { return BytesToHash(a[:]) }
-
-// Hex returns an EIP55-compliant hex string representation of the address.
-func (a Address) Hex() string {
-	unchecksummed := hex.EncodeToString(a[:])
-	sha := sha3.NewLegacyKeccak256()
-	sha.Write([]byte(unchecksummed))
-	hash := sha.Sum(nil)
-
-	result := []byte(unchecksummed)
-	for i := 0; i < len(result); i++ {
-		hashByte := hash[i/2]
-		if i%2 == 0 {
-			hashByte = hashByte >> 4
-		} else {
-			hashByte &= 0xf
-		}
-		if result[i] > '9' && hashByte > 7 {
-			result[i] -= 32
-		}
-	}
-	return "0x" + string(result)
-}
-
-// String implements fmt.Stringer.
-func (a Address) String() string {
-	// return a.Hex()
-	tmpAddress := Address{}
-	if a == tmpAddress {
-		return ""
-	}
-	addr := a.Bytes()
-	if !bytes.Equal(addr[:8], AddressPrefixByte) {
-		return ""
-	}
-	prefix := fmt.Sprintf("%s", addr[:11])
-	suffix := base58.Encode(addr[11:])
-	return prefix + suffix
-}
-
-// Format implements fmt.Formatter, forcing the byte slice to be formatted as is,
-// without going through the stringer common used for logging.
-func (a Address) Format(s fmt.State, c rune) {
-	fmt.Fprintf(s, "%"+string(c), a[:])
-}
-
-func (a *Address) SetBytesWithoutPre(b []byte) {
-	if len(b) > len(a) {
-		b = b[len(b)-AddressLength:]
-	}
-	copy(a[AddressLength-len(b):], b)
-}
-
-// SetBytes sets the address to the value of b.
-// If b is larger than len(a) it will panic.
-func (a *Address) SetBytes(b []byte) {
-	if len(b) > len(a) {
-		b = b[len(b)-AddressLength:]
-	}
-	copy(a[AddressLength-len(b):], b)
-}
-
-// MarshalText returns the hex representation of a.
-func (a Address) MarshalText() ([]byte, error) {
-	return hexutil.Bytes(a[:]).MarshalText()
-}
-
-// UnmarshalText parses a hash in hex syntax.
-func (a *Address) UnmarshalText(input []byte) error {
-	return hexutil.UnmarshalFixedText("Address", input, a[:])
-}
-
-// UnmarshalJSON parses a hash in hex syntax.
-func (a *Address) UnmarshalJSON(input []byte) error {
-	return hexutil.UnmarshalFixedJSON(addressT, input, a[:])
+	return false
 }

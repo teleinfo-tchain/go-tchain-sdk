@@ -54,14 +54,14 @@ func NewKeyStore(keydir string, scryptN, scryptP int) *KeyStore {
 }
 
 // ImportECDSA stores the given key into the key directory, encrypting it with the passphrase.
-func (ks *KeyStore) ImportECDSA(priv *ecdsa.PrivateKey, passphrase string) (accounts.Account, error) {
+func (ks *KeyStore) ImportECDSA(priv *ecdsa.PrivateKey, passphrase, chainCode string) (accounts.Account, error) {
 	key := NewKeyFromECDSA(priv)
-	return ks.importKey(key, passphrase)
+	return ks.importKey(key, passphrase, chainCode)
 }
 
-func (ks *KeyStore) importKey(key *Key, passphrase string) (accounts.Account, error) {
-	a := accounts.Account{Address: key.Address, URL: accounts.URL{Scheme: KeyStoreScheme, Path: ks.storage.JoinPath(keyFileName(key.Address))}}
-	if err := ks.storage.StoreKey(a.URL.Path, key, passphrase); err != nil {
+func (ks *KeyStore) importKey(key *Key, passphrase, chainCode string) (accounts.Account, error) {
+	a := accounts.Account{Address: key.Address, URL: accounts.URL{Scheme: KeyStoreScheme, Path: ks.storage.JoinPath(keyFileName(key.Address, chainCode))}}
+	if err := ks.storage.StoreKey(a.URL.Path, key, passphrase, chainCode); err != nil {
 		return accounts.Account{}, err
 	}
 	return a, nil

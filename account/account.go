@@ -8,6 +8,7 @@ import (
 	"fmt"
 	"github.com/bif/bif-sdk-go/account/keystore"
 	"github.com/bif/bif-sdk-go/crypto"
+	"github.com/bif/bif-sdk-go/crypto/config"
 	"github.com/bif/bif-sdk-go/dto"
 	"github.com/bif/bif-sdk-go/providers"
 	"github.com/bif/bif-sdk-go/utils"
@@ -32,25 +33,25 @@ func NewAccount(provider providers.ProviderInterface) *Account {
 	return account
 }
 
-func cryptoType(isSM2 bool) crypto.CryptoType {
+func cryptoType(isSM2 bool) config.CryptoType {
 	if isSM2 {
-		return crypto.SM2
+		return config.SM2
 	}
-	return crypto.SECP256K1
+	return config.SECP256K1
 }
 
-func publicKeyStrToAddress(pubBytes []byte, isSM2 bool) (string, error) {
+func publicKeyStrToAddress(pubBytes []byte, isSM2 bool, chainCode string) (string, error) {
 	var addr []byte
 	if isSM2 {
-		addr = crypto.Keccak256(crypto.SECP256K1, pubBytes[1:])[12:]
+		addr = crypto.Keccak256(config.SECP256K1, pubBytes[1:])[12:]
 		addr[8] = 115
 	} else {
-		addr = crypto.Keccak256(crypto.SECP256K1, pubBytes[1:])[12:]
+		addr = crypto.Keccak256(config.SECP256K1, pubBytes[1:])[12:]
 		if addr[8] == 115 {
 			addr[8] = 103
 		}
 	}
-	return utils.BytesToAddress(addr).String(), nil
+	return utils.BytesToAddress(addr).String(chainCode), nil
 }
 
 func (account *Account) getChainId() (uint64, error) {
@@ -90,27 +91,14 @@ func (account *Account) getTransactionCount(publicAddr string) (uint64, error) {
 
 func (account *Account) preCheckTx(signData *SignTxParams, privateKey string, isSM2 bool) (*txData, error) {
 
-	var recipient utils.Address
-	// 校验地址
-	if signData.Recipient != "" {
-		recipient = utils.StringToAddress(signData.Recipient)
-	}
-
 	publicAddr, err := GetAddressFromPrivate(privateKey, isSM2)
 	if err != nil {
 		return nil, errors.New("not invalid privateKey")
 	}
-	// 校验地址
-	var sender utils.Address
-	if signData.Sender != "" {
-		sender = utils.StringToAddress(signData.Sender)
-	} else {
-		sender = utils.StringToAddress(publicAddr)
-	}
 
 	// 校验Nonce(谁签名就取谁的Nonce)
 	if signData.AccountNonce == 0 {
-		signData.AccountNonce, err = account.getTransactionCount(publicAddr)
+		signData.AccountNonce, err = account.getTransactionCount(publicAddr.String(""))
 		if err != nil {
 			return nil, err
 		}
@@ -153,8 +141,8 @@ func (account *Account) preCheckTx(signData *SignTxParams, privateKey string, is
 		AccountNonce: signData.AccountNonce,
 		GasPrice:     signData.GasPrice,
 		GasLimit:     signData.GasLimit,
-		Sender:       &sender,
-		Recipient:    &recipient,
+		Sender:       signData.Sender,
+		Recipient:    signData.Recipient,
 		Amount:       signData.Amount,
 		Payload:      signData.Payload,
 		SignUser:     nil,
@@ -175,13 +163,13 @@ func (account *Account) preCheckTx(signData *SignTxParams, privateKey string, is
 
   Call permissions: Anyone
 */
-func (account *Account) Create(isSM2 bool) (string, string, error) {
+func (account *Account) Create(isSM2 bool, chainCode string) (string, string, error) {
 	cryptoType := cryptoType(isSM2)
 	privateKeyECDSA, err := crypto.GenerateKey(cryptoType)
 	if err != nil {
 		return "", "", err
 	}
-	accountAddress := crypto.PubkeyToAddress(*privateKeyECDSA.Public().(*ecdsa.PublicKey)).String()
+	accountAddress := crypto.PubkeyToAddress(*privateKeyECDSA.Public().(*ecdsa.PublicKey)).String(chainCode)
 	privateKey := hex.EncodeToString(privateKeyECDSA.D.Bytes())
 	return accountAddress, privateKey, nil
 }
@@ -200,14 +188,14 @@ func (account *Account) Create(isSM2 bool) (string, string, error) {
 
   Call permissions: Anyone
 */
-func (account *Account) PrivateKeyToAccount(privateKey string, isSM2 bool) (string, error) {
+func (account *Account) PrivateKeyToAccount(privateKey, chainCode string, isSM2 bool) (string, error) {
 	cryptoType := cryptoType(isSM2)
 	privKey, err := crypto.HexToECDSA(privateKey, cryptoType)
 	if err != nil {
 		return "", err
 	}
 	// 转换成地址
-	return crypto.PubkeyToAddress(*privKey.Public().(*ecdsa.PublicKey)).String(), nil
+	return crypto.PubkeyToAddress(*privKey.Public().(*ecdsa.PublicKey)).String(chainCode), nil
 }
 
 /*
@@ -226,7 +214,7 @@ func (account *Account) PrivateKeyToAccount(privateKey string, isSM2 bool) (stri
 
   Call permissions: Anyone
 */
-func (account *Account) Encrypt(privateKey string, isSM2 bool, password string, UseLightweightKDF bool) ([]byte, error) {
+func (account *Account) Encrypt(privateKey string, isSM2 bool, password, chainCode string, UseLightweightKDF bool) ([]byte, error) {
 	if password == "" {
 		return nil, errors.New("empty password, please check")
 	}
@@ -246,7 +234,7 @@ func (account *Account) Encrypt(privateKey string, isSM2 bool, password string, 
 		return nil, err
 	}
 
-	return keystore.EncryptKey(keystore.NewKeyFromECDSA(privkey), password, scryptN, scryptP)
+	return keystore.EncryptKey(keystore.NewKeyFromECDSA(privkey), password, chainCode, scryptN, scryptP)
 }
 
 /*
@@ -272,12 +260,13 @@ func (account *Account) Decrypt(keystoreJson []byte, isSM2 bool, password string
 
 	cryptoType := cryptoType(isSM2)
 
-	key, err := keystore.DecryptKey(keystoreJson, password, cryptoType)
+	var addressString string
+	key, addressString, err := keystore.DecryptKey(keystoreJson, password, cryptoType)
 	if err != nil {
 		return "", "", err
 	}
 
-	return key.Address.String(), hex.EncodeToString(key.PrivateKey.D.Bytes()), nil
+	return addressString, hex.EncodeToString(key.PrivateKey.D.Bytes()), nil
 }
 
 /*
@@ -311,11 +300,11 @@ func (account *Account) SignTransaction(signData *SignTxParams, privateKey strin
 	}
 
 	// 2 Get signature type based on Sender type
-	var cryptoType crypto.CryptoType
+	var cryptoType config.CryptoType
 	if isSM2 {
-		cryptoType = crypto.SM2
+		cryptoType = config.SM2
 	} else {
-		cryptoType = crypto.SECP256K1
+		cryptoType = config.SECP256K1
 	}
 
 	privKey, err := crypto.HexToECDSA(privateKey, cryptoType)
@@ -336,7 +325,7 @@ func (account *Account) SignTransaction(signData *SignTxParams, privateKey strin
 		return nil, err
 	}
 	fmt.Printf("signed  %#v \n", signed)
-	fmt.Printf("signed  from %#v \n", signed.Sender.String())
+	fmt.Printf("signed  from %#v \n", signed.Sender.String(""))
 	return &SignTransactionResult{data, signed}, nil
 }
 
@@ -444,11 +433,11 @@ func (account *Account) HashMessage(message string, isSm2 bool) string {
 	buffer.Write([]byte(preamble))
 	buffer.Write(messageBytes)
 
-	var cryptoType crypto.CryptoType
+	var cryptoType config.CryptoType
 	if isSm2 {
-		cryptoType = crypto.SM2
+		cryptoType = config.SM2
 	} else {
-		cryptoType = crypto.SECP256K1
+		cryptoType = config.SECP256K1
 	}
 	hashBytes := crypto.Keccak256(cryptoType, buffer.Bytes())
 	return "0x" + utils.Bytes2Hex(hashBytes)

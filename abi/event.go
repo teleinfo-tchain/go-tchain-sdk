@@ -16,6 +16,7 @@ package abi
 
 import (
 	"fmt"
+	"github.com/bif/bif-sdk-go/crypto/config"
 	"github.com/bif/bif-sdk-go/utils"
 	"strings"
 
@@ -80,7 +81,7 @@ func NewEvent(name, rawName string, anonymous bool, inputs Arguments) Event {
 
 	str := fmt.Sprintf("event %v(%v)", rawName, strings.Join(names, ", "))
 	sig := fmt.Sprintf("%v(%v)", rawName, strings.Join(types, ","))
-	id := utils.BytesToHash(crypto.Keccak256(crypto.SECP256K1, []byte(sig)))
+	id := utils.BytesToHash(crypto.Keccak256(config.SECP256K1, []byte(sig)))
 
 	return Event{
 		Name:      name,

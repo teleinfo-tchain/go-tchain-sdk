@@ -9,6 +9,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"github.com/bif/bif-sdk-go/crypto"
+	"github.com/bif/bif-sdk-go/crypto/config"
 	"github.com/bif/bif-sdk-go/utils"
 	"github.com/bif/bif-sdk-go/utils/math"
 	"github.com/pborman/uuid"
@@ -49,37 +50,35 @@ type keyStorePassphrase struct {
 	scryptP     int
 }
 
-func (ks keyStorePassphrase) GetKey(addr utils.Address, filename, auth string) (*Key, error) {
+func (ks keyStorePassphrase) GetKey(addr utils.Address, filename, auth, chainCode string) (*Key, error) {
 	// Load the key from the keystore and decrypt its contents
 	keyjson, err := ioutil.ReadFile(filename)
 	if err != nil {
 		return nil, err
 	}
 	var key *Key
-	if addr.IsSM2() {
-		key, err = DecryptKey(keyjson, auth, crypto.SM2)
-	} else {
-		key, err = DecryptKey(keyjson, auth, crypto.SECP256K1)
-	}
+	var addressString string
+
+	key, addressString, err = DecryptKey(keyjson, auth, addr.CryptoType())
 
 	if err != nil {
 		return nil, err
 	}
 	// Make sure we're really operating on the requested key (no swap attacks)
 	if !bytes.HasSuffix(key.Address[:], addr[:]) {
-		return nil, fmt.Errorf("key content mismatch: have account %x, want %x", key.Address, addr)
+		return nil, fmt.Errorf("key content mismatch: have account %x, want %x", addressString, addr)
 	}
 	return key, nil
 }
 
 // StoreKey generates a key, encrypts with 'auth' and stores in the given directory
-func StoreKey(dir, auth string, scryptN, scryptP int, cryptoType crypto.CryptoType) (utils.Address, error) {
-	_, a, err := storeNewKey(&keyStorePassphrase{dir, scryptN, scryptP}, rand.Reader, auth, cryptoType)
+func StoreKey(dir, auth, chainCode string, scryptN, scryptP int, cryptoType config.CryptoType) (utils.Address, error) {
+	_, a, err := storeNewKey(&keyStorePassphrase{dir, scryptN, scryptP}, rand.Reader, auth, chainCode, cryptoType)
 	return a.Address, err
 }
 
-func (ks keyStorePassphrase) StoreKey(filename string, key *Key, auth string) error {
-	keyjson, err := EncryptKey(key, auth, ks.scryptN, ks.scryptP)
+func (ks keyStorePassphrase) StoreKey(filename string, key *Key, auth, chainCode string) error {
+	keyjson, err := EncryptKey(key, auth, chainCode, ks.scryptN, ks.scryptP)
 	if err != nil {
 		return err
 	}
@@ -89,7 +88,7 @@ func (ks keyStorePassphrase) StoreKey(filename string, key *Key, auth string) er
 		return err
 	}
 	// Verify that we can decrypt the file with the given password.
-	_, err = ks.GetKey(key.Address, tmpName, auth)
+	_, err = ks.GetKey(key.Address, tmpName, auth, chainCode)
 	if err != nil {
 		msg := "An error was encountered when saving and verifying the keystore file. \n" +
 			"This indicates that the keystore is corrupted. \n" +
@@ -130,7 +129,7 @@ func EncryptDataV3(data, auth []byte, scryptN, scryptP int) (CryptoJSON, error) 
 	if err != nil {
 		return CryptoJSON{}, err
 	}
-	mac := crypto.Keccak256(crypto.SECP256K1, derivedKey[16:32], cipherText)
+	mac := crypto.Keccak256(config.SECP256K1, derivedKey[16:32], cipherText)
 
 	scryptParamsJSON := make(map[string]interface{}, 5)
 	scryptParamsJSON["n"] = scryptN
@@ -155,14 +154,14 @@ func EncryptDataV3(data, auth []byte, scryptN, scryptP int) (CryptoJSON, error) 
 
 // EncryptKey encrypts a key using the specified scrypt parameters into a json
 // blob that can be decrypted later on.
-func EncryptKey(key *Key, auth string, scryptN, scryptP int) ([]byte, error) {
+func EncryptKey(key *Key, auth, chainCode string, scryptN, scryptP int) ([]byte, error) {
 	keyBytes := math.PaddedBigBytes(key.PrivateKey.D, 32)
 	cryptoStruct, err := EncryptDataV3(keyBytes, []byte(auth), scryptN, scryptP)
 	if err != nil {
 		return nil, err
 	}
 	encryptedKeyJSONV3 := encryptedKeyJSONV3{
-		key.Address.String(),
+		key.Address.String(chainCode),
 		cryptoStruct,
 		key.Id.String(),
 		version,
@@ -171,33 +170,37 @@ func EncryptKey(key *Key, auth string, scryptN, scryptP int) ([]byte, error) {
 }
 
 // DecryptKey decrypts a key from a json blob, returning the private key itself.
-func DecryptKey(keyjson []byte, auth string, cryptoType crypto.CryptoType) (*Key, error) {
+func DecryptKey(keyjson []byte, auth string, cryptoType config.CryptoType) (*Key, string, error) {
 	// Parse the json into a simple map to fetch the key version
 	m := make(map[string]interface{})
 	if err := json.Unmarshal(keyjson, &m); err != nil {
-		return nil, err
+		return nil, "", err
 	}
 	// Depending on the version try to parse one way or another
 	var (
 		keyBytes, keyId []byte
 		err             error
+		addressString   string
 	)
+
 	if version, ok := m["version"].(string); ok && version == "1" {
 		k := new(encryptedKeyJSONV1)
 		if err := json.Unmarshal(keyjson, k); err != nil {
-			return nil, err
+			return nil, addressString, err
 		}
 		keyBytes, keyId, err = decryptKeyV1(k, auth)
+		addressString = k.Address
 	} else {
 		k := new(encryptedKeyJSONV3)
 		if err := json.Unmarshal(keyjson, k); err != nil {
-			return nil, err
+			return nil, addressString, err
 		}
 		keyBytes, keyId, err = decryptKeyV3(k, auth)
+		addressString = k.Address
 	}
 	// Handle any decryption errors and return the key
 	if err != nil {
-		return nil, err
+		return nil, addressString, err
 	}
 	key := crypto.ToECDSAUnsafe(keyBytes, cryptoType)
 
@@ -205,7 +208,7 @@ func DecryptKey(keyjson []byte, auth string, cryptoType crypto.CryptoType) (*Key
 		Id:         uuid.UUID(keyId),
 		Address:    crypto.PubkeyToAddress(key.PublicKey),
 		PrivateKey: key,
-	}, nil
+	}, addressString, nil
 }
 
 func DecryptDataV3(cryptoJson CryptoJSON, auth string) ([]byte, error) {
@@ -232,7 +235,7 @@ func DecryptDataV3(cryptoJson CryptoJSON, auth string) ([]byte, error) {
 		return nil, err
 	}
 
-	calculatedMAC := crypto.Keccak256(crypto.SECP256K1, derivedKey[16:32], cipherText)
+	calculatedMAC := crypto.Keccak256(config.SECP256K1, derivedKey[16:32], cipherText)
 	if !bytes.Equal(calculatedMAC, mac) {
 		return nil, ErrDecrypt
 	}
@@ -278,12 +281,12 @@ func decryptKeyV1(keyProtected *encryptedKeyJSONV1, auth string) (keyBytes []byt
 		return nil, nil, err
 	}
 
-	calculatedMAC := crypto.Keccak256(crypto.SECP256K1, derivedKey[16:32], cipherText)
+	calculatedMAC := crypto.Keccak256(config.SECP256K1, derivedKey[16:32], cipherText)
 	if !bytes.Equal(calculatedMAC, mac) {
 		return nil, nil, ErrDecrypt
 	}
 
-	plainText, err := aesCBCDecrypt(crypto.Keccak256(crypto.SECP256K1, derivedKey[:16])[:16], cipherText, iv)
+	plainText, err := aesCBCDecrypt(crypto.Keccak256(config.SECP256K1, derivedKey[:16])[:16], cipherText, iv)
 	if err != nil {
 		return nil, nil, err
 	}

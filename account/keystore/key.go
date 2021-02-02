@@ -23,6 +23,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"github.com/bif/bif-sdk-go/account/accounts"
+	"github.com/bif/bif-sdk-go/crypto/config"
 	"github.com/bif/bif-sdk-go/utils"
 	"io"
 	"io/ioutil"
@@ -50,9 +51,9 @@ type Key struct {
 
 type keyStore interface {
 	// Loads and decrypts the key from disk.
-	GetKey(addr utils.Address, filename string, auth string) (*Key, error)
+	GetKey(addr utils.Address, filename string, auth, chainCode string) (*Key, error)
 	// Writes and encrypts the key.
-	StoreKey(filename string, k *Key, auth string) error
+	StoreKey(filename string, k *Key, auth, chainCode string) error
 	// Joins filename with the key directory unless it is already absolute.
 	JoinPath(filename string) string
 }
@@ -119,9 +120,9 @@ func (k *Key) UnmarshalJSON(j []byte) (err error) {
 
 	var privkey *ecdsa.PrivateKey
 	if bytes.HasPrefix(addr, []byte("did:bid:")) && addr[8] == 115 {
-		privkey, err = crypto.HexToECDSA(keyJSON.PrivateKey, crypto.SM2)
+		privkey, err = crypto.HexToECDSA(keyJSON.PrivateKey, config.SM2)
 	} else {
-		privkey, err = crypto.HexToECDSA(keyJSON.PrivateKey, crypto.SECP256K1)
+		privkey, err = crypto.HexToECDSA(keyJSON.PrivateKey, config.SECP256K1)
 	}
 
 	if err != nil {
@@ -144,7 +145,7 @@ func NewKeyFromECDSA(privateKeyECDSA *ecdsa.PrivateKey) *Key {
 	return key
 }
 
-func newKey(rand io.Reader, cryptoType crypto.CryptoType) (*Key, error) {
+func newKey(rand io.Reader, cryptoType config.CryptoType) (*Key, error) {
 	privateKeyECDSA, err := ecdsa.GenerateKey(crypto.S256(cryptoType), rand)
 	if err != nil {
 		return nil, err
@@ -152,16 +153,16 @@ func newKey(rand io.Reader, cryptoType crypto.CryptoType) (*Key, error) {
 	return NewKeyFromECDSA(privateKeyECDSA), nil
 }
 
-func storeNewKey(ks keyStore, rand io.Reader, auth string, cryptoType crypto.CryptoType) (*Key, accounts.Account, error) {
+func storeNewKey(ks keyStore, rand io.Reader, auth, chainCode string, cryptoType config.CryptoType) (*Key, accounts.Account, error) {
 	key, err := newKey(rand, cryptoType)
 	if err != nil {
 		return nil, accounts.Account{}, err
 	}
 	a := accounts.Account{
 		Address: key.Address,
-		URL:     accounts.URL{Scheme: KeyStoreScheme, Path: ks.JoinPath(keyFileName(key.Address))},
+		URL:     accounts.URL{Scheme: KeyStoreScheme, Path: ks.JoinPath(keyFileName(key.Address, chainCode))},
 	}
-	if err := ks.StoreKey(a.URL.Path, key, auth); err != nil {
+	if err := ks.StoreKey(a.URL.Path, key, auth, chainCode); err != nil {
 		zeroKey(key.PrivateKey)
 		return nil, a, err
 	}
@@ -192,9 +193,9 @@ func writeTemporaryKeyFile(file string, content []byte) (string, error) {
 
 // keyFileName implements the naming convention for keyfiles:
 // UTC--<created_at UTC ISO8601>-<address hex>
-func keyFileName(keyAddr utils.Address) string {
+func keyFileName(keyAddr utils.Address, chainCode string) string {
 	ts := time.Now().UTC()
-	addr := keyAddr.String()
+	addr := keyAddr.String(chainCode)
 	addr = strings.ReplaceAll(addr, ":", "-")
 	return fmt.Sprintf("UTC--%s--%s", toISO8601(ts), addr)
 }

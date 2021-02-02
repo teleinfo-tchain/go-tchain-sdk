@@ -5,11 +5,12 @@ import (
 	"errors"
 	"fmt"
 	"github.com/bif/bif-sdk-go/crypto"
+	"github.com/bif/bif-sdk-go/crypto/config"
 	"github.com/bif/bif-sdk-go/utils"
 	"math/big"
 )
 
-type SignData  struct {
+type SignData struct {
 	Message     string `json:"message"    gencodec:"required"`
 	MessageHash string `json:"messageHash" gencodec:"required"`
 	// account Signature values
@@ -35,15 +36,15 @@ func SignDt(signData *SignData, s BIFSigner, prv *ecdsa.PrivateKey) (*SignData, 
 	t := signData.T.Uint64()
 	switch t {
 	case 0:
-		sig, err = crypto.Sign(h[:], prv, crypto.SM2)
+		sig, err = crypto.Sign(h[:], prv, config.SM2)
 	case 1:
-		sig, err = crypto.Sign(h[:], prv, crypto.SECP256K1)
+		sig, err = crypto.Sign(h[:], prv, config.SECP256K1)
 	default:
-		sig, err = crypto.Sign(h[:], prv, crypto.SM2)
+		sig, err = crypto.Sign(h[:], prv, config.SM2)
 	}
 	if err != nil {
 		return nil, err
 	}
 	fmt.Println("sig ", sig)
-	return nil,errors.New("接口待修改")
+	return nil, errors.New("接口待修改")
 }

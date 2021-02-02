@@ -59,9 +59,11 @@ func (sys *System) prePareSignTransaction(signTxParams *SysTxParams, payLoad []b
 		return "", err
 	}
 
+	sender := utils.StringToAddress(signTxParams.From)
+	recipient := utils.StringToAddress(contractAddr)
 	signTx := &account.SignTxParams{
-		Sender:       signTxParams.From,
-		Recipient:    contractAddr,
+		Sender:       &sender,
+		Recipient:    &recipient,
 		AccountNonce: signTxParams.Nonce,
 		GasPrice:     signTxParams.GasPrice,
 		GasLimit:     signTxParams.Gas,
@@ -160,7 +162,7 @@ func (sys *System) SystemLogDecode(transactionHash string) (*LogData, error) {
 }
 
 func isValidHexAddress(address string) bool {
-	return utils.IsHexAddress(address)
+	return utils.StringToAddress(address).EqualString(address)
 }
 
 // email verify

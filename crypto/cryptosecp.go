@@ -22,6 +22,7 @@ import (
 	"crypto/rand"
 	"errors"
 	"fmt"
+	"github.com/bif/bif-sdk-go/crypto/config"
 	"github.com/bif/bif-sdk-go/utils"
 	"github.com/bif/bif-sdk-go/utils/math"
 	"golang.org/x/crypto/sha3"
@@ -121,7 +122,7 @@ func GenerateKeyBtc() (*ecdsa.PrivateKey, error) {
 // }
 func PubkeyToAddressBtc(p ecdsa.PublicKey) []byte {
 	pubBytes := CompressPubkeyBtc(&p)
-	return Keccak256(SECP256K1, pubBytes)
+	return Keccak256(config.SECP256K1, pubBytes)
 }
 
 func zeroBytes(bytes []byte) {

@@ -19,6 +19,7 @@ package crypto
 import (
 	"crypto/ecdsa"
 	"crypto/elliptic"
+	"github.com/bif/bif-sdk-go/crypto/config"
 	"github.com/bif/bif-sdk-go/utils"
 	"github.com/teleinfo-bif/bit-gmsm/sm2"
 	"github.com/teleinfo-bif/bit-gmsm/sm3"
@@ -116,5 +117,5 @@ func ValidateSignatureValuesSm2(v byte, r, s *big.Int, homestead bool) bool {
 
 func PubkeyToAddressSm2(p ecdsa.PublicKey) []byte {
 	pubBytes := CompressPubkeySm2(&p)
-	return Keccak256(SM2, pubBytes)
+	return Keccak256(config.SM2, pubBytes)
 }

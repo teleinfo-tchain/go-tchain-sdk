@@ -20,6 +20,7 @@ import (
 	"crypto/ecdsa"
 	"encoding/hex"
 	"errors"
+	"github.com/bif/bif-sdk-go/crypto/config"
 	"github.com/bif/bif-sdk-go/utils"
 	"github.com/btcsuite/btcutil/base58"
 	"io"
@@ -32,11 +33,11 @@ import (
 )
 
 // Keccak256 calculates and returns the Keccak256 hash of the input data.
-func Keccak256(cryptoType CryptoType, data ...[]byte) []byte {
+func Keccak256(cryptoType config.CryptoType, data ...[]byte) []byte {
 	switch cryptoType {
-	case SM2:
+	case config.SM2:
 		return Keccak256Sm2(data...)
-	case SECP256K1:
+	case config.SECP256K1:
 		return Keccak256Btc(data...)
 	default:
 		return Keccak256Sm2(data...)
@@ -45,11 +46,11 @@ func Keccak256(cryptoType CryptoType, data ...[]byte) []byte {
 
 // Keccak256Hash calculates and returns the Keccak256 hash of the input data,
 // converting it to an internal Hash data structure.
-func Keccak256Hash(cryptoType CryptoType, data ...[]byte) (h utils.Hash) {
+func Keccak256Hash(cryptoType config.CryptoType, data ...[]byte) (h utils.Hash) {
 	switch cryptoType {
-	case SM2:
+	case config.SM2:
 		return Keccak256HashSm2(data...)
-	case SECP256K1:
+	case config.SECP256K1:
 		return Keccak256HashBtc(data...)
 	default:
 		return Keccak256HashSm2(data...)
@@ -57,11 +58,11 @@ func Keccak256Hash(cryptoType CryptoType, data ...[]byte) (h utils.Hash) {
 }
 
 // ToECDSA creates a private key with the given D value.
-func ToECDSA(d []byte, cryptoType CryptoType) (*ecdsa.PrivateKey, error) {
+func ToECDSA(d []byte, cryptoType config.CryptoType) (*ecdsa.PrivateKey, error) {
 	switch cryptoType {
-	case SM2:
+	case config.SM2:
 		return toECDSASm2(d, true)
-	case SECP256K1:
+	case config.SECP256K1:
 		return toECDSABtc(d, true)
 	default:
 		return toECDSASm2(d, true)
@@ -71,12 +72,12 @@ func ToECDSA(d []byte, cryptoType CryptoType) (*ecdsa.PrivateKey, error) {
 // ToECDSAUnsafe blindly converts a binary blob to a private key. It should almost
 // never be used unless you are sure the input is valid and want to avoid hitting
 // errors due to bad origin encoding (0 prefixes cut off).
-func ToECDSAUnsafe(d []byte, cryptoType CryptoType) *ecdsa.PrivateKey {
+func ToECDSAUnsafe(d []byte, cryptoType config.CryptoType) *ecdsa.PrivateKey {
 	var priv *ecdsa.PrivateKey
 	switch cryptoType {
-	case SM2:
+	case config.SM2:
 		priv, _ = toECDSASm2(d, false)
-	case SECP256K1:
+	case config.SECP256K1:
 		priv, _ = toECDSABtc(d, false)
 	default:
 		priv, _ = toECDSASm2(d, false)
@@ -123,7 +124,7 @@ func FromECDSAPub(p *ecdsa.PublicKey) []byte {
 }
 
 // HexToECDSA parses a secp256k1 private key.
-func HexToECDSA(hexkey string, cryptoType CryptoType) (*ecdsa.PrivateKey, error) {
+func HexToECDSA(hexkey string, cryptoType config.CryptoType) (*ecdsa.PrivateKey, error) {
 	b, err := hex.DecodeString(hexkey)
 	if err != nil {
 		return nil, errors.New("invalid hex string")
@@ -132,7 +133,7 @@ func HexToECDSA(hexkey string, cryptoType CryptoType) (*ecdsa.PrivateKey, error)
 }
 
 // LoadECDSA loads a secp256k1 private key from the given file.
-func LoadECDSA(file string, cryptoType CryptoType) (*ecdsa.PrivateKey, error) {
+func LoadECDSA(file string, cryptoType config.CryptoType) (*ecdsa.PrivateKey, error) {
 	buf := make([]byte, 64)
 	fd, err := os.Open(file)
 	if err != nil {
@@ -157,11 +158,11 @@ func SaveECDSA(file string, key *ecdsa.PrivateKey) error {
 	return ioutil.WriteFile(file, []byte(k), 0600)
 }
 
-func GenerateKey(cryptoType CryptoType) (*ecdsa.PrivateKey, error) {
+func GenerateKey(cryptoType config.CryptoType) (*ecdsa.PrivateKey, error) {
 	switch cryptoType {
-	case SM2:
+	case config.SM2:
 		return GenerateKeySm2()
-	case SECP256K1:
+	case config.SECP256K1:
 		return GenerateKeyBtc()
 	default:
 		return GenerateKeySm2()
@@ -191,24 +192,24 @@ func PubkeyToAddress(p ecdsa.PublicKey) utils.Address {
 	prefix.WriteString(utils.AddressPrefixString)
 	if S256Sm2().IsOnCurve(p.X, p.Y) {
 		hash = PubkeyToAddressSm2(p)
-		prefix.WriteString(string(SM2_Prefix))
+		prefix.WriteString(string(config.SM2_Prefix))
 	} else if S256Btc().IsOnCurve(p.X, p.Y) {
 		hash = PubkeyToAddressBtc(p)
-		prefix.WriteString(string(SECP256K1_Prefix))
+		prefix.WriteString(string(config.SECP256K1_Prefix))
 	} else {
 		hash = PubkeyToAddressSm2(p)
-		prefix.WriteString(string(SM2_Prefix))
+		prefix.WriteString(string(config.SM2_Prefix))
 	}
 
 	// todo: 公钥压缩的长度会比20小吗？？
-	if len(hash) < HashLength {
+	if len(hash) < config.HashLength {
 		h = hash[:]
 	} else {
-		h = hash[len(hash)-HashLength:]
+		h = hash[len(hash)-config.HashLength:]
 	}
 
 	// todo: is always Base58??
-	prefix.WriteString(string(BASE58_Prefix))
-	prefix.WriteString(string(HashLength20))
+	prefix.WriteString(string(config.BASE58_Prefix))
+	prefix.WriteString(string(config.HashLength20))
 	return utils.StringToAddress(prefix.String() + base58.Encode(h))
 }

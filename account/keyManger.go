@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"github.com/bif/bif-sdk-go/account/keystore"
 	"github.com/bif/bif-sdk-go/crypto"
+	"github.com/bif/bif-sdk-go/crypto/config"
 	"github.com/bif/bif-sdk-go/utils"
 	libp2pcorecrypto "github.com/libp2p/go-libp2p-core/crypto"
 	libp2pcorepeer "github.com/libp2p/go-libp2p-core/peer"
@@ -47,24 +48,24 @@ func preCheck(keyStorePath string, password string, UseLightweightKDF bool) (int
 
   Call permissions: Anyone
 */
-func GenerateKeyStore(keyStorePath string, isSM2 bool, password string, UseLightweightKDF bool) (string, error) {
+func GenerateKeyStore(keyStorePath string, isSM2 bool, password, chainCode string, UseLightweightKDF bool) (string, error) {
 
 	scryptN, scryptP, err := preCheck(keyStorePath, password, UseLightweightKDF)
 	if err != nil {
 		return "", err
 	}
-	var cryptoType crypto.CryptoType
+	var cryptoType config.CryptoType
 	if isSM2 {
-		cryptoType = crypto.SM2
+		cryptoType = config.SM2
 	} else {
-		cryptoType = crypto.SECP256K1
+		cryptoType = config.SECP256K1
 	}
 
-	address, err := keystore.StoreKey(keyStorePath, password, scryptN, scryptP, cryptoType)
+	address, err := keystore.StoreKey(keyStorePath, password, chainCode, scryptN, scryptP, cryptoType)
 	if err != nil {
 		return "", err
 	}
-	return address.String(), nil
+	return address.String(chainCode), nil
 }
 
 /*
@@ -90,11 +91,8 @@ func GetPrivateKeyFromFile(address string, keyStorePath, password string) (strin
 	var key *keystore.Key
 
 	addr := utils.StringToAddress(address)
-	if addr.IsSM2() {
-		key, err = keystore.DecryptKey(keyJson, password, crypto.SM2)
-	} else {
-		key, err = keystore.DecryptKey(keyJson, password, crypto.SECP256K1)
-	}
+	key, _, err = keystore.DecryptKey(keyJson, password, addr.CryptoType())
+
 	if err != nil {
 		return "", err
 	}
@@ -122,7 +120,7 @@ func GetPrivateKeyFromFile(address string, keyStorePath, password string) (strin
 
   Call permissions: Anyone
 */
-func PrivateKeyToKeyStoreFile(keyStorePath string, isSM2 bool, privateKey string, password string) (bool, error) {
+func PrivateKeyToKeyStoreFile(keyStorePath string, isSM2 bool, privateKey string, password, chainCode string) (bool, error) {
 	if utils.Has0xPrefix(privateKey) {
 		privateKey = privateKey[2:]
 	}
@@ -131,11 +129,11 @@ func PrivateKeyToKeyStoreFile(keyStorePath string, isSM2 bool, privateKey string
 		return false, errors.New("privateKey is not hex string or not 32 Bytes")
 	}
 
-	var cryptoType crypto.CryptoType
+	var cryptoType config.CryptoType
 	if isSM2 {
-		cryptoType = crypto.SM2
+		cryptoType = config.SM2
 	} else {
-		cryptoType = crypto.SECP256K1
+		cryptoType = config.SECP256K1
 	}
 
 	privateKeyN, err := crypto.HexToECDSA(privateKey, cryptoType)
@@ -149,7 +147,7 @@ func PrivateKeyToKeyStoreFile(keyStorePath string, isSM2 bool, privateKey string
 	}
 
 	key := keystore.NewKeyStore(keyStorePath, scryptN, scryptP)
-	_, err = key.ImportECDSA(privateKeyN, password)
+	_, err = key.ImportECDSA(privateKeyN, password, chainCode)
 	if err != nil {
 		return false, err
 	}
@@ -170,28 +168,28 @@ func PrivateKeyToKeyStoreFile(keyStorePath string, isSM2 bool, privateKey string
 
   Call permissions: Anyone
 */
-func GetAddressFromPrivate(privateKey string, isSM2 bool) (string, error) {
+func GetAddressFromPrivate(privateKey string, isSM2 bool) (utils.Address, error) {
 	if utils.Has0xPrefix(privateKey) {
 		privateKey = privateKey[2:]
 	}
 
 	if !utils.IsHex(privateKey) || len(privateKey) != 64 {
-		return "", errors.New("privateKey is not hex string or not 32 Bytes")
+		return utils.Address{}, errors.New("privateKey is not hex string or not 32 Bytes")
 	}
 
-	var cryptoType crypto.CryptoType
+	var cryptoType config.CryptoType
 	if isSM2 {
-		cryptoType = crypto.SM2
+		cryptoType = config.SM2
 	} else {
-		cryptoType = crypto.SECP256K1
+		cryptoType = config.SECP256K1
 	}
 
 	privateKeyN, err := crypto.HexToECDSA(privateKey, cryptoType)
 	if err != nil {
-		return "", err
+		return utils.Address{}, err
 	}
 	// 转换成地址
-	return crypto.PubkeyToAddress(*privateKeyN.Public().(*ecdsa.PublicKey)).String(), nil
+	return crypto.PubkeyToAddress(*privateKeyN.Public().(*ecdsa.PublicKey)), nil
 }
 
 /*
@@ -217,11 +215,11 @@ func GetPublicKeyFromPrivate(privateKey string, isSM2 bool) (string, error) {
 		return "", errors.New("privateKey is not hex string or not 32 Bytes")
 	}
 
-	var cryptoType crypto.CryptoType
+	var cryptoType config.CryptoType
 	if isSM2 {
-		cryptoType = crypto.SM2
+		cryptoType = config.SM2
 	} else {
-		cryptoType = crypto.SECP256K1
+		cryptoType = config.SECP256K1
 	}
 
 	privateKeyN, err := crypto.HexToECDSA(privateKey, cryptoType)
@@ -257,14 +255,14 @@ func GetPublicKeyFromFile(keyStorePath, password string, isSM2 bool) (string, er
 		return "", errors.New("not find privateKeyFile")
 	}
 
-	var cryptoType crypto.CryptoType
+	var cryptoType config.CryptoType
 	if isSM2 {
-		cryptoType = crypto.SM2
+		cryptoType = config.SM2
 	} else {
-		cryptoType = crypto.SECP256K1
+		cryptoType = config.SECP256K1
 	}
 
-	key, err := keystore.DecryptKey(keyJson, password, cryptoType)
+	key, _, err := keystore.DecryptKey(keyJson, password, cryptoType)
 	if err != nil {
 		return "", err
 	}
@@ -296,10 +294,8 @@ func GetPublicKeyFromFile(keyStorePath, password string, isSM2 bool) (string, er
   Call permissions: Anyone
 */
 func CheckPublicKeyToAccount(account, publicKey string) (bool, error) {
-	// 检测是否是hex address
-	if !utils.IsHexAddress(account) {
-		return false, errors.New("account is not valid ")
-	}
+
+	addr := utils.StringToAddress(account)
 
 	// 检测是否带有前缀
 	if utils.Has0xPrefix(publicKey) {
@@ -311,7 +307,6 @@ func CheckPublicKeyToAccount(account, publicKey string) (bool, error) {
 		return false, errors.New("publicKey is not a hexadecimal string or the length is less than 130(132 with prefix '0x'")
 	}
 
-	addr := utils.StringToAddress(account)
 	pubBytes, err := hex.DecodeString(publicKey)
 	if err != nil {
 		return false, errors.New("publicKey can't be decode to bytes")
@@ -342,7 +337,7 @@ func GenerateNodeUrlFromKeyStore(nodePrivateKeyPath, password, host string, port
 		return "", err
 	}
 
-	key, err := keystore.DecryptKey(keyJson, password, crypto.SECP256K1)
+	key, _, err := keystore.DecryptKey(keyJson, password, config.SECP256K1)
 
 	if err != nil {
 		return "", err
@@ -383,7 +378,7 @@ func GenerateNodeUrlFromPrivateKey(privateKey, host string, port uint64) (string
 		return "", errors.New("privateKey is not hex string or not 32 Bytes")
 	}
 
-	privateKeyN, err := crypto.HexToECDSA(privateKey, crypto.SECP256K1)
+	privateKeyN, err := crypto.HexToECDSA(privateKey, config.SECP256K1)
 	if err != nil {
 		return "", err
 	}

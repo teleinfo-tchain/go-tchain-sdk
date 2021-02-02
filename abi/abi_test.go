@@ -19,6 +19,7 @@ import (
 	"encoding/hex"
 	"errors"
 	"fmt"
+	"github.com/bif/bif-sdk-go/crypto/config"
 	"github.com/bif/bif-sdk-go/utils"
 	"math/big"
 	"reflect"
@@ -239,7 +240,7 @@ func TestMethodSignature(t *testing.T) {
 		t.Error("signature mismatch", exp, "!=", m.Sig)
 	}
 
-	idexp := crypto.Keccak256(crypto.SECP256K1, []byte(exp))[:4]
+	idexp := crypto.Keccak256(config.SECP256K1, []byte(exp))[:4]
 	if !bytes.Equal(m.ID, idexp) {
 		t.Errorf("expected ids to match %x != %x", m.ID, idexp)
 	}
@@ -299,7 +300,7 @@ func TestMultiPack(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	sig := crypto.Keccak256(crypto.SECP256K1, []byte("bar(uint32,uint16)"))[:4]
+	sig := crypto.Keccak256(config.SECP256K1, []byte("bar(uint32,uint16)"))[:4]
 	sig = append(sig, make([]byte, 64)...)
 	sig[35] = 10
 	sig[67] = 11
@@ -955,7 +956,7 @@ func TestABI_MethodById(t *testing.T) {
 		}
 	}
 	// test unsuccessful lookups
-	if _, err = abi.MethodById(crypto.Keccak256(crypto.SECP256K1)); err == nil {
+	if _, err = abi.MethodById(crypto.Keccak256(config.SECP256K1)); err == nil {
 		t.Error("Expected error: no method with this id")
 	}
 	// Also test empty
@@ -1013,7 +1014,7 @@ func TestABI_EventById(t *testing.T) {
 		}
 
 		topic := test.event
-		topicID := crypto.Keccak256Hash(crypto.SECP256K1, []byte(topic))
+		topicID := crypto.Keccak256Hash(config.SECP256K1, []byte(topic))
 
 		event, err := abi.EventByID(topicID)
 		if err != nil {
@@ -1027,7 +1028,7 @@ func TestABI_EventById(t *testing.T) {
 			t.Errorf("Event id %s does not match topic %s, test #%d", event.ID.Hex(), topicID.Hex(), testnum)
 		}
 
-		unknowntopicID := crypto.Keccak256Hash(crypto.SECP256K1, []byte("unknownEvent"))
+		unknowntopicID := crypto.Keccak256Hash(config.SECP256K1, []byte("unknownEvent"))
 		unknownEvent, err := abi.EventByID(unknowntopicID)
 		if err == nil {
 			t.Errorf("EventByID should return an error if a topic is not found, test #%d", testnum)
