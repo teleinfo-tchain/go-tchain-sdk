@@ -122,7 +122,7 @@ func TestCoreSendTransactionDeployContract(t *testing.T) {
 	t.Log("Estimate gas is ", gas)
 
 	// transaction.GasPrice = big.NewInt(1000000)
-	transaction.GasLimit = gas
+	transaction.GasLimit = gas.Uint64()
 	txHash, err := connection.Core.SendTransaction(transaction)
 
 	if err != nil {
