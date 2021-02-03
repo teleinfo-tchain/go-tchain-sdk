@@ -51,13 +51,13 @@ type TransactionCallParameters struct {
 // RequestTransactionParameters JSON
 type RequestTransactionParameters struct {
 	ChainId      string `json:"chainId"`
-	Sender       string `json:"from"`
-	Recipient    string `json:"to,omitempty"`
+	Sender       string `json:"sender"`
+	Recipient    string `json:"recipient,omitempty"`
 	AccountNonce string `json:"nonce,omitempty"`
 	GasPrice     string `json:"gasPrice,omitempty"`
 	GasLimit     string `json:"gas,omitempty"`
-	Amount       string `json:"value,omitempty"`
-	Payload      string `json:"data,omitempty"`
+	Amount       string `json:"amount,omitempty"`
+	Payload      string `json:"payload,omitempty"`
 }
 
 // Transform the GO transactions parameters to json style

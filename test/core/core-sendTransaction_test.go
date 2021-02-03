@@ -53,7 +53,7 @@ func TestCoreSendTransaction(t *testing.T) {
 	transaction.Sender = generator
 	transaction.Recipient = toAddress
 	transaction.Amount = big.NewInt(0).Mul(big.NewInt(1), big.NewInt(1e17))
-	transaction.GasLimit = big.NewInt(40000)
+	transaction.GasLimit = 40000
 	transaction.Payload = "Transfer test"
 
 	txID, err := connection.Core.SendTransaction(transaction)
