@@ -18,7 +18,6 @@ import (
 	"encoding/json"
 	"github.com/bif/bif-sdk-go/test/resources"
 	"io/ioutil"
-	"math/big"
 	"testing"
 	"time"
 
@@ -72,7 +71,7 @@ func TestCoreGetCode(t *testing.T) {
 	}
 
 	transaction.Sender = generator
-	transaction.GasLimit = big.NewInt(4000000)
+	transaction.GasLimit = uint64(4000000)
 	hash, err := contract.Deploy(transaction, byteCode)
 
 	if err != nil {

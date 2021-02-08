@@ -41,6 +41,21 @@ type ABI struct {
 	Receive  Method
 }
 
+// NewABI returns a parsed ABI struct
+func NewABI(s string) (*ABI, error) {
+	return NewABIFromReader(bytes.NewReader([]byte(s)))
+}
+
+// NewABIFromReader returns an ABI object from a reader
+func NewABIFromReader(r io.Reader) (*ABI, error) {
+	var abi *ABI
+	dec := json.NewDecoder(r)
+	if err := dec.Decode(&abi); err != nil {
+		return nil, err
+	}
+	return abi, nil
+}
+
 // JSON returns a parsed ABI interface and error if it failed.
 func JSON(reader io.Reader) (ABI, error) {
 	dec := json.NewDecoder(reader)

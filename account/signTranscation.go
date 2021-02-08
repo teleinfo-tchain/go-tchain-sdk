@@ -28,10 +28,10 @@ type txData struct {
 	AccountNonce uint64         `json:"nonce"    gencodec:"required"`
 	GasPrice     *big.Int       `json:"gasPrice" gencodec:"required"`
 	GasLimit     uint64         `json:"gas"      gencodec:"required"`
-	Sender       *utils.Address `json:"from"     rlp:"nil"` // nil means contract creation
-	Recipient    *utils.Address `json:"to"       rlp:"nil"` // nil means contract creation
-	Amount       *big.Int       `json:"value"    gencodec:"required"`
-	Payload      []byte         `json:"input"    gencodec:"required"`
+	Sender       *utils.Address `json:"sender"     rlp:"nil"` // nil means contract creation
+	Recipient    *utils.Address `json:"recipient"       rlp:"nil"` // nil means contract creation
+	Amount       *big.Int       `json:"amount"    gencodec:"required"`
+	Payload      []byte         `json:"payload"    gencodec:"required"`
 
 	// account Signature values
 	SignUser []byte `json:"signUser"    gencodec:"required"` // 33 + 1 + 32 + 32  即  公钥 + 类型 + r + s

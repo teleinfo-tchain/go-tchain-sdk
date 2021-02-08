@@ -210,6 +210,7 @@ func PubkeyToAddress(p ecdsa.PublicKey) utils.Address {
 
 	// todo: is always Base58??
 	prefix.WriteString(string(config.BASE58_Prefix))
-	prefix.WriteString(string(config.HashLength20))
-	return utils.StringToAddress(prefix.String() + base58.Encode(h))
+	//prefix.WriteString(string(config.SECP256K1_Prefix))
+	tmp := prefix.String() + base58.Encode(h)
+	return utils.StringToAddress(tmp)
 }

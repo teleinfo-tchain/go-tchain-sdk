@@ -41,7 +41,7 @@ const (
 	HashLength = 32
 	// AddressLength is the expected length of the address
 	AddressLength       = 24
-	AddressPrefixString = "did:bid:"
+	AddressPrefixString = "did:bid:hufa:"
 	AddressSplit        = ":"
 )
 
@@ -49,7 +49,7 @@ var (
 	hashT             = reflect.TypeOf(Hash{})
 	addressT          = reflect.TypeOf(Address{})
 	AddressPrefixByte = []byte(AddressPrefixString)
-	AddressRegexp     = regexp.MustCompile(`^(did:bid:(([a-z0-9]{4}):)?)?([zes][sft])([1-9a-km-zA-HJ-NP-Z]+)$`)
+	AddressRegexp     = regexp.MustCompile(`^(did:bid:hufa:(([a-z0-9]{4}):)?)?([zes][sft])([1-9a-km-zA-HJ-NP-Z]+)$`)
 	ChainCodeRegexp   = regexp.MustCompile(`^[a-z0-9]{4}$`)
 )
 

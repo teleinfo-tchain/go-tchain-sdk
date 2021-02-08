@@ -32,21 +32,29 @@ func (pointer *TxPoolRequestResult) ToTxPoolStatus() (map[string]hexutil.Uint, e
 		return nil, err
 	}
 
-	result := (pointer).Result.(map[string]interface{})
 
-	if len(result) == 0 {
-		return nil, EMPTYRESPONSE
+	var data []byte
+	var err error
+	var status map[string]hexutil.Uint
+	if value, ok := pointer.Result.(string); ok {
+		//come from websock
+		data = []byte(value)
+		//status = make(map[string]hexutil.Uint, len(value))
+	} else {
+		//come from http
+		result := (pointer).Result.(map[string]interface{})
+		//status = make(map[string]hexutil.Uint, len(result))
+		if len(result) == 0 {
+			return nil, EMPTYRESPONSE
+		}
+		data, err = json.Marshal(result)
 	}
-
-	status := make(map[string]hexutil.Uint, len(result))
-
-	marshal, err := json.Marshal(result)
 
 	if err != nil {
 		return nil, UNPARSEABLEINTERFACE
 	}
 
-	err = json.Unmarshal(marshal, &status)
+	err = json.Unmarshal(data, &status)
 
 	return status, err
 }
@@ -56,21 +64,26 @@ func (pointer *TxPoolRequestResult) ToTxPoolInspect() (map[string]map[string]map
 		return nil, err
 	}
 
-	result := (pointer).Result.(map[string]interface{})
-
-	if len(result) == 0 {
-		return nil, EMPTYRESPONSE
+	var data []byte
+	var err error
+	var inspect map[string]map[string]map[string]string
+	if value, ok := pointer.Result.(string); ok {
+		//come from websock
+		data = []byte(value)
+	} else {
+		//come from http
+		result := (pointer).Result.(map[string]interface{})
+		if len(result) == 0 {
+			return nil, EMPTYRESPONSE
+		}
+		data, err = json.Marshal(result)
 	}
-
-	inspect := make(map[string]map[string]map[string]string, len(result))
-
-	marshal, err := json.Marshal(result)
 
 	if err != nil {
 		return nil, UNPARSEABLEINTERFACE
 	}
 
-	err = json.Unmarshal(marshal, &inspect)
+	err = json.Unmarshal(data, &inspect)
 
 	return inspect, err
 }
@@ -80,21 +93,27 @@ func (pointer *TxPoolRequestResult) ToTxPoolContent() (map[string]map[string]map
 		return nil, err
 	}
 
-	result := (pointer).Result.(map[string]interface{})
+	var data []byte
+	var err error
+	var transactions map[string]map[string]map[string]*RPCTransaction
 
-	if len(result) == 0 {
-		return nil, EMPTYRESPONSE
+	if value, ok := pointer.Result.(string); ok {
+		//come from websock
+		data = []byte(value)
+	} else {
+		//come from http
+		result := (pointer).Result.(map[string]interface{})
+		if len(result) == 0 {
+			return nil, EMPTYRESPONSE
+		}
+		data, err = json.Marshal(result)
 	}
-
-	transactions := make(map[string]map[string]map[string]*RPCTransaction, len(result))
-
-	marshal, err := json.Marshal(result)
 
 	if err != nil {
 		return nil, UNPARSEABLEINTERFACE
 	}
 
-	err = json.Unmarshal(marshal, &transactions)
+	err = json.Unmarshal(data, &transactions)
 
 	return transactions, err
 }

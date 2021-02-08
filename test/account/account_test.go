@@ -152,10 +152,12 @@ func TestSignTransaction(t *testing.T) {
 		// 	ChainId:  chainId,
 		// }
 		t.Log("nonce is ", nonce, " chainId is ", chainId)
+		var recipient utils.Address
+		recipient = utils.StringToAddress(test.to)
 		tx := &account.SignTxParams{
-			Recipient:    test.to,
+			Recipient:    &recipient,
 			AccountNonce: 0,
-			GasPrice:     21000,
+			GasPrice:     big.NewInt(21000),
 			GasLimit:     nil,
 			Amount:       big.NewInt(50000000000),
 			Payload:      nil,

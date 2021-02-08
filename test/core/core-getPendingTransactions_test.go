@@ -25,7 +25,7 @@ func TestCoreGetPendingTransactions(t *testing.T) {
 	transaction.Sender = generator
 	transaction.Recipient = resources.NewAddrE
 	transaction.Amount = big.NewInt(0).Mul(big.NewInt(1), big.NewInt(1e15))
-	transaction.GasLimit = big.NewInt(40000)
+	transaction.GasLimit = uint64(40000)
 	transaction.Payload = "Transfer test"
 
 	_, err = connection.Core.SendTransaction(transaction)

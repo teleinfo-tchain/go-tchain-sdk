@@ -43,7 +43,7 @@ func TestGetBlockTransactionCountByNumber(t *testing.T) {
 	transaction.Sender = generator
 	transaction.Recipient = generator
 	transaction.Amount = big.NewInt(200000)
-	transaction.GasLimit = big.NewInt(40000)
+	transaction.GasLimit = uint64(40000)
 
 	txID, err := connection.Core.SendTransaction(transaction)
 

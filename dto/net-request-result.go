@@ -42,33 +42,59 @@ func (pointer *NetRequestResult) ToPeerInfo() ([]*PeerInfo, error) {
 		return nil, err
 	}
 
-	resultLi := (pointer).Result.([]interface{})
+	var data0 []byte
+	var err0 error
+	if value, ok := pointer.Result.(string); ok {
+		//come from websock
+		data0 = []byte(value)
+	} else {
+		//come from http
+		resultLi := pointer.Result.([]interface{})
+
+		if len(resultLi) == 0 {
+			return nil, EMPTYRESPONSE
+		}
+		data0, err0 = json.Marshal(resultLi)
+	}
+
+	if err0 != nil {
+		return nil, UNPARSEABLEINTERFACE
+	}
+
+	var resultLi []interface{}
+
+	err0 = json.Unmarshal(data0, &resultLi)
+
 	peerInfoLi := make([]*PeerInfo, len(resultLi))
 
 	for i, v := range resultLi {
 
-		result := v.(map[string]interface{})
+		var data []byte
+		var err error
+		if value, ok := v.(string); ok {
+			//come from websock
+			data = []byte(value)
+		} else {
+			//come from http
+			result := v.(map[string]interface{})
 
-		if len(result) == 0 {
-			return nil, EMPTYRESPONSE
+			if len(result) == 0 {
+				return nil, EMPTYRESPONSE
+			}
+			data, err = json.Marshal(result)
 		}
-
-		info := &PeerInfo{}
-
-		marshal, err := json.Marshal(result)
 
 		if err != nil {
 			return nil, UNPARSEABLEINTERFACE
 		}
 
-		err = json.Unmarshal(marshal, info)
+		nodeInfo := &PeerInfo{}
 
-		peerInfoLi[i] = info
+		err = json.Unmarshal(data, nodeInfo)
 
+		peerInfoLi[i] = nodeInfo
 	}
-
 	return peerInfoLi, nil
-
 }
 
 func (pointer *NetRequestResult) ToNodeInfo() (*NodeInfo, error) {
@@ -77,20 +103,28 @@ func (pointer *NetRequestResult) ToNodeInfo() (*NodeInfo, error) {
 		return nil, err
 	}
 
-	result := (pointer).Result.(map[string]interface{})
-	if len(result) == 0 {
-		return nil, EMPTYRESPONSE
+	var data []byte
+	var err error
+	if value, ok := pointer.Result.(string); ok {
+		//come from websock
+		data = []byte(value)
+	} else {
+		//come from http
+		result := (pointer).Result.(map[string]interface{})
+
+		if len(result) == 0 {
+			return nil, EMPTYRESPONSE
+		}
+		data, err = json.Marshal(result)
 	}
-
-	nodeInfo := &NodeInfo{}
-
-	marshal, err := json.Marshal(result)
 
 	if err != nil {
 		return nil, UNPARSEABLEINTERFACE
 	}
 
-	err = json.Unmarshal(marshal, nodeInfo)
+	nodeInfo := &NodeInfo{}
+
+	err = json.Unmarshal(data, nodeInfo)
 
 	return nodeInfo, err
 }

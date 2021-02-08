@@ -47,11 +47,55 @@ func (pointer *RequestResult) ToStringArray() ([]string, error) {
 		return nil, err
 	}
 
-	result := (pointer).Result.([]interface{})
+	var data0 []byte
+	var err0 error
+	if value, ok := pointer.Result.(string); ok {
+		//come from websock
+		data0 = []byte(value)
+	} else {
+		//come from http
+		resultSingle := pointer.Result.([]interface{})
 
-	stringArray := make([]string, len(result))
-	for i, v := range result {
-		stringArray[i] = v.(string)
+		if len(resultSingle) == 0 {
+			return nil, EMPTYRESPONSE
+		}
+		data0, err0 = json.Marshal(resultSingle)
+	}
+
+	if err0 != nil {
+		return nil, UNPARSEABLEINTERFACE
+	}
+
+	var resultLi []interface{}
+
+	err0 = json.Unmarshal(data0, &resultLi)
+
+	stringArray := make([]string, len(resultLi))
+	for i, v := range resultLi {
+		var data []byte
+		var err error
+		if value, ok := v.(string); ok {
+			//come from websock
+			data = []byte(value)
+		} else {
+			//come from http
+			result := v.(map[string]interface{})
+
+			if len(result) == 0 {
+				return nil, EMPTYRESPONSE
+			}
+			data, err = json.Marshal(result)
+		}
+
+		if err != nil {
+			return nil, UNPARSEABLEINTERFACE
+		}
+
+		var stringInfo string
+
+		err = json.Unmarshal(data, &stringInfo)
+
+		stringArray[i] = stringInfo
 	}
 
 	return stringArray, nil
@@ -105,8 +149,13 @@ func (pointer *RequestResult) ToUint64() (uint64, error) {
 	}
 
 	result := (pointer).Result.(interface{})
+	hex := result.(string)
 
-	hex := result.(string)[2:]
+	if strings.HasPrefix(hex, "0") {
+		hex = hex[2:]
+	} else {
+		hex = hex[3:len(hex)-1]
+	}
 
 	numericResult, err := strconv.ParseUint(hex, 16, 64)
 
@@ -196,7 +245,7 @@ func (pointer *RequestResult) ToTransactionReceipt() (*TransactionReceipt, error
 
 }
 
-// Recipient avoid a conversion of a nil interface
+// To avoid a conversion of a nil interface
 func (pointer *RequestResult) checkResponse() error {
 
 	if pointer.Error != nil {

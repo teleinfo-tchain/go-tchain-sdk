@@ -6,6 +6,7 @@ import (
 	"github.com/bif/bif-sdk-go/core/block"
 	"github.com/bif/bif-sdk-go/providers"
 	"github.com/bif/bif-sdk-go/test/resources"
+	"github.com/bif/bif-sdk-go/utils"
 	"github.com/bif/bif-sdk-go/utils/hexutil"
 	"math/big"
 	"testing"
@@ -29,11 +30,14 @@ func TestCoreSendRawTransaction(t *testing.T) {
 		t.FailNow()
 	}
 
+	var recipient utils.Address
+	recipient = utils.StringToAddress(resources.NewAddrE)
+
 	tx := &account.SignTxParams{
-		Recipient:    resources.NewAddrE,
+		Recipient:    &recipient,
 		AccountNonce: nonce.Uint64(),
-		GasPrice:     2000000,
-		GasLimit:     big.NewInt(30),
+		GasPrice:     big.NewInt(2000000),
+		GasLimit:     uint64(30),
 		Amount:       big.NewInt(50000000000),
 		Payload:      nil,
 		ChainId:      chainId,

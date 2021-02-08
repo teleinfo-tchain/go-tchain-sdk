@@ -40,36 +40,48 @@ func (pointer *CoreRequestResult) ToSyncingResponse() (*SyncingResponse, error) 
 	}
 
 	var result map[string]interface{}
+	var data []byte
+	var err error
 
 	switch (pointer).Result.(type) {
 	case bool:
 		return &SyncingResponse{}, nil
 	case map[string]interface{}:
+		// come from http
 		result = (pointer).Result.(map[string]interface{})
+		if len(result) == 0 {
+			return nil, EMPTYRESPONSE
+		}
+		data, err = json.Marshal(result)
 	default:
-		return nil, UNPARSEABLEINTERFACE
+		if value, ok := pointer.Result.(string); ok {
+			// come from websock
+			data = []byte(value)
+			if len(data) == 0 {
+				return nil, EMPTYRESPONSE
+			}
+		} else {
+			return nil, UNPARSEABLEINTERFACE
+		}
 	}
-
-	if len(result) == 0 {
-		return nil, EMPTYRESPONSE
-	}
-
-	syncingResponse := &SyncingResponse{}
-
-	marshal, err := json.Marshal(result)
 
 	if err != nil {
 		return nil, UNPARSEABLEINTERFACE
 	}
 
-	err = json.Unmarshal(marshal, syncingResponse)
+	syncingResponse := &SyncingResponse{}
+
+	err = json.Unmarshal(data, syncingResponse)
+
+	if err != nil {
+		return &SyncingResponse{}, nil
+	}
 
 	return syncingResponse, err
-
 }
 
 func (pointer *CoreRequestResult) ToTransactionResponse() (*TransactionResponse, error) {
-
+	// todo
 	if err := pointer.checkResponse(); err != nil {
 		return nil, err
 	}
@@ -101,6 +113,7 @@ func (pointer *CoreRequestResult) ToTransactionResponse() (*TransactionResponse,
 }
 
 func (pointer *CoreRequestResult) ToSignTransactionResponse() (*SignTransactionResponse, error) {
+	// todo
 	if err := pointer.checkResponse(); err != nil {
 		return nil, err
 	}
@@ -138,7 +151,7 @@ func (pointer *CoreRequestResult) ToBlock(transactionDetails bool) (interface{},
 
 	var data []byte
 	var err error
-	if value, ok := pointer.Result.([]byte); ok {
+	if value, ok := pointer.Result.(string); ok {
 		//come from websock
 		data = []byte(value)
 	} else {
@@ -167,41 +180,66 @@ func (pointer *CoreRequestResult) ToBlock(transactionDetails bool) (interface{},
 }
 
 func (pointer *CoreRequestResult) ToPendingTransactions() ([]*TransactionResponse, error) {
+
 	if err := pointer.checkResponse(); err != nil {
 		return nil, err
 	}
 
-	results := (pointer).Result.([]interface{})
+	var data0 []byte
+	var err0 error
+	if value, ok := pointer.Result.(string); ok {
+		//come from websock
+		data0 = []byte(value)
+	} else {
+		//come from http
+		result := (pointer).Result.([]interface{})
+		//if len(result) == 0 {
+		//	return nil, EMPTYRESPONSE
+		//}
+		data0, err0 = json.Marshal(result)
+	}
 
-	pendingTransactions := make([]*TransactionResponse, len(results))
+	if err0 != nil {
+		return nil, UNPARSEABLEINTERFACE
+	}
 
-	for i, v := range results {
+	var results []interface{}
+	_ = json.Unmarshal(data0, &results)
 
-		result := v.(map[string]interface{})
+	var pendingTransactions []*TransactionResponse
 
-		if len(result) == 0 {
-			return nil, EMPTYRESPONSE
+	for _, v := range results {
+
+		var data []byte
+		var err error
+		if value, ok := v.(string); ok {
+			//come from websock
+			data = []byte(value)
+		} else {
+			//come from http
+			result := v.(map[string]interface{})
+
+			if len(result) == 0 {
+				return nil, EMPTYRESPONSE
+			}
+			data, err = json.Marshal(result)
+		}
+
+		if err != nil {
+			return nil, UNPARSEABLEINTERFACE
 		}
 
 		info := &TransactionResponse{}
 
-		marshal, err := json.Marshal(result)
-
+		err = json.Unmarshal(data, info)
 		if err != nil {
 			return nil, UNPARSEABLEINTERFACE
 		}
 
-		err = json.Unmarshal(marshal, info)
-		if err != nil {
-			return nil, UNPARSEABLEINTERFACE
-		}
-
-		pendingTransactions[i] = info
-
+		pendingTransactions = append(pendingTransactions, info)
 	}
 
 	return pendingTransactions, nil
-
 }
 
 func (pointer *CoreRequestResult) ToProof() (*AccountResult, error) {
@@ -211,6 +249,8 @@ func (pointer *CoreRequestResult) ToProof() (*AccountResult, error) {
 
 	var data []byte
 	var err error
+	value0 := pointer.Result
+	println(value0)
 	if value, ok := pointer.Result.(string); ok {
 		//come from websock
 		data = []byte(value)
