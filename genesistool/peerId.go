@@ -1,0 +1,23 @@
+package genesistool
+
+import (
+	"github.com/bif/bif-sdk-go/crypto"
+	"github.com/bif/bif-sdk-go/crypto/config"
+	libp2pcorecrypto "github.com/libp2p/go-libp2p-core/crypto"
+	libp2pcorepeer "github.com/libp2p/go-libp2p-core/peer"
+)
+
+func PeerIdGen(nodePrivateHex string) (string, error) {
+	p2pPrivateKey, err := crypto.HexToECDSA(nodePrivateHex, config.SECP256K1)
+	if err != nil {
+		return "", err
+	}
+
+	var peerId libp2pcorepeer.ID
+	if peerId, err = libp2pcorepeer.IDFromPrivateKey((*libp2pcorecrypto.Secp256k1PrivateKey)(p2pPrivateKey)); err != nil {
+		return "", err
+	}
+
+	return peerId.String(), nil
+
+}

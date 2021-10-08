@@ -104,8 +104,8 @@ func NewTestServer(t *testing.T, cb ServerConfigCallback) *TestServer {
 
 	config := &TestServerConfig{
 		DataDir:  dir,
-		HTTPPort: "44002",//getOpenPort(),
-		WSPort:   "44003",//getOpenPort(),
+		HTTPPort: "44002", //getOpenPort(),
+		WSPort:   "44003", //getOpenPort(),
 	}
 	if cb != nil {
 		cb(config)
@@ -177,9 +177,10 @@ func (t *TestServer) HTTPAddr() string {
 
 // ProcessBlock processes a new block
 func (t *TestServer) ProcessBlock() error {
+	to := web3.HexToAddress(dummyAddr)
 	_, err := t.SendTxn(&web3.Transaction{
 		From:  t.accounts[0],
-		To:    dummyAddr,
+		To:    &to,
 		Value: big.NewInt(10),
 	})
 	return err
@@ -206,8 +207,9 @@ func (t *TestServer) Call(msg *web3.CallMsg) (string, error) {
 // TxnTo sends a transaction to a given method without any arguments
 func (t *TestServer) TxnTo(address web3.Address, method string) *web3.Receipt {
 	sig := MethodSig(method)
+	to := web3.HexToAddress(address.String())
 	receipt, err := t.SendTxn(&web3.Transaction{
-		To:    address.String(),
+		To:    &to,
 		Input: sig,
 	})
 	if err != nil {

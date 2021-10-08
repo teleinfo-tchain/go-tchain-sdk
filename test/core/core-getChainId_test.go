@@ -24,7 +24,7 @@ import (
 
 func TestGetChainId(t *testing.T) {
 
-	var connection = bif.NewBif(providers.NewHTTPProvider(resources.IP+":"+resources.Port, 10, false))
+	var connection = bif.NewBif(providers.NewHTTPProvider(resources.IP00+":"+strconv.FormatUint(resources.Port, 10), 10, false))
 
 	chainId, err := connection.Core.GetChainId()
 

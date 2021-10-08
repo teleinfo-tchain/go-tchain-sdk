@@ -14,6 +14,7 @@ import (
 	"github.com/bif/bif-sdk-go/utils/types"
 	"io/ioutil"
 	"math/big"
+	"strconv"
 	"strings"
 	"testing"
 	"time"
@@ -241,7 +242,7 @@ func (p *personal) personaBatchImportByFiles(pathDir string) (string, error) {
 // 节点管理的账户列表
 // {"jsonrpc":"2.0","method":"personal_listAccounts","params":[],"id":67}
 func TestPersonalListAccounts(t *testing.T) {
-	var connection = newPersonal(providers.NewHTTPProvider(resources.IP+":"+resources.Port, 10, false))
+	var connection = newPersonal(providers.NewHTTPProvider(resources.IP00+":"+strconv.FormatUint(resources.Port, 10), 10, false))
 
 	res, err := connection.personalListAccounts()
 	if err != nil {
@@ -253,7 +254,7 @@ func TestPersonalListAccounts(t *testing.T) {
 // 节点管理的钱包账户
 // {"jsonrpc":"2.0","method":"personal_listWallets","params":[],"id":67}
 func TestPersonalListWallets(t *testing.T) {
-	var connection = newPersonal(providers.NewHTTPProvider(resources.IP+":"+resources.Port, 10, false))
+	var connection = newPersonal(providers.NewHTTPProvider(resources.IP00+":"+strconv.FormatUint(resources.Port, 10), 10, false))
 
 	res, err := connection.personalListWallets()
 
@@ -268,7 +269,7 @@ func TestPersonalListWallets(t *testing.T) {
 // 生成账户地址
 // {"jsonrpc":"2.0","method":"personal_newAccount","params":["teleinfo",0],"id":67}
 func TestPersonaNewAccount(t *testing.T) {
-	var connection = newPersonal(providers.NewHTTPProvider(resources.IP+":"+resources.Port, 10, false))
+	var connection = newPersonal(providers.NewHTTPProvider(resources.IP00+":"+strconv.FormatUint(resources.Port, 10), 10, false))
 
 	auth := "node"
 	cryptoType := 0
@@ -283,7 +284,7 @@ func TestPersonaNewAccount(t *testing.T) {
 // 导入节点账户地址
 // {"jsonrpc":"2.0","method":"personal_importRawKey","params":[" ","teleinfo", 0],"id":67}
 func TestPersonalImportRawKey(t *testing.T) {
-	var connection = newPersonal(providers.NewHTTPProvider(resources.IP+":"+resources.Port, 10, false))
+	var connection = newPersonal(providers.NewHTTPProvider(resources.IP00+":"+strconv.FormatUint(resources.Port, 10), 10, false))
 
 	for _, test := range []struct {
 		privateKey       string
@@ -305,7 +306,7 @@ func TestPersonalImportRawKey(t *testing.T) {
 // lock账户
 // {"jsonrpc":"2.0","method":"personal_lockAccount","params":["did:bid:c117c1794fc7a27bd301ae52"],"id":67}
 func TestPersonalLockAccount(t *testing.T) {
-	var connection = newPersonal(providers.NewHTTPProvider(resources.IP+":"+resources.Port, 10, false))
+	var connection = newPersonal(providers.NewHTTPProvider(resources.IP00+":"+strconv.FormatUint(resources.Port, 10), 10, false))
 	for _, test := range []struct {
 		address string
 	}{
@@ -322,7 +323,7 @@ func TestPersonalLockAccount(t *testing.T) {
 // unlock账户
 // {"jsonrpc":"2.0","method":"personal_unlockAccount","params":["did:bid:c117c1794fc7a27bd301ae52","teleinfo",0],"id":67}
 func TestPersonalUnLockAccount(t *testing.T) {
-	var connection = newPersonal(providers.NewHTTPProvider(resources.IP+":"+resources.Port, 10, false))
+	var connection = newPersonal(providers.NewHTTPProvider(resources.IP00+":"+strconv.FormatUint(resources.Port, 10), 10, false))
 
 	for _, test := range []struct {
 		address  string
@@ -340,7 +341,7 @@ func TestPersonalUnLockAccount(t *testing.T) {
 }
 
 func TestPersonalExportToFile(t *testing.T) {
-	var connection = newPersonal(providers.NewHTTPProvider(resources.IP+":"+resources.Port, 10, false))
+	var connection = newPersonal(providers.NewHTTPProvider(resources.IP00+":"+strconv.FormatUint(resources.Port, 10), 10, false))
 	for _, test := range []struct {
 		address string
 	}{
@@ -356,7 +357,7 @@ func TestPersonalExportToFile(t *testing.T) {
 }
 
 func TestPersonalBatchExportToFiles(t *testing.T) {
-	var connection = newPersonal(providers.NewHTTPProvider(resources.IP+":"+resources.Port, 10, false))
+	var connection = newPersonal(providers.NewHTTPProvider(resources.IP00+":"+strconv.FormatUint(resources.Port, 10), 10, false))
 
 	pathDir := "keyStoreTest"
 	res, err := connection.personalBatchExportToFiles(pathDir)
@@ -367,7 +368,7 @@ func TestPersonalBatchExportToFiles(t *testing.T) {
 }
 
 func TestPersonalImportByFile(t *testing.T) {
-	var connection = newPersonal(providers.NewHTTPProvider(resources.IP+":"+resources.Port, 10, false))
+	var connection = newPersonal(providers.NewHTTPProvider(resources.IP00+":"+strconv.FormatUint(resources.Port, 10), 10, false))
 	for _, test := range []struct {
 		fileName string
 	}{
@@ -383,7 +384,7 @@ func TestPersonalImportByFile(t *testing.T) {
 }
 
 func TestPersonaBatchImportByFiles(t *testing.T) {
-	var connection = newPersonal(providers.NewHTTPProvider(resources.IP+":"+resources.Port, 10, false))
+	var connection = newPersonal(providers.NewHTTPProvider(resources.IP00+":"+strconv.FormatUint(resources.Port, 10), 10, false))
 
 	pathDir := "keyStoreTest"
 	res, err := connection.personaBatchImportByFiles(pathDir)
@@ -397,7 +398,7 @@ func TestPersonaBatchImportByFiles(t *testing.T) {
 // 测试转账
 func TestCoreSendTransaction(t *testing.T) {
 
-	var connection = bif.NewBif(providers.NewHTTPProvider(resources.IP+":"+resources.Port, 10, false))
+	var connection = bif.NewBif(providers.NewHTTPProvider(resources.IP00+":"+strconv.FormatUint(resources.Port, 10), 10, false))
 	generator, err := connection.Core.GetGenerator()
 	if err != nil {
 		t.Error(err)
@@ -427,7 +428,7 @@ func TestCoreSendTransaction(t *testing.T) {
 	transaction.Sender = generator
 	transaction.Recipient = toAddress
 	transaction.Amount = big.NewInt(0).Mul(big.NewInt(1), big.NewInt(1e17))
-	transaction.GasLimit = big.NewInt(40000)
+	transaction.GasLimit = 40000
 	transaction.Payload = "Transfer test"
 
 	txID, err := connection.Core.SendTransaction(transaction)
@@ -462,7 +463,7 @@ func TestCoreSendTransactionDeployContract(t *testing.T) {
 		t.FailNow()
 	}
 
-	var connection = bif.NewBif(providers.NewHTTPProvider(resources.IP+":"+resources.Port, 10, false))
+	var connection = bif.NewBif(providers.NewHTTPProvider(resources.IP00+":"+strconv.FormatUint(resources.Port, 10), 10, false))
 	byteCode := unmarshalResponse.ByteCode
 	parsedAbi, err := Abi.JSON(strings.NewReader(unmarshalResponse.Abi))
 	if err != nil {
@@ -496,7 +497,7 @@ func TestCoreSendTransactionDeployContract(t *testing.T) {
 	t.Log("Estimate gas is ", gas)
 
 	// transaction.GasPrice = big.NewInt(1000000)
-	transaction.GasLimit = gas
+	transaction.GasLimit = gas.Uint64()
 	txHash, err := connection.Core.SendTransaction(transaction)
 
 	if err != nil {

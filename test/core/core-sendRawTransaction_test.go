@@ -9,20 +9,21 @@ import (
 	"github.com/bif/bif-sdk-go/utils"
 	"github.com/bif/bif-sdk-go/utils/hexutil"
 	"math/big"
+	"strconv"
 	"testing"
 )
 
 // 测试发送RawTransaction
 func TestCoreSendRawTransaction(t *testing.T) {
-	var connection = bif.NewBif(providers.NewHTTPProvider(resources.IP+":"+resources.Port, 10, false))
+	var connection = bif.NewBif(providers.NewHTTPProvider(resources.IP00+":"+strconv.FormatUint(resources.Port, 10), 10, false))
 
-	nonce, err := connection.Core.GetTransactionCount(resources.TestAddr, block.LATEST)
+	nonce, err := connection.Core.GetTransactionCount(resources.Addr1, block.LATEST)
 	if err != nil {
 		t.Error(err)
 		t.FailNow()
 	}
 
-	privKey := resources.TestAddrPri
+	privKey := resources.Addr1Pri
 
 	chainId, err := connection.Core.GetChainId()
 	if err != nil {
@@ -31,7 +32,7 @@ func TestCoreSendRawTransaction(t *testing.T) {
 	}
 
 	var recipient utils.Address
-	recipient = utils.StringToAddress(resources.NewAddrE)
+	recipient = utils.StringToAddress(resources.Addr2)
 
 	tx := &account.SignTxParams{
 		Recipient:    &recipient,

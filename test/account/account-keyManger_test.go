@@ -2,6 +2,7 @@ package account
 
 import (
 	"github.com/bif/bif-sdk-go/account"
+	"github.com/bif/bif-sdk-go/test/resources"
 	"testing"
 )
 
@@ -10,12 +11,13 @@ func TestGenerateKeyStore(t *testing.T) {
 		storeKeyDir       string
 		isSm2             bool
 		password          string
+		chainCode         string
 		useLightweightKDF bool
 	}{
-		{"./keystore", true, "teleinfo", false},
-		{"./keystore", false, "teleinfo", false},
+		{"../resources/keystore", true, resources.PassWord, resources.ChainCode, false},
+		{"../resources/keystore", false, resources.PassWord, resources.ChainCode, false},
 	} {
-		addr, err := account.GenerateKeyStore(test.storeKeyDir, test.isSm2, test.password, test.useLightweightKDF)
+		addr, err := account.GenerateKeyStore(test.storeKeyDir, test.isSm2, test.password, test.chainCode, test.useLightweightKDF)
 		if err != nil {
 			t.Error(err)
 			t.FailNow()
@@ -31,9 +33,7 @@ func TestGetPrivateKeyFromFile(t *testing.T) {
 		address  string
 		keyDir   string
 	}{
-		// {"teleinfo", "did:bid:ZFT4CziA2ktCNgfQPqSm1GpQxSck5q4", "./keystore/UTC--2020-08-19T05-48-44.625362500Z--did-bid-ZFT4CziA2ktCNgfQPqSm1GpQxSck5q4"},
-		// {"teleinfo", "did:bid:EFTTQWPMdtghuZByPsfQAUuPkWkWYb", "./keystore/UTC--2020-08-19T05-48-46.004537900Z--did-bid-EFTTQWPMdtghuZByPsfQAUuPkWkWYb"},
-		{"teleinfo", "did:bid:EFTVcqqKyFR17jfPxqwEtpmRpbkvSs", "./keystore/UTC--2020-08-20T05-28-39.403642600Z--did-bid-EFTVcqqKyFR17jfPxqwEtpmRpbkvSs"},
+		{resources.PassWord, resources.Addr1, "../resources/keystore/UTC--2020-08-20T05-28-39.403642600Z--did-bid-EFTVcqqKyFR17jfPxqwEtpmRpbkvSs"},
 	} {
 		pri, err := account.GetPrivateKeyFromFile(test.address, test.keyDir, test.password)
 		if err != nil {
@@ -46,16 +46,16 @@ func TestGetPrivateKeyFromFile(t *testing.T) {
 
 func TestPrivateKeyToKeyStoreFile(t *testing.T) {
 	for _, test := range []struct {
-		password   string
-		privateKey string
-		isSM2      bool
 		keyDir     string
+		isSM2      bool
+		privateKey string
+		password   string
+		chainCode  string
+
 	}{
-		// {"teleinfo", "89b9c1cfc8ab8937cfda96393d4cf2f9789b824c75ff8eaeeeebd572193bec38", true, "./keystore"},
-		// {"teleinfo", "e4b4a35bee3d92a0b07f16e3253ae8459e817305514dcd0ed0c64342312b41d8", false, "./keystore"},
-		{"teleinfo", "41e46e858ea707453d8fc553805772165a4f66e6e18ca38220daa157534e0c0e", false, "./keystore"},
+		{"../resources/keystore",false,resources.Addr1Pri, resources.PassWord, resources.ChainCode},
 	} {
-		isSuccess, err := account.PrivateKeyToKeyStoreFile(test.keyDir, test.isSM2, test.privateKey, test.password)
+		isSuccess, err := account.PrivateKeyToKeyStoreFile(test.keyDir, test.isSM2, test.privateKey, test.password, test.chainCode)
 		if err != nil {
 			t.Error(err)
 			t.FailNow()
@@ -72,8 +72,8 @@ func TestGetAddressFromPrivate(t *testing.T) {
 		privateKey string
 		isSM2      bool
 	}{
-		{"89b9c1cfc8ab8937cfda96393d4cf2f9789b824c75ff8eaeeeebd572193bec38", true},
-		{"e4b4a35bee3d92a0b07f16e3253ae8459e817305514dcd0ed0c64342312b41d8", false},
+		{resources.Addr1Pri, true},
+		{resources.Addr2Pri, false},
 	} {
 		accountAddress, err := account.GetAddressFromPrivate(test.privateKey, test.isSM2)
 		if err != nil {
@@ -90,8 +90,8 @@ func TestGetPublicKeyFromPrivate(t *testing.T) {
 		isSM2      bool
 		want       string
 	}{
-		{"89b9c1cfc8ab8937cfda96393d4cf2f9789b824c75ff8eaeeeebd572193bec38", true, "0x0102d53a8080379bb6499966687a9fccd3ac0641010eb53c983b9dd7f6a0c860b1665275b26d616eecee10d7bd03755c31c4e1ab7ca45e3b7b266442f7f64efa03"},
-		{"e4b4a35bee3d92a0b07f16e3253ae8459e817305514dcd0ed0c64342312b41d8", false, "0x043ee1708e4b431e71b1cc596c15425b8e889b80ec120840b6dd998a3a6397142405875eebe6b3488723e6ad3c5c7397c42c57696ac1e2fa925c0a1f6a61fc20a7"},
+		{resources.Addr1Pri, true, resources.Addr1Hex},
+		{resources.Addr2Pri, false, resources.Addr2Hex},
 	} {
 		publicKey, err := account.GetPublicKeyFromPrivate(test.privateKey, test.isSM2)
 		if err != nil {
@@ -113,9 +113,7 @@ func TestGetGetPublicKeyFromFile(t *testing.T) {
 		isSM2              bool
 		want               string
 	}{
-		// {"./keystore/UTC--2020-08-19T05-48-44.625362500Z--did-bid-ZFT4CziA2ktCNgfQPqSm1GpQxSck5q4", "teleinfo", true, "0x0102d53a8080379bb6499966687a9fccd3ac0641010eb53c983b9dd7f6a0c860b1665275b26d616eecee10d7bd03755c31c4e1ab7ca45e3b7b266442f7f64efa03"},
-		// {"./keystore/UTC--2020-08-19T05-48-46.004537900Z--did-bid-EFTTQWPMdtghuZByPsfQAUuPkWkWYb", "teleinfo", false, "0x043ee1708e4b431e71b1cc596c15425b8e889b80ec120840b6dd998a3a6397142405875eebe6b3488723e6ad3c5c7397c42c57696ac1e2fa925c0a1f6a61fc20a7"},
-		{"./keystore/UTC--2020-08-20T05-28-39.403642600Z--did-bid-EFTVcqqKyFR17jfPxqwEtpmRpbkvSs", "teleinfo", false, "0x04647f729afb309e4cd20f4b186a7883e1cd23b245e9fb6eb939ad74e47cc16c55e60aa12f20ed21bee8d23291aae377ad319b166604dec1a81dfb2b008bdc3c68"},
+		{"../resources/keystore/UTC--2020-08-20T05-28-39.403642600Z--did-bid-EFTVcqqKyFR17jfPxqwEtpmRpbkvSs", "teleInfo", false, "0x04647f729afb309e4cd20f4b186a7883e1cd23b245e9fb6eb939ad74e47cc16c55e60aa12f20ed21bee8d23291aae377ad319b166604dec1a81dfb2b008bdc3c68"},
 	} {
 		publicKey, err := account.GetPublicKeyFromFile(test.privateKeyFilePath, test.password, test.isSM2)
 		if err != nil {
@@ -138,7 +136,7 @@ func TestGenerateNodeUrlFromKeyStore(t *testing.T) {
 		host               string
 		port               uint64
 	}{
-		{"./keystore/UTC--2020-08-19T05-48-46.004537900Z--did-bid-EFTTQWPMdtghuZByPsfQAUuPkWkWYb", "teleinfo", "127.0.0.1", 55555},
+		{"./keystore/UTC--2020-08-19T05-48-46.004537900Z--did-bid-EFTTQWPMdtghuZByPsfQAUuPkWkWYb", "teleInfo", "127.0.0.1", 55555},
 	} {
 		nodeUrl, err := account.GenerateNodeUrlFromKeyStore(test.nodePrivateKeyPath, test.password, test.host, test.port)
 		if err != nil {
@@ -156,8 +154,8 @@ func TestGenerateNodeUrlFromPrivateKey(t *testing.T) {
 		host       string
 		port       uint64
 	}{
-		{"6fc71b424542603b40732a1cff4504318cd0625f1e1b3553cc4ed3d385c3c463", "127.0.0.1", 55555},
-		{"d4b8727f468ecd8c2a809b99658f243b268ef2b36d3e0e7f9d9bac9fc8fa78e9", "127.0.0.1", 55555},
+		{resources.Addr1Pri, resources.IP00, resources.Port},
+		{resources.Addr2Pri, resources.IP00, resources.Port},
 	} {
 		nodeUrl, err := account.GenerateNodeUrlFromPrivateKey(test.privateKey, test.host, test.port)
 		if err != nil {

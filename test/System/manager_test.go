@@ -8,32 +8,26 @@ import (
 	"github.com/bif/bif-sdk-go/test/resources"
 	"io/ioutil"
 	"math/big"
+	"strconv"
 	"testing"
 )
 
-const (
-	isSM2Manager       = false
-	passwordManager    = "teleinfo"
-	testAddressManager = "did:bid:EFTVcqqKyFR17jfPxqwEtpmRpbkvSs"
-	testAddressManagerFile    = "../resources/superNodeKeyStore/UTC--2020-08-20T05-28-39.403642600Z--did-bid-EFTVcqqKyFR17jfPxqwEtpmRpbkvSs"
-)
-
 func TestContractEnable(t *testing.T) {
-	var connection = bif.NewBif(providers.NewHTTPProvider(resources.IP+":"+resources.Port, 10, false))
+	var connection = bif.NewBif(providers.NewHTTPProvider(resources.IP00+":"+strconv.FormatUint(resources.Port, 10), 10, false))
 	chainId, err := connection.Core.GetChainId()
 	if err != nil {
 		t.Log(err)
 		t.FailNow()
 	}
 
-	nonce, err := connection.Core.GetTransactionCount(testAddressManager, block.LATEST)
+	nonce, err := connection.Core.GetTransactionCount(resources.TestAddressManager, block.LATEST)
 	if err != nil {
 		t.Log(err)
 		t.FailNow()
 	}
 
 	// keyFileData 还可以进一步校验
-	keyFileData, err := ioutil.ReadFile(testAddressManagerFile)
+	keyFileData, err := ioutil.ReadFile(resources.TestAddressManagerFile)
 	if err != nil {
 		t.Error(err)
 		t.FailNow()
@@ -44,8 +38,8 @@ func TestContractEnable(t *testing.T) {
 	}
 
 	sysTxParams := new(system.SysTxParams)
-	sysTxParams.IsSM2 = isSM2Manager
-	sysTxParams.Password = passwordManager
+	sysTxParams.IsSM2 = resources.NotSm2
+	sysTxParams.Password = resources.SystemPassword
 	sysTxParams.KeyFileData = keyFileData
 	sysTxParams.GasPrice = big.NewInt(35)
 	sysTxParams.Gas = 2000000
@@ -65,21 +59,21 @@ func TestContractEnable(t *testing.T) {
 }
 
 func TestContractDisable(t *testing.T) {
-	var connection = bif.NewBif(providers.NewHTTPProvider(resources.IP+":"+resources.Port, 10, false))
+	var connection = bif.NewBif(providers.NewHTTPProvider(resources.IP00+":"+strconv.FormatUint(resources.Port, 10), 10, false))
 	chainId, err := connection.Core.GetChainId()
 	if err != nil {
 		t.Log(err)
 		t.FailNow()
 	}
 
-	nonce, err := connection.Core.GetTransactionCount(testAddressManager, block.LATEST)
+	nonce, err := connection.Core.GetTransactionCount(resources.TestAddressManager, block.LATEST)
 	if err != nil {
 		t.Log(err)
 		t.FailNow()
 	}
 
 	// keyFileData 还可以进一步校验
-	keyFileData, err := ioutil.ReadFile(testAddressManagerFile)
+	keyFileData, err := ioutil.ReadFile(resources.TestAddressManagerFile)
 	if err != nil {
 		t.Error(err)
 		t.FailNow()
@@ -90,8 +84,8 @@ func TestContractDisable(t *testing.T) {
 	}
 
 	sysTxParams := new(system.SysTxParams)
-	sysTxParams.IsSM2 = isSM2Manager
-	sysTxParams.Password = passwordManager
+	sysTxParams.IsSM2 = resources.NotSm2
+	sysTxParams.Password = resources.SystemPassword
 	sysTxParams.KeyFileData = keyFileData
 	sysTxParams.GasPrice = big.NewInt(35)
 	sysTxParams.Gas = 2000000
@@ -111,21 +105,21 @@ func TestContractDisable(t *testing.T) {
 }
 
 func TestSetPower(t *testing.T) {
-	var connection = bif.NewBif(providers.NewHTTPProvider(resources.IP+":"+resources.Port, 10, false))
+	var connection = bif.NewBif(providers.NewHTTPProvider(resources.IP00+":"+strconv.FormatUint(resources.Port, 10), 10, false))
 	chainId, err := connection.Core.GetChainId()
 	if err != nil {
 		t.Log(err)
 		t.FailNow()
 	}
 
-	nonce, err := connection.Core.GetTransactionCount(testAddressManager, block.LATEST)
+	nonce, err := connection.Core.GetTransactionCount(resources.TestAddressManager, block.LATEST)
 	if err != nil {
 		t.Log(err)
 		t.FailNow()
 	}
 
 	// keyFileData 还可以进一步校验
-	keyFileData, err := ioutil.ReadFile(testAddressManagerFile)
+	keyFileData, err := ioutil.ReadFile(resources.TestAddressManagerFile)
 	if err != nil {
 		t.Error(err)
 		t.FailNow()
@@ -136,8 +130,8 @@ func TestSetPower(t *testing.T) {
 	}
 
 	sysTxParams := new(system.SysTxParams)
-	sysTxParams.IsSM2 = isSM2Manager
-	sysTxParams.Password = passwordManager
+	sysTxParams.IsSM2 = resources.NotSm2
+	sysTxParams.Password = resources.SystemPassword
 	sysTxParams.KeyFileData = keyFileData
 	sysTxParams.GasPrice = big.NewInt(35)
 	sysTxParams.Gas = 2000000
@@ -146,7 +140,7 @@ func TestSetPower(t *testing.T) {
 
 	manager := connection.System.NewManager()
 
-	userAddress := resources.TestAddr
+	userAddress := resources.Addr1
 	var power uint64 = 1
 
 	txHash, err := manager.SetPower(sysTxParams, userAddress, power)
@@ -158,7 +152,7 @@ func TestSetPower(t *testing.T) {
 }
 
 func TestAllContracts(t *testing.T) {
-	var connection = bif.NewBif(providers.NewHTTPProvider(resources.IP+":"+resources.Port, 10, false))
+	var connection = bif.NewBif(providers.NewHTTPProvider(resources.IP00+":"+strconv.FormatUint(resources.Port, 10), 10, false))
 	_, err := connection.Core.GetChainId()
 
 	if err != nil {
@@ -181,7 +175,7 @@ func TestAllContracts(t *testing.T) {
 }
 
 func TestContractIsEnable(t *testing.T) {
-	var connection = bif.NewBif(providers.NewHTTPProvider(resources.IP+":"+resources.Port, 10, false))
+	var connection = bif.NewBif(providers.NewHTTPProvider(resources.IP00+":"+strconv.FormatUint(resources.Port, 10), 10, false))
 	_, err := connection.Core.GetChainId()
 
 	if err != nil {
@@ -201,7 +195,7 @@ func TestContractIsEnable(t *testing.T) {
 }
 
 func TestGetPower(t *testing.T) {
-	var connection = bif.NewBif(providers.NewHTTPProvider(resources.IP+":"+resources.Port, 10, false))
+	var connection = bif.NewBif(providers.NewHTTPProvider(resources.IP00+":"+strconv.FormatUint(resources.Port, 10), 10, false))
 	_, err := connection.Core.GetChainId()
 
 	if err != nil {
@@ -210,7 +204,7 @@ func TestGetPower(t *testing.T) {
 	}
 
 	manager := connection.System.NewManager()
-	userAddress := resources.TestAddr
+	userAddress := resources.Addr1
 	power, err := manager.GetPower(userAddress)
 	if err != nil {
 		t.Error(err)

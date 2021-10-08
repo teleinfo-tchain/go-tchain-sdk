@@ -9,36 +9,26 @@ import (
 	"github.com/bif/bif-sdk-go/test/resources"
 	"io/ioutil"
 	"math/big"
+	"strconv"
 	"testing"
 )
 
-const (
-	// 注册证书的bid
-	personCertificate = "did:bid:EFTVcqqKyFR17jfPxqwEtpmRpbkvSs"
-	// 与personCertificate对应的公钥
-	personCertificatePublicKey = "0x04647f729afb309e4cd20f4b186a7883e1cd23b245e9fb6eb939ad74e47cc16c55e60aa12f20ed21bee8d23291aae377ad319b166604dec1a81dfb2b008bdc3c68"
-	isSM2Certificate           = false
-	passwordCertificate        = "teleinfo"
-	testAddressCertificate     = "did:bid:EFTTQWPMdtghuZByPsfQAUuPkWkWYb"
-	testAddressCertificateFile     = "../resources/superNodeKeyStore/UTC--2020-08-19T05-48-46.004537900Z--did-bid-EFTTQWPMdtghuZByPsfQAUuPkWkWYb"
-)
-
 func TestRegisterCertificate(t *testing.T) {
-	var connection = bif.NewBif(providers.NewHTTPProvider(resources.IP+":"+resources.Port, 10, false))
+	var connection = bif.NewBif(providers.NewHTTPProvider(resources.IP00+":"+strconv.FormatUint(resources.Port, 10), 10, false))
 	chainId, err := connection.Core.GetChainId()
 	if err != nil {
 		t.Log(err)
 		t.FailNow()
 	}
 
-	nonce, err := connection.Core.GetTransactionCount(testAddressCertificate, block.LATEST)
+	nonce, err := connection.Core.GetTransactionCount(resources.TestAddressCertificate, block.LATEST)
 	if err != nil {
 		t.Log(err)
 		t.FailNow()
 	}
 
 	// keyFileData 还可以进一步校验
-	keyFileData, err := ioutil.ReadFile(testAddressCertificateFile)
+	keyFileData, err := ioutil.ReadFile(resources.TestAddressCertificateFile)
 	if err != nil {
 		t.Error(err)
 		t.FailNow()
@@ -49,8 +39,8 @@ func TestRegisterCertificate(t *testing.T) {
 	}
 
 	sysTxParams := new(system.SysTxParams)
-	sysTxParams.IsSM2 = isSM2Certificate
-	sysTxParams.Password = passwordCertificate
+	sysTxParams.IsSM2 = resources.NotSm2
+	sysTxParams.Password = resources.SystemPassword
 	sysTxParams.KeyFileData = keyFileData
 	sysTxParams.GasPrice = big.NewInt(35)
 	sysTxParams.Gas = 2000000
@@ -60,13 +50,13 @@ func TestRegisterCertificate(t *testing.T) {
 	cer := connection.System.NewCertificate()
 
 	registerCertificate := new(dto.RegisterCertificate)
-	registerCertificate.Id = personCertificate
+	registerCertificate.Id = resources.PersonCertificate
 	registerCertificate.Context = "test context"
-	registerCertificate.Subject = personCertificate
+	registerCertificate.Subject = resources.PersonCertificate
 	registerCertificate.Period = 1
 	registerCertificate.IssuerAlgorithm = "test"
 	registerCertificate.IssuerSignature = "test"
-	registerCertificate.SubjectPublicKey = personCertificatePublicKey
+	registerCertificate.SubjectPublicKey = resources.PersonCertificatePublicKey
 	registerCertificate.SubjectAlgorithm = "test"
 	registerCertificate.SubjectSignature = "test"
 	// registerCertificate
@@ -80,14 +70,14 @@ func TestRegisterCertificate(t *testing.T) {
 }
 
 func TestRevokedCertificate(t *testing.T) {
-	var connection = bif.NewBif(providers.NewHTTPProvider(resources.IP+":"+resources.Port, 10, false))
+	var connection = bif.NewBif(providers.NewHTTPProvider(resources.IP00+":"+strconv.FormatUint(resources.Port, 10), 10, false))
 	chainId, err := connection.Core.GetChainId()
 	if err != nil {
 		t.Log(err)
 		t.FailNow()
 	}
 
-	nonce, err := connection.Core.GetTransactionCount(testAddressCertificate, block.LATEST)
+	nonce, err := connection.Core.GetTransactionCount(resources.TestAddressCertificate, block.LATEST)
 	if err != nil {
 		t.Log(err)
 		t.FailNow()
@@ -96,7 +86,7 @@ func TestRevokedCertificate(t *testing.T) {
 	t.Logf("nonce is %d , chainId is %d ", nonce, chainId)
 
 	// keyFileData 还可以进一步校验
-	keyFileData, err := ioutil.ReadFile(testAddressCertificateFile)
+	keyFileData, err := ioutil.ReadFile(resources.TestAddressCertificateFile)
 	if err != nil {
 		t.Error(err)
 		t.FailNow()
@@ -107,15 +97,15 @@ func TestRevokedCertificate(t *testing.T) {
 	}
 
 	sysTxParams := new(system.SysTxParams)
-	sysTxParams.IsSM2 = isSM2Certificate
-	sysTxParams.Password = passwordCertificate
+	sysTxParams.IsSM2 = resources.NotSm2
+	sysTxParams.Password = resources.SystemPassword
 	sysTxParams.KeyFileData = keyFileData
 	sysTxParams.GasPrice = nil
 	sysTxParams.Gas = 2000000
 
 	cer := connection.System.NewCertificate()
 
-	transactionHash, err := cer.RevokedCertificate(sysTxParams, personCertificate)
+	transactionHash, err := cer.RevokedCertificate(sysTxParams, resources.PersonCertificate)
 	if err != nil {
 		t.Error(err)
 		t.FailNow()
@@ -124,21 +114,21 @@ func TestRevokedCertificate(t *testing.T) {
 }
 
 func TestRevokedCertificates(t *testing.T) {
-	var connection = bif.NewBif(providers.NewHTTPProvider(resources.IP+":"+resources.Port, 10, false))
+	var connection = bif.NewBif(providers.NewHTTPProvider(resources.IP00+":"+strconv.FormatUint(resources.Port, 10), 10, false))
 	chainId, err := connection.Core.GetChainId()
 	if err != nil {
 		t.Log(err)
 		t.FailNow()
 	}
 
-	nonce, err := connection.Core.GetTransactionCount(testAddressCertificate, block.LATEST)
+	nonce, err := connection.Core.GetTransactionCount(resources.TestAddressCertificate, block.LATEST)
 	if err != nil {
 		t.Log(err)
 		t.FailNow()
 	}
 
 	// keyFileData 还可以进一步校验
-	keyFileData, err := ioutil.ReadFile(testAddressCertificateFile)
+	keyFileData, err := ioutil.ReadFile(resources.TestAddressCertificateFile)
 	if err != nil {
 		t.Error(err)
 		t.FailNow()
@@ -149,8 +139,8 @@ func TestRevokedCertificates(t *testing.T) {
 	}
 
 	sysTxParams := new(system.SysTxParams)
-	sysTxParams.IsSM2 = isSM2Certificate
-	sysTxParams.Password = passwordCertificate
+	sysTxParams.IsSM2 = resources.NotSm2
+	sysTxParams.Password = resources.SystemPassword
 	sysTxParams.KeyFileData = keyFileData
 	sysTxParams.GasPrice = big.NewInt(45)
 	sysTxParams.Gas = 2000000
@@ -168,7 +158,7 @@ func TestRevokedCertificates(t *testing.T) {
 }
 
 func TestGetPeriod(t *testing.T) {
-	var connection = bif.NewBif(providers.NewHTTPProvider(resources.IP+":"+resources.Port, 10, false))
+	var connection = bif.NewBif(providers.NewHTTPProvider(resources.IP00+":"+strconv.FormatUint(resources.Port, 10), 10, false))
 	_, err := connection.Core.GetChainId()
 	if err != nil {
 		t.Error(err)
@@ -176,7 +166,7 @@ func TestGetPeriod(t *testing.T) {
 	}
 	cer := connection.System.NewCertificate()
 
-	period, err := cer.GetPeriod(personCertificate)
+	period, err := cer.GetPeriod(resources.PersonCertificate)
 	if err != nil {
 		t.Error(err)
 		t.FailNow()
@@ -185,7 +175,7 @@ func TestGetPeriod(t *testing.T) {
 }
 
 func TestGetActive(t *testing.T) {
-	var connection = bif.NewBif(providers.NewHTTPProvider(resources.IP+":"+resources.Port, 10, false))
+	var connection = bif.NewBif(providers.NewHTTPProvider(resources.IP00+":"+strconv.FormatUint(resources.Port, 10), 10, false))
 	_, err := connection.Core.GetChainId()
 	if err != nil {
 		t.Error(err)
@@ -193,7 +183,7 @@ func TestGetActive(t *testing.T) {
 	}
 	cer := connection.System.NewCertificate()
 
-	isEnable, err := cer.GetActive(personCertificate)
+	isEnable, err := cer.GetActive(resources.PersonCertificate)
 	if err != nil {
 		t.Error(err)
 		t.FailNow()
@@ -203,7 +193,7 @@ func TestGetActive(t *testing.T) {
 }
 
 func TestGetCertificate(t *testing.T) {
-	var connection = bif.NewBif(providers.NewHTTPProvider(resources.IP+":"+resources.Port, 10, false))
+	var connection = bif.NewBif(providers.NewHTTPProvider(resources.IP00+":"+strconv.FormatUint(resources.Port, 10), 10, false))
 	_, err := connection.Core.GetChainId()
 	if err != nil {
 		t.Error(err)
@@ -211,7 +201,7 @@ func TestGetCertificate(t *testing.T) {
 	}
 	cer := connection.System.NewCertificate()
 
-	certificate, err := cer.GetCertificate(personCertificate)
+	certificate, err := cer.GetCertificate(resources.PersonCertificate)
 	if err != nil {
 		t.Error(err)
 		t.FailNow()
@@ -221,7 +211,7 @@ func TestGetCertificate(t *testing.T) {
 }
 
 func TestGetIssuer(t *testing.T) {
-	var connection = bif.NewBif(providers.NewHTTPProvider(resources.IP+":"+resources.Port, 10, false))
+	var connection = bif.NewBif(providers.NewHTTPProvider(resources.IP00+":"+strconv.FormatUint(resources.Port, 10), 10, false))
 	_, err := connection.Core.GetChainId()
 	if err != nil {
 		t.Log(err)
@@ -229,7 +219,7 @@ func TestGetIssuer(t *testing.T) {
 	}
 	cer := connection.System.NewCertificate()
 
-	issuer, err := cer.GetIssuer(personCertificate)
+	issuer, err := cer.GetIssuer(resources.PersonCertificate)
 	if err != nil {
 		t.Error(err)
 		t.FailNow()
@@ -238,7 +228,7 @@ func TestGetIssuer(t *testing.T) {
 }
 
 func TestGetSubject(t *testing.T) {
-	var connection = bif.NewBif(providers.NewHTTPProvider(resources.IP+":"+resources.Port, 10, false))
+	var connection = bif.NewBif(providers.NewHTTPProvider(resources.IP00+":"+strconv.FormatUint(resources.Port, 10), 10, false))
 	_, err := connection.Core.GetChainId()
 	if err != nil {
 		t.Log(err)
@@ -246,7 +236,7 @@ func TestGetSubject(t *testing.T) {
 	}
 	cer := connection.System.NewCertificate()
 
-	subjectSignature, err := cer.GetSubject(personCertificate)
+	subjectSignature, err := cer.GetSubject(resources.PersonCertificate)
 	if err != nil {
 		t.Error(err)
 		t.FailNow()

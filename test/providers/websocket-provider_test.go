@@ -15,14 +15,15 @@
 package test
 
 import (
+	"fmt"
 	"github.com/bif/bif-sdk-go/account"
 	block2 "github.com/bif/bif-sdk-go/core/block"
 	"github.com/bif/bif-sdk-go/dto"
 	"github.com/bif/bif-sdk-go/test/resources"
 	"github.com/bif/bif-sdk-go/txpool"
 	"github.com/bif/bif-sdk-go/utils"
-	"github.com/golang/tools/go/ssa/interp/testdata/src/fmt"
 	"math/big"
+	"strconv"
 	"testing"
 
 	"github.com/bif/bif-sdk-go"
@@ -31,7 +32,7 @@ import (
 
 func Test_Websocket_Core_ToSyncingResponse(t *testing.T) {
 
-	var connection = bif.NewBif(providers.NewWebSocketProvider("ws://"+resources.IP+":"+resources.WebsocketPort))
+	var connection = bif.NewBif(providers.NewWebSocketProvider("ws://" + resources.IP00 + ":" + strconv.FormatUint(resources.WebsocketPort, 10)))
 
 	for index := 0; index < 2; index++ {
 		var _, err = connection.ClientVersion()
@@ -56,24 +57,24 @@ func Test_Websocket_Core_ToSyncingResponse(t *testing.T) {
 }
 
 func Test_Websocket_Core_ToTransactionResponse(t *testing.T) {
-	var connection = bif.NewBif(providers.NewWebSocketProvider("ws://"+resources.IP+":"+resources.WebsocketPort))
+	var connection = bif.NewBif(providers.NewWebSocketProvider("ws://" + resources.IP00 + ":" + strconv.FormatUint(resources.WebsocketPort, 10)))
 	chainId, _ := connection.Core.GetChainId()
 
 	var sender utils.Address
-	sender = utils.StringToAddress(resources.NewAddrZ)
+	sender = utils.StringToAddress(resources.Addr1)
 	var recipient utils.Address
-	recipient = utils.StringToAddress(resources.NewAddrE)
+	recipient = utils.StringToAddress(resources.Addr2)
 
 	tx := &account.SignTxParams{
-		Sender   :   &sender,
-		Recipient:   &recipient,
-		Amount   :   big.NewInt(10000),
-		GasLimit :   200000,
-		GasPrice :   big.NewInt(30),
-		ChainId  :   chainId,
+		Sender:    &sender,
+		Recipient: &recipient,
+		Amount:    big.NewInt(10000),
+		GasLimit:  200000,
+		GasPrice:  big.NewInt(30),
+		ChainId:   chainId,
 	}
 
-	res, err := connection.Account.SignTransaction(tx, resources.NewAddrZPri, false)
+	res, err := connection.Account.SignTransaction(tx, resources.Addr1Pri, false)
 
 	if err != nil {
 		t.Error(err)
@@ -98,12 +99,12 @@ func Test_Websocket_Core_ToTransactionResponse(t *testing.T) {
 }
 
 func Test_Websocket_Core_ToSignTransactionResponse(t *testing.T) {
-	var connection = bif.NewBif(providers.NewWebSocketProvider("ws://"+resources.IP+":"+resources.WebsocketPort))
+	var connection = bif.NewBif(providers.NewWebSocketProvider("ws://" + resources.IP00 + ":" + strconv.FormatUint(resources.WebsocketPort, 10)))
 
 	transaction := new(dto.TransactionParameters)
 	transaction.AccountNonce = uint64(2)
-	transaction.Sender = resources.NewAddrZ
-	transaction.Recipient = resources.NewAddrE
+	transaction.Sender = resources.Addr1
+	transaction.Recipient = resources.Addr2
 	transaction.Amount = big.NewInt(0).Mul(big.NewInt(5), big.NewInt(1e17))
 	transaction.GasLimit = uint64(50000)
 	transaction.GasPrice = big.NewInt(1)
@@ -120,7 +121,7 @@ func Test_Websocket_Core_ToSignTransactionResponse(t *testing.T) {
 }
 
 func Test_Websocket_Core_ToPendingTransactions(t *testing.T) {
-	var connection = bif.NewBif(providers.NewWebSocketProvider("ws://"+resources.IP+":"+resources.WebsocketPort))
+	var connection = bif.NewBif(providers.NewWebSocketProvider("ws://" + resources.IP00 + ":" + strconv.FormatUint(resources.WebsocketPort, 10)))
 
 	pendingTransactions, err := connection.Core.GetPendingTransactions()
 
@@ -134,7 +135,7 @@ func Test_Websocket_Core_ToPendingTransactions(t *testing.T) {
 
 func Test_Websocket_Core_ToBlock(t *testing.T) {
 
-	var connection = bif.NewBif(providers.NewWebSocketProvider("ws://"+resources.IP+":"+resources.WebsocketPort))
+	var connection = bif.NewBif(providers.NewWebSocketProvider("ws://" + resources.IP00 + ":" + strconv.FormatUint(resources.WebsocketPort, 10)))
 
 	for index := 0; index < 2; index++ {
 		var _, err = connection.ClientVersion()
@@ -162,7 +163,7 @@ func Test_Websocket_Core_ToBlock(t *testing.T) {
 
 func Test_Websocket_Core_ToProof(t *testing.T) {
 	// todo
-	var connection = bif.NewBif(providers.NewWebSocketProvider("ws://"+resources.IP+":"+resources.WebsocketPort))
+	var connection = bif.NewBif(providers.NewWebSocketProvider("ws://" + resources.IP00 + ":" + strconv.FormatUint(resources.WebsocketPort, 10)))
 
 	for index := 0; index < 2; index++ {
 		var _, err = connection.ClientVersion()
@@ -191,7 +192,7 @@ func Test_Websocket_Core_ToProof(t *testing.T) {
 
 func Test_Websocket_Debug_ToDumpBlock(t *testing.T) {
 
-	var connection = bif.NewBif(providers.NewWebSocketProvider("ws://"+resources.IP+":"+resources.WebsocketPort))
+	var connection = bif.NewBif(providers.NewWebSocketProvider("ws://" + resources.IP00 + ":" + strconv.FormatUint(resources.WebsocketPort, 10)))
 
 	var _, err = connection.ClientVersion()
 
@@ -218,7 +219,7 @@ func Test_Websocket_Debug_ToDumpBlock(t *testing.T) {
 }
 
 func Test_Websocket_Net_ToPeerInfo(t *testing.T) {
-	var connection = bif.NewBif(providers.NewWebSocketProvider("ws://"+resources.IP+":"+resources.WebsocketPort))
+	var connection = bif.NewBif(providers.NewWebSocketProvider("ws://" + resources.IP00 + ":" + strconv.FormatUint(resources.WebsocketPort, 10)))
 
 	for index := 0; index < 2; index++ {
 		var _, err = connection.ClientVersion()
@@ -247,7 +248,7 @@ func Test_Websocket_Net_ToPeerInfo(t *testing.T) {
 
 func Test_Websocket_Net_ToNodeInfo(t *testing.T) {
 	// todo
-	var connection = bif.NewBif(providers.NewWebSocketProvider("ws://"+resources.IP+":"+resources.WebsocketPort))
+	var connection = bif.NewBif(providers.NewWebSocketProvider("ws://" + resources.IP00 + ":" + strconv.FormatUint(resources.WebsocketPort, 10)))
 
 	for index := 0; index < 2; index++ {
 		var _, err = connection.ClientVersion()
@@ -276,7 +277,7 @@ func Test_Websocket_Net_ToNodeInfo(t *testing.T) {
 
 func Test_Websocket_Request_ToStringArray(t *testing.T) {
 
-	var connection = bif.NewBif(providers.NewWebSocketProvider("ws://"+resources.IP+":"+resources.WebsocketPort))
+	var connection = bif.NewBif(providers.NewWebSocketProvider("ws://" + resources.IP00 + ":" + strconv.FormatUint(resources.WebsocketPort, 10)))
 
 	for index := 0; index < 2; index++ {
 		var _, err = connection.ClientVersion()
@@ -305,7 +306,7 @@ func Test_Websocket_Request_ToStringArray(t *testing.T) {
 
 func Test_Websocket_Request_ToUint64(t *testing.T) {
 
-	var connection = bif.NewBif(providers.NewWebSocketProvider("ws://"+resources.IP+":"+resources.WebsocketPort))
+	var connection = bif.NewBif(providers.NewWebSocketProvider("ws://" + resources.IP00 + ":" + strconv.FormatUint(resources.WebsocketPort, 10)))
 
 	for index := 0; index < 2; index++ {
 		var _, err = connection.ClientVersion()
@@ -334,7 +335,7 @@ func Test_Websocket_Request_ToUint64(t *testing.T) {
 
 func Test_Websocket_Request_ToBoolean(t *testing.T) {
 
-	var connection = bif.NewBif(providers.NewWebSocketProvider("ws://"+resources.IP+":"+resources.WebsocketPort))
+	var connection = bif.NewBif(providers.NewWebSocketProvider("ws://" + resources.IP00 + ":" + strconv.FormatUint(resources.WebsocketPort, 10)))
 
 	for index := 0; index < 2; index++ {
 		var _, err = connection.ClientVersion()
@@ -363,7 +364,7 @@ func Test_Websocket_Request_ToBoolean(t *testing.T) {
 
 func Test_Websocket_Txpool_ToTxPoolStatus(t *testing.T) {
 
-	var connection = txpool.NewTxPool(providers.NewWebSocketProvider("ws://"+resources.IP+":"+resources.WebsocketPort))
+	var connection = txpool.NewTxPool(providers.NewWebSocketProvider("ws://" + resources.IP00 + ":" + strconv.FormatUint(resources.WebsocketPort, 10)))
 
 	status, err := connection.GetStatus()
 
@@ -377,7 +378,7 @@ func Test_Websocket_Txpool_ToTxPoolStatus(t *testing.T) {
 
 func Test_Websocket_Txpool_ToTxPoolInspect(t *testing.T) {
 
-	var connection = txpool.NewTxPool(providers.NewWebSocketProvider("ws://"+resources.IP+":"+resources.WebsocketPort))
+	var connection = txpool.NewTxPool(providers.NewWebSocketProvider("ws://" + resources.IP00 + ":" + strconv.FormatUint(resources.WebsocketPort, 10)))
 
 	inspect, err := connection.Inspect()
 
@@ -391,7 +392,7 @@ func Test_Websocket_Txpool_ToTxPoolInspect(t *testing.T) {
 
 func Test_Websocket_Txpool_ToTxPoolContent(t *testing.T) {
 
-	var connection = txpool.NewTxPool(providers.NewWebSocketProvider("ws://"+resources.IP+":"+resources.WebsocketPort))
+	var connection = txpool.NewTxPool(providers.NewWebSocketProvider("ws://" + resources.IP00 + ":" + strconv.FormatUint(resources.WebsocketPort, 10)))
 
 	content, err := connection.Content()
 
@@ -403,112 +404,9 @@ func Test_Websocket_Txpool_ToTxPoolContent(t *testing.T) {
 	fmt.Println(content)
 }
 
-func Test_Websocket_System_ToPeerCertificate(t *testing.T) {
-
-	var connection = bif.NewBif(providers.NewWebSocketProvider("ws://"+resources.IP+":"+resources.WebsocketPort))
-
-	for index := 0; index < 2; index++ {
-		var _, err = connection.ClientVersion()
-		if err != nil {
-			t.Error(err)
-			t.Fail()
-		}
-	}
-
-	_, err := connection.Core.GetGenerator()
-
-	if err != nil {
-		t.Error(err)
-		t.FailNow()
-	}
-
-	peerCer := connection.System.NewPeerCertificate()
-	peerCertificate, err := peerCer.GetPeerCertificate("did:bid:hufa:sf26xSMerRVcs9E642Rkbq4TxLrhQsWzk")
-
-	if err != nil {
-		t.Error(err)
-		t.FailNow()
-	}
-
-	fmt.Println(peerCertificate)
-
-	err = connection.Provider.Close()
-
-	if err != nil {
-		t.Error(err)
-		t.Fail()
-	}
-}
-
-func Test_Websocket_System_ToTrustAnchor(t *testing.T) {
-
-	var connection = bif.NewBif(providers.NewWebSocketProvider("ws://"+resources.IP+":"+resources.WebsocketPort))
-
-	for index := 0; index < 2; index++ {
-		var _, err = connection.ClientVersion()
-		if err != nil {
-			t.Error(err)
-			t.Fail()
-		}
-	}
-
-	anchor := connection.System.NewTrustAnchor()
-
-	trustAnchor, err := anchor.GetTrustAnchor("did:bid:hufa:sf26xSMerRVcs9E642Rkbq4TxLrhQsWzk")
-
-	if err != nil {
-		t.Error(err)
-		t.FailNow()
-	}
-
-	fmt.Println(trustAnchor)
-
-	err = connection.Provider.Close()
-
-	if err != nil {
-		t.Error(err)
-		t.Fail()
-	}
-}
-
-func Test_Websocket_System_ToTrustAnchorVoter(t *testing.T) {
-
-	var connection = bif.NewBif(providers.NewWebSocketProvider("ws://"+resources.IP+":"+resources.WebsocketPort))
-
-	for index := 0; index < 2; index++ {
-		var _, err = connection.ClientVersion()
-		if err != nil {
-			t.Error(err)
-			t.Fail()
-		}
-	}
-
-	_, err := connection.Core.GetChainId()
-	if err != nil {
-		t.Error(err)
-		t.FailNow()
-	}
-
-	anchor := connection.System.NewTrustAnchor()
-	trustAnchorVoterLi, err := anchor.GetVoter("did:bid:hufa:sf26xSMerRVcs9E642Rkbq4TxLrhQsWzk")
-	if err != nil {
-		t.Error(err)
-		t.FailNow()
-	}
-
-	fmt.Println(trustAnchorVoterLi)
-
-	err = connection.Provider.Close()
-
-	if err != nil {
-		t.Error(err)
-		t.Fail()
-	}
-}
-
 func Test_Websocket_System_ToCertificateInfo(t *testing.T) {
 
-	var connection = bif.NewBif(providers.NewWebSocketProvider("ws://"+resources.IP+":"+resources.WebsocketPort))
+	var connection = bif.NewBif(providers.NewWebSocketProvider("ws://" + resources.IP00 + ":" + strconv.FormatUint(resources.WebsocketPort, 10)))
 
 	for index := 0; index < 2; index++ {
 		var _, err = connection.ClientVersion()
@@ -525,7 +423,7 @@ func Test_Websocket_System_ToCertificateInfo(t *testing.T) {
 	}
 	cer := connection.System.NewCertificate()
 
-	certificate, err := cer.GetCertificate("did:bid:hufa:sf26xSMerRVcs9E642Rkbq4TxLrhQsWzk")
+	certificate, err := cer.GetCertificate("did:bid:sf26xSMerRVcs9E642Rkbq4TxLrhQsWzk")
 	if err != nil {
 		t.Error(err)
 		t.FailNow()
@@ -543,7 +441,7 @@ func Test_Websocket_System_ToCertificateInfo(t *testing.T) {
 
 func Test_Websocket_System_ToCertificateIssuerSignature(t *testing.T) {
 
-	var connection = bif.NewBif(providers.NewWebSocketProvider("ws://"+resources.IP+":"+resources.WebsocketPort))
+	var connection = bif.NewBif(providers.NewWebSocketProvider("ws://" + resources.IP00 + ":" + strconv.FormatUint(resources.WebsocketPort, 10)))
 
 	for index := 0; index < 2; index++ {
 		var _, err = connection.ClientVersion()
@@ -560,7 +458,7 @@ func Test_Websocket_System_ToCertificateIssuerSignature(t *testing.T) {
 	}
 	cer := connection.System.NewCertificate()
 
-	issuer, err := cer.GetIssuer("did:bid:hufa:sf26xSMerRVcs9E642Rkbq4TxLrhQsWzk")
+	issuer, err := cer.GetIssuer("did:bid:sf26xSMerRVcs9E642Rkbq4TxLrhQsWzk")
 	if err != nil {
 		t.Error(err)
 		t.FailNow()
@@ -578,7 +476,7 @@ func Test_Websocket_System_ToCertificateIssuerSignature(t *testing.T) {
 
 func Test_Websocket_System_ToCertificateSubjectSignature(t *testing.T) {
 
-	var connection = bif.NewBif(providers.NewWebSocketProvider("ws://"+resources.IP+":"+resources.WebsocketPort))
+	var connection = bif.NewBif(providers.NewWebSocketProvider("ws://" + resources.IP00 + ":" + strconv.FormatUint(resources.WebsocketPort, 10)))
 
 	for index := 0; index < 2; index++ {
 		var _, err = connection.ClientVersion()
@@ -595,7 +493,7 @@ func Test_Websocket_System_ToCertificateSubjectSignature(t *testing.T) {
 	}
 	cer := connection.System.NewCertificate()
 
-	subjectSignature, err := cer.GetSubject("did:bid:hufa:sf26xSMerRVcs9E642Rkbq4TxLrhQsWzk")
+	subjectSignature, err := cer.GetSubject("did:bid:sf26xSMerRVcs9E642Rkbq4TxLrhQsWzk")
 
 	if err != nil {
 		t.Error(err)
@@ -614,7 +512,7 @@ func Test_Websocket_System_ToCertificateSubjectSignature(t *testing.T) {
 
 func Test_Websocket_System_ToDocument(t *testing.T) {
 
-	var connection = bif.NewBif(providers.NewWebSocketProvider("ws://"+resources.IP+":"+resources.WebsocketPort))
+	var connection = bif.NewBif(providers.NewWebSocketProvider("ws://" + resources.IP00 + ":" + strconv.FormatUint(resources.WebsocketPort, 10)))
 
 	for index := 0; index < 2; index++ {
 		var _, err = connection.ClientVersion()
@@ -632,7 +530,7 @@ func Test_Websocket_System_ToDocument(t *testing.T) {
 
 	doc := connection.System.NewDoc()
 
-	document, err := doc.GetDocument("did:bid:hufa:sf26xSMerRVcs9E642Rkbq4TxLrhQsWzk")
+	document, err := doc.GetDocument("did:bid:sf26xSMerRVcs9E642Rkbq4TxLrhQsWzk")
 
 	if err != nil {
 		t.Error(err)

@@ -4,12 +4,13 @@ import (
 	"github.com/bif/bif-sdk-go"
 	"github.com/bif/bif-sdk-go/providers"
 	"github.com/bif/bif-sdk-go/test/resources"
+	"strconv"
 	"testing"
 )
 
 // 测试系统合约的执行结果
 func TestSystemLogDecode(t *testing.T) {
-	var connection = bif.NewBif(providers.NewHTTPProvider(resources.IP+":"+resources.Port, 10, false))
+	var connection = bif.NewBif(providers.NewHTTPProvider(resources.IP00+":"+strconv.FormatUint(resources.Port, 10), 10, false))
 	_, err := connection.Core.GetChainId()
 	if err != nil {
 		t.Error(err)

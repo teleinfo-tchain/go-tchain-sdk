@@ -17,6 +17,7 @@ package test
 import (
 	"github.com/bif/bif-sdk-go/test/resources"
 	"github.com/bif/bif-sdk-go/txpool"
+	"strconv"
 	"testing"
 
 	"github.com/bif/bif-sdk-go/providers"
@@ -24,7 +25,7 @@ import (
 
 func TestGetStatus(t *testing.T) {
 
-	var connection = txpool.NewTxPool(providers.NewHTTPProvider(resources.IP+":"+resources.Port, 10, false))
+	var connection = txpool.NewTxPool(providers.NewHTTPProvider(resources.IP00+":"+strconv.FormatUint(resources.Port, 10), 10, false))
 
 	status, err := connection.GetStatus()
 	if err != nil {
@@ -38,7 +39,7 @@ func TestGetStatus(t *testing.T) {
 
 func TestTxPoolInspect(t *testing.T) {
 
-	var connection = txpool.NewTxPool(providers.NewHTTPProvider(resources.IP+":"+resources.Port, 10, false))
+	var connection = txpool.NewTxPool(providers.NewHTTPProvider(resources.IP00+":"+strconv.FormatUint(resources.Port, 10), 10, false))
 
 	inspect, err := connection.Inspect()
 	if err != nil {
@@ -50,7 +51,7 @@ func TestTxPoolInspect(t *testing.T) {
 
 func TestTxPoolContent(t *testing.T) {
 
-	var connection = txpool.NewTxPool(providers.NewHTTPProvider(resources.IP55+":"+resources.Port, 10, false))
+	var connection = txpool.NewTxPool(providers.NewHTTPProvider(resources.IP00+":"+strconv.FormatUint(resources.Port, 10), 10, false))
 
 	transactions, err := connection.Content()
 	if err != nil {
@@ -58,5 +59,4 @@ func TestTxPoolContent(t *testing.T) {
 		t.FailNow()
 	}
 	t.Log(transactions)
-	// fmt.Printf("%#v \n", transactions)
 }

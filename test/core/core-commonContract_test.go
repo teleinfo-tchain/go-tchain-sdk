@@ -45,7 +45,7 @@ func TestCoreContract(t *testing.T) {
 	unmarshalResponse.Abi = artifact.Abi
 	unmarshalResponse.ByteCode = artifact.Bin
 
-	var connection = bif.NewBif(providers.NewHTTPProvider(resources.IP+":"+resources.Port, 10, false))
+	var connection = bif.NewBif(providers.NewHTTPProvider(resources.IP00+":"+strconv.FormatUint(resources.Port, 10), 10, false))
 	byteCode := unmarshalResponse.ByteCode
 	contract, err := connection.Core.NewContract(unmarshalResponse.Abi)
 	if err != nil {

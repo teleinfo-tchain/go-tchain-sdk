@@ -8,19 +8,12 @@ import (
 	"github.com/bif/bif-sdk-go/test/resources"
 	"io/ioutil"
 	"math/big"
+	"strconv"
 	"testing"
 )
 
-const (
-	isSM2Doc                = false
-	passwordDoc             = "teleinfo"
-	testAddressDoc          = "did:bid:EFTVcqqKyFR17jfPxqwEtpmRpbkvSs"
-	testAddressDocPublicKey = "0x04647f729afb309e4cd20f4b186a7883e1cd23b245e9fb6eb939ad74e47cc16c55e60aa12f20ed21bee8d23291aae377ad319b166604dec1a81dfb2b008bdc3c68"
-	testAddressDocFile      = "../resources/superNodeKeyStore/UTC--2020-08-20T05-28-39.403642600Z--did-bid-EFTVcqqKyFR17jfPxqwEtpmRpbkvSs"
-)
-
 func TestInit(t *testing.T) {
-	var connection = bif.NewBif(providers.NewHTTPProvider(resources.IP+":"+resources.Port, 10, false))
+	var connection = bif.NewBif(providers.NewHTTPProvider(resources.IP00+":"+strconv.FormatUint(resources.Port, 10), 10, false))
 	chainId, err := connection.Core.GetChainId()
 	if err != nil {
 		t.Log(err)
@@ -28,7 +21,7 @@ func TestInit(t *testing.T) {
 	}
 
 	// keyFileData 还可以进一步校验
-	keyFileData, err := ioutil.ReadFile(testAddressDocFile)
+	keyFileData, err := ioutil.ReadFile(resources.TestAddressDocFile)
 	if err != nil {
 		t.Error(err)
 		t.FailNow()
@@ -39,8 +32,8 @@ func TestInit(t *testing.T) {
 	}
 
 	sysTxParams := new(system.SysTxParams)
-	sysTxParams.IsSM2 = isSM2Doc
-	sysTxParams.Password = passwordDoc
+	sysTxParams.IsSM2 = resources.NotSm2
+	sysTxParams.Password = resources.SystemPassword
 	sysTxParams.KeyFileData = keyFileData
 	sysTxParams.GasPrice = big.NewInt(35)
 	sysTxParams.Gas = 2000000
@@ -58,21 +51,21 @@ func TestInit(t *testing.T) {
 }
 
 func TestSetBidName(t *testing.T) {
-	var connection = bif.NewBif(providers.NewHTTPProvider(resources.IP+":"+resources.Port, 10, false))
+	var connection = bif.NewBif(providers.NewHTTPProvider(resources.IP00+":"+strconv.FormatUint(resources.Port, 10), 10, false))
 	chainId, err := connection.Core.GetChainId()
 	if err != nil {
 		t.Log(err)
 		t.FailNow()
 	}
 
-	nonce, err := connection.Core.GetTransactionCount(testAddressDoc, block.LATEST)
+	nonce, err := connection.Core.GetTransactionCount(resources.TestAddressDoc, block.LATEST)
 	if err != nil {
 		t.Log(err)
 		t.FailNow()
 	}
 
 	// keyFileData 还可以进一步校验
-	keyFileData, err := ioutil.ReadFile(testAddressDocFile)
+	keyFileData, err := ioutil.ReadFile(resources.TestAddressDocFile)
 	if err != nil {
 		t.Error(err)
 		t.FailNow()
@@ -83,8 +76,8 @@ func TestSetBidName(t *testing.T) {
 	}
 
 	sysTxParams := new(system.SysTxParams)
-	sysTxParams.IsSM2 = isSM2Doc
-	sysTxParams.Password = passwordDoc
+	sysTxParams.IsSM2 = resources.NotSm2
+	sysTxParams.Password = resources.SystemPassword
 	sysTxParams.KeyFileData = keyFileData
 	sysTxParams.GasPrice = big.NewInt(55)
 	sysTxParams.Gas = 2000000
@@ -93,7 +86,7 @@ func TestSetBidName(t *testing.T) {
 
 	doc := connection.System.NewDoc()
 
-	txHash, err := doc.SetBidName(sysTxParams, testAddressDoc, "test12")
+	txHash, err := doc.SetBidName(sysTxParams, resources.TestAddressDoc, "test12")
 	if err != nil {
 		t.Error(err)
 		t.FailNow()
@@ -103,7 +96,7 @@ func TestSetBidName(t *testing.T) {
 }
 
 func TestGetDocument(t *testing.T) {
-	var connection = bif.NewBif(providers.NewHTTPProvider(resources.IP+":"+resources.Port, 10, false))
+	var connection = bif.NewBif(providers.NewHTTPProvider(resources.IP00+":"+strconv.FormatUint(resources.Port, 10), 10, false))
 	_, err := connection.Core.GetChainId()
 	if err != nil {
 		t.Error(err)
@@ -111,7 +104,7 @@ func TestGetDocument(t *testing.T) {
 	}
 	doc := connection.System.NewDoc()
 
-	document, err := doc.GetDocument(testAddressDoc)
+	document, err := doc.GetDocument(resources.TestAddressDoc)
 	if err != nil {
 		t.Error(err)
 		t.FailNow()
@@ -135,7 +128,7 @@ func TestGetDocument(t *testing.T) {
 }
 
 func TestAddPublic(t *testing.T) {
-	var connection = bif.NewBif(providers.NewHTTPProvider(resources.IP+":"+resources.Port, 10, false))
+	var connection = bif.NewBif(providers.NewHTTPProvider(resources.IP00+":"+strconv.FormatUint(resources.Port, 10), 10, false))
 	chainId, err := connection.Core.GetChainId()
 	if err != nil {
 		t.Log(err)
@@ -143,7 +136,7 @@ func TestAddPublic(t *testing.T) {
 	}
 
 	// keyFileData 还可以进一步校验
-	keyFileData, err := ioutil.ReadFile(testAddressDocFile)
+	keyFileData, err := ioutil.ReadFile(resources.TestAddressDocFile)
 	if err != nil {
 		t.Error(err)
 		t.FailNow()
@@ -153,15 +146,15 @@ func TestAddPublic(t *testing.T) {
 		t.FailNow()
 	}
 
-	nonce, err := connection.Core.GetTransactionCount(testAddressDoc, block.LATEST)
+	nonce, err := connection.Core.GetTransactionCount(resources.TestAddressDoc, block.LATEST)
 	if err != nil {
 		t.Log(err)
 		t.FailNow()
 	}
 
 	sysTxParams := new(system.SysTxParams)
-	sysTxParams.IsSM2 = isSM2Doc
-	sysTxParams.Password = passwordDoc
+	sysTxParams.IsSM2 = resources.NotSm2
+	sysTxParams.Password = resources.SystemPassword
 	sysTxParams.KeyFileData = keyFileData
 	sysTxParams.GasPrice = big.NewInt(35)
 	sysTxParams.Gas = 2000000
@@ -170,7 +163,7 @@ func TestAddPublic(t *testing.T) {
 
 	doc := connection.System.NewDoc()
 	// 0x043ee1708e4b431e71b1cc596c15425b8e889b80ec120840b6dd998a3a6397142405875eebe6b3488723e6ad3c5c7397c42c57696ac1e2fa925c0a1f6a61fc20a7
-	txHash, err := doc.AddPublic(sysTxParams, testAddressDoc, "secp256k1", "all", testAddressDocPublicKey)
+	txHash, err := doc.AddPublic(sysTxParams, resources.TestAddressDoc, "secp256k1", "all", resources.TestAddressDocPublicKey)
 	if err != nil {
 		t.Error(err)
 		t.FailNow()
@@ -180,21 +173,21 @@ func TestAddPublic(t *testing.T) {
 }
 
 func TestDelPublic(t *testing.T) {
-	var connection = bif.NewBif(providers.NewHTTPProvider(resources.IP+":"+resources.Port, 10, false))
+	var connection = bif.NewBif(providers.NewHTTPProvider(resources.IP00+":"+strconv.FormatUint(resources.Port, 10), 10, false))
 	chainId, err := connection.Core.GetChainId()
 	if err != nil {
 		t.Log(err)
 		t.FailNow()
 	}
 
-	nonce, err := connection.Core.GetTransactionCount(testAddressDoc, block.LATEST)
+	nonce, err := connection.Core.GetTransactionCount(resources.TestAddressDoc, block.LATEST)
 	if err != nil {
 		t.Log(err)
 		t.FailNow()
 	}
 
 	// keyFileData 还可以进一步校验
-	keyFileData, err := ioutil.ReadFile(testAddressDocFile)
+	keyFileData, err := ioutil.ReadFile(resources.TestAddressDocFile)
 	if err != nil {
 		t.Error(err)
 		t.FailNow()
@@ -205,8 +198,8 @@ func TestDelPublic(t *testing.T) {
 	}
 
 	sysTxParams := new(system.SysTxParams)
-	sysTxParams.IsSM2 = isSM2Doc
-	sysTxParams.Password = passwordDoc
+	sysTxParams.IsSM2 = resources.NotSm2
+	sysTxParams.Password = resources.SystemPassword
 	sysTxParams.KeyFileData = keyFileData
 	sysTxParams.GasPrice = big.NewInt(35)
 	sysTxParams.Gas = 2000000
@@ -215,7 +208,7 @@ func TestDelPublic(t *testing.T) {
 
 	doc := connection.System.NewDoc()
 
-	txHash, err := doc.DelPublic(sysTxParams, testAddressDoc, testAddressDocPublicKey)
+	txHash, err := doc.DelPublic(sysTxParams, resources.TestAddressDoc, resources.TestAddressDocPublicKey)
 	if err != nil {
 		t.Error(err)
 		t.FailNow()
@@ -225,21 +218,21 @@ func TestDelPublic(t *testing.T) {
 }
 
 func TestAddAuth(t *testing.T) {
-	var connection = bif.NewBif(providers.NewHTTPProvider(resources.IP+":"+resources.Port, 10, false))
+	var connection = bif.NewBif(providers.NewHTTPProvider(resources.IP00+":"+strconv.FormatUint(resources.Port, 10), 10, false))
 	chainId, err := connection.Core.GetChainId()
 	if err != nil {
 		t.Log(err)
 		t.FailNow()
 	}
 
-	nonce, err := connection.Core.GetTransactionCount(testAddressDoc, block.LATEST)
+	nonce, err := connection.Core.GetTransactionCount(resources.TestAddressDoc, block.LATEST)
 	if err != nil {
 		t.Log(err)
 		t.FailNow()
 	}
 
 	// keyFileData 还可以进一步校验
-	keyFileData, err := ioutil.ReadFile(testAddressDocFile)
+	keyFileData, err := ioutil.ReadFile(resources.TestAddressDocFile)
 	if err != nil {
 		t.Error(err)
 		t.FailNow()
@@ -250,8 +243,8 @@ func TestAddAuth(t *testing.T) {
 	}
 
 	sysTxParams := new(system.SysTxParams)
-	sysTxParams.IsSM2 = isSM2Doc
-	sysTxParams.Password = passwordDoc
+	sysTxParams.IsSM2 = resources.NotSm2
+	sysTxParams.Password = resources.SystemPassword
 	sysTxParams.KeyFileData = keyFileData
 	sysTxParams.GasPrice = big.NewInt(35)
 	sysTxParams.Gas = 2000000
@@ -260,7 +253,7 @@ func TestAddAuth(t *testing.T) {
 
 	doc := connection.System.NewDoc()
 
-	txHash, err := doc.AddAuth(sysTxParams, testAddressDoc, "test1")
+	txHash, err := doc.AddAuth(sysTxParams, resources.TestAddressDoc, "test1")
 	if err != nil {
 		t.Error(err)
 		t.FailNow()
@@ -270,21 +263,21 @@ func TestAddAuth(t *testing.T) {
 }
 
 func TestDelAuth(t *testing.T) {
-	var connection = bif.NewBif(providers.NewHTTPProvider(resources.IP+":"+resources.Port, 10, false))
+	var connection = bif.NewBif(providers.NewHTTPProvider(resources.IP00+":"+strconv.FormatUint(resources.Port, 10), 10, false))
 	chainId, err := connection.Core.GetChainId()
 	if err != nil {
 		t.Log(err)
 		t.FailNow()
 	}
 
-	nonce, err := connection.Core.GetTransactionCount(testAddressDoc, block.LATEST)
+	nonce, err := connection.Core.GetTransactionCount(resources.TestAddressDoc, block.LATEST)
 	if err != nil {
 		t.Log(err)
 		t.FailNow()
 	}
 
 	// keyFileData 还可以进一步校验
-	keyFileData, err := ioutil.ReadFile(testAddressDocFile)
+	keyFileData, err := ioutil.ReadFile(resources.TestAddressDocFile)
 	if err != nil {
 		t.Error(err)
 		t.FailNow()
@@ -295,8 +288,8 @@ func TestDelAuth(t *testing.T) {
 	}
 
 	sysTxParams := new(system.SysTxParams)
-	sysTxParams.IsSM2 = isSM2Doc
-	sysTxParams.Password = passwordDoc
+	sysTxParams.IsSM2 = resources.NotSm2
+	sysTxParams.Password = resources.SystemPassword
 	sysTxParams.KeyFileData = keyFileData
 	sysTxParams.GasPrice = big.NewInt(35)
 	sysTxParams.Gas = 2000000
@@ -305,7 +298,7 @@ func TestDelAuth(t *testing.T) {
 
 	doc := connection.System.NewDoc()
 
-	txHash, err := doc.DelAuth(sysTxParams, testAddressDoc, "test1")
+	txHash, err := doc.DelAuth(sysTxParams, resources.TestAddressDoc, "test1")
 	if err != nil {
 		t.Error(err)
 		t.FailNow()
@@ -315,21 +308,21 @@ func TestDelAuth(t *testing.T) {
 }
 
 func TestAddService(t *testing.T) {
-	var connection = bif.NewBif(providers.NewHTTPProvider(resources.IP+":"+resources.Port, 10, false))
+	var connection = bif.NewBif(providers.NewHTTPProvider(resources.IP00+":"+strconv.FormatUint(resources.Port, 10), 10, false))
 	chainId, err := connection.Core.GetChainId()
 	if err != nil {
 		t.Log(err)
 		t.FailNow()
 	}
 
-	nonce, err := connection.Core.GetTransactionCount(testAddressDoc, block.LATEST)
+	nonce, err := connection.Core.GetTransactionCount(resources.TestAddressDoc, block.LATEST)
 	if err != nil {
 		t.Log(err)
 		t.FailNow()
 	}
 
 	// keyFileData 还可以进一步校验
-	keyFileData, err := ioutil.ReadFile(testAddressDocFile)
+	keyFileData, err := ioutil.ReadFile(resources.TestAddressDocFile)
 	if err != nil {
 		t.Error(err)
 		t.FailNow()
@@ -340,8 +333,8 @@ func TestAddService(t *testing.T) {
 	}
 
 	sysTxParams := new(system.SysTxParams)
-	sysTxParams.IsSM2 = isSM2Doc
-	sysTxParams.Password = passwordDoc
+	sysTxParams.IsSM2 = resources.NotSm2
+	sysTxParams.Password = resources.SystemPassword
 	sysTxParams.KeyFileData = keyFileData
 	sysTxParams.GasPrice = big.NewInt(35)
 	sysTxParams.Gas = 2000000
@@ -350,7 +343,7 @@ func TestAddService(t *testing.T) {
 
 	doc := connection.System.NewDoc()
 
-	txHash, err := doc.AddService(sysTxParams, testAddressDoc, "did:bid:EFTTQWPMdtghuZByPsfQAUuPkWkWYb", "2", "123")
+	txHash, err := doc.AddService(sysTxParams, resources.TestAddressDoc, "did:bid:EFTTQWPMdtghuZByPsfQAUuPkWkWYb", "2", "123")
 	if err != nil {
 		t.Error(err)
 		t.FailNow()
@@ -360,21 +353,21 @@ func TestAddService(t *testing.T) {
 }
 
 func TestDelService(t *testing.T) {
-	var connection = bif.NewBif(providers.NewHTTPProvider(resources.IP+":"+resources.Port, 10, false))
+	var connection = bif.NewBif(providers.NewHTTPProvider(resources.IP00+":"+strconv.FormatUint(resources.Port, 10), 10, false))
 	chainId, err := connection.Core.GetChainId()
 	if err != nil {
 		t.Log(err)
 		t.FailNow()
 	}
 
-	nonce, err := connection.Core.GetTransactionCount(testAddressDoc, block.LATEST)
+	nonce, err := connection.Core.GetTransactionCount(resources.TestAddressDoc, block.LATEST)
 	if err != nil {
 		t.Log(err)
 		t.FailNow()
 	}
 
 	// keyFileData 还可以进一步校验
-	keyFileData, err := ioutil.ReadFile(testAddressDocFile)
+	keyFileData, err := ioutil.ReadFile(resources.TestAddressDocFile)
 	if err != nil {
 		t.Error(err)
 		t.FailNow()
@@ -385,8 +378,8 @@ func TestDelService(t *testing.T) {
 	}
 
 	sysTxParams := new(system.SysTxParams)
-	sysTxParams.IsSM2 = isSM2Doc
-	sysTxParams.Password = passwordDoc
+	sysTxParams.IsSM2 = resources.NotSm2
+	sysTxParams.Password = resources.SystemPassword
 	sysTxParams.KeyFileData = keyFileData
 	sysTxParams.GasPrice = big.NewInt(35)
 	sysTxParams.Gas = 2000000
@@ -395,7 +388,7 @@ func TestDelService(t *testing.T) {
 
 	doc := connection.System.NewDoc()
 
-	txHash, err := doc.DelService(sysTxParams, testAddressDoc, "did:bid:EFTTQWPMdtghuZByPsfQAUuPkWkWYb")
+	txHash, err := doc.DelService(sysTxParams, resources.TestAddressDoc, "did:bid:EFTTQWPMdtghuZByPsfQAUuPkWkWYb")
 	if err != nil {
 		t.Error(err)
 		t.FailNow()
@@ -405,21 +398,21 @@ func TestDelService(t *testing.T) {
 }
 
 func TestAddProof(t *testing.T) {
-	var connection = bif.NewBif(providers.NewHTTPProvider(resources.IP+":"+resources.Port, 10, false))
+	var connection = bif.NewBif(providers.NewHTTPProvider(resources.IP00+":"+strconv.FormatUint(resources.Port, 10), 10, false))
 	chainId, err := connection.Core.GetChainId()
 	if err != nil {
 		t.Log(err)
 		t.FailNow()
 	}
 
-	nonce, err := connection.Core.GetTransactionCount(testAddressDoc, block.LATEST)
+	nonce, err := connection.Core.GetTransactionCount(resources.TestAddressDoc, block.LATEST)
 	if err != nil {
 		t.Log(err)
 		t.FailNow()
 	}
 
 	// keyFileData 还可以进一步校验
-	keyFileData, err := ioutil.ReadFile(testAddressDocFile)
+	keyFileData, err := ioutil.ReadFile(resources.TestAddressDocFile)
 	if err != nil {
 		t.Error(err)
 		t.FailNow()
@@ -430,8 +423,8 @@ func TestAddProof(t *testing.T) {
 	}
 
 	sysTxParams := new(system.SysTxParams)
-	sysTxParams.IsSM2 = isSM2Doc
-	sysTxParams.Password = passwordDoc
+	sysTxParams.IsSM2 = resources.NotSm2
+	sysTxParams.Password = resources.SystemPassword
 	sysTxParams.KeyFileData = keyFileData
 	sysTxParams.GasPrice = big.NewInt(35)
 	sysTxParams.Gas = 2000000
@@ -440,7 +433,7 @@ func TestAddProof(t *testing.T) {
 
 	doc := connection.System.NewDoc()
 
-	txHash, err := doc.AddProof(sysTxParams, testAddressDoc, "0", "testProof", "1")
+	txHash, err := doc.AddProof(sysTxParams, resources.TestAddressDoc, "0", "testProof", "1")
 	if err != nil {
 		t.Error(err)
 		t.FailNow()
@@ -450,21 +443,21 @@ func TestAddProof(t *testing.T) {
 }
 
 func TestDelProof(t *testing.T) {
-	var connection = bif.NewBif(providers.NewHTTPProvider(resources.IP+":"+resources.Port, 10, false))
+	var connection = bif.NewBif(providers.NewHTTPProvider(resources.IP00+":"+strconv.FormatUint(resources.Port, 10), 10, false))
 	chainId, err := connection.Core.GetChainId()
 	if err != nil {
 		t.Log(err)
 		t.FailNow()
 	}
 
-	nonce, err := connection.Core.GetTransactionCount(testAddressDoc, block.LATEST)
+	nonce, err := connection.Core.GetTransactionCount(resources.TestAddressDoc, block.LATEST)
 	if err != nil {
 		t.Log(err)
 		t.FailNow()
 	}
 
 	// keyFileData 还可以进一步校验
-	keyFileData, err := ioutil.ReadFile(testAddressDocFile)
+	keyFileData, err := ioutil.ReadFile(resources.TestAddressDocFile)
 	if err != nil {
 		t.Error(err)
 		t.FailNow()
@@ -475,8 +468,8 @@ func TestDelProof(t *testing.T) {
 	}
 
 	sysTxParams := new(system.SysTxParams)
-	sysTxParams.IsSM2 = isSM2Doc
-	sysTxParams.Password = passwordDoc
+	sysTxParams.IsSM2 = resources.NotSm2
+	sysTxParams.Password = resources.SystemPassword
 	sysTxParams.KeyFileData = keyFileData
 	sysTxParams.GasPrice = big.NewInt(35)
 	sysTxParams.Gas = 2000000
@@ -485,7 +478,7 @@ func TestDelProof(t *testing.T) {
 
 	doc := connection.System.NewDoc()
 
-	txHash, err := doc.DelProof(sysTxParams, testAddressDoc)
+	txHash, err := doc.DelProof(sysTxParams, resources.TestAddressDoc)
 	if err != nil {
 		t.Error(err)
 		t.FailNow()
@@ -495,21 +488,21 @@ func TestDelProof(t *testing.T) {
 }
 
 func TestAddExtra(t *testing.T) {
-	var connection = bif.NewBif(providers.NewHTTPProvider(resources.IP+":"+resources.Port, 10, false))
+	var connection = bif.NewBif(providers.NewHTTPProvider(resources.IP00+":"+strconv.FormatUint(resources.Port, 10), 10, false))
 	chainId, err := connection.Core.GetChainId()
 	if err != nil {
 		t.Log(err)
 		t.FailNow()
 	}
 
-	nonce, err := connection.Core.GetTransactionCount(testAddressDoc, block.LATEST)
+	nonce, err := connection.Core.GetTransactionCount(resources.TestAddressDoc, block.LATEST)
 	if err != nil {
 		t.Log(err)
 		t.FailNow()
 	}
 
 	// keyFileData 还可以进一步校验
-	keyFileData, err := ioutil.ReadFile(testAddressDocFile)
+	keyFileData, err := ioutil.ReadFile(resources.TestAddressDocFile)
 	if err != nil {
 		t.Error(err)
 		t.FailNow()
@@ -520,8 +513,8 @@ func TestAddExtra(t *testing.T) {
 	}
 
 	sysTxParams := new(system.SysTxParams)
-	sysTxParams.IsSM2 = isSM2Doc
-	sysTxParams.Password = passwordDoc
+	sysTxParams.IsSM2 = resources.NotSm2
+	sysTxParams.Password = resources.SystemPassword
 	sysTxParams.KeyFileData = keyFileData
 	sysTxParams.GasPrice = big.NewInt(35)
 	sysTxParams.Gas = 2000000
@@ -530,7 +523,7 @@ func TestAddExtra(t *testing.T) {
 
 	doc := connection.System.NewDoc()
 
-	txHash, err := doc.AddExtra(sysTxParams, testAddressDoc, "attr")
+	txHash, err := doc.AddExtra(sysTxParams, resources.TestAddressDoc, "attr")
 	if err != nil {
 		t.Error(err)
 		t.FailNow()
@@ -540,21 +533,21 @@ func TestAddExtra(t *testing.T) {
 }
 
 func TestDelExtra(t *testing.T) {
-	var connection = bif.NewBif(providers.NewHTTPProvider(resources.IP+":"+resources.Port, 10, false))
+	var connection = bif.NewBif(providers.NewHTTPProvider(resources.IP00+":"+strconv.FormatUint(resources.Port, 10), 10, false))
 	chainId, err := connection.Core.GetChainId()
 	if err != nil {
 		t.Log(err)
 		t.FailNow()
 	}
 
-	nonce, err := connection.Core.GetTransactionCount(testAddressDoc, block.LATEST)
+	nonce, err := connection.Core.GetTransactionCount(resources.TestAddressDoc, block.LATEST)
 	if err != nil {
 		t.Log(err)
 		t.FailNow()
 	}
 
 	// keyFileData 还可以进一步校验
-	keyFileData, err := ioutil.ReadFile(testAddressDocFile)
+	keyFileData, err := ioutil.ReadFile(resources.TestAddressDocFile)
 	if err != nil {
 		t.Error(err)
 		t.FailNow()
@@ -565,8 +558,8 @@ func TestDelExtra(t *testing.T) {
 	}
 
 	sysTxParams := new(system.SysTxParams)
-	sysTxParams.IsSM2 = isSM2Doc
-	sysTxParams.Password = passwordDoc
+	sysTxParams.IsSM2 = resources.NotSm2
+	sysTxParams.Password = resources.SystemPassword
 	sysTxParams.KeyFileData = keyFileData
 	sysTxParams.GasPrice = big.NewInt(35)
 	sysTxParams.Gas = 2000000
@@ -575,7 +568,7 @@ func TestDelExtra(t *testing.T) {
 
 	doc := connection.System.NewDoc()
 
-	txHash, err := doc.DelExtra(sysTxParams, testAddressDoc)
+	txHash, err := doc.DelExtra(sysTxParams, resources.TestAddressDoc)
 	if err != nil {
 		t.Error(err)
 		t.FailNow()
@@ -585,21 +578,21 @@ func TestDelExtra(t *testing.T) {
 }
 
 func TestEnable(t *testing.T) {
-	var connection = bif.NewBif(providers.NewHTTPProvider(resources.IP+":"+resources.Port, 10, false))
+	var connection = bif.NewBif(providers.NewHTTPProvider(resources.IP00+":"+strconv.FormatUint(resources.Port, 10), 10, false))
 	chainId, err := connection.Core.GetChainId()
 	if err != nil {
 		t.Log(err)
 		t.FailNow()
 	}
 
-	nonce, err := connection.Core.GetTransactionCount(testAddressDoc, block.LATEST)
+	nonce, err := connection.Core.GetTransactionCount(resources.TestAddressDoc, block.LATEST)
 	if err != nil {
 		t.Log(err)
 		t.FailNow()
 	}
 
 	// keyFileData 还可以进一步校验
-	keyFileData, err := ioutil.ReadFile(testAddressDocFile)
+	keyFileData, err := ioutil.ReadFile(resources.TestAddressDocFile)
 	if err != nil {
 		t.Error(err)
 		t.FailNow()
@@ -610,8 +603,8 @@ func TestEnable(t *testing.T) {
 	}
 
 	sysTxParams := new(system.SysTxParams)
-	sysTxParams.IsSM2 = isSM2Doc
-	sysTxParams.Password = passwordDoc
+	sysTxParams.IsSM2 = resources.NotSm2
+	sysTxParams.Password = resources.SystemPassword
 	sysTxParams.KeyFileData = keyFileData
 	sysTxParams.GasPrice = big.NewInt(35)
 	sysTxParams.Gas = 2000000
@@ -620,7 +613,7 @@ func TestEnable(t *testing.T) {
 
 	doc := connection.System.NewDoc()
 
-	txHash, err := doc.Enable(sysTxParams, testAddressDoc)
+	txHash, err := doc.Enable(sysTxParams, resources.TestAddressDoc)
 	if err != nil {
 		t.Error(err)
 		t.FailNow()
@@ -630,21 +623,21 @@ func TestEnable(t *testing.T) {
 }
 
 func TestDisable(t *testing.T) {
-	var connection = bif.NewBif(providers.NewHTTPProvider(resources.IP+":"+resources.Port, 10, false))
+	var connection = bif.NewBif(providers.NewHTTPProvider(resources.IP00+":"+strconv.FormatUint(resources.Port, 10), 10, false))
 	chainId, err := connection.Core.GetChainId()
 	if err != nil {
 		t.Log(err)
 		t.FailNow()
 	}
 
-	nonce, err := connection.Core.GetTransactionCount(testAddressDoc, block.LATEST)
+	nonce, err := connection.Core.GetTransactionCount(resources.TestAddressDoc, block.LATEST)
 	if err != nil {
 		t.Log(err)
 		t.FailNow()
 	}
 
 	// keyFileData 还可以进一步校验
-	keyFileData, err := ioutil.ReadFile(testAddressDocFile)
+	keyFileData, err := ioutil.ReadFile(resources.TestAddressDocFile)
 	if err != nil {
 		t.Error(err)
 		t.FailNow()
@@ -655,8 +648,8 @@ func TestDisable(t *testing.T) {
 	}
 
 	sysTxParams := new(system.SysTxParams)
-	sysTxParams.IsSM2 = isSM2Doc
-	sysTxParams.Password = passwordDoc
+	sysTxParams.IsSM2 = resources.NotSm2
+	sysTxParams.Password = resources.SystemPassword
 	sysTxParams.KeyFileData = keyFileData
 	sysTxParams.GasPrice = big.NewInt(35)
 	sysTxParams.Gas = 2000000
@@ -665,7 +658,7 @@ func TestDisable(t *testing.T) {
 
 	doc := connection.System.NewDoc()
 
-	txHash, err := doc.Disable(sysTxParams, testAddressDoc)
+	txHash, err := doc.Disable(sysTxParams, resources.TestAddressDoc)
 	if err != nil {
 		t.Error(err)
 		t.FailNow()
@@ -675,7 +668,7 @@ func TestDisable(t *testing.T) {
 }
 
 func TestIsEnable(t *testing.T) {
-	var connection = bif.NewBif(providers.NewHTTPProvider(resources.IP+":"+resources.Port, 10, false))
+	var connection = bif.NewBif(providers.NewHTTPProvider(resources.IP00+":"+strconv.FormatUint(resources.Port, 10), 10, false))
 	_, err := connection.Core.GetGenerator()
 	if err != nil {
 		t.Error(err)
@@ -684,7 +677,7 @@ func TestIsEnable(t *testing.T) {
 
 	doc := connection.System.NewDoc()
 
-	isEnable, err := doc.IsEnable(testAddressDoc)
+	isEnable, err := doc.IsEnable(resources.TestAddressDoc)
 	if err != nil {
 		t.Error(err)
 		t.FailNow()

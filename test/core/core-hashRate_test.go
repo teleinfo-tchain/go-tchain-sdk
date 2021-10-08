@@ -24,7 +24,7 @@ import (
 
 func TestCoreHashRate(t *testing.T) {
 
-	var connection = web3.NewBif(providers.NewHTTPProvider(resources.IP+":"+resources.Port, 10, false))
+	var connection = web3.NewBif(providers.NewHTTPProvider(resources.IP00+":"+strconv.FormatUint(resources.Port, 10), 10, false))
 
 	rate, err := connection.Core.GetHashRate()
 

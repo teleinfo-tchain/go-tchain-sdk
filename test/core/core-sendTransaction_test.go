@@ -26,6 +26,7 @@ import (
 	"github.com/bif/bif-sdk-go/utils/types"
 	"io/ioutil"
 	"math/big"
+	"strconv"
 	"strings"
 	"testing"
 	"time"
@@ -34,15 +35,15 @@ import (
 // 测试转账
 func TestCoreSendTransaction(t *testing.T) {
 
-	var connection = bif.NewBif(providers.NewHTTPProvider(resources.IP+":"+resources.Port, 10, false))
+	var connection = bif.NewBif(providers.NewHTTPProvider(resources.IP00+":"+strconv.FormatUint(resources.Port, 10), 10, false))
 	// generator, err := connection.Core.GetGenerator()
 	// if err != nil {
 	// 	t.Error(err)
 	// 	t.FailNow()
 	// }
-	generator := resources.TestAddr
-	toAddress := resources.NewAddrE
-	balance, err := connection.Core.GetBalance(resources.NewAddrE, block.LATEST)
+	generator := resources.Addr1
+	toAddress := resources.Addr2
+	balance, err := connection.Core.GetBalance(resources.Addr2, block.LATEST)
 	if err == nil {
 		util := utils.NewUtils()
 		balBif, _ := util.FromWei(balance)
@@ -88,7 +89,7 @@ func TestCoreSendTransactionDeployContract(t *testing.T) {
 		t.FailNow()
 	}
 
-	var connection = bif.NewBif(providers.NewHTTPProvider(resources.IP+":"+resources.Port, 10, false))
+	var connection = bif.NewBif(providers.NewHTTPProvider(resources.IP00+":"+strconv.FormatUint(resources.Port, 10), 10, false))
 	byteCode := unmarshalResponse.ByteCode
 	parsedAbi, err := Abi.JSON(strings.NewReader(unmarshalResponse.Abi))
 	if err != nil {
@@ -110,7 +111,7 @@ func TestCoreSendTransactionDeployContract(t *testing.T) {
 	// 	t.FailNow()
 	// }
 
-	transaction.Sender = resources.TestAddr
+	transaction.Sender = resources.Addr1
 	transaction.Payload = types.ComplexString(byteCode) + types.ComplexString(utils.Bytes2Hex(inputEncode))
 	// estimate the gas required to deploy the contract
 	gas, err := connection.Core.EstimateGas(transaction)
@@ -167,7 +168,7 @@ func TestCoreSendTransactionInteractContract(t *testing.T) {
 		t.FailNow()
 	}
 
-	var connection = bif.NewBif(providers.NewHTTPProvider(resources.IP+":"+resources.Port, 10, false))
+	var connection = bif.NewBif(providers.NewHTTPProvider(resources.IP00+":"+strconv.FormatUint(resources.Port, 10), 10, false))
 	parsedAbi, err := Abi.JSON(strings.NewReader(unmarshalResponse.Abi))
 	if err != nil {
 		t.Error(err)
@@ -185,7 +186,7 @@ func TestCoreSendTransactionInteractContract(t *testing.T) {
 	// 	t.Error(err)
 	// 	t.FailNow()
 	// }
-	fromAddress := resources.TestAddr
+	fromAddress := resources.Addr1
 
 	transaction := new(dto.TransactionParameters)
 	transaction.Sender = fromAddress

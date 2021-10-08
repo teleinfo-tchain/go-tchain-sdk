@@ -77,7 +77,7 @@ dpos_test.go            | dpos属性单元测试
     ```
     func TestRegisterCertificate(t *testing.T) {
         // 初始化bif
-    	var connection = bif.NewBif(providers.NewHTTPProvider(resources.IP+":"+resources.Port, 10, false))
+    	var connection = bif.NewBif(providers.NewHTTPProvider(resources.IP00+":"+strconv.FormatUint(resources.Port, 10), 10, false))
         	chainId, err := connection.Core.GetChainId()
         	if err != nil {
         		t.Log(err)
@@ -148,7 +148,7 @@ dpos_test.go            | dpos属性单元测试
     ```
     // 测试系统合约的执行结果
     func TestSystemLogDecode(t *testing.T) {
-    	var connection = bif.NewBif(providers.NewHTTPProvider(resources.IP+":"+resources.Port, 10, false))
+    	var connection = bif.NewBif(providers.NewHTTPProvider(resources.IP00+":"+strconv.FormatUint(resources.Port, 10), 10, false))
     	_, err := connection.Core.GetGenerator()
     	if err != nil {
     		t.Error(err)
@@ -186,7 +186,7 @@ dpos_test.go            | dpos属性单元测试
         ```
         func TestGetPeriod(t *testing.T) {
             // 初始化bif
-            var connection = bif.NewBif(providers.NewHTTPProvider(resources.IP+":"+resources.Port, 10, false))
+            var connection = bif.NewBif(providers.NewHTTPProvider(resources.IP00+":"+strconv.FormatUint(resources.Port, 10), 10, false))
             // 获取generator
             generator, err := connection.Core.GetGenerator()
             // 错误判断
@@ -223,7 +223,7 @@ dpos_test.go            | dpos属性单元测试
         		{"Hello World", false, "0xa1de988600a42c4b4ab089b619297c17d53cffae5d5120d82d8a92d0bb3b78f2"},
         		{utils.NewUtils().Utf8ToHex("Hello World"), false, "0xa1de988600a42c4b4ab089b619297c17d53cffae5d5120d82d8a92d0bb3b78f2"},
         	} {
-        		var connection = bif.NewBif(providers.NewHTTPProvider(resources.IP+":"+resources.Port, 10, false))
+        		var connection = bif.NewBif(providers.NewHTTPProvider(resources.IP00+":"+strconv.FormatUint(resources.Port, 10), 10, false))
         		res := connection.Account.HashMessage(test.message, test.isSm2)
         		if res != test.hashMessage {
         			t.Errorf("hash error, input is %s, result is %s, expect is %s \n", test.message, res, test.hashMessage)

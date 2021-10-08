@@ -8,32 +8,26 @@ import (
 	"github.com/bif/bif-sdk-go/test/resources"
 	"io/ioutil"
 	"math/big"
+	"strconv"
 	"testing"
 )
 
-const (
-	isSM2Sen       = false
-	passwordSen    = "teleinfo"
-	testAddressSen = "did:bid:EFTVcqqKyFR17jfPxqwEtpmRpbkvSs"
-	testAddressSenFile    = "../resources/superNodeKeyStore/UTC--2020-08-20T05-28-39.403642600Z--did-bid-EFTVcqqKyFR17jfPxqwEtpmRpbkvSs"
-)
-
 func TestAddWords(t *testing.T) {
-	var connection = bif.NewBif(providers.NewHTTPProvider(resources.IP+":"+resources.Port, 10, false))
+	var connection = bif.NewBif(providers.NewHTTPProvider(resources.IP00+":"+strconv.FormatUint(resources.Port, 10), 10, false))
 	chainId, err := connection.Core.GetChainId()
 	if err != nil {
 		t.Log(err)
 		t.FailNow()
 	}
 
-	nonce, err := connection.Core.GetTransactionCount(testAddressSen, block.LATEST)
+	nonce, err := connection.Core.GetTransactionCount(resources.TestAddressSen, block.LATEST)
 	if err != nil {
 		t.Log(err)
 		t.FailNow()
 	}
 
 	// keyFileData 还可以进一步校验
-	keyFileData, err := ioutil.ReadFile(testAddressSenFile)
+	keyFileData, err := ioutil.ReadFile(resources.TestAddressSenFile)
 	if err != nil {
 		t.Error(err)
 		t.FailNow()
@@ -44,8 +38,8 @@ func TestAddWords(t *testing.T) {
 	}
 
 	sysTxParams := new(system.SysTxParams)
-	sysTxParams.IsSM2 = isSM2Sen
-	sysTxParams.Password = passwordSen
+	sysTxParams.IsSM2 = resources.NotSm2
+	sysTxParams.Password = resources.SystemPassword
 	sysTxParams.KeyFileData = keyFileData
 	sysTxParams.GasPrice = big.NewInt(45)
 	sysTxParams.Gas = 2000000
@@ -65,21 +59,21 @@ func TestAddWords(t *testing.T) {
 }
 
 func TestDelWord(t *testing.T) {
-	var connection = bif.NewBif(providers.NewHTTPProvider(resources.IP+":"+resources.Port, 10, false))
+	var connection = bif.NewBif(providers.NewHTTPProvider(resources.IP00+":"+strconv.FormatUint(resources.Port, 10), 10, false))
 	chainId, err := connection.Core.GetChainId()
 	if err != nil {
 		t.Log(err)
 		t.FailNow()
 	}
 
-	nonce, err := connection.Core.GetTransactionCount(testAddressSen, block.LATEST)
+	nonce, err := connection.Core.GetTransactionCount(resources.TestAddressSen, block.LATEST)
 	if err != nil {
 		t.Log(err)
 		t.FailNow()
 	}
 
 	// keyFileData 还可以进一步校验
-	keyFileData, err := ioutil.ReadFile(testAddressSenFile)
+	keyFileData, err := ioutil.ReadFile(resources.TestAddressSenFile)
 	if err != nil {
 		t.Error(err)
 		t.FailNow()
@@ -90,8 +84,8 @@ func TestDelWord(t *testing.T) {
 	}
 
 	sysTxParams := new(system.SysTxParams)
-	sysTxParams.IsSM2 = isSM2Sen
-	sysTxParams.Password = passwordSen
+	sysTxParams.IsSM2 = resources.NotSm2
+	sysTxParams.Password = resources.SystemPassword
 	sysTxParams.KeyFileData = keyFileData
 	sysTxParams.GasPrice = big.NewInt(35)
 	sysTxParams.Gas = 2000000
@@ -111,7 +105,7 @@ func TestDelWord(t *testing.T) {
 }
 
 func TestGetAllWords(t *testing.T) {
-	var connection = bif.NewBif(providers.NewHTTPProvider(resources.IP+":"+resources.Port, 10, false))
+	var connection = bif.NewBif(providers.NewHTTPProvider(resources.IP00+":"+strconv.FormatUint(resources.Port, 10), 10, false))
 	_, err := connection.Core.GetChainId()
 
 	if err != nil {
@@ -130,7 +124,7 @@ func TestGetAllWords(t *testing.T) {
 }
 
 func TestIsContainWord(t *testing.T) {
-	var connection = bif.NewBif(providers.NewHTTPProvider(resources.IP+":"+resources.Port, 10, false))
+	var connection = bif.NewBif(providers.NewHTTPProvider(resources.IP00+":"+strconv.FormatUint(resources.Port, 10), 10, false))
 	_, err := connection.Core.GetChainId()
 
 	if err != nil {

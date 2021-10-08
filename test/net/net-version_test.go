@@ -19,6 +19,7 @@ import (
 	"fmt"
 	"github.com/bif/bif-sdk-go/test/resources"
 	"sort"
+	"strconv"
 	"testing"
 
 	"github.com/bif/bif-sdk-go"
@@ -27,7 +28,7 @@ import (
 
 func TestNetVersion(t *testing.T) {
 
-	var connection = bif.NewBif(providers.NewHTTPProvider(resources.IP+":"+resources.Port, 10, false))
+	var connection = bif.NewBif(providers.NewHTTPProvider(resources.IP00+":"+strconv.FormatUint(resources.Port, 10), 10, false))
 
 	// Possible options
 	po := []string{"1", "2", "3", "4", "42", "333"}
