@@ -35,6 +35,8 @@ type (
 	HashLengthType string
 )
 
+var EmptyAddress = Address{}
+
 // Lengths of hashes and addresses in bytes.
 const (
 	// HashLength is the expected length of the hash

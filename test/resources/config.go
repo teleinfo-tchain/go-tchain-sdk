@@ -36,7 +36,11 @@ const (
 const (
 	IsSM2 = true
 	NotSm2 = false
-	SystemPassword = "teleInfo" 
+	SystemPassword = "teleInfo"
+
+	AlliancePublicKey = "0x04647f729afb309e4cd20f4b186a7883e1cd23b245e9fb6eb939ad74e47cc16c55e60aa12f20ed21bee8d23291aae377ad319b166604dec1a81dfb2b008bdc3c68"
+	TestAddressAlliance     = "did:bid:EFTTQWPMdtghuZByPsfQAUuPkWkWYb"
+	TestAddressAllianceFile = "../resources/keystore/UTC--2020-08-19T05-48-46.004537900Z--did-bid-EFTTQWPMdtghuZByPsfQAUuPkWkWYb"
 
 	// PersonCertificate 注册证书的bid
 	PersonCertificate = "did:bid:EFTVcqqKyFR17jfPxqwEtpmRpbkvSs"

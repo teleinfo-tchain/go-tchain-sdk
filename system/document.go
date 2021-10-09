@@ -8,28 +8,7 @@ import (
 	"strings"
 )
 
-const (
-	DocContractAddr = "did:bid:ZFT2iHNnPP5bc5sy3kJz7rDUzYR1pSX"
-)
 
-// did文档的AbiJson数据
-const DocAbiJSON = `[
-{"constant": false,"name":"init","inputs":[{"name":"bid_type","type":"uint64"}],"outputs":[],"type":"function"},
-{"constant": false,"name":"setBidName","inputs":[{"name":"id","type":"string"},{"name":"bid_name","type":"string"}],"outputs":[],"type":"function"},
-{"constant": false,"name":"addPublic","inputs":[{"name":"id","type":"string"},{"name":"public_type","type":"string"},{"name":"public_auth","type":"string"},{"name":"public_key","type":"string"}],"outputs":[],"type":"function"},
-{"constant": false,"name":"delPublic","inputs":[{"name":"id","type":"string"},{"name":"public_key","type":"string"}],"outputs":[],"type":"function"},
-{"constant": false,"name":"addAuth","inputs":[{"name":"id","type":"string"},{"name":"auth","type":"string"}],"outputs":[],"type":"function"},
-{"constant": false,"name":"delAuth","inputs":[{"name":"id","type":"string"},{"name":"auth","type":"string"}],"outputs":[],"type":"function"},
-{"constant": false,"name":"addService","inputs":[{"name":"id","type":"string"},{"name":"service_id","type":"string"},{"name":"service_type","type":"string"},{"name":"service_endpoint","type":"string"}],"outputs":[],"type":"function"},
-{"constant": false,"name":"delService","inputs":[{"name":"id","type":"string"},{"name":"service_id","type":"string"}],"outputs":[],"type":"function"},
-{"constant": false,"name":"addProof","inputs":[{"name":"id","type":"string"},{"name":"proof_type","type":"string"},{"name":"proof_creator","type":"string"},{"name":"proof_sign","type":"string"}],"outputs":[],"type":"function"},
-{"constant": false,"name":"delProof","inputs":[{"name":"id","type":"string"}],"outputs":[],"type":"function"},
-{"constant": false,"name":"addExtra","inputs":[{"name":"id","type":"string"},{"name":"extra","type":"string"}],"outputs":[],"type":"function"},
-{"constant": false,"name":"delExtra","inputs":[{"name":"id","type":"string"}],"outputs":[],"type":"function"},
-{"constant": false,"name":"enable","inputs":[{"name":"id","type":"string"}],"outputs":[],"type":"function"},
-{"constant": false,"name":"disable","inputs":[{"name":"id","type":"string"}],"outputs":[],"type":"function"},
-{"anonymous":false,"inputs":[{"indexed":false,"name":"method_name","type":"string"},{"indexed":false,"name":"status","type":"uint32"},{"indexed":false,"name":"reason","type":"string"}],"name":"bidEvent","type":"event"}
-]`
 
 // Doc - The Doc Module
 type Doc struct {
@@ -73,7 +52,7 @@ func (doc *Doc) Init(signTxParams *SysTxParams, bidType uint64) (string, error) 
 		return "", err
 	}
 
-	signedTx, err := doc.super.prePareSignTransaction(signTxParams, inputEncode, DocContractAddr)
+	signedTx, err := doc.super.prePareSignTransaction(signTxParams, inputEncode, DocumentContract)
 	if err != nil {
 		return "", err
 	}
@@ -111,7 +90,7 @@ func (doc *Doc) SetBidName(signTxParams *SysTxParams, id string, bidName string)
 		return "", err
 	}
 
-	signedTx, err := doc.super.prePareSignTransaction(signTxParams, inputEncode, DocContractAddr)
+	signedTx, err := doc.super.prePareSignTransaction(signTxParams, inputEncode, DocumentContract)
 	if err != nil {
 		return "", err
 	}
@@ -214,7 +193,7 @@ func (doc *Doc) AddPublic(signTxParams *SysTxParams, id string, publicType strin
 		return "", err
 	}
 
-	signedTx, err := doc.super.prePareSignTransaction(signTxParams, inputEncode, DocContractAddr)
+	signedTx, err := doc.super.prePareSignTransaction(signTxParams, inputEncode, DocumentContract)
 	if err != nil {
 		return "", err
 	}
@@ -259,7 +238,7 @@ func (doc *Doc) DelPublic(signTxParams *SysTxParams, id string, publicKey string
 		return "", err
 	}
 
-	signedTx, err := doc.super.prePareSignTransaction(signTxParams, inputEncode, DocContractAddr)
+	signedTx, err := doc.super.prePareSignTransaction(signTxParams, inputEncode, DocumentContract)
 	if err != nil {
 		return "", err
 	}
@@ -296,7 +275,7 @@ func (doc *Doc) AddAuth(signTxParams *SysTxParams, id string, auth string) (stri
 		return "", err
 	}
 
-	signedTx, err := doc.super.prePareSignTransaction(signTxParams, inputEncode, DocContractAddr)
+	signedTx, err := doc.super.prePareSignTransaction(signTxParams, inputEncode, DocumentContract)
 	if err != nil {
 		return "", err
 	}
@@ -333,7 +312,7 @@ func (doc *Doc) DelAuth(signTxParams *SysTxParams, id string, auth string) (stri
 		return "", err
 	}
 
-	signedTx, err := doc.super.prePareSignTransaction(signTxParams, inputEncode, DocContractAddr)
+	signedTx, err := doc.super.prePareSignTransaction(signTxParams, inputEncode, DocumentContract)
 	if err != nil {
 		return "", err
 	}
@@ -378,7 +357,7 @@ func (doc *Doc) AddService(signTxParams *SysTxParams, id string, serviceId strin
 		return "", err
 	}
 
-	signedTx, err := doc.super.prePareSignTransaction(signTxParams, inputEncode, DocContractAddr)
+	signedTx, err := doc.super.prePareSignTransaction(signTxParams, inputEncode, DocumentContract)
 	if err != nil {
 		return "", err
 	}
@@ -415,7 +394,7 @@ func (doc *Doc) DelService(signTxParams *SysTxParams, id string, serviceId strin
 		return "", err
 	}
 
-	signedTx, err := doc.super.prePareSignTransaction(signTxParams, inputEncode, DocContractAddr)
+	signedTx, err := doc.super.prePareSignTransaction(signTxParams, inputEncode, DocumentContract)
 	if err != nil {
 		return "", err
 	}
@@ -459,7 +438,7 @@ func (doc *Doc) AddProof(signTxParams *SysTxParams, id string, proofType string,
 		return "", err
 	}
 
-	signedTx, err := doc.super.prePareSignTransaction(signTxParams, inputEncode, DocContractAddr)
+	signedTx, err := doc.super.prePareSignTransaction(signTxParams, inputEncode, DocumentContract)
 	if err != nil {
 		return "", err
 	}
@@ -492,7 +471,7 @@ func (doc *Doc) DelProof(signTxParams *SysTxParams, id string) (string, error) {
 		return "", err
 	}
 
-	signedTx, err := doc.super.prePareSignTransaction(signTxParams, inputEncode, DocContractAddr)
+	signedTx, err := doc.super.prePareSignTransaction(signTxParams, inputEncode, DocumentContract)
 	if err != nil {
 		return "", err
 	}
@@ -530,7 +509,7 @@ func (doc *Doc) AddExtra(signTxParams *SysTxParams, id string, extra string) (st
 		return "", err
 	}
 
-	signedTx, err := doc.super.prePareSignTransaction(signTxParams, inputEncode, DocContractAddr)
+	signedTx, err := doc.super.prePareSignTransaction(signTxParams, inputEncode, DocumentContract)
 	if err != nil {
 		return "", err
 	}
@@ -563,7 +542,7 @@ func (doc *Doc) DelExtra(signTxParams *SysTxParams, id string) (string, error) {
 		return "", err
 	}
 
-	signedTx, err := doc.super.prePareSignTransaction(signTxParams, inputEncode, DocContractAddr)
+	signedTx, err := doc.super.prePareSignTransaction(signTxParams, inputEncode, DocumentContract)
 	if err != nil {
 		return "", err
 	}
@@ -593,7 +572,7 @@ func (doc *Doc) Enable(signTxParams *SysTxParams, id string) (string, error) {
 	// encoding
 	inputEncode, _ := doc.abi.Pack("enable", id)
 
-	signedTx, err := doc.super.prePareSignTransaction(signTxParams, inputEncode, DocContractAddr)
+	signedTx, err := doc.super.prePareSignTransaction(signTxParams, inputEncode, DocumentContract)
 	if err != nil {
 		return "", err
 	}
@@ -623,7 +602,7 @@ func (doc *Doc) Disable(signTxParams *SysTxParams, id string) (string, error) {
 	// encoding
 	inputEncode, _ := doc.abi.Pack("disable", id)
 
-	signedTx, err := doc.super.prePareSignTransaction(signTxParams, inputEncode, DocContractAddr)
+	signedTx, err := doc.super.prePareSignTransaction(signTxParams, inputEncode, DocumentContract)
 	if err != nil {
 		return "", err
 	}

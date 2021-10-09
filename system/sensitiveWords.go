@@ -7,15 +7,6 @@ import (
 	"strings"
 )
 
-const (
-	SensitiveWordsContractAddr = "did:bid:ZFT2yHwKD7GQeBdiFsUy5gbPQqLMKPA"
-	SensitiveWordsAbiJSON      = `[
-{"constant": false,"name":"addWords","inputs":[{"name":"word","type":"string"}],"outputs":[],"type":"function"},
-{"constant": false,"name":"delWord","inputs":[{"name":"word","type":"string"}],"outputs":[],"type":"function"},
-{"anonymous":false,"inputs":[{"indexed":false,"name":"method_name","type":"string"},{"indexed":false,"name":"status","type":"uint32"},{"indexed":false,"name":"reason","type":"string"}],"name":"sensitiveEvent","type":"event"}
-]`
-)
-
 // SensitiveWord - The SensitiveWord Module
 type SensitiveWord struct {
 	super *System
@@ -67,7 +58,7 @@ func (sen *SensitiveWord) AddWords(signTxParams *SysTxParams, wordsLi []string) 
 		return "", err
 	}
 
-	signedTx, err := sen.super.prePareSignTransaction(signTxParams, inputEncode, SensitiveWordsContractAddr)
+	signedTx, err := sen.super.prePareSignTransaction(signTxParams, inputEncode, SensitiveContract)
 	if err != nil {
 		return "", err
 	}
@@ -100,7 +91,7 @@ func (sen *SensitiveWord) DelWord(signTxParams *SysTxParams, word string) (strin
 		return "", err
 	}
 
-	signedTx, err := sen.super.prePareSignTransaction(signTxParams, inputEncode, SensitiveWordsContractAddr)
+	signedTx, err := sen.super.prePareSignTransaction(signTxParams, inputEncode, SensitiveContract)
 	if err != nil {
 		return "", err
 	}

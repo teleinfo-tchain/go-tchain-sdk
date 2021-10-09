@@ -9,18 +9,6 @@ import (
 	"strings"
 )
 
-const (
-	CertificateContractAddr = "did:bid:ZFTGU7MpkWsKp6CKemzx1TFbWvaZm7"
-)
-
-// 个人可信的AbiJson数据
-const CertificateAbiJSON = `[
-{"constant": false,"name":"registerCertificate","inputs":[{"name":"Id","type":"string"},{"name":"Context","type":"string"},{"name":"Subject","type":"string"},{"name":"Period","type":"uint64"},{"name":"IssuerAlgorithm","type":"string"},{"name":"IssuerSignature","type":"string"},{"name":"SubjectPublicKey","type":"string"},{"name":"SubjectAlgorithm","type":"string"},{"name":"SubjectSignature","type":"string"}],"outputs":[],"type":"function"},
-{"constant": false,"name":"revokedCertificate","inputs":[{"name":"id","type":"string"}],"outputs":[],"type":"function"},
-{"constant": false,"name":"revokedCertificates","inputs":[],"outputs":[],"type":"function"},
-{"anonymous":false,"inputs":[{"indexed":false,"name":"methodName","type":"string"},{"indexed":false,"name":"status","type":"uint32"},{"indexed":false,"name":"reason","type":"string"},{"indexed":false,"name":"time","type":"uint256"}],"name":"cerdEvent","type":"event"}
-]`
-
 // Certificate - The Certificate Module
 type Certificate struct {
 	super *System
@@ -116,7 +104,7 @@ func (cer *Certificate) RegisterCertificate(signTxParams *SysTxParams, registerC
 		return "", err
 	}
 
-	signedTx, err := cer.super.prePareSignTransaction(signTxParams, inputEncode, CertificateContractAddr)
+	signedTx, err := cer.super.prePareSignTransaction(signTxParams, inputEncode, CertificateContract)
 	if err != nil {
 		return "", err
 	}
@@ -149,7 +137,7 @@ func (cer *Certificate) RevokedCertificate(signTxParams *SysTxParams, id string)
 		return "", err
 	}
 
-	signedTx, err := cer.super.prePareSignTransaction(signTxParams, inputEncode, CertificateContractAddr)
+	signedTx, err := cer.super.prePareSignTransaction(signTxParams, inputEncode, CertificateContract)
 	if err != nil {
 		return "", err
 	}
@@ -174,7 +162,7 @@ func (cer *Certificate) RevokedCertificates(signTxParams *SysTxParams) (string, 
 	// encoding
 	inputEncode, _ := cer.abi.Pack("revokedCertificates")
 
-	signedTx, err := cer.super.prePareSignTransaction(signTxParams, inputEncode, CertificateContractAddr)
+	signedTx, err := cer.super.prePareSignTransaction(signTxParams, inputEncode, CertificateContract)
 	if err != nil {
 		return "", err
 	}

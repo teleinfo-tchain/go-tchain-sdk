@@ -7,15 +7,7 @@ import (
 	"strings"
 )
 
-const (
-	ManagerContractAddr = "did:bid:ZFT2ndSGfBuT1jKrsYBU5hLm7DmDV8u"
-	ManagerAbiJSON      = `[
-{"constant": false,"name":"enable","inputs":[{"name":"contract_address","type":"string"}],"outputs":[],"type":"function"},
-{"constant": false,"name":"disable","inputs":[{"name":"contract_address","type":"string"}],"outputs":[],"type":"function"},
-{"constant": false,"name":"power","inputs":[{"name":"user_address","type":"string"},{"name":"power","type":"uint64"}],"outputs":[],"type":"function"},
-{"anonymous":false,"inputs":[{"indexed":false,"name":"method_name","type":"string"},{"indexed":false,"name":"status","type":"uint32"},{"indexed":false,"name":"reason","type":"string"}],"name":"superManagerEvent","type":"event"}
-]`
-)
+
 
 // Manager - The Manager Module
 type Manager struct {
@@ -58,7 +50,7 @@ func (manager *Manager) Enable(signTxParams *SysTxParams, contractAddress string
 		return "", err
 	}
 
-	signedTx, err := manager.super.prePareSignTransaction(signTxParams, inputEncode, ManagerContractAddr)
+	signedTx, err := manager.super.prePareSignTransaction(signTxParams, inputEncode, SuperManagerContract)
 	if err != nil {
 		return "", err
 	}
@@ -91,7 +83,7 @@ func (manager *Manager) Disable(signTxParams *SysTxParams, contractAddress strin
 		return "", err
 	}
 
-	signedTx, err := manager.super.prePareSignTransaction(signTxParams, inputEncode, ManagerContractAddr)
+	signedTx, err := manager.super.prePareSignTransaction(signTxParams, inputEncode, SuperManagerContract)
 	if err != nil {
 		return "", err
 	}
@@ -128,7 +120,7 @@ func (manager *Manager) SetPower(signTxParams *SysTxParams, userAddress string, 
 		return "", err
 	}
 
-	signedTx, err := manager.super.prePareSignTransaction(signTxParams, inputEncode, ManagerContractAddr)
+	signedTx, err := manager.super.prePareSignTransaction(signTxParams, inputEncode, SuperManagerContract)
 	if err != nil {
 		return "", err
 	}

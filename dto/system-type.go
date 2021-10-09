@@ -10,9 +10,7 @@ import (
 	"math/big"
 )
 
-/*
-	DPoS子模块所需数据结构
-*/
+// Message DPoS子模块所需数据结构
 type Message struct {
 	Code          uint64 `json:"code"`
 	Msg           []byte `json:"message"`
@@ -32,7 +30,7 @@ type MessageSet struct {
 	Messages []*Message `json:"messages"`
 }
 
-type Preprepare struct {
+type PrePrepare struct {
 	View     *View    `json:"view"` // 序列和round
 	Proposal Proposal `json:"proposal"`
 }
@@ -52,7 +50,7 @@ type Proposal interface {
 	String() string
 }
 
-// RoundStateInfoResponse is the information of RoundState
+// RoundStateInfo is the information of RoundState
 type RoundStateInfo struct {
 	Commits     *MessageSet `json:"commits"`
 	LockedHash  string      `json:"lockedHash"`
@@ -60,7 +58,7 @@ type RoundStateInfo struct {
 	Proposer    string      `json:"proposer"`
 	Round       *big.Int    `json:"round"`
 	Sequence    *big.Int    `json:"sequence"`
-	PrePrepares *Preprepare `json:"preprepares"`
+	PrePrepares *PrePrepare `json:"preprepares"`
 }
 
 func (roundStateInfo *RoundStateInfo) UnmarshalJSON(data []byte) error {
@@ -98,145 +96,34 @@ type RoundChangeSetInfo struct {
 	Validates    []string               `json:"validates"`
 }
 
-/*
-	节点可信合约
-*/
-
-type RegisterCertificateInfo struct {
-	Id          string // 节点证书的bid，必须和public_key对应，索引
-	Apply       string // 申请人的bid（与Id可以相同，可以不同）
-	PublicKey   string // 53个字符的公钥，也就是p2p节点id的形式
-	NodeName    string // 节点名称，不含敏感词的字符串
-	MessageSha3 string // 消息sha3后的16进制字符串，用于本地签名和链上验证签名，该字段不会被链保存
-	Signature   string // 对上一个字段消息的签名，16进制字符串
-	NodeType    uint64 // 节点类型，0企业，1个人
-	Period      uint64 // 证书有效期，以年为单位的整型
-	IP          string // 节点间互连的ip
-	Port        uint64 // 节点间互连的端口
-	CompanyName string // 公司名（如果是个人，则是个人姓名），不含敏感词的字符串
-	CompanyCode string // 公司代码，不含敏感词的字符串
+// AllianceInfo 联盟合约
+type AllianceInfo struct {
+	Id          string `json:"id"`          // 联盟成员bid
+	PublicKey   string `json:"publicKey"`   // 联盟成员公钥
+	CompanyName string `json:"companyName"` // 公司名称
+	CompanyCode string `json:"companyCode"` // 公司信用代码
 }
 
-type PeerCertificate struct {
-	Id          string   `json:"id"`          // 唯一索引
-	Issuer      string   `json:"issuer"`      // 颁发者地址
-	Apply       string   `json:"apply"`       // 申请人bid
-	PublicKey   string   `json:"publicKey"`   // 节点公钥
-	NodeName    string   `json:"nodeName"`    // 节点名称
-	Signature   string   `json:"signature"`   // 节点签名内容
-	NodeType    uint64   `json:"nodeType"`    // 节点类型0企业，1个人
-	CompanyName string   `json:"companyName"` // 公司名称
-	CompanyCode string   `json:"companyCode"` // 公司信用代码
-	IssuedTime  *big.Int `json:"issuedTime"`  // 颁发时间
-	Period      uint64   `json:"period"`      // 有效期
-	IsEnable    bool     `json:"isEnable"`    // true 凭证有效，false 凭证已撤销
+type Alliance struct {
+	Id           utils.Address `json:"id"`           // 联盟成员bid
+	Role         uint64        `json:"role"`         // 角色 1理事，2副理事长，3理事长
+	PublicKey    []byte        `json:"publicKey"`    // 联盟成员公钥
+	CompanyName  []byte        `json:"companyName"`  // 公司名称
+	CompanyCode  []byte        `json:"companyCode"`  // 公司信用代码
+	Auditor      utils.Address `json:"auditor"`      // 审核员
+	AuditTime    uint64        `json:"auditTime"`    // 审核时间
+	RevokeReason []byte        `json:"revokeReason"` // 撤销理由
+	Active       bool          `json:"active"`       // 是否有效，是否撤销
 }
 
-/*
-	信任锚合约
-*/
-
-type RegisterAnchor struct {
-	Anchor      string // 信任锚bid
-	AnchorType  uint64 // 信任锚的类型，10为根信任锚，11为扩展信任锚
-	AnchorName  string // 信任锚名称，不含敏感词的字符串
-	Company     string // 公司名
-	CompanyUrl  string // 公司网址
-	Website     string // 信任锚网址
-	DocumentUrl string // 信任锚接口字段文档
-	ServerUrl   string // 服务链接
-	Email       string // 邮箱地址 email没有做格式校验，在sdk中做？？
-	Desc        string // 描述
+type Weights struct {
+	DirectorWeights        uint64 `json:"directorWeights"`        // 理事权重
+	ViceWeights            uint64 `json:"viceWeights"`            // 副理事长权重
+	DirectorGeneralWeights uint64 `json:"directorGeneralWeights"` // 理事长权重
+	Score                  uint64 `json:"score"`                  // 总票数
 }
 
-type UpdateAnchorInfo struct {
-	CompanyUrl  string
-	Website     string
-	DocumentUrl string
-	ServerUrl   string
-	Email       string
-	Desc        string
-}
-
-type TrustAnchor struct {
-	Id               string   `json:"id"              gencodec:"required"`   // 信任锚BID地址
-	Name             string   `json:"name"            gencodec:"required"`   // 信任锚名称
-	Company          string   `json:"company"         gencodec:"required"`   // 信任锚所属公司
-	CompanyUrl       string   `json:"company_url"     gencodec:"required"`   // 公司网址
-	Website          string   `json:"website"         gencodec:"required"`   // 信任锚网址
-	ServerUrl        string   `json:"server_url"      gencodec:"required"`   // 服务链接
-	DocumentUrl      string   `json:"document_url"    gencodec:"required"`   // 信任锚接口字段文档
-	Email            string   `json:"email"           gencodec:"required"`   // 信任锚客服邮箱
-	Desc             string   `json:"desc" gencodec:"required"`              // 描述
-	TrustAnchorType  uint64   `json:"type"            gencodec:"required"`   // 信任锚类型
-	Status           uint64   `json:"status"          gencodec:"required"`   // 服务状态
-	Active           bool     `json:"active"          gencodec:"required"`   // 是否是根信任锚
-	TotalBounty      *big.Int `json:"totalBounty"     gencodec:"required"`   // 总激励
-	ExtractedBounty  *big.Int `json:"extractedBounty" gencodec:"required"`   // 已提取激励
-	LastExtractTime  uint64   `json:"lastExtractTime" gencodec:"required"`   // 上次提取时间
-	VoteCount        *big.Int `json:"vote_count" gencodec:"required"`        // 得票数
-	Stake            *big.Int `json:"stake" gencodec:"required"`             // 抵押
-	CreateDate       uint64   `json:"create_date" gencodec:"required"`       // 创建时间
-	CertificateCount *big.Int `json:"certificate_count" gencodec:"required"` // 证书总数
-}
-
-func (trustAnchor *TrustAnchor) UnmarshalJSON(data []byte) error {
-	type Alias TrustAnchor
-
-	temp := &struct {
-		TotalBounty      string `json:"totalBounty"`
-		ExtractedBounty  string `json:"extractedBounty"`
-		VoteCount        string `json:"vote_count"`
-		Stake            string `json:"stake"`
-		CertificateCount string `json:"certificate_count"`
-		*Alias
-	}{
-		Alias: (*Alias)(trustAnchor),
-	}
-	if err := json.Unmarshal(data, &temp); err != nil {
-		return err
-	}
-
-	totalBounty, success := big.NewInt(0).SetString(temp.TotalBounty[2:], 16)
-	if !success {
-		return errors.New(fmt.Sprintf("Error converting %s to BigInt", temp.TotalBounty))
-	}
-
-	extractedBounty, success := big.NewInt(0).SetString(temp.ExtractedBounty[2:], 16)
-	if !success {
-		return errors.New(fmt.Sprintf("Error converting %s to BigInt", temp.ExtractedBounty))
-	}
-
-	voteCount, success := big.NewInt(0).SetString(temp.VoteCount[2:], 16)
-	if !success {
-		return errors.New(fmt.Sprintf("Error converting %s to BigInt", temp.VoteCount))
-	}
-
-	stake, success := big.NewInt(0).SetString(temp.Stake[2:], 16)
-	if !success {
-		return errors.New(fmt.Sprintf("Error converting %s to BigInt", temp.Stake))
-	}
-
-	certificateCount, success := big.NewInt(0).SetString(temp.CertificateCount[2:], 16)
-	if !success {
-		return errors.New(fmt.Sprintf("Error converting %s to BigInt", temp.CertificateCount))
-	}
-
-	trustAnchor.TotalBounty = totalBounty
-	trustAnchor.ExtractedBounty = extractedBounty
-	trustAnchor.VoteCount = voteCount
-	trustAnchor.Stake = stake
-	trustAnchor.CertificateCount = certificateCount
-
-	return nil
-}
-
-type TrustAnchorVoter struct {
-	Id             string `json:"owner"`          // 投票人地址
-	VoteCandidates string `json:"voteCandidates"` // 投的人
-	Votes          uint64 `json:"Votes"`          // 得票人的票数
-}
-
+// RegisterCertificate 可信认证
 type RegisterCertificate struct {
 	Id               string // 个人可信证书bid
 	Context          string // 证书上下文环境，随便一个字符串，不验证
@@ -289,9 +176,7 @@ type SubjectSignature struct {
 	Signature string // 签名内容
 }
 
-/*
-	did文档合约
-*/
+// PublicKey did文档合约
 type PublicKey struct {
 	Id string `json:"id"`
 	// KeyId      string `json:"key_id"`
@@ -342,132 +227,43 @@ type Proof struct {
 	Signature  string `json:"signatureValue"`
 }
 
-/*
-	dpos投票合约
-*/
-
-type RegisterWitness struct {
-	NodeUrl string
-	Website string
-	Name    string
+type PeerNodeInfo struct {
+	Id          string `json:"id"`          // 唯一索引，节点bid
+	Issuer      string `json:"issuer"`      // 颁发者地址(理事长地址)
+	Apply       string `json:"apply"`       // m申请人地址（联盟成员的地址）
+	PublicKey   string `json:"publicKey"`   // 节点公钥
+	NodeName    string `json:"nodeName"`    // 节点名称
+	MessageSha3 string `json:"messageSha3"` // 要签名的内容sha3的hash
+	Signature   string `json:"signature"`   // 节点签名内容
+	Url         string `json:"url"`         // 节点URL
+	Website     string `json:"website"`     // 节点网站地址
+	NodeType    uint64 `json:"nodeType"`    // 节点类型0企业，1个人
+	CompanyName string `json:"companyName"` // 公司名称
+	CompanyCode string `json:"companyCode"` // 公司信用代码
+	Ip          string `json:"ip"`          // ip
+	Port        uint64 `json:"port"`        // 端口
 }
 
-type Candidate struct {
-	Id              string   `json:"owner"`           // 候选人地址
-	Name            string   `json:"name"`            // 候选人名称
-	Active          bool     `json:"active"`          // 当前是否是候选人
-	Url             string   `json:"url"`             // 节点的URL
-	VoteCount       *big.Int `json:"voteCount"`       // 收到的票数
-	TotalBounty     *big.Int `json:"totalBounty"`     // 总奖励金额
-	ExtractedBounty *big.Int `json:"extractedBounty"` // 已提取奖励金额
-	LastExtractTime uint64   `json:"lastExtractTime"` // 上次提权时间
-	Website         string   `json:"website"`         // 见证人网站
-}
-
-func (candidate *Candidate) UnmarshalJSON(data []byte) error {
-	type Alias Candidate
-
-	temp := &struct {
-		VoteCount       string `json:"voteCount"`
-		TotalBounty     string `json:"totalBounty"`
-		ExtractedBounty string `json:"extractedBounty"`
-		*Alias
-	}{
-		Alias: (*Alias)(candidate),
-	}
-	if err := json.Unmarshal(data, &temp); err != nil {
-		return err
-	}
-
-	totalBounty, success := big.NewInt(0).SetString(temp.TotalBounty[2:], 16)
-	if !success {
-		return errors.New(fmt.Sprintf("Error converting %s to BigInt", temp.TotalBounty))
-	}
-
-	extractedBounty, success := big.NewInt(0).SetString(temp.ExtractedBounty[2:], 16)
-	if !success {
-		return errors.New(fmt.Sprintf("Error converting %s to BigInt", temp.ExtractedBounty))
-	}
-
-	voteCount, success := big.NewInt(0).SetString(temp.VoteCount[2:], 16)
-	if !success {
-		return errors.New(fmt.Sprintf("Error converting %s to BigInt", temp.VoteCount))
-	}
-
-	candidate.VoteCount = voteCount
-	candidate.TotalBounty = totalBounty
-	candidate.ExtractedBounty = extractedBounty
-
-	return nil
-}
-
-type Voter struct {
-	Id                string   `json:"owner"`             // 投票人的地址
-	IsProxy           bool     `json:"isProxy"`           // 是否是代理人
-	ProxyVoteCount    *big.Int `json:"proxyVoteCount"`    // 收到的代理的票数
-	Proxy             string   `json:"proxy"`             // 该节点设置的代理人
-	LastVoteCount     *big.Int `json:"lastVoteCount"`     // 上次投的票数
-	LastVoteTimeStamp uint64   `json:"lastVoteTimeStamp"` // 上次投票时间戳
-	VoteCandidates    []string `json:"voteCandidates"`    // 投了哪些人
-}
-
-func (voter *Voter) UnmarshalJSON(data []byte) error {
-	type Alias Voter
-
-	temp := &struct {
-		ProxyVoteCount string `json:"proxyVoteCount"`
-		LastVoteCount  string `json:"lastVoteCount"`
-		*Alias
-	}{
-		Alias: (*Alias)(voter),
-	}
-	if err := json.Unmarshal(data, &temp); err != nil {
-		return err
-	}
-
-	proxyVoteCount, success := big.NewInt(0).SetString(temp.ProxyVoteCount[2:], 16)
-	if !success {
-		return errors.New(fmt.Sprintf("Error converting %s to BigInt", temp.ProxyVoteCount))
-	}
-
-	lastVoteCount, success := big.NewInt(0).SetString(temp.LastVoteCount[2:], 16)
-	if !success {
-		return errors.New(fmt.Sprintf("Error converting %s to BigInt", temp.LastVoteCount))
-	}
-
-	voter.ProxyVoteCount = proxyVoteCount
-	voter.LastVoteCount = lastVoteCount
-
-	return nil
-}
-
-type Stake struct {
-	Id                 string   `json:"owner"`              // 抵押代币的所有人
-	StakeCount         *big.Int `json:"stakeCount"`         // 抵押的代币数量
-	LastStakeTimeStamp uint64   `json:"lastStakeTimeStamp"` // 上次抵押时间戳
-}
-
-func (stake *Stake) UnmarshalJSON(data []byte) error {
-	type Alias Stake
-
-	temp := &struct {
-		StakeCount string `json:"stakeCount"`
-		*Alias
-	}{
-		Alias: (*Alias)(stake),
-	}
-	if err := json.Unmarshal(data, &temp); err != nil {
-		return err
-	}
-
-	stakeCount, success := big.NewInt(0).SetString(temp.StakeCount[2:], 16)
-	if !success {
-		return errors.New(fmt.Sprintf("Error converting %s to BigInt", temp.StakeCount))
-	}
-
-	stake.StakeCount = stakeCount
-
-	return nil
+type PeerNodeDetail struct {
+	Id              string   `json:"id"`              // 唯一索引，节点bid
+	Issuer          string   `json:"issuer"`          // 颁发者地址(理事长地址)
+	Apply           string   `json:"apply"`           // 申请人地址（联盟成员的地址）
+	PublicKey       string   `json:"publicKey"`       // 节点公钥
+	NodeName        string   `json:"nodeName"`        // 节点名称
+	Signature       string   `json:"signature"`       // 节点签名内容
+	Url             string   `json:"url"`             // 节点URL
+	Website         string   `json:"website"`         // 节点网站地址
+	NodeType        uint64   `json:"nodeType"`        // 节点类型0企业，1个人
+	CompanyName     string   `json:"companyName"`     // 公司名称
+	CompanyCode     string   `json:"companyCode"`     // 公司信用代码
+	Role            uint64   `json:"role"`            // 可信节点、候选节点、共识节点
+	Active          bool     `json:"active"`          // 是否有效
+	CreateTime      uint64   `json:"create"`          // 创建时间
+	RevokeReason    string   `json:"revokeReason"`    // 节点删除理由
+	ConsensusRevoke string   `json:"consensusRevoke"` // 共识撤销理由
+	StartTime       uint64   `json:"startTime"`       // 投票开始时间
+	Score           uint64   `json:"score"`           // 投票得分
+	VoterList       []string `json:"voterList"`       // 投票给这个节点的投票人列表
 }
 
 type AllContract struct {

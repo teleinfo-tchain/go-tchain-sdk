@@ -11,78 +11,26 @@ type SystemRequestResult struct {
 	RequestResult
 }
 
-// todo: 结果返回为双nil，为方便开发者debug，返回具体的错误
-func (pointer *SystemRequestResult) ToPeerCertificate() (*PeerCertificate, error) {
+func (pointer *SystemRequestResult) ToAllianceDirectors() ([]*Alliance, error) {
 	if err := pointer.checkResponse(); err != nil {
 		if err == EMPTYRESPONSE {
-			return nil, errors.New("节点可信证书不存在")
+			return nil, errors.New("联盟成员为空")
 		}
 		return nil, err
 	}
 
-	result := (pointer).Result.(map[string]interface{})
+	directorLi := (pointer).Result.([]interface{})
+	directors := make([]*Alliance, len(directorLi))
 
-	if len(result) == 0 {
-		return nil, EMPTYRESPONSE
-	}
+	for i, v := range directorLi {
 
-	peerCertificate := &PeerCertificate{}
-
-	marshal, err := json.Marshal(result)
-
-	if err != nil {
-		return nil, UNPARSEABLEINTERFACE
-	}
-
-	err = json.Unmarshal(marshal, peerCertificate)
-
-	return peerCertificate, err
-}
-
-// todo: 结果返回为双nil，为方便开发者debug，返回具体的错误
-func (pointer *SystemRequestResult) ToTrustAnchor() (*TrustAnchor, error) {
-	if err := pointer.checkResponse(); err != nil {
-		if err == EMPTYRESPONSE {
-			return nil, errors.New("信任锚信息不存在")
-		}
-		return nil, err
-	}
-
-	result := (pointer).Result.(map[string]interface{})
-
-	if len(result) == 0 {
-		return nil, EMPTYRESPONSE
-	}
-
-	trustAnchor := &TrustAnchor{}
-
-	marshal, err := json.Marshal(result)
-
-	if err != nil {
-		return nil, UNPARSEABLEINTERFACE
-	}
-
-	err = json.Unmarshal(marshal, trustAnchor)
-	return trustAnchor, err
-}
-
-func (pointer *SystemRequestResult) ToTrustAnchorVoter() ([]TrustAnchorVoter, error) {
-	if err := pointer.checkResponse(); err != nil {
-		return nil, err
-	}
-
-	resultLi := (pointer).Result.([]interface{})
-
-	trustAnchorVoterLi := make([]TrustAnchorVoter, len(resultLi))
-
-	for i, v := range resultLi {
 		result := v.(map[string]interface{})
 
 		if len(result) == 0 {
 			return nil, EMPTYRESPONSE
 		}
 
-		info := &TrustAnchorVoter{}
+		info := &Alliance{}
 
 		marshal, err := json.Marshal(result)
 
@@ -95,13 +43,102 @@ func (pointer *SystemRequestResult) ToTrustAnchorVoter() ([]TrustAnchorVoter, er
 			return nil, UNPARSEABLEINTERFACE
 		}
 
-		trustAnchorVoterLi[i] = *info
-	}
+		directors[i] = info
 
-	return trustAnchorVoterLi, nil
+	}
+	return directors, nil
 }
 
-// todo: 结果返回为双nil，为方便开发者debug，返回具体的错误
+func (pointer *SystemRequestResult) ToAllianceVices() ([]*Alliance, error) {
+	if err := pointer.checkResponse(); err != nil {
+		if err == EMPTYRESPONSE {
+			return nil, errors.New("联盟成员为空")
+		}
+		return nil, err
+	}
+
+	viceLi := (pointer).Result.([]interface{})
+	vices := make([]*Alliance, len(viceLi))
+
+	for i, v := range viceLi {
+
+		result := v.(map[string]interface{})
+
+		if len(result) == 0 {
+			return nil, EMPTYRESPONSE
+		}
+
+		info := &Alliance{}
+
+		marshal, err := json.Marshal(result)
+
+		if err != nil {
+			return nil, UNPARSEABLEINTERFACE
+		}
+
+		err = json.Unmarshal(marshal, info)
+		if err != nil {
+			return nil, UNPARSEABLEINTERFACE
+		}
+
+		vices[i] = info
+
+	}
+	return vices, nil
+}
+
+func (pointer *SystemRequestResult) ToAlliance() (*Alliance, error) {
+	if err := pointer.checkResponse(); err != nil {
+		if err == EMPTYRESPONSE {
+			return nil, errors.New("联盟成员为空")
+		}
+		return nil, err
+	}
+
+	result := (pointer).Result.(map[string]interface{})
+
+	if len(result) == 0 {
+		return nil, EMPTYRESPONSE
+	}
+
+	alliance := &Alliance{}
+
+	marshal, err := json.Marshal(result)
+
+	if err != nil {
+		return nil, err
+	}
+
+	err = json.Unmarshal(marshal, alliance)
+	return alliance, err
+}
+
+func (pointer *SystemRequestResult) ToWeights() (*Weights, error) {
+	if err := pointer.checkResponse(); err != nil {
+		if err == EMPTYRESPONSE {
+			return nil, errors.New("联盟成员权重为空")
+		}
+		return nil, err
+	}
+
+	result := (pointer).Result.(map[string]interface{})
+
+	if len(result) == 0 {
+		return nil, EMPTYRESPONSE
+	}
+
+	weights := &Weights{}
+
+	marshal, err := json.Marshal(result)
+
+	if err != nil {
+		return nil, err
+	}
+
+	err = json.Unmarshal(marshal, weights)
+	return weights, err
+}
+
 func (pointer *SystemRequestResult) ToCertificateInfo() (*CertificateInfo, error) {
 	if err := pointer.checkResponse(); err != nil {
 		if err == EMPTYRESPONSE {
@@ -128,7 +165,6 @@ func (pointer *SystemRequestResult) ToCertificateInfo() (*CertificateInfo, error
 	return certificateInfo, err
 }
 
-// todo: 结果返回为双nil，为方便开发者debug，返回具体的错误
 func (pointer *SystemRequestResult) ToCertificateIssuerSignature() (*IssuerSignature, error) {
 	if err := pointer.checkResponse(); err != nil {
 		if err == EMPTYRESPONSE {
@@ -155,7 +191,6 @@ func (pointer *SystemRequestResult) ToCertificateIssuerSignature() (*IssuerSigna
 	return issuerSignature, err
 }
 
-// todo: 结果返回为双nil，为方便开发者debug，返回具体的错误
 func (pointer *SystemRequestResult) ToCertificateSubjectSignature() (*SubjectSignature, error) {
 	if err := pointer.checkResponse(); err != nil {
 		if err == EMPTYRESPONSE {
@@ -182,7 +217,6 @@ func (pointer *SystemRequestResult) ToCertificateSubjectSignature() (*SubjectSig
 	return subjectSignature, err
 }
 
-// todo: 结果返回为双nil，为方便开发者debug，返回具体的错误
 func (pointer *SystemRequestResult) ToDocument() (*Document, error) {
 	if err := pointer.checkResponse(); err != nil {
 		if err == EMPTYRESPONSE {
@@ -282,7 +316,6 @@ func (pointer *SystemRequestResult) ToElectionCandidates() ([]Candidate, error) 
 	return candidates, nil
 }
 
-// todo: 结果返回为双nil，为方便开发者debug，返回具体的错误
 func (pointer *SystemRequestResult) ToElectionVoter() (*Voter, error) {
 	if err := pointer.checkResponse(); err != nil {
 		if err == EMPTYRESPONSE {
@@ -341,28 +374,6 @@ func (pointer *SystemRequestResult) ToElectionVoterList() ([]Voter, error) {
 	}
 
 	return voters, nil
-}
-
-// todo: 结果返回为双nil，为方便开发者debug，返回具体的错误
-func (pointer *SystemRequestResult) ToElectionStake() (*Stake, error) {
-	if err := pointer.checkResponse(); err != nil {
-		if err == EMPTYRESPONSE {
-			return nil, errors.New("地址无抵押权益")
-		}
-		return nil, err
-	}
-
-	result := (pointer).Result.(map[string]interface{})
-	stake := &Stake{}
-
-	marshal, err := json.Marshal(result)
-	if err != nil {
-		return nil, err
-	}
-
-	err = json.Unmarshal(marshal, stake)
-
-	return stake, err
 }
 
 func (pointer *SystemRequestResult) ToRoundStateInfo() (*RoundStateInfo, error) {
