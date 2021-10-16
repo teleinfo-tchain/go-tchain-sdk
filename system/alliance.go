@@ -23,10 +23,10 @@ type Alliance struct {
 func (sys *System) NewAlliance() *Alliance {
 	parsedAbi, _ := abi.JSON(strings.NewReader(AllianceAbiJSON))
 
-	cer := new(Alliance)
-	cer.abi = parsedAbi
-	cer.super = sys
-	return cer
+	ali := new(Alliance)
+	ali.abi = parsedAbi
+	ali.super = sys
+	return ali
 }
 
 func registerDirectorPreCheck(directorInfo dto.AllianceInfo) error {

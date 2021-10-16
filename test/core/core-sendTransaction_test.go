@@ -41,9 +41,9 @@ func TestCoreSendTransaction(t *testing.T) {
 	// 	t.Error(err)
 	// 	t.FailNow()
 	// }
-	generator := resources.Addr1
-	toAddress := resources.Addr2
-	balance, err := connection.Core.GetBalance(resources.Addr2, block.LATEST)
+	generator := resources.TestAddressAlliance
+	toAddress := resources.RegisterAllianceOne
+	balance, err := connection.Core.GetBalance(toAddress, block.LATEST)
 	if err == nil {
 		util := utils.NewUtils()
 		balBif, _ := util.FromWei(balance)

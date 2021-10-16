@@ -6,6 +6,7 @@ import (
 	"github.com/bif/bif-sdk-go/providers"
 	"github.com/bif/bif-sdk-go/test/resources"
 	"math/big"
+	"strconv"
 	"testing"
 )
 
@@ -23,7 +24,7 @@ func TestCoreGetPendingTransactions(t *testing.T) {
 
 	transaction := new(dto.TransactionParameters)
 	transaction.Sender = generator
-	transaction.Recipient = resources.NewAddrE
+	transaction.Recipient = resources.Addr1
 	transaction.Amount = big.NewInt(0).Mul(big.NewInt(1), big.NewInt(1e15))
 	transaction.GasLimit = uint64(40000)
 	transaction.Payload = "Transfer test"

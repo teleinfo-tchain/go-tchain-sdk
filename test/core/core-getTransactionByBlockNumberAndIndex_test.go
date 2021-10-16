@@ -22,6 +22,7 @@ import (
 	"github.com/bif/bif-sdk-go/test/resources"
 	"github.com/bif/bif-sdk-go/utils/hexutil"
 	"math/big"
+	"strconv"
 	"testing"
 	"time"
 )

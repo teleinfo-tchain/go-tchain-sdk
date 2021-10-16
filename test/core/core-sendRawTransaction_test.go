@@ -23,7 +23,7 @@ func TestCoreSendRawTransaction(t *testing.T) {
 		t.FailNow()
 	}
 
-	privKey := resources.Addr1Pri
+	privKey := "bd0bc93d5bfd6f329f3b1fb61109fdb81290dfb9a78de491aa84276af4a713a2"
 
 	chainId, err := connection.Core.GetChainId()
 	if err != nil {
@@ -32,13 +32,13 @@ func TestCoreSendRawTransaction(t *testing.T) {
 	}
 
 	var recipient utils.Address
-	recipient = utils.StringToAddress(resources.Addr2)
+	recipient = utils.StringToAddress(resources.RegisterAllianceOne)
 
 	tx := &account.SignTxParams{
 		Recipient:    &recipient,
 		AccountNonce: nonce.Uint64(),
 		GasPrice:     big.NewInt(2000000),
-		GasLimit:     uint64(30),
+		GasLimit:     uint64(41000),
 		Amount:       big.NewInt(50000000000),
 		Payload:      nil,
 		ChainId:      chainId,

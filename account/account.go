@@ -325,7 +325,7 @@ func (account *Account) SignTransaction(signData *SignTxParams, privateKey strin
 		return nil, err
 	}
 	fmt.Printf("signed  %#v \n", signed)
-	fmt.Printf("signed  from %#v \n", signed.Sender.String(""))
+	//fmt.Printf("signed  from %#v \n", signed.Sender.String(""))
 	return &SignTransactionResult{data, signed}, nil
 }
 

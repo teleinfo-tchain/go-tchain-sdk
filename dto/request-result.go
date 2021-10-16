@@ -185,7 +185,7 @@ func (pointer *RequestResult) ToBigInt() (*big.Int, error) {
 func (pointer *RequestResult) ToComplexIntResponse() (types.ComplexIntResponse, error) {
 
 	if err := pointer.checkResponse(); err != nil {
-		return types.ComplexIntResponse(0), err
+		return types.ComplexIntResponse(rune(0)), err
 	}
 
 	result := (pointer).Result.(interface{})

@@ -14,7 +14,7 @@ const AllianceAbiJSON = `[
 {"constant": false,"name":"upgradeDirector","inputs":[{"name":"director","type":"string"}],"outputs":[],"type":"function"},
 {"constant": false,"name":"revoke","inputs":[{"name":"member","type":"string"}, {"name":"revokeReason","type":"string"}],"outputs":[],"type":"function"},
 {"constant": false,"name":"setWeights","inputs":[{"name":"directorWeights","type":"uint64"},{"name":"viceWeights","type":"uint64"},{"name":"directorGeneralWeights","type":"uint64"}],"outputs":[],"type":"function"},
-{"anonymous":false,"inputs":[{"indexed":false,"name":"method_name","type":"string"},{"indexed":false,"name":"status","type":"uint32"},{"indexed":false,"name":"reason","type":"string"}],"name":"allianceEvent","type":"event"},
+{"anonymous":false,"inputs":[{"indexed":false,"name":"method_name","type":"string"},{"indexed":false,"name":"status","type":"uint32"},{"indexed":false,"name":"reason","type":"string"}],"name":"allianceEvent","type":"event"}
 ]`
 
 const ElectionAbiJSON = `[

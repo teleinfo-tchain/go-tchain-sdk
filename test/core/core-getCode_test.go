@@ -18,6 +18,7 @@ import (
 	"encoding/json"
 	"github.com/bif/bif-sdk-go/test/resources"
 	"io/ioutil"
+	"strconv"
 	"testing"
 	"time"
 

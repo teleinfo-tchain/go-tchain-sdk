@@ -14,7 +14,7 @@ type SystemRequestResult struct {
 func (pointer *SystemRequestResult) ToAllianceDirectors() ([]*Alliance, error) {
 	if err := pointer.checkResponse(); err != nil {
 		if err == EMPTYRESPONSE {
-			return nil, errors.New("联盟成员为空")
+			return nil, nil
 		}
 		return nil, err
 	}
@@ -52,11 +52,10 @@ func (pointer *SystemRequestResult) ToAllianceDirectors() ([]*Alliance, error) {
 func (pointer *SystemRequestResult) ToAllianceVices() ([]*Alliance, error) {
 	if err := pointer.checkResponse(); err != nil {
 		if err == EMPTYRESPONSE {
-			return nil, errors.New("联盟成员为空")
+			return nil, nil
 		}
 		return nil, err
 	}
-
 	viceLi := (pointer).Result.([]interface{})
 	vices := make([]*Alliance, len(viceLi))
 
@@ -90,7 +89,7 @@ func (pointer *SystemRequestResult) ToAllianceVices() ([]*Alliance, error) {
 func (pointer *SystemRequestResult) ToAlliance() (*Alliance, error) {
 	if err := pointer.checkResponse(); err != nil {
 		if err == EMPTYRESPONSE {
-			return nil, errors.New("联盟成员为空")
+			return nil, errors.New("alliance is not exist")
 		}
 		return nil, err
 	}
@@ -101,7 +100,8 @@ func (pointer *SystemRequestResult) ToAlliance() (*Alliance, error) {
 		return nil, EMPTYRESPONSE
 	}
 
-	alliance := &Alliance{}
+	var alliance Alliance
+	//alliance := &Alliance{}
 
 	marshal, err := json.Marshal(result)
 
@@ -109,8 +109,8 @@ func (pointer *SystemRequestResult) ToAlliance() (*Alliance, error) {
 		return nil, err
 	}
 
-	err = json.Unmarshal(marshal, alliance)
-	return alliance, err
+	err = json.Unmarshal(marshal, &alliance)
+	return &alliance, err
 }
 
 func (pointer *SystemRequestResult) ToWeights() (*Weights, error) {
@@ -241,7 +241,7 @@ func (pointer *SystemRequestResult) ToDocument() (*Document, error) {
 	return document, err
 }
 
-func (pointer *SystemRequestResult) ToRestBIFBounty() (*big.Int, error) {
+func (pointer *SystemRequestResult) ToElectionRestBIFBounty() (*big.Int, error) {
 	if err := pointer.checkResponse(); err != nil {
 		return nil, err
 	}
@@ -256,39 +256,15 @@ func (pointer *SystemRequestResult) ToRestBIFBounty() (*big.Int, error) {
 	return ret, nil
 }
 
-func (pointer *SystemRequestResult) ToElectionCandidate() (*Candidate, error) {
+func (pointer *SystemRequestResult) ToElectionPeerNodes() ([]*PeerNodeDetail, error) {
 	if err := pointer.checkResponse(); err != nil {
 		return nil, err
 	}
 
-	result := (pointer).Result.(map[string]interface{})
+	peerNodesLi := (pointer).Result.([]interface{})
+	peerNodes := make([]*PeerNodeDetail, len(peerNodesLi))
 
-	if result["owner"] == "" {
-		return nil, errors.New("无候选者")
-	}
-
-	candidate := &Candidate{}
-
-	marshal, err := json.Marshal(result)
-
-	if err != nil {
-		return nil, err
-	}
-
-	err = json.Unmarshal(marshal, candidate)
-
-	return candidate, err
-}
-
-func (pointer *SystemRequestResult) ToElectionCandidates() ([]Candidate, error) {
-	if err := pointer.checkResponse(); err != nil {
-		return nil, err
-	}
-
-	candidateLi := (pointer).Result.([]interface{})
-	candidates := make([]Candidate, len(candidateLi))
-
-	for i, v := range candidateLi {
+	for i, v := range peerNodesLi {
 
 		result := v.(map[string]interface{})
 
@@ -296,7 +272,7 @@ func (pointer *SystemRequestResult) ToElectionCandidates() ([]Candidate, error) 
 			return nil, EMPTYRESPONSE
 		}
 
-		info := &Candidate{}
+		info := &PeerNodeDetail{}
 
 		marshal, err := json.Marshal(result)
 
@@ -309,71 +285,31 @@ func (pointer *SystemRequestResult) ToElectionCandidates() ([]Candidate, error) 
 			return nil, UNPARSEABLEINTERFACE
 		}
 
-		candidates[i] = *info
+		peerNodes[i] = info
 
 	}
 
-	return candidates, nil
+	return peerNodes, nil
 }
 
-func (pointer *SystemRequestResult) ToElectionVoter() (*Voter, error) {
+func (pointer *SystemRequestResult) ToElectionPeerNode() (*PeerNodeDetail, error) {
 	if err := pointer.checkResponse(); err != nil {
-		if err == EMPTYRESPONSE {
-			return nil, errors.New("投票人信息为空")
-		}
 		return nil, err
 	}
 
 	result := (pointer).Result.(map[string]interface{})
+
 	if len(result) == 0 {
 		return nil, EMPTYRESPONSE
 	}
 
-	voter := &Voter{}
+	peerNodeDetail := &PeerNodeDetail{}
+
 	marshal, err := json.Marshal(result)
 
-	if err != nil {
-		return nil, err
-	}
+	err = json.Unmarshal(marshal, peerNodeDetail)
 
-	err = json.Unmarshal(marshal, voter)
-	return voter, err
-}
-
-func (pointer *SystemRequestResult) ToElectionVoterList() ([]Voter, error) {
-	if err := pointer.checkResponse(); err != nil {
-		return nil, err
-	}
-
-	resultVoters := (pointer).Result.([]interface{})
-
-	voters := make([]Voter, len(resultVoters))
-
-	for i, v := range resultVoters {
-
-		result := v.(map[string]interface{})
-		if len(result) == 0 {
-			return nil, EMPTYRESPONSE
-		}
-
-		info := &Voter{}
-
-		marshal, err := json.Marshal(result)
-
-		if err != nil {
-			return nil, UNPARSEABLEINTERFACE
-		}
-
-		err = json.Unmarshal(marshal, info)
-		if err != nil {
-			return nil, UNPARSEABLEINTERFACE
-		}
-
-		voters[i] = *info
-
-	}
-
-	return voters, nil
+	return peerNodeDetail, err
 }
 
 func (pointer *SystemRequestResult) ToRoundStateInfo() (*RoundStateInfo, error) {

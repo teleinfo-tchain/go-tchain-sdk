@@ -5,9 +5,6 @@ import (
 	"fmt"
 	"github.com/bif/bif-sdk-go/abi"
 	"github.com/bif/bif-sdk-go/dto"
-	"github.com/bif/bif-sdk-go/utils/hexutil"
-	"github.com/prometheus/common/log"
-	"golang.org/x/tools/go/analysis/passes/nilfunc"
 	"math/big"
 	"strings"
 )
@@ -36,22 +33,6 @@ func (e *Election) judgeScheme(url string) bool {
 	return true
 }
 
-//type PeerNodeInfo struct {
-//	Id          string `json:"id"`          // 唯一索引，节点bid
-//	Issuer      string `json:"issuer"`      // 颁发者地址(理事长地址)
-//	Apply       string `json:"apply"`       // m申请人地址（联盟成员的地址）
-//	PublicKey   string `json:"publicKey"`   // 节点公钥
-//	NodeName    string `json:"nodeName"`    // 节点名称
-//	MessageSha3 string `json:"messageSha3"` // 要签名的内容sha3的hash
-//	Signature   string `json:"signature"`   // 节点签名内容
-//	Url         string `json:"url"`         // 节点URL
-//	Website     string `json:"website"`     // 节点网站地址
-//	NodeType    uint64 `json:"nodeType"`    // 节点类型0企业，1个人
-//	CompanyName string `json:"companyName"` // 公司名称
-//	CompanyCode string `json:"companyCode"` // 公司信用代码
-//	Ip          string `json:"ip"`          // ip
-//	Port        uint64 `json:"port"`        // 端口
-//}
 func registerTrustNodePreCheck(trustNode *dto.PeerNodeInfo) error {
 	trustNode.Id = strings.TrimSpace(trustNode.Id)
 	trustNode.Apply = strings.TrimSpace(trustNode.Apply)
@@ -60,9 +41,6 @@ func registerTrustNodePreCheck(trustNode *dto.PeerNodeInfo) error {
 	trustNode.MessageSha3 = strings.TrimSpace(trustNode.MessageSha3)
 	trustNode.Signature = strings.TrimSpace(trustNode.Signature)
 	trustNode.Url = strings.TrimSpace(trustNode.Url)
-	trustNode.Website = strings.TrimSpace(trustNode.Website)
-	trustNode.CompanyName = strings.TrimSpace(trustNode.CompanyName)
-	trustNode.CompanyCode = strings.TrimSpace(trustNode.CompanyCode)
 
 	if !isValidHexAddress(trustNode.Id) {
 		return errors.New("registerTrustNode id is not valid bid")
@@ -84,8 +62,16 @@ func registerTrustNodePreCheck(trustNode *dto.PeerNodeInfo) error {
 		return fmt.Errorf("parameter is not illegal, parameter is %s, length is 0", "Signature")
 	}
 
-	if len(trustNode.Website) == 0 || isBlankCharacter(witness.Website) {
-		return errors.New("witness Website can't be empty or blank character")
+	if len(trustNode.Url) == 0 {
+		return fmt.Errorf("parameter is not illegal, parameter is %s, length is 0", "Url")
+	}
+
+	if len(trustNode.NodeName) < 4 || len(trustNode.NodeName) > 20 {
+		return errors.New("registerCertificate Website len is range in 4 to 20")
+	}
+
+	if len(trustNode.Website) <6 || len(trustNode.Website) > 60 {
+		return errors.New("registerCertificate Website len is range in 6 to 50")
 	}
 
 	if trustNode.NodeType > 1 {
@@ -104,14 +90,6 @@ func registerTrustNodePreCheck(trustNode *dto.PeerNodeInfo) error {
 	}
 	if trustNode.Port > 65535 {
 		return errors.New("parameter is not illegal, parameter is Port, Port should be in range 0 to 65535")
-	}
-
-	if !e.judgeScheme(witness.Website) {
-		return errors.New("witness Website protocol scheme missing")
-	}
-
-	if len(witness.Name) == 0 || isBlankCharacter(witness.Name) {
-		return errors.New("witness Name can't be empty or blank character")
 	}
 
 	return nil
@@ -303,7 +281,7 @@ func (e *Election) GetRestBIFBounty() (*big.Int, error) {
 		return nil, err
 	}
 
-	return *res, nil
+	return res, nil
 }
 
 func (e *Election) GetAllTrusted() ([]*dto.PeerNodeDetail, error) {
@@ -314,12 +292,12 @@ func (e *Election) GetAllTrusted() ([]*dto.PeerNodeDetail, error) {
 		return nil, err
 	}
 
-	res, err := pointer.ToElectionAllTrusted()
+	res, err := pointer.ToElectionPeerNodes()
 	if err != nil {
 		return nil, err
 	}
 
-	return *res, nil
+	return res, nil
 }
 
 func (e *Election) GetAllCandidates() ([]*dto.PeerNodeDetail, error) {
@@ -330,12 +308,12 @@ func (e *Election) GetAllCandidates() ([]*dto.PeerNodeDetail, error) {
 		return nil, err
 	}
 
-	res, err := pointer.ToElectionAllCandidates()
+	res, err := pointer.ToElectionPeerNodes()
 	if err != nil {
 		return nil, err
 	}
 
-	return *res, nil
+	return res, nil
 }
 
 func (e *Election) GetAllConsensus() ([]*dto.PeerNodeDetail, error) {
@@ -346,12 +324,12 @@ func (e *Election) GetAllConsensus() ([]*dto.PeerNodeDetail, error) {
 		return nil, err
 	}
 
-	res, err := pointer.ToElectionAllConsensus()
+	res, err := pointer.ToElectionPeerNodes()
 	if err != nil {
 		return nil, err
 	}
 
-	return *res, nil
+	return res, nil
 }
 
 func (e *Election) GetAllNodes() ([]*dto.PeerNodeDetail, error) {
@@ -362,12 +340,12 @@ func (e *Election) GetAllNodes() ([]*dto.PeerNodeDetail, error) {
 		return nil, err
 	}
 
-	res, err := pointer.ToElectionAllNodes()
+	res, err := pointer.ToElectionPeerNodes()
 	if err != nil {
 		return nil, err
 	}
 
-	return *res, nil
+	return res, nil
 }
 
 func (e *Election) GetPeerNode(peerNodeId string) (*dto.PeerNodeDetail, error) {
@@ -390,7 +368,7 @@ func (e *Election) GetPeerNode(peerNodeId string) (*dto.PeerNodeDetail, error) {
 		return nil, err
 	}
 
-	return *res, nil
+	return res, nil
 }
 
 func (e *Election) GetVoteNodes(voter string) ([]*dto.PeerNodeDetail, error) {
@@ -408,12 +386,12 @@ func (e *Election) GetVoteNodes(voter string) ([]*dto.PeerNodeDetail, error) {
 		return nil, err
 	}
 
-	res, err := pointer.ToElectionVoteNodes()
+	res, err := pointer.ToElectionPeerNodes()
 	if err != nil {
 		return nil, err
 	}
 
-	return *res, nil
+	return res, nil
 }
 
 func (e *Election) GetApplyNodes(apply string) ([]*dto.PeerNodeDetail, error) {
@@ -431,12 +409,12 @@ func (e *Election) GetApplyNodes(apply string) ([]*dto.PeerNodeDetail, error) {
 		return nil, err
 	}
 
-	res, err := pointer.ToElectionApplyNodes()
+	res, err := pointer.ToElectionPeerNodes()
 	if err != nil {
 		return nil, err
 	}
 
-	return *res, nil
+	return res, nil
 }
 
 func (e *Election) GetDeadline() (uint64, error) {
@@ -447,7 +425,7 @@ func (e *Election) GetDeadline() (uint64, error) {
 		return 0, err
 	}
 
-	res, err := pointer.ToElectionDeadline()
+	res, err := pointer.ToUint64()
 	if err != nil {
 		return 0, err
 	}

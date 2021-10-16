@@ -20,6 +20,7 @@ import (
 	"github.com/bif/bif-sdk-go/providers"
 	"github.com/bif/bif-sdk-go/test/resources"
 	"math/big"
+	"strconv"
 	"testing"
 	"time"
 )
@@ -33,7 +34,7 @@ func TestCoreGetTransactionReceipt(t *testing.T) {
 		t.FailNow()
 	}
 
-	toAddress := resources.NewAddrE
+	toAddress := resources.Addr1
 
 	transaction := new(dto.TransactionParameters)
 	transaction.Sender = generator
@@ -54,7 +55,7 @@ func TestCoreGetTransactionReceipt(t *testing.T) {
 		time.Sleep(time.Second)
 		receipt, err = connection.Core.GetTransactionReceipt(txID)
 	}
-	if err != nil{
+	if err != nil {
 		t.Error(err)
 		t.FailNow()
 	}

@@ -23,6 +23,7 @@ import (
 	"github.com/bif/bif-sdk-go/utils"
 	"github.com/bif/bif-sdk-go/utils/hexutil"
 	"math/big"
+	"strconv"
 	"testing"
 )
 
@@ -31,8 +32,8 @@ func TestCoreSignTransaction(t *testing.T) {
 
 	transaction := new(dto.TransactionParameters)
 	transaction.AccountNonce = uint64(2)
-	transaction.Sender = resources.TestAddr
-	transaction.Recipient = resources.NewAddrE
+	transaction.Sender = resources.Addr1
+	transaction.Recipient = resources.Addr2
 	transaction.Amount = big.NewInt(0).Mul(big.NewInt(5), big.NewInt(1e17))
 	transaction.GasLimit = uint64(50000)
 	transaction.GasPrice = big.NewInt(1)

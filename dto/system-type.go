@@ -105,15 +105,29 @@ type AllianceInfo struct {
 }
 
 type Alliance struct {
-	Id           utils.Address `json:"id"`           // 联盟成员bid
-	Role         uint64        `json:"role"`         // 角色 1理事，2副理事长，3理事长
-	PublicKey    []byte        `json:"publicKey"`    // 联盟成员公钥
-	CompanyName  []byte        `json:"companyName"`  // 公司名称
-	CompanyCode  []byte        `json:"companyCode"`  // 公司信用代码
-	Auditor      utils.Address `json:"auditor"`      // 审核员
-	AuditTime    uint64        `json:"auditTime"`    // 审核时间
-	RevokeReason []byte        `json:"revokeReason"` // 撤销理由
-	Active       bool          `json:"active"`       // 是否有效，是否撤销
+	Id           string `json:"id"`           // 联盟成员bid
+	Role         uint64 `json:"role"`         // 角色 1理事，2副理事长，3理事长
+	PublicKey    string `json:"publicKey"`    // 联盟成员公钥
+	CompanyName  string `json:"companyName"`  // 公司名称
+	CompanyCode  string `json:"companyCode"`  // 公司信用代码
+	Auditor      string `json:"auditor"`      // 审核员
+	AuditTime    uint64 `json:"auditTime"`    // 审核时间
+	RevokeReason string `json:"revokeReason"` // 撤销理由
+	Active       bool   `json:"active"`       // 是否有效，是否撤销
+}
+
+func (alliance *Alliance) UnmarshalJSON(data []byte) error {
+	type Alli Alliance
+
+	temp := &struct {
+		*Alli
+	}{
+		Alli: (*Alli)(alliance),
+	}
+	if err := json.Unmarshal(data, &temp); err != nil {
+		return err
+	}
+	return nil
 }
 
 type Weights struct {

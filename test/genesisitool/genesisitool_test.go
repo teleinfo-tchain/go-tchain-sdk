@@ -2,6 +2,7 @@ package test
 
 import (
 	"github.com/bif/bif-sdk-go/genesistool"
+	"github.com/bif/bif-sdk-go/test/resources"
 	"testing"
 )
 
@@ -41,20 +42,25 @@ func TestEncodeHotStuff(t *testing.T) {
 }
 
 func TestPeerIdGen(t *testing.T) {
-	testNodePriStr := "bd0bc93d5bfd6f329f3b1fb61109fdb81290dfb9a78de491aa84276af4a713a2"
-	peerId, err := genesistool.PeerIdGen(testNodePriStr)
+	for _, test := range []struct {
+		privateKey string
+		want       string
+	}{
+		{resources.RegisterAllianceOnePriKey, resources.RegisterAllianceOnePubKey},
+		{resources.RegisterAllianceTwoPriKey, resources.RegisterAllianceTwoPubKey},
+		{resources.RegisterAllianceThreePriKey, resources.RegisterAllianceThreePubKey},
+	} {
+		peerId, err := genesistool.PeerIdGen(test.privateKey)
 
-	if err != nil {
-		t.Error(err)
-		t.FailNow()
+		if err != nil {
+			t.Error(err)
+			t.FailNow()
+		}
+
+		if peerId != test.want {
+			t.Logf("want peerId is : %s , result is %s \n", test.want, peerId)
+		}
 	}
-
-	want := "16Uiu2HAmSgtVcHBHe79Ey3H3DHHxqbFBCFLL5UcEAUz8sBBxouui"
-
-	if peerId != want {
-		t.Logf("want peerId is : %s , result is %s \n", want, peerId)
-	}
-
 }
 
 func TestRegEncode(t *testing.T) {

@@ -12,22 +12,23 @@ import (
 	"math/big"
 	"strconv"
 	"testing"
+	"time"
 )
 
-func connectWithSig() (*bif.Bif, *system.SysTxParams, error) {
+func connectWithSig(sigAddr string, singAddrFile string) (*bif.Bif, *system.SysTxParams, error) {
 	var connection = bif.NewBif(providers.NewHTTPProvider(resources.IP00+":"+strconv.FormatUint(resources.Port, 10), 10, false))
 	chainId, err := connection.Core.GetChainId()
 	if err != nil {
 		return nil, nil, err
 	}
 
-	nonce, err := connection.Core.GetTransactionCount(resources.TestAddressAlliance, block.LATEST)
+	nonce, err := connection.Core.GetTransactionCount(sigAddr, block.LATEST)
 	if err != nil {
 		return nil, nil, err
 	}
 
 	// keyFileData 还可以进一步校验
-	keyFileData, err := ioutil.ReadFile(resources.TestAddressAllianceFile)
+	keyFileData, err := ioutil.ReadFile(singAddrFile)
 	if err != nil {
 		return nil, nil, err
 	}
@@ -36,6 +37,7 @@ func connectWithSig() (*bif.Bif, *system.SysTxParams, error) {
 	}
 
 	sysTxParams := new(system.SysTxParams)
+	sysTxParams.From = sigAddr
 	sysTxParams.IsSM2 = resources.NotSm2
 	sysTxParams.Password = resources.SystemPassword
 	sysTxParams.KeyFileData = keyFileData
@@ -57,7 +59,7 @@ func connectBif() (*bif.Bif, error) {
 }
 
 func TestRegisterDirector(t *testing.T) {
-	con, sigPara, err := connectWithSig()
+	con, sigPara, err := connectWithSig(resources.TestAddressAlliance, resources.TestAddressAllianceFile)
 	if err != nil {
 		t.Error(err)
 		t.FailNow()
@@ -66,8 +68,8 @@ func TestRegisterDirector(t *testing.T) {
 	ali := con.System.NewAlliance()
 
 	registerDirector := new(dto.AllianceInfo)
-	registerDirector.Id = resources.TestAddressAlliance
-	registerDirector.PublicKey = resources.AlliancePublicKey
+	registerDirector.Id = resources.RegisterAllianceOne
+	registerDirector.PublicKey = resources.RegisterAllianceOnePubKey
 	registerDirector.CompanyName = "teleInfo"
 	registerDirector.CompanyCode = "110112"
 
@@ -78,10 +80,23 @@ func TestRegisterDirector(t *testing.T) {
 	}
 
 	t.Log(registerDirectorHash, err)
+
+	time.Sleep(8*time.Second)
+
+	log, err := con.System.SystemLogDecode(registerDirectorHash)
+
+	if err != nil {
+		t.Errorf("err log : %v ", err)
+		t.FailNow()
+	}
+
+	if !log.Status {
+		t.Errorf("err, method is %s , err is %s ", log.Method, log.Result)
+	}
 }
 
 func TestUpgradeDirector(t *testing.T) {
-	con, sigPara, err := connectWithSig()
+	con, sigPara, err := connectWithSig(resources.TestAddressAlliance, resources.TestAddressAllianceFile)
 	if err != nil {
 		t.Error(err)
 		t.FailNow()
@@ -89,16 +104,29 @@ func TestUpgradeDirector(t *testing.T) {
 
 	ali := con.System.NewAlliance()
 
-	transactionHash, err := ali.UpgradeDirector(sigPara, resources.TestAddressAlliance)
+	transactionHash, err := ali.UpgradeDirector(sigPara, resources.RegisterAllianceOne)
 	if err != nil {
 		t.Error(err)
 		t.FailNow()
 	}
 	t.Log(transactionHash, err)
+
+	time.Sleep(8*time.Second)
+
+	log, err := con.System.SystemLogDecode(transactionHash)
+
+	if err != nil {
+		t.Errorf("err log : %v ", err)
+		t.FailNow()
+	}
+
+	if !log.Status {
+		t.Errorf("err, method is %s , err is %s ", log.Method, log.Result)
+	}
 }
 
 func TestRevoke(t *testing.T) {
-	con, sigPara, err := connectWithSig()
+	con, sigPara, err := connectWithSig(resources.TestAddressAlliance, resources.TestAddressAllianceFile)
 	if err != nil {
 		t.Error(err)
 		t.FailNow()
@@ -108,16 +136,29 @@ func TestRevoke(t *testing.T) {
 
 	revokeReason := "不合法"
 
-	transactionHash, err := ali.Revoke(sigPara, resources.TestAddressAlliance, revokeReason)
+	transactionHash, err := ali.Revoke(sigPara, resources.RegisterAllianceOne, revokeReason)
 	if err != nil {
 		t.Error(err)
 		t.FailNow()
 	}
 	t.Log(transactionHash, err)
+
+	time.Sleep(8*time.Second)
+
+	log, err := con.System.SystemLogDecode(transactionHash)
+
+	if err != nil {
+		t.Errorf("err log : %v ", err)
+		t.FailNow()
+	}
+
+	if !log.Status {
+		t.Errorf("err, method is %s , err is %s ", log.Method, log.Result)
+	}
 }
 
 func TestSetWeights(t *testing.T) {
-	con, sigPara, err := connectWithSig()
+	con, sigPara, err := connectWithSig(resources.TestAddressAlliance, resources.TestAddressAllianceFile)
 	if err != nil {
 		t.Error(err)
 		t.FailNow()
@@ -125,12 +166,25 @@ func TestSetWeights(t *testing.T) {
 
 	ali := con.System.NewAlliance()
 
-	transactionHash, err := ali.SetWeights(sigPara, 1, 2, 3)
+	transactionHash, err := ali.SetWeights(sigPara, 2, 3, 4)
 	if err != nil {
 		t.Error(err)
 		t.FailNow()
 	}
 	t.Log(transactionHash, err)
+
+	time.Sleep(8*time.Second)
+
+	log, err := con.System.SystemLogDecode(transactionHash)
+
+	if err != nil {
+		t.Errorf("err log : %v ", err)
+		t.FailNow()
+	}
+
+	if !log.Status {
+		t.Errorf("err, method is %s , err is %s ", log.Method, log.Result)
+	}
 }
 
 func TestGetAllDirectors(t *testing.T) {
@@ -148,7 +202,9 @@ func TestGetAllDirectors(t *testing.T) {
 		t.FailNow()
 	}
 
-	t.Logf("directors is %v \n", directors)
+	for _, v := range directors{
+		t.Logf("directors is %+v \n", v)
+	}
 }
 
 func TestGetAllVices(t *testing.T) {
@@ -166,7 +222,9 @@ func TestGetAllVices(t *testing.T) {
 		t.FailNow()
 	}
 
-	t.Logf("vices is %v \n", vices)
+	for _, v := range vices{
+		t.Logf("vices is %+v \n", v)
+	}
 }
 
 func TestGetAlliance(t *testing.T) {
@@ -178,12 +236,13 @@ func TestGetAlliance(t *testing.T) {
 
 	ali := con.System.NewAlliance()
 
-	aliance, err := ali.GetAlliance(resources.TestAddressAlliance)
+	//alliance, err := ali.GetAlliance(resources.TestAddressAlliance)
+	alliance, err := ali.GetAlliance(resources.RegisterAllianceOne)
 	if err != nil {
 		t.Error(err)
 		t.FailNow()
 	}
-	t.Logf("aliance is %v \n", aliance)
+	t.Logf("aliance is %+v \n", alliance)
 }
 
 func TestGetWeights(t *testing.T) {

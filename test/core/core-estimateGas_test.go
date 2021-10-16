@@ -22,6 +22,7 @@ import (
 	"github.com/bif/bif-sdk-go/dto"
 	"github.com/bif/bif-sdk-go/providers"
 	"math/big"
+	"strconv"
 )
 
 func TestCoreEstimateGas(t *testing.T) {

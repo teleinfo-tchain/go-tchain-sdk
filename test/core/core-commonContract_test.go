@@ -23,8 +23,10 @@ import (
 	"github.com/bif/bif-sdk-go/testutil"
 	"github.com/stretchr/testify/assert"
 	"math/big"
+	"strconv"
 	"testing"
 	"time"
+
 )
 
 func TestCoreContract(t *testing.T) {

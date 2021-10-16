@@ -16,6 +16,7 @@ package test
 
 import (
 	"github.com/bif/bif-sdk-go/test/resources"
+	"strconv"
 	"testing"
 
 	"github.com/bif/bif-sdk-go"
