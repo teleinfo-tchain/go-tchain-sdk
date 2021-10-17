@@ -253,7 +253,7 @@ func (account *Account) Encrypt(privateKey string, isSM2 bool, password, chainCo
 
   Call permissions: Anyone
 */
-func (account *Account) Decrypt(keystoreJson []byte, isSM2 bool, password string) (string, string, error) {
+func Decrypt(keystoreJson []byte, isSM2 bool, password string) (string, string, error) {
 	if len(keystoreJson) == 0 {
 		return "", "", errors.New("keystoreJson is empty")
 	}
@@ -566,4 +566,42 @@ func (account *Account) Recover(rawTxString string, isSM2 bool) (string, error) 
 	// }
 	// return publicKeyStrToAddress(pubBytes, isSM2)
 	return "", errors.New("接口待修改")
+}
+
+func MessageSignature(message, password string, keyFileData []byte, isSM2 bool) (string, string, error) {
+	messageSha3 := utils.NewUtils().Sha3Raw(message)
+
+	_, privateKey, err := Decrypt(keyFileData, isSM2, password)
+	privKey, err := crypto.HexToECDSA(privateKey, config.SECP256K1)
+	if err != nil {
+		return "", "", err
+	}
+
+	var cryptoType config.CryptoType
+	var t string
+	if isSM2 {
+		t = "00"
+		cryptoType = config.SM2
+	} else {
+		cryptoType = config.SECP256K1
+		t = "01"
+	}
+
+	messageSha3Bytes :=  utils.Hex2Bytes(messageSha3[2:])
+	sig, err := crypto.Sign(messageSha3Bytes, privKey, cryptoType)
+	if err != nil {
+		return "", "", err
+	}
+	// r := new(big.Int).SetBytes(sig[:32])
+	// s := new(big.Int).SetBytes(sig[32:64])
+	// v := new(big.Int).SetBytes([]byte{sig[64] + 27})
+	// fmt.Printf("r %x \n", r)
+	// fmt.Printf("s %x \n", s)
+	// fmt.Printf("v %x \n", v)
+	// fmt.Printf("sig len is  %x \n", len(sig))
+	var buf bytes.Buffer
+	buf.Write([]byte{sig[64] + 27})
+	buf.Write(sig[:64])
+	// fmt.Printf("sig is  %s \n", t+utils.Bytes2Hex(buf.Bytes()))
+	return messageSha3, t +  utils.Bytes2Hex(buf.Bytes()), err
 }

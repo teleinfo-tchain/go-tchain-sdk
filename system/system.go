@@ -54,7 +54,7 @@ func NewSystem(provider providers.ProviderInterface) *System {
 	prePareSignTransaction - 构造交易
 */
 func (sys *System) prePareSignTransaction(signTxParams *SysTxParams, payLoad []byte, contractAddr string) (string, error) {
-	_, privateKey, err := sys.acc.Decrypt(signTxParams.KeyFileData, signTxParams.IsSM2, signTxParams.Password)
+	_, privateKey, err := account.Decrypt(signTxParams.KeyFileData, signTxParams.IsSM2, signTxParams.Password)
 	if err != nil {
 		return "", err
 	}

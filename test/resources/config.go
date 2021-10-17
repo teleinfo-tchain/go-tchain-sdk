@@ -32,7 +32,7 @@ const (
 
 )
 
-// system contract 
+// system contract
 const (
 	IsSM2 = true
 	NotSm2 = false
@@ -42,6 +42,7 @@ const (
 	TestAddressAlliance     = "did:bid:tele:sfYVq8gWNHSFhwUtA5KcKCVMszR86Zgc"
 	TestAddressAllianceFile = FilePath+"UTC--2021-10-11T02-48-43.619738164Z--did:bid:tele:sfYVq8gWNHSFhwUtA5KcKCVMszR86Zgc"
 
+	// RegisterAllianceOnePubKey 联盟合约配置
 	RegisterAllianceOnePubKey = "16Uiu2HAm5wRVEuPzTjjq18tXFNxUepnMAxPFA1UQyMxCingPHEAP"
 	RegisterAllianceOnePriKey = "f50eca2610b6ec2a2cc7a781174f9051a5313813e66168970fa986613df796f0"
 	RegisterAllianceOne = "did:bid:tele:sfx2ee4QMyUsJEUJZgC9GuoGLwGYMtAk"
@@ -57,24 +58,33 @@ const (
 	RegisterAllianceThree = "did:bid:tele:sftkV9fC1fdcDaW1972fPs3CatUmc5SF"
 	RegisterAllianceThreeFile = FilePath+"UTC--2021-10-11T02-48-43.740088399Z--did:bid:tele:sftkV9fC1fdcDaW1972fPs3CatUmc5SF"
 
-	// PersonCertificate 注册证书的bid
+	// TestAddressElect 选举合约配置
+	TestAddressElect = "did:bid:EFTVcqqKyFR17jfPxqwEtpmRpbkvSs"
+	TestAddressFile  = "../resources/keystore/UTC--2020-08-20T05-28-39.403642600Z--did-bid-EFTVcqqKyFR17jfPxqwEtpmRpbkvSs"
+
+	RegisterTrustNodePubKey = "16Uiu2HAmBYGHwpUuBJEHfwisKqdzdbHwKADVtuT3Db8AiSsXNiJH"
+	RegisterTrustNodePriKey = "3c4a99e1600447ecd937574679a1a8fada4026bdc7aaa3e6f7909c99712b6b2a"
+	RegisterTrustNodeOne = "did:bid:tele:sftkV9fC1fdcDaW1972fPs3CatUmc5SF"
+	RegisterTrustNodeOneFile = FilePath+"UTC--2021-10-11T02-48-43.740088399Z--did:bid:tele:sftkV9fC1fdcDaW1972fPs3CatUmc5SF"
+
+	// PersonCertificate 证书合约配置
 	PersonCertificate = "did:bid:EFTVcqqKyFR17jfPxqwEtpmRpbkvSs"
 	// PersonCertificatePublicKey 与personCertificate对应的公钥
 	PersonCertificatePublicKey = "0x04647f729afb309e4cd20f4b186a7883e1cd23b245e9fb6eb939ad74e47cc16c55e60aa12f20ed21bee8d23291aae377ad319b166604dec1a81dfb2b008bdc3c68"
 	TestAddressCertificate     = "did:bid:tele:sfYVq8gWNHSFhwUtA5KcKCVMszR86Zgc"
 	TestAddressCertificateFile = FilePath+"UTC--2021-10-11T02-48-43.619738164Z--did:bid:tele:sfYVq8gWNHSFhwUtA5KcKCVMszR86Zgc"
 
+	// TestAddressDoc did文档合约配置
 	TestAddressDoc          = "did:bid:EFTVcqqKyFR17jfPxqwEtpmRpbkvSs"
 	TestAddressDocPublicKey = "0x04647f729afb309e4cd20f4b186a7883e1cd23b245e9fb6eb939ad74e47cc16c55e60aa12f20ed21bee8d23291aae377ad319b166604dec1a81dfb2b008bdc3c68"
 	TestAddressDocFile      = "../resources/keystore/UTC--2020-08-20T05-28-39.403642600Z--did-bid-EFTVcqqKyFR17jfPxqwEtpmRpbkvSs"
 
+	// TestAddressManager 管理合约配置
 	TestAddressManager = "did:bid:EFTVcqqKyFR17jfPxqwEtpmRpbkvSs"
 	TestAddressManagerFile    = "../resources/keystore/UTC--2020-08-20T05-28-39.403642600Z--did-bid-EFTVcqqKyFR17jfPxqwEtpmRpbkvSs"
 	TestContractAddress = ""
 
+	// TestAddressSen 敏感词合约配置
 	TestAddressSen = "did:bid:EFTVcqqKyFR17jfPxqwEtpmRpbkvSs"
 	TestAddressSenFile    = "../resources/keystore/UTC--2020-08-20T05-28-39.403642600Z--did-bid-EFTVcqqKyFR17jfPxqwEtpmRpbkvSs"
-	
-	TestAddressElect = "did:bid:EFTVcqqKyFR17jfPxqwEtpmRpbkvSs"
-	TestAddressFile  = "../resources/keystore/UTC--2020-08-20T05-28-39.403642600Z--did-bid-EFTVcqqKyFR17jfPxqwEtpmRpbkvSs"
 )

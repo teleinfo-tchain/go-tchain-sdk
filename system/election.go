@@ -4,6 +4,7 @@ import (
 	"errors"
 	"fmt"
 	"github.com/bif/bif-sdk-go/abi"
+	"github.com/bif/bif-sdk-go/account"
 	"github.com/bif/bif-sdk-go/dto"
 	"math/big"
 	"strings"
@@ -38,8 +39,6 @@ func registerTrustNodePreCheck(trustNode *dto.PeerNodeInfo) error {
 	trustNode.Apply = strings.TrimSpace(trustNode.Apply)
 	trustNode.PublicKey = strings.TrimSpace(trustNode.PublicKey)
 	trustNode.NodeName = strings.TrimSpace(trustNode.NodeName)
-	trustNode.MessageSha3 = strings.TrimSpace(trustNode.MessageSha3)
-	trustNode.Signature = strings.TrimSpace(trustNode.Signature)
 	trustNode.Url = strings.TrimSpace(trustNode.Url)
 
 	if !isValidHexAddress(trustNode.Id) {
@@ -52,14 +51,6 @@ func registerTrustNodePreCheck(trustNode *dto.PeerNodeInfo) error {
 
 	if len(trustNode.PublicKey) != 53 {
 		return fmt.Errorf("parameter is not illegal, parameter is %s, length is not 53", "")
-	}
-
-	if len(trustNode.MessageSha3) == 0 {
-		return fmt.Errorf("parameter is not illegal, parameter is %s, length is 0", "MessageSha3")
-	}
-
-	if len(trustNode.Signature) == 0 {
-		return fmt.Errorf("parameter is not illegal, parameter is %s, length is 0", "Signature")
 	}
 
 	if len(trustNode.Url) == 0 {
@@ -95,11 +86,19 @@ func registerTrustNodePreCheck(trustNode *dto.PeerNodeInfo) error {
 	return nil
 }
 
-func (e *Election) RegisterTrustNode(signTxParams *SysTxParams, trustNode *dto.PeerNodeInfo) (string, error) {
+func (e *Election) RegisterTrustNode(signTxParams *SysTxParams, trustNode *dto.PeerNodeInfo, idPassword string, idKeyFile []byte, idIsSM2 bool) (string, error) {
 	err := registerTrustNodePreCheck(trustNode)
 	if err != nil {
 		return "", err
 	}
+
+	messageSha3, signature, err := account.MessageSignature("RegisterTrustNode", idPassword, idKeyFile, idIsSM2)
+	if err != nil {
+		return "", err
+	}
+	// 添加messageSha3 signature
+	trustNode.MessageSha3 = messageSha3
+	trustNode.Signature = signature
 
 	// encode
 	// trustNode is a struct we need to use the components.

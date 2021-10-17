@@ -70,13 +70,12 @@ func TestDecrypt(t *testing.T) {
 		{true, resources.PassWord, "./keystore/UTC--2020-08-19T05-48-44.625362500Z--did-bid-ZFT4CziA2ktCNgfQPqSm1GpQxSck5q4", "did:bid:ZFT4CziA2ktCNgfQPqSm1GpQxSck5q4"},
 		{false, resources.PassWord, "./keystore/UTC--2020-08-19T05-48-46.004537900Z--did-bid-EFTTQWPMdtghuZByPsfQAUuPkWkWYb", "did:bid:EFTTQWPMdtghuZByPsfQAUuPkWkWYb"},
 	} {
-		var connection = bif.NewBif(providers.NewHTTPProvider(resources.IP00+":"+strconv.FormatUint(resources.Port, 10), 10, false))
 		keyJson, err := ioutil.ReadFile(test.keyDir)
 		if err != nil {
 			t.Error(err)
 			t.FailNow()
 		}
-		address, _, err := connection.Account.Decrypt(keyJson, test.isSM2, test.password)
+		address, _, err := account.Decrypt(keyJson, test.isSM2, test.password)
 		if err != nil {
 			t.Error(err)
 			t.FailNow()

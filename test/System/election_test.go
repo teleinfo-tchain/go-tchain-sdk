@@ -3,6 +3,7 @@ package System
 import (
 	"github.com/bif/bif-sdk-go"
 	"github.com/bif/bif-sdk-go/core/block"
+	"github.com/bif/bif-sdk-go/dto"
 	"github.com/bif/bif-sdk-go/providers"
 	"github.com/bif/bif-sdk-go/system"
 	"github.com/bif/bif-sdk-go/test/resources"
@@ -10,7 +11,69 @@ import (
 	"math/big"
 	"strconv"
 	"testing"
+	"time"
 )
+
+// 注册成为可信节点
+func TestRegisterTrustNode(t *testing.T) {
+	con, sigPara, err := connectWithSig(resources.TestAddressAlliance, resources.TestAddressAllianceFile)
+	if err != nil {
+		t.Error(err)
+		t.FailNow()
+	}
+
+	ele := con.System.NewElection()
+
+	// 注册的ID（地址） 对应的keystore文件的密码
+	idPassword := resources.SystemPassword
+	// 注册的ID（地址）对应的keystore文件
+	idKeyFileData, err := ioutil.ReadFile(resources.RegisterTrustNodeOneFile)
+	if err != nil {
+		t.Error(err)
+		t.FailNow()
+	}
+	if len(idKeyFileData) == 0 {
+		t.Errorf("idKeyFileData can't be empty")
+		t.FailNow()
+	}
+	//  注册的ID（地址）对应的keyStore文件生成方式
+	idIsSM2 := false
+
+	registerTrustNode := new(dto.PeerNodeInfo)
+	registerTrustNode.Id = resources.RegisterTrustNodeOne
+	registerTrustNode.Apply = resources.RegisterTrustNodeOne
+	registerTrustNode.PublicKey = resources.RegisterTrustNodePubKey
+	registerTrustNode.NodeName = "Node0"
+	registerTrustNode.Url = "/ip4/127.0.0.1/tcp/5001/p2p/16Uiu2HAmSgtVcHBHe79Ey3H3DHHxqbFBCFLL5UcEAUz8sBBxouui"
+	registerTrustNode.Website = "testNode"
+	registerTrustNode.NodeType = 0
+	registerTrustNode.CompanyName = "teleInfo"
+	registerTrustNode.CompanyCode = "110112"
+	registerTrustNode.Ip = "127.0.0.1"
+	registerTrustNode.Port = 5001
+
+	transactionHash, err := ele.RegisterTrustNode(sigPara, registerTrustNode, idPassword, idKeyFileData, idIsSM2)
+	if err != nil {
+		t.Error(err)
+		t.FailNow()
+	}
+
+	t.Log(transactionHash, err)
+
+	time.Sleep(8*time.Second)
+
+	log, err := con.System.SystemLogDecode(transactionHash)
+
+	if err != nil {
+		t.Errorf("err log : %v ", err)
+		t.FailNow()
+	}
+
+	if !log.Status {
+		t.Errorf("err, method is %s , err is %s ", log.Method, log.Result)
+	}
+}
+
 
 //// 注册成为候选者节点
 //func TestRegisterWitness(t *testing.T) {
