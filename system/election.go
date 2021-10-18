@@ -61,7 +61,7 @@ func registerTrustNodePreCheck(trustNode *dto.PeerNodeInfo) error {
 		return errors.New("registerCertificate Website len is range in 4 to 20")
 	}
 
-	if len(trustNode.Website) <6 || len(trustNode.Website) > 60 {
+	if len(trustNode.Website) < 6 || len(trustNode.Website) > 60 {
 		return errors.New("registerCertificate Website len is range in 6 to 50")
 	}
 
@@ -86,13 +86,13 @@ func registerTrustNodePreCheck(trustNode *dto.PeerNodeInfo) error {
 	return nil
 }
 
-func (e *Election) RegisterTrustNode(signTxParams *SysTxParams, trustNode *dto.PeerNodeInfo, idPassword string, idKeyFile []byte, idIsSM2 bool) (string, error) {
+func (e *Election) RegisterTrustNode(signTxParams *SysTxParams, trustNode *dto.PeerNodeInfo, idPassword string, idKeyFile []byte) (string, error) {
 	err := registerTrustNodePreCheck(trustNode)
 	if err != nil {
 		return "", err
 	}
 
-	messageSha3, signature, err := account.MessageSignature("RegisterTrustNode", idPassword, idKeyFile, idIsSM2)
+	messageSha3, signature, err := account.MessageSignatureBtc("registerTrustNode", idPassword, idKeyFile)
 	if err != nil {
 		return "", err
 	}
@@ -209,8 +209,8 @@ func (e *Election) CancelConsensusNode(signTxParams *SysTxParams, consensusNode 
 
 	var values []interface{}
 	type nodeInfo struct {
-		ConsensusNode   string
-		ConsensusReason string
+		Consensus             string
+		CancelConsensusReason string
 	}
 	var consensusNodeInfo = nodeInfo{consensusNode, cancelConsensusReason}
 
@@ -419,7 +419,7 @@ func (e *Election) GetApplyNodes(apply string) ([]*dto.PeerNodeDetail, error) {
 func (e *Election) GetDeadline() (uint64, error) {
 	pointer := &dto.SystemRequestResult{}
 
-	err := e.super.provider.SendRequest(pointer, "election_voter", nil)
+	err := e.super.provider.SendRequest(pointer, "election_deadline", nil)
 	if err != nil {
 		return 0, err
 	}

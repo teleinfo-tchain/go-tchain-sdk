@@ -3,12 +3,14 @@ package System
 import (
 	"github.com/bif/bif-sdk-go/dto"
 	"github.com/bif/bif-sdk-go/test/resources"
+	"path/filepath"
 	"testing"
 	"time"
 )
 
 func TestRegisterDirector(t *testing.T) {
-	con, sigPara, err := connectWithSig(resources.TestAddressAlliance, resources.TestAddressAllianceFile)
+	file := filepath.Dir(GetCurrentAbPath())+resources.KeyStoreFile+resources.TestAddressRegulatoryFile
+	con, sigPara, err := connectWithSig(resources.TestAddressRegulatory, file)
 	if err != nil {
 		t.Error(err)
 		t.FailNow()
@@ -17,8 +19,8 @@ func TestRegisterDirector(t *testing.T) {
 	ali := con.System.NewAlliance()
 
 	registerDirector := new(dto.AllianceInfo)
-	registerDirector.Id = resources.RegisterAllianceOne
-	registerDirector.PublicKey = resources.RegisterAllianceOnePubKey
+	registerDirector.Id = resources.RegisterAllianceTwo
+	registerDirector.PublicKey = resources.RegisterAllianceTwoPubKey
 	registerDirector.CompanyName = "teleInfo"
 	registerDirector.CompanyCode = "110112"
 
@@ -45,7 +47,8 @@ func TestRegisterDirector(t *testing.T) {
 }
 
 func TestUpgradeDirector(t *testing.T) {
-	con, sigPara, err := connectWithSig(resources.TestAddressAlliance, resources.TestAddressAllianceFile)
+	file := filepath.Dir(GetCurrentAbPath())+resources.KeyStoreFile+resources.TestAddressRegulatoryFile
+	con, sigPara, err := connectWithSig(resources.TestAddressRegulatory, file)
 	if err != nil {
 		t.Error(err)
 		t.FailNow()
@@ -53,7 +56,7 @@ func TestUpgradeDirector(t *testing.T) {
 
 	ali := con.System.NewAlliance()
 
-	transactionHash, err := ali.UpgradeDirector(sigPara, resources.RegisterAllianceOne)
+	transactionHash, err := ali.UpgradeDirector(sigPara, resources.RegisterAllianceTwo)
 	if err != nil {
 		t.Error(err)
 		t.FailNow()
@@ -75,7 +78,8 @@ func TestUpgradeDirector(t *testing.T) {
 }
 
 func TestRevoke(t *testing.T) {
-	con, sigPara, err := connectWithSig(resources.TestAddressAlliance, resources.TestAddressAllianceFile)
+	file := filepath.Dir(GetCurrentAbPath())+resources.KeyStoreFile+resources.TestAddressRegulatoryFile
+	con, sigPara, err := connectWithSig(resources.TestAddressRegulatory, file)
 	if err != nil {
 		t.Error(err)
 		t.FailNow()
@@ -107,7 +111,8 @@ func TestRevoke(t *testing.T) {
 }
 
 func TestSetWeights(t *testing.T) {
-	con, sigPara, err := connectWithSig(resources.TestAddressAlliance, resources.TestAddressAllianceFile)
+	file := filepath.Dir(GetCurrentAbPath())+resources.KeyStoreFile+resources.TestAddressRegulatoryFile
+	con, sigPara, err := connectWithSig(resources.TestAddressRegulatory, file)
 	if err != nil {
 		t.Error(err)
 		t.FailNow()

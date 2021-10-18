@@ -13,78 +13,91 @@ const (
 
 	ChainCode string = "tele"
 	PassWord  string = "teleInfo"
-
 )
 
 // accounts
 const (
-	Addr1    string = "did:bid:sf26xSMerRVcs9E642Rkbq4TxLrhQsWzk"
+	Addr1    string = ""
 	Addr1Hex string = ""
-	Addr1Pri string = "d37df84af4156fe9ab65a5642418cd7bd9e9371acb5ae1bd282d1d473bcb1f13"
+	Addr1Pri string = ""
 
-	Addr2    string = "did:bid:sf26xSMerRVcs9E642Rkbq4TxLrhQsWzk"
+	Addr2    string = ""
 	Addr2Hex string = ""
-	Addr2Pri string = "d37df84af4156fe9ab65a5642418cd7bd9e9371acb5ae1bd282d1d473bcb1f13"
-
-	Addr3    string = "did:bid:sf26xSMerRVcs9E642Rkbq4TxLrhQsWzk"
-	Addr3Hex string = ""
-	Addr3Pri string = "d37df84af4156fe9ab65a5642418cd7bd9e9371acb5ae1bd282d1d473bcb1f13"
-
+	Addr2Pri string = ""
 )
+
+const KeyStoreFile string = "/resources/keystore/"
 
 // system contract
 const (
-	IsSM2 = true
-	NotSm2 = false
-	SystemPassword = "teleinfo"
+	IsSM2          = true
+	NotSm2         = false
+	SystemPassword = "tele"
 
-	FilePath = "../resources/keystore/"
-	TestAddressAlliance     = "did:bid:tele:sfYVq8gWNHSFhwUtA5KcKCVMszR86Zgc"
-	TestAddressAllianceFile = FilePath+"UTC--2021-10-11T02-48-43.619738164Z--did:bid:tele:sfYVq8gWNHSFhwUtA5KcKCVMszR86Zgc"
+	TestAddressRegulatory     = "did:bid:tele:sf25XGBQU8E8wGFo9wGKo95jUgtYPM24Y"
+	TestAddressRegulatoryFile = "UTC--2021-10-18T03-00-25.788254467Z--did:bid:tele:sf25XGBQU8E8wGFo9wGKo95jUgtYPM24Y"
+
+	TestAddressAlliance     = "did:bid:tele:sf25XGBQU8E8wGFo9wGKo95jUgtYPM24Y"
+	TestAddressAllianceFile = "UTC--2021-10-18T03-00-25.788254467Z--did:bid:tele:sf25XGBQU8E8wGFo9wGKo95jUgtYPM24Y"
 
 	// RegisterAllianceOnePubKey 联盟合约配置
-	RegisterAllianceOnePubKey = "16Uiu2HAm5wRVEuPzTjjq18tXFNxUepnMAxPFA1UQyMxCingPHEAP"
-	RegisterAllianceOnePriKey = "f50eca2610b6ec2a2cc7a781174f9051a5313813e66168970fa986613df796f0"
-	RegisterAllianceOne = "did:bid:tele:sfx2ee4QMyUsJEUJZgC9GuoGLwGYMtAk"
-	RegisterAllianceOneFile = FilePath+"UTC--2021-10-11T02-48-43.660543959Z--did:bid:tele:sfx2ee4QMyUsJEUJZgC9GuoGLwGYMtAk"
+	RegisterAllianceOnePubKey = "16Uiu2HAm3z3rBzpH5tpFkdTxf7CU2JSdEDT4A6JH78ieKc69Aotp"
+	RegisterAllianceOnePriKey = "78a0fc8f2e8440e1cc13eb12e5eb0a76c70e4cb0b864dfcc4d9530832f259363"
+	RegisterAllianceOne       = "did:bid:tele:sf2BX7RNbmdtGgyYuD3HL7H7w1XmGSTFY"
+	RegisterAllianceOneFile   = "UTC--2021-10-18T03-00-25.866164055Z--did:bid:tele:sf2BX7RNbmdtGgyYuD3HL7H7w1XmGSTFY"
 
-	RegisterAllianceTwoPubKey = "16Uiu2HAmGxSMc6uyMD44ofU6M2r4C4eL5Qs3LpRDWdtg6i7SG3E7"
-	RegisterAllianceTwoPriKey = "b08e9b9c87ddd936213e55e9db005e2218fea7ee3cf752f3b0cc480871ead389"
-	RegisterAllianceTwo = "did:bid:tele:sfyqv1R7kMYKxLcZMeS5ZQeez91ae1kt"
-	RegisterAllianceTwoFile = FilePath+"UTC--2021-10-11T02-48-43.701398271Z--did:bid:tele:sfyqv1R7kMYKxLcZMeS5ZQeez91ae1kt"
+	RegisterAllianceTwoPubKey = "16Uiu2HAmPR6ruDPZnoAJEo8PzJXPBfaRT8ureQtkhabXgdMyuttc"
+	RegisterAllianceTwoPriKey = "344d73bf98e1b9afdd6451ce7bb531d54b3c5cdbe6611d9252f3826b458ef5e9"
+	RegisterAllianceTwo       = "did:bid:tele:sfrVXK5LxB6ZYrqXsaqp6g3izMkm2r8n"
+	RegisterAllianceTwoFile   = "UTC--2021-10-18T03-00-25.911112270Z--did:bid:tele:sfrVXK5LxB6ZYrqXsaqp6g3izMkm2r8n"
 
-	RegisterAllianceThreePubKey = "16Uiu2HAmBYGHwpUuBJEHfwisKqdzdbHwKADVtuT3Db8AiSsXNiJH"
-	RegisterAllianceThreePriKey = "3c4a99e1600447ecd937574679a1a8fada4026bdc7aaa3e6f7909c99712b6b2a"
-	RegisterAllianceThree = "did:bid:tele:sftkV9fC1fdcDaW1972fPs3CatUmc5SF"
-	RegisterAllianceThreeFile = FilePath+"UTC--2021-10-11T02-48-43.740088399Z--did:bid:tele:sftkV9fC1fdcDaW1972fPs3CatUmc5SF"
+	RegisterAllianceThreePubKey = "16Uiu2HAmAomJHsiKfnYsBAdKSbzqFdoZetoyKPEdG5g8vdDKPHny"
+	RegisterAllianceThreePriKey = "7499f87d504b672f0671eaa7dcde51581bd3b1e9f5c7fcde1bade03766dbcdfa"
+	RegisterAllianceThree       = "did:bid:tele:sfCXQusR8SEWgp8fQ9BQu61riWdDLCMN"
+	RegisterAllianceThreeFile   = "UTC--2021-10-18T03-00-25.953464329Z--did:bid:tele:sfCXQusR8SEWgp8fQ9BQu61riWdDLCMN"
 
 	// TestAddressElect 选举合约配置
-	TestAddressElect = "did:bid:EFTVcqqKyFR17jfPxqwEtpmRpbkvSs"
-	TestAddressFile  = "../resources/keystore/UTC--2020-08-20T05-28-39.403642600Z--did-bid-EFTVcqqKyFR17jfPxqwEtpmRpbkvSs"
-
-	RegisterTrustNodePubKey = "16Uiu2HAmBYGHwpUuBJEHfwisKqdzdbHwKADVtuT3Db8AiSsXNiJH"
-	RegisterTrustNodePriKey = "3c4a99e1600447ecd937574679a1a8fada4026bdc7aaa3e6f7909c99712b6b2a"
-	RegisterTrustNodeOne = "did:bid:tele:sftkV9fC1fdcDaW1972fPs3CatUmc5SF"
-	RegisterTrustNodeOneFile = FilePath+"UTC--2021-10-11T02-48-43.740088399Z--did:bid:tele:sftkV9fC1fdcDaW1972fPs3CatUmc5SF"
 
 	// PersonCertificate 证书合约配置
-	PersonCertificate = "did:bid:EFTVcqqKyFR17jfPxqwEtpmRpbkvSs"
+	PersonCertificate = ""
+
 	// PersonCertificatePublicKey 与personCertificate对应的公钥
-	PersonCertificatePublicKey = "0x04647f729afb309e4cd20f4b186a7883e1cd23b245e9fb6eb939ad74e47cc16c55e60aa12f20ed21bee8d23291aae377ad319b166604dec1a81dfb2b008bdc3c68"
-	TestAddressCertificate     = "did:bid:tele:sfYVq8gWNHSFhwUtA5KcKCVMszR86Zgc"
-	TestAddressCertificateFile = FilePath+"UTC--2021-10-11T02-48-43.619738164Z--did:bid:tele:sfYVq8gWNHSFhwUtA5KcKCVMszR86Zgc"
+	PersonCertificatePublicKey = ""
+	TestAddressCertificate     = ""
+	TestAddressCertificateFile = ""
 
 	// TestAddressDoc did文档合约配置
-	TestAddressDoc          = "did:bid:EFTVcqqKyFR17jfPxqwEtpmRpbkvSs"
-	TestAddressDocPublicKey = "0x04647f729afb309e4cd20f4b186a7883e1cd23b245e9fb6eb939ad74e47cc16c55e60aa12f20ed21bee8d23291aae377ad319b166604dec1a81dfb2b008bdc3c68"
-	TestAddressDocFile      = "../resources/keystore/UTC--2020-08-20T05-28-39.403642600Z--did-bid-EFTVcqqKyFR17jfPxqwEtpmRpbkvSs"
+	TestAddressDoc = ""
+
+	TestAddressDocPublicKey = ""
+	TestAddressDocFile      = ""
 
 	// TestAddressManager 管理合约配置
-	TestAddressManager = "did:bid:EFTVcqqKyFR17jfPxqwEtpmRpbkvSs"
-	TestAddressManagerFile    = "../resources/keystore/UTC--2020-08-20T05-28-39.403642600Z--did-bid-EFTVcqqKyFR17jfPxqwEtpmRpbkvSs"
-	TestContractAddress = ""
+	TestAddressManager = ""
+
+	TestAddressManagerFile = ""
+	TestContractAddress    = ""
 
 	// TestAddressSen 敏感词合约配置
-	TestAddressSen = "did:bid:EFTVcqqKyFR17jfPxqwEtpmRpbkvSs"
-	TestAddressSenFile    = "../resources/keystore/UTC--2020-08-20T05-28-39.403642600Z--did-bid-EFTVcqqKyFR17jfPxqwEtpmRpbkvSs"
+	TestAddressSen     = ""
+	TestAddressSenFile = ""
 )
+
+//node0
+//rm -rf node1/gbif/
+
+
+//node1
+//rm -rf node1/gbif/
+//./gbifBone init --datadir node1 --chain.code tele genesis.json
+//./gbifBone --syncmode full --datadir node1 --verbosity 3 --port 5101 --rpc --rpcaddr 0.0.0.0 --rpcport 5102 --rpcapi core,gb,admin,personal,db,net,txpool,bif,dpos,alliance,election,certificate,document,sensitive,supermanager --unlock did:bid:tele:sf2BX7RNbmdtGgyYuD3HL7H7w1XmGSTFY --password ./password.txt --chain.code tele --generate console
+
+//node2
+//rm -rf ./node2/gbif/
+//./gbifBone init --datadir ./node2/ --chain.code tele genesis.json
+//./gbifBone --syncmode full --datadir node2 --verbosity 3 --port 5201 --rpc --rpcaddr 0.0.0.0 --rpcport 5202 --rpcapi core,gb,admin,personal,db,net,txpool,bif,dpos,alliance,election,certificate,document,sensitive,supermanager --unlock did:bid:tele:sfrVXK5LxB6ZYrqXsaqp6g3izMkm2r8n --password ./password.txt --chain.code tele --generate console
+
+//node3
+//rm -rf node3/gbif/
+//./gbifBone init --datadir ./node3/ --chain.code tele genesis.json
+//./gbifBone --syncmode full --datadir node3 --verbosity 3 --port 5301 --rpc --rpcaddr 0.0.0.0 --rpcport 5302 --rpcapi core,gb,admin,personal,db,net,txpool,bif,dpos,alliance,election,certificate,document,sensitive,supermanager --unlock did:bid:tele:sfCXQusR8SEWgp8fQ9BQu61riWdDLCMN --password ./password.txt --chain.code tele --generate console

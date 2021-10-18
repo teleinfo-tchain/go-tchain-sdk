@@ -243,7 +243,6 @@ type Proof struct {
 
 type PeerNodeInfo struct {
 	Id          string `json:"id"`          // 唯一索引，节点bid
-	Issuer      string `json:"issuer"`      // 颁发者地址(理事长地址)
 	Apply       string `json:"apply"`       // m申请人地址（联盟成员的地址）
 	PublicKey   string `json:"publicKey"`   // 节点公钥
 	NodeName    string `json:"nodeName"`    // 节点名称

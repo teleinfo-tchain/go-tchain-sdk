@@ -18,7 +18,7 @@ const AllianceAbiJSON = `[
 ]`
 
 const ElectionAbiJSON = `[
-{"constant": false,"name":"registerTrustNode","inputs":[{"name":"id","type":"string"},{"name":"apply","type":"string"},{"name":"publicKey","type":"string"},{"name":"nodeName","type":"string"},{"name":"messageSha3","type":"string"},{"name":"signature","type":"string"},{"name":"url","type":"string"},{"name":"website","type":"string"},{"name":"nodeType","type":"uint64"},{"name":"companyName","type":"string"},{"name":"companyCode","type":"string"},{"name":"ip","type":"string"},{"name":"port","type":"uint64"},],"outputs":[],"type":"function"}, 
+{"constant": false,"name":"registerTrustNode","inputs":[{"name":"id","type":"string"},{"name":"apply","type":"string"},{"name":"publicKey","type":"string"},{"name":"nodeName","type":"string"},{"name":"messageSha3","type":"string"},{"name":"signature","type":"string"},{"name":"url","type":"string"},{"name":"website","type":"string"},{"name":"nodeType","type":"uint64"},{"name":"companyName","type":"string"},{"name":"companyCode","type":"string"},{"name":"ip","type":"string"},{"name":"port","type":"uint64"}],"outputs":[],"type":"function"}, 
 {"constant": false,"name":"deleteTrustNode","inputs":[{"name":"trustNode","type":"string"}, {"name":"revokeReason","type":"string"}],"outputs":[],"type":"function"},
 {"constant": false,"name":"applyCandidate","inputs":[{"name":"candidate","type":"string"}],"outputs":[],"type":"function"},
 {"constant": false,"name":"cancelCandidate","inputs":[{"name":"candidate","type":"string"}],"outputs":[],"type":"function"},

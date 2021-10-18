@@ -22,5 +22,5 @@ build/_vendor/pkg
 
 .idea
 
-./test/resources/node
-./test/resources/keystore
+test/resources/node
+test/resources/keystore

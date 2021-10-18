@@ -258,6 +258,9 @@ func (pointer *SystemRequestResult) ToElectionRestBIFBounty() (*big.Int, error) 
 
 func (pointer *SystemRequestResult) ToElectionPeerNodes() ([]*PeerNodeDetail, error) {
 	if err := pointer.checkResponse(); err != nil {
+		if err == EMPTYRESPONSE {
+			return nil, errors.New("nodes not exist")
+		}
 		return nil, err
 	}
 

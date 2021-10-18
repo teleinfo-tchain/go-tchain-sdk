@@ -568,24 +568,17 @@ func (account *Account) Recover(rawTxString string, isSM2 bool) (string, error) 
 	return "", errors.New("接口待修改")
 }
 
-func MessageSignature(message, password string, keyFileData []byte, isSM2 bool) (string, string, error) {
+func MessageSignatureBtc(message, password string, keyFileData []byte) (string, string, error) {
 	messageSha3 := utils.NewUtils().Sha3Raw(message)
 
-	_, privateKey, err := Decrypt(keyFileData, isSM2, password)
+	_, privateKey, err := Decrypt(keyFileData, false, password)
 	privKey, err := crypto.HexToECDSA(privateKey, config.SECP256K1)
 	if err != nil {
 		return "", "", err
 	}
 
 	var cryptoType config.CryptoType
-	var t string
-	if isSM2 {
-		t = "00"
-		cryptoType = config.SM2
-	} else {
-		cryptoType = config.SECP256K1
-		t = "01"
-	}
+	cryptoType = config.SECP256K1
 
 	messageSha3Bytes :=  utils.Hex2Bytes(messageSha3[2:])
 	sig, err := crypto.Sign(messageSha3Bytes, privKey, cryptoType)
@@ -600,8 +593,9 @@ func MessageSignature(message, password string, keyFileData []byte, isSM2 bool) 
 	// fmt.Printf("v %x \n", v)
 	// fmt.Printf("sig len is  %x \n", len(sig))
 	var buf bytes.Buffer
-	buf.Write([]byte{sig[64] + 27})
+	// 链的代码已经撤销这个
+	//buf.Write([]byte{sig[64] + 27})
 	buf.Write(sig[:64])
 	// fmt.Printf("sig is  %s \n", t+utils.Bytes2Hex(buf.Bytes()))
-	return messageSha3, t +  utils.Bytes2Hex(buf.Bytes()), err
+	return messageSha3, utils.Bytes2Hex(buf.Bytes()), err
 }
