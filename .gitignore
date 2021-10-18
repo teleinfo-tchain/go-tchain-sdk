@@ -5,14 +5,8 @@
 #   git config --global core.excludesfile ~/.gitignore_global
 
 /tmp
-*/**/*un~
 */**/*.test
-*un~
-.DS_Store
-*/**/.DS_Store
-.ethtest
-*/**/*tx_database*
-*/**/*dapps*
+
 build/_vendor/pkg
 
 #*
@@ -26,7 +20,4 @@ build/_vendor/pkg
 /build/_workspace/
 /build/bin/
 
-# travis
-profile.tmp
-profile.cov
 .idea

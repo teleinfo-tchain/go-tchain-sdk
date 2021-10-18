@@ -1,6 +1,7 @@
 package System
 
 import (
+	"fmt"
 	"github.com/bif/bif-sdk-go"
 	"github.com/bif/bif-sdk-go/core/block"
 	"github.com/bif/bif-sdk-go/dto"
@@ -16,6 +17,7 @@ import (
 
 // 注册成为可信节点
 func TestRegisterTrustNode(t *testing.T) {
+	fmt.Println(GetCurrentAbPath())
 	con, sigPara, err := connectWithSig(resources.TestAddressAlliance, resources.TestAddressAllianceFile)
 	if err != nil {
 		t.Error(err)
