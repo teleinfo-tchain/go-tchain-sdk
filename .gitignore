@@ -21,3 +21,6 @@ build/_vendor/pkg
 /build/bin/
 
 .idea
+
+./test/resources/node
+./test/resources/keystore
