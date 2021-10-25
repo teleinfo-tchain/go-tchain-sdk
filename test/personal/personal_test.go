@@ -411,16 +411,14 @@ func TestCoreSendTransaction(t *testing.T) {
 
 	balanceFrom, err := connection.Core.GetBalance(generator, block.LATEST)
 	if err == nil {
-		util := utils.NewUtils()
-		balBif, _ := util.FromWei(balanceFrom)
+		balBif, _ := utils.FromWei(balanceFrom)
 		t.Log("fromAddress balance is ", balBif)
 	}
 
 	toAddress := "did:bid:ZFT4Y87Xdg83GEDDbiNknHLWs3Hfq58"
 	balanceTo, err := connection.Core.GetBalance(toAddress, block.LATEST)
 	if err == nil {
-		util := utils.NewUtils()
-		balBif, _ := util.FromWei(balanceTo)
+		balBif, _ := utils.FromWei(balanceTo)
 		t.Log("toAddress balance is ", balBif)
 	}
 

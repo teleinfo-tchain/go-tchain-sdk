@@ -2,10 +2,10 @@ package System
 
 import (
 	"fmt"
+	"github.com/bif/bif-sdk-go"
 	"github.com/bif/bif-sdk-go/dto"
 	"github.com/bif/bif-sdk-go/test/resources"
 	"io/ioutil"
-	"path/filepath"
 	"testing"
 	"time"
 )
@@ -13,7 +13,7 @@ import (
 // 注册成为可信节点（只有理事长可以注册，即监管节点）
 func TestRegisterTrustNode(t *testing.T) {
 	// 签名的节点是联盟成员
-	file := filepath.Dir(GetCurrentAbPath()) + resources.KeyStoreFile + resources.TestAddressRegulatoryFile
+	file := bif.GetCurrentAbPath() + resources.KeyStoreFile + resources.TestAddressRegulatoryFile
 	con, sigPara, err := connectWithSig(resources.TestAddressRegulatory, file)
 	if err != nil {
 		t.Error(err)
@@ -43,7 +43,7 @@ func TestRegisterTrustNode(t *testing.T) {
 		},
 	} {
 		// 注册的ID（地址）对应的keystore文件
-		registerNodeIdFile := filepath.Dir(GetCurrentAbPath()) + resources.KeyStoreFile + resources.RegisterAllianceTwoFile
+		registerNodeIdFile := bif.GetCurrentAbPath() + resources.KeyStoreFile + resources.RegisterAllianceTwoFile
 		idKeyFileData, err := ioutil.ReadFile(registerNodeIdFile)
 		if err != nil {
 			t.Error(err)
@@ -80,7 +80,7 @@ func TestRegisterTrustNode(t *testing.T) {
 // 删除可信节点（只有理事长可以注册，即监管节点）
 func TestDeleteTrustNode(t *testing.T) {
 	// 签名的节点是联盟成员
-	file := filepath.Dir(GetCurrentAbPath()) + resources.KeyStoreFile + resources.TestAddressRegulatoryFile
+	file := bif.GetCurrentAbPath() + resources.KeyStoreFile + resources.TestAddressRegulatoryFile
 	con, sigPara, err := connectWithSig(resources.TestAddressRegulatory, file)
 	if err != nil {
 		t.Error(err)
@@ -115,7 +115,7 @@ func TestDeleteTrustNode(t *testing.T) {
 // 申请成为候选节点
 func TestApplyCandidate(t *testing.T) {
 	// 签名的节点是联盟成员
-	file := filepath.Dir(GetCurrentAbPath()) + resources.KeyStoreFile + resources.RegisterAllianceTwoFile
+	file := bif.GetCurrentAbPath() + resources.KeyStoreFile + resources.RegisterAllianceTwoFile
 	con, sigPara, err := connectWithSig(resources.RegisterAllianceTwo, file)
 	if err != nil {
 		t.Error(err)
@@ -149,7 +149,7 @@ func TestApplyCandidate(t *testing.T) {
 // 取消成为候选节点
 func TestCancelCandidate(t *testing.T) {
 	// 签名的节点是联盟成员
-	file := filepath.Dir(GetCurrentAbPath()) + resources.KeyStoreFile + resources.TestAddressRegulatoryFile
+	file := bif.GetCurrentAbPath() + resources.KeyStoreFile + resources.TestAddressRegulatoryFile
 	con, sigPara, err := connectWithSig(resources.TestAddressRegulatory, file)
 	if err != nil {
 		t.Error(err)
@@ -182,7 +182,7 @@ func TestCancelCandidate(t *testing.T) {
 
 func TestVoteCandidate(t *testing.T) {
 	// 签名的节点是联盟成员
-	file := filepath.Dir(GetCurrentAbPath()) + resources.KeyStoreFile + resources.RegisterAllianceTwoFile
+	file := bif.GetCurrentAbPath() + resources.KeyStoreFile + resources.RegisterAllianceTwoFile
 	con, sigPara, err := connectWithSig(resources.RegisterAllianceTwo, file)
 	if err != nil {
 		t.Error(err)
@@ -215,7 +215,7 @@ func TestVoteCandidate(t *testing.T) {
 
 func TestCancelConsensusNode(t *testing.T) {
 	// 签名的节点是联盟成员
-	file := filepath.Dir(GetCurrentAbPath()) + resources.KeyStoreFile + resources.TestAddressRegulatoryFile
+	file := bif.GetCurrentAbPath() + resources.KeyStoreFile + resources.TestAddressRegulatoryFile
 	con, sigPara, err := connectWithSig(resources.TestAddressRegulatory, file)
 	if err != nil {
 		t.Error(err)
@@ -251,7 +251,7 @@ func TestCancelConsensusNode(t *testing.T) {
 // 设置投票期限  只能监管节点设置
 func TestSetDeadline(t *testing.T) {
 	// 签名的节点是联盟成员
-	file := filepath.Dir(GetCurrentAbPath()) + resources.KeyStoreFile + resources.TestAddressRegulatoryFile
+	file := bif.GetCurrentAbPath()+ resources.KeyStoreFile + resources.TestAddressRegulatoryFile
 	con, sigPara, err := connectWithSig(resources.TestAddressRegulatory, file)
 	if err != nil {
 		t.Error(err)
@@ -285,7 +285,7 @@ func TestSetDeadline(t *testing.T) {
 }
 
 func TestExtractOwnBounty(t *testing.T) {
-	file := filepath.Dir(GetCurrentAbPath()) + resources.KeyStoreFile + resources.RegisterAllianceOneFile
+	file := bif.GetCurrentAbPath() + resources.KeyStoreFile + resources.RegisterAllianceOneFile
 	con, sigPara, err := connectWithSig(resources.RegisterAllianceOne, file)
 	if err != nil {
 		t.Error(err)
@@ -319,7 +319,7 @@ func TestExtractOwnBounty(t *testing.T) {
 
 func TestIssueAdditionalBounty(t *testing.T) {
 	// 签名的节点是联盟成员
-	file := filepath.Dir(GetCurrentAbPath()) + resources.KeyStoreFile + resources.TestAddressRegulatoryFile
+	file := bif.GetCurrentAbPath()+ resources.KeyStoreFile + resources.TestAddressRegulatoryFile
 	con, sigPara, err := connectWithSig(resources.TestAddressRegulatory, file)
 	if err != nil {
 		t.Error(err)

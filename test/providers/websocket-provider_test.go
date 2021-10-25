@@ -74,7 +74,7 @@ func Test_Websocket_Core_ToTransactionResponse(t *testing.T) {
 		ChainId:   chainId,
 	}
 
-	res, err := connection.Account.SignTransaction(tx, resources.Addr1Pri, false)
+	res, err := account.SignTransaction(tx, resources.Addr1Pri, false)
 
 	if err != nil {
 		t.Error(err)

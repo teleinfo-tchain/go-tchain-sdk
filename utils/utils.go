@@ -5,12 +5,15 @@ import (
 	"encoding/hex"
 	"errors"
 	"fmt"
+	"github.com/bif/bif-sdk-go/utils/hexutil"
 	"github.com/bif/bif-sdk-go/utils/math"
 	"github.com/teleinfo-bif/bit-gmsm/sm3"
 	"golang.org/x/crypto/sha3"
 	"math/big"
+	"math/rand"
+	"strconv"
 	"strings"
-	"sync"
+	"time"
 )
 
 // define some const
@@ -32,29 +35,10 @@ var (
 	ErrInvalidSha3 = errors.New("invalid input, input is null")
 	ErrInvalidSm3  = errors.New("invalid input, input is null")
 	ErrBigInt      = errors.New("big int not in -2*255——2*255-1")
-	ErrUintNoExist = errors.New("uint not exist")
 )
 
-// Utils - The Utils Module
-type Utils struct {
-	BiferUint map[string]string
-}
-
-var utils *Utils
-var once sync.Once
-
-// NewUtils - Utils Module constructor to set the default provider
-func NewUtils() *Utils {
-	once.Do(func() {
-		utils = new(Utils)
-		utils.BiferUint = biferUint
-
-	})
-	return utils
-}
-
-// bifer uints
-var biferUint = map[string]string{
+// bifUint 
+var bifUint = map[string]string{
 	"nobif":    "0",
 	"wei":      "1",
 	"kwei":     "1000",
@@ -84,16 +68,16 @@ var biferUint = map[string]string{
 
   Call permissions: Anyone
 */
-func (util *Utils) ToWei(balance string, uint ...string) (*big.Int, error) {
+func ToWei(balance string, uint ...string) (*big.Int, error) {
 	var number string
 	if len(uint) >= 1 {
-		value, ok := biferUint[strings.ToLower(uint[0])]
+		value, ok := bifUint[strings.ToLower(uint[0])]
 		if !ok {
 			return nil, errors.New("uint not exist")
 		}
 		number = value
 	} else {
-		number = biferUint[bif]
+		number = bifUint[bif]
 	}
 	value, _ := new(big.Int).SetString(number, 10)
 
@@ -165,16 +149,16 @@ func (util *Utils) ToWei(balance string, uint ...string) (*big.Int, error) {
 
   Call permissions: Anyone
 */
-func (util *Utils) FromWei(balance *big.Int, uint ...string) (string, error) {
+func FromWei(balance *big.Int, uint ...string) (string, error) {
 	var number string
 	if len(uint) >= 1 {
-		value, ok := biferUint[strings.ToLower(uint[0])]
+		value, ok := bifUint[strings.ToLower(uint[0])]
 		if !ok {
 			return "", errors.New("uint not exist")
 		}
 		number = value
 	} else {
-		number = biferUint[bif]
+		number = bifUint[bif]
 	}
 	value, _ := new(big.Int).SetString(number, 10)
 	// 判断输入的正负
@@ -200,61 +184,19 @@ func (util *Utils) FromWei(balance *big.Int, uint ...string) (string, error) {
 
 }
 
-/*
-  Sm3:
-   	EN -
-	CN -
-  Params:
-  	-
-  	-
-
-  Returns:
-  	-
-	- error
-
-  Call permissions: Anyone
-*/
-func (util *Utils) Sm3(str string) (string, error) {
+func Sm3(str string) (string, error) {
 	var hexBytes []byte
-	if util.IsHexStrict(str) {
+	if IsHexStrict(str) {
 		hexBytes = Hex2Bytes(str[2:])
 	} else {
 		hexBytes = []byte(str)
 	}
-	resStr := util.ByteToHex(keccak256(0, hexBytes))
+	resStr := ByteToHex(keccak256(0, hexBytes))
 	if resStr == Sm3Null {
 		return "", ErrInvalidSm3
 	} else {
 		return resStr, nil
 	}
-}
-
-// keccak256 calculates and returns the Keccak256 hash of the input data.
-func keccak256(cryptoType uint8, data ...[]byte) []byte {
-	switch cryptoType {
-	case 0:
-		return keccak256Sm2(data...)
-	case 1:
-		return keccak256Btc(data...)
-	default:
-		return keccak256Sm2(data...)
-	}
-}
-func keccak256Sm2(data ...[]byte) []byte {
-	d := sm3.New()
-	for _, b := range data {
-		d.Write(b)
-	}
-	return d.Sum(nil)
-}
-
-// keccak256Btc calculates and returns the Keccak256 hash of the input data.
-func keccak256Btc(data ...[]byte) []byte {
-	d := sha3.NewLegacyKeccak256()
-	for _, b := range data {
-		d.Write(b)
-	}
-	return d.Sum(nil)
 }
 
 /*
@@ -270,14 +212,14 @@ func keccak256Btc(data ...[]byte) []byte {
 
   Call permissions: Anyone
 */
-func (util *Utils) Sha3(input string) (string, error) {
+func Sha3(input string) (string, error) {
 	var hexBytes []byte
-	if util.IsHexStrict(input) {
+	if IsHexStrict(input) {
 		hexBytes, _ = hex.DecodeString(input[2:])
 	} else {
 		hexBytes = []byte(input)
 	}
-	resStr := util.ByteToHex(keccak256(1, hexBytes))
+	resStr := ByteToHex(keccak256(1, hexBytes))
 	if resStr == Sha3Null {
 		return "", ErrInvalidSha3
 	} else {
@@ -297,14 +239,14 @@ func (util *Utils) Sha3(input string) (string, error) {
 
   Call permissions: Anyone
 */
-func (util *Utils) Sha3Raw(str string) string {
+func Sha3Raw(str string) string {
 	var hexBytes []byte
-	if util.IsHexStrict(str) {
+	if IsHexStrict(str) {
 		hexBytes, _ = hex.DecodeString(str[2:])
 	} else {
 		hexBytes = []byte(str)
 	}
-	resStr := util.ByteToHex(keccak256(1, hexBytes))
+	resStr := ByteToHex(keccak256(1, hexBytes))
 	return resStr
 }
 
@@ -321,42 +263,8 @@ func (util *Utils) Sha3Raw(str string) string {
 
   Call permissions: Anyone
 */
-func (util *Utils) ByteToHex(byteArr []byte) string {
+func ByteToHex(byteArr []byte) string {
 	return "0x" + hex.EncodeToString(byteArr)
-}
-
-/*
-  LeftPadBytes:
-   	EN - zero-pads slice to the left up to length l.
-	CN - 在字节数组的左侧填充0至长度l
-  Params:
-  	- slice []byte 要填充的字节数组
-  	- l int 填充的长度（如果长度小于字节数组，则返回原字节数组）
-
-  Returns:
-  	- []byte 填充的字节数组
-
-  Call permissions: Anyone
-*/
-func (util *Utils) LeftPadBytes(slice []byte, l int) []byte {
-	return LeftPadBytes(slice, l)
-}
-
-/*
-  RightPadBytes:
-   	EN - zero-pads slice to the right up to length l.
-	CN - 在字节数组的右侧填充0至长度l
-  Params:
-  	- slice []byte 要填充的字节数组
-  	- l int 填充的长度（如果长度小于字节数组，则返回原字节数组）
-
-  Returns:
-  	- []byte 填充的字节数组
-
-  Call permissions: Anyone
-*/
-func (util *Utils) RightPadBytes(slice []byte, l int) []byte {
-	return RightPadBytes(slice, l)
 }
 
 /*
@@ -373,7 +281,7 @@ func (util *Utils) RightPadBytes(slice []byte, l int) []byte {
 
   Call permissions: Anyone
 */
-func (util *Utils) ToTwosComplement(input *big.Int) (string, error) {
+func ToTwosComplement(input *big.Int) (string, error) {
 	if input.Cmp(MaxBig255) == 1 || input.Cmp(MinBig255) == -1 {
 		return "", ErrBigInt
 	}
@@ -384,7 +292,213 @@ func (util *Utils) ToTwosComplement(input *big.Int) (string, error) {
 	} else if input.Sign() == -1 {
 		return "0x" + fmt.Sprintf("%x", math.U256(input)), nil
 	} else {
-		// return "0x" + util.PadLeft("0", 64), nil
+		// return "0x" + PadLeft("0", 64), nil
 		return fmt.Sprintf("%064x", 0), nil
 	}
+}
+
+/*
+  描述:
+   	EN - judge if input is hex strict string with prefix 0[x|X]
+	CN - 判断输入的字符串是否为十六进制字符串(必须带前缀0[x|X])
+  Params:
+  	- input string, 输入的字符串
+
+  Returns:
+  	- bool， true表示是hex string，false表示不是hex string
+
+  Call permissions: Anyone
+*/
+func IsHexStrict(input string) bool {
+	if Has0xPrefix(input) {
+		input = input[2:]
+	} else {
+		return false
+	}
+	return IsHex(input)
+}
+
+/*
+  RandomHex:
+   	EN - generate cryptographically strong pseudo-random HEX strings from a given byte size
+	CN - 从给定的字节大小生成具有加密强度的伪随机HEX字符串
+  Params:
+  	- size int 给定字节的大小
+
+  Returns:
+  	- string， HEX字符串
+
+  Call permissions: Anyone
+*/
+func RandomHex(size int) string {
+	str := "0123456789abcdef"
+	bytes := []byte(str)
+	var result []byte
+	r := rand.New(rand.NewSource(time.Now().UnixNano()))
+	for i := 0; i < size*2; i++ {
+		result = append(result, bytes[r.Intn(len(bytes))])
+	}
+	return string(result)
+}
+
+/*
+  描述:
+   	EN -  convert hex string to byte
+	CN - 将十六进制字符串转换为字节
+  Params:
+  	- input string 输入的hex string，必须带有前缀0[x|X],否则报错
+
+  Returns:
+  	- []byte
+	- error
+
+  Call permissions: Anyone
+*/
+func HexToBytes(input string) ([]byte, error) {
+	return hexutil.Decode(input)
+}
+
+/*
+  HexToUint64:
+   	EN - convert hex string to uint64
+	CN - 将十六进制字符串转换为uint64
+  Params:
+  	- input string，输入的hex 字符串
+
+  Returns:
+  	- uint64， 转换得到的值
+	- error
+
+  Call permissions: Anyone
+*/
+func HexToUint64(input string) (uint64, error) {
+	return hexutil.DecodeUint64(input)
+}
+
+/*
+  描述:
+   	EN - convert hex string to *big.Int
+	CN - 将十六进制字符串转换为*big.Int
+  Params:
+	- input string，输入的hex 字符串
+  	-
+
+  Returns:
+  	- *big.Int， 转换得到的值
+	- error
+
+  Call permissions: Anyone
+*/
+func HexToBigInt(input string) (*big.Int, error) {
+	return hexutil.DecodeBig(input)
+}
+
+/*
+  描述:
+   	EN - convert hex string to utf8 string
+	CN - 将十六进制字符串转换为utf8字符串
+  Params:
+  	- input string hex字符串
+
+  Returns:
+  	- string UTF-8字符串
+	- error
+
+  Call permissions: Anyone
+*/
+func HexToUtf8(input string) (string, error) {
+	res, err := hexutil.Decode(input)
+	if err != nil {
+		return "", err
+	} else {
+		return string(res), nil
+	}
+}
+
+/*
+  HexToAscii:
+   	EN - convert hex string to ascii string
+	CN - 将十六进制字符串转换为ASCII字符串
+  Params:
+  	- input string hex字符串
+
+  Returns:
+  	- string ASCII字符串
+	- error
+
+  Call permissions: Anyone
+*/
+func HexToAscii(input string) (string, error) {
+	res, err := hexutil.Decode(input)
+	if err != nil {
+		return "", err
+	} else {
+		return string(res), nil
+	}
+}
+
+/*
+  AsciiToHex:
+   	EN - convert ASCII string to hex string
+	CN - 将ASCII字符串转换为十六进制字符串
+  Params:
+  	- input string,给定的ASCII字符串
+
+  Returns:
+  	- string，hex字符串
+
+  Call permissions: Anyone
+*/
+func AsciiToHex(input string) string {
+	runeInput := []rune(input)
+	hexStr := "0x"
+	for _, v := range runeInput {
+		hexStr += strconv.FormatInt(int64(v), 16)
+	}
+	return hexStr
+}
+
+/*
+  Utf8ToHex:
+   	EN - convert utf8 string to hex string
+	CN - 将UTF-8字符串转换为十六进制字符串
+  Params:
+  	- input string,给定的UTF-8字符串
+
+  Returns:
+  	- string，hex字符串
+
+  Call permissions: Anyone
+*/
+func Utf8ToHex(input string) string {
+	return "0x" + hex.EncodeToString([]byte(input))
+}
+
+// keccak256 calculates and returns the Keccak256 hash of the input data.
+func keccak256(cryptoType uint8, data ...[]byte) []byte {
+	switch cryptoType {
+	case 0:
+		return keccak256Sm2(data...)
+	case 1:
+		return keccak256Btc(data...)
+	default:
+		return keccak256Sm2(data...)
+	}
+}
+
+func keccak256Sm2(data ...[]byte) []byte {
+	d := sm3.New()
+	for _, b := range data {
+		d.Write(b)
+	}
+	return d.Sum(nil)
+}
+
+// keccak256Btc calculates and returns the Keccak256 hash of the input data.
+func keccak256Btc(data ...[]byte) []byte {
+	d := sha3.NewLegacyKeccak256()
+	for _, b := range data {
+		d.Write(b)
+	}
+	return d.Sum(nil)
 }

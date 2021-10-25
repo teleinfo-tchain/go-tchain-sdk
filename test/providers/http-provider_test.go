@@ -27,6 +27,7 @@ import (
 	"math/big"
 	"strconv"
 	"testing"
+	"time"
 )
 
 func Test_HTTP_Core_ToSyncingResponse(t *testing.T) {
@@ -59,21 +60,24 @@ func Test_HTTP_Core_ToTransactionResponse(t *testing.T) {
 
 	chainId, _ := connection.Core.GetChainId()
 
+	nonce, _ := connection.Core.GetTransactionCount(resources.Addr1, block2.LATEST)
+
 	var sender utils.Address
 	sender = utils.StringToAddress(resources.Addr1)
 	var recipient utils.Address
 	recipient = utils.StringToAddress(resources.Addr2)
 
 	tx := &account.SignTxParams{
-		Sender   :   &sender,
-		Recipient:   &recipient,
-		Amount   :   big.NewInt(10000),
-		GasLimit :   200000,
-		GasPrice :   big.NewInt(30),
-		ChainId  :   chainId,
+		ChainId:   chainId,
+		Nonce:     nonce,
+		GasPrice:  big.NewInt(200),
+		GasLimit:  200000,
+		Sender:    &sender,
+		Recipient: &recipient,
+		Amount:    big.NewInt(10000),
 	}
 
-	res, err := connection.Account.SignTransaction(tx, resources.Addr1, false)
+	res, err := account.SignTransaction(tx, resources.Addr1Pri, false)
 
 	if err != nil {
 		t.Error(err)
@@ -86,6 +90,8 @@ func Test_HTTP_Core_ToTransactionResponse(t *testing.T) {
 		t.Error(err)
 		t.FailNow()
 	}
+
+	time.Sleep(8)
 
 	txFromHash, err := connection.Core.GetTransactionByHash(txHash)
 
@@ -389,15 +395,15 @@ func Test_HTTP_Request_ToTransactionReceipt(t *testing.T) {
 	recipient = utils.StringToAddress(resources.Addr2)
 
 	tx := &account.SignTxParams{
-		Sender   :   &sender,
-		Recipient:   &recipient,
-		Amount   :   big.NewInt(10000),
-		GasLimit :   200000,
-		GasPrice :   big.NewInt(30),
-		ChainId  :   chainId,
+		Sender:    &sender,
+		Recipient: &recipient,
+		Amount:    big.NewInt(10000),
+		GasLimit:  200000,
+		GasPrice:  big.NewInt(30),
+		ChainId:   chainId,
 	}
 
-	res, err := connection.Account.SignTransaction(tx, resources.Addr1, false)
+	res, err := account.SignTransaction(tx, resources.Addr1, false)
 
 	if err != nil {
 		t.Error(err)

@@ -2,31 +2,31 @@ package resources
 
 // base config
 const (
-	IP00 string = "127.0.0.1"
+	IP00 string = "39.99.132.122"
 	IP51 string = "172.17.6.51"
 	IP52 string = "172.17.6.52"
 	IP54 string = "172.17.6.54"
 	IP55 string = "172.17.6.55"
 
-	Port          uint64 = 5002
+	Port          uint64 = 44002
 	WebsocketPort uint64 = 5003
 
 	ChainCode string = "tele"
-	PassWord  string = "teleInfo"
+	PassWord  string = "tele"
 )
 
 // accounts
 const (
-	Addr1    string = ""
-	Addr1Hex string = ""
-	Addr1Pri string = ""
+	Addr1    string = "did:bid:qwer:sf25XGBQU8E8wGFo9wGKo95jUgtYPM24Y"
+	Addr1Hex string = "did:bid:qwer:sf25XGBQU8E8wGFo9wGKo95jUgtYPM24Y"
+	Addr1Pri string = "e41219552564c956edeb0fa782c7760a6f5ade504768b3570c68dc0459a7889a"
 
-	Addr2    string = ""
-	Addr2Hex string = ""
-	Addr2Pri string = ""
+	Addr2    string = "did:bid:qwer:sf2BX7RNbmdtGgyYuD3HL7H7w1XmGSTFY"
+	Addr2Hex string = "did:bid:qwer:sf2BX7RNbmdtGgyYuD3HL7H7w1XmGSTFY"
+	Addr2Pri string = "78a0fc8f2e8440e1cc13eb12e5eb0a76c70e4cb0b864dfcc4d9530832f259363"
 )
 
-const KeyStoreFile string = "/resources/keystore/"
+const KeyStoreFile string = "/test/resources/keystore/"
 
 // system contract
 const (

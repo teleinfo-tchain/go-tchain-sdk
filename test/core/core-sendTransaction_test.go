@@ -45,8 +45,7 @@ func TestCoreSendTransaction(t *testing.T) {
 	toAddress := resources.RegisterAllianceOne
 	balance, err := connection.Core.GetBalance(toAddress, block.LATEST)
 	if err == nil {
-		util := utils.NewUtils()
-		balBif, _ := util.FromWei(balance)
+		balBif, _ := utils.FromWei(balance)
 		t.Log("toAddress balance is ", balBif)
 	}
 

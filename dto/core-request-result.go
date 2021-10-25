@@ -88,10 +88,10 @@ func (pointer *CoreRequestResult) ToTransactionResponse() (*TransactionResponse,
 	var data []byte
 	var err error
 	if value, ok := pointer.Result.(string); ok {
-		//come from websock
+		// come from websock
 		data = []byte(value)
 	} else {
-		//come from http
+		// come from http
 		result := (pointer).Result.(map[string]interface{})
 
 		if len(result) == 0 {
@@ -121,10 +121,10 @@ func (pointer *CoreRequestResult) ToSignTransactionResponse() (*SignTransactionR
 	var data []byte
 	var err error
 	if value, ok := pointer.Result.(string); ok {
-		//come from websock
+		// come from websock
 		data = []byte(value)
 	} else {
-		//come from http
+		// come from http
 		result := (pointer).Result.(map[string]interface{})
 
 		if len(result) == 0 {
@@ -152,10 +152,10 @@ func (pointer *CoreRequestResult) ToBlock(transactionDetails bool) (interface{},
 	var data []byte
 	var err error
 	if value, ok := pointer.Result.(string); ok {
-		//come from websock
+		// come from websock
 		data = []byte(value)
 	} else {
-		//come from http
+		// come from http
 		result := (pointer).Result.(map[string]interface{})
 
 		if len(result) == 0 {
@@ -188,14 +188,14 @@ func (pointer *CoreRequestResult) ToPendingTransactions() ([]*TransactionRespons
 	var data0 []byte
 	var err0 error
 	if value, ok := pointer.Result.(string); ok {
-		//come from websock
+		// come from websock
 		data0 = []byte(value)
 	} else {
-		//come from http
+		// come from http
 		result := (pointer).Result.([]interface{})
-		//if len(result) == 0 {
+		// if len(result) == 0 {
 		//	return nil, EMPTYRESPONSE
-		//}
+		// }
 		data0, err0 = json.Marshal(result)
 	}
 
@@ -213,10 +213,10 @@ func (pointer *CoreRequestResult) ToPendingTransactions() ([]*TransactionRespons
 		var data []byte
 		var err error
 		if value, ok := v.(string); ok {
-			//come from websock
+			// come from websock
 			data = []byte(value)
 		} else {
-			//come from http
+			// come from http
 			result := v.(map[string]interface{})
 
 			if len(result) == 0 {
@@ -252,10 +252,10 @@ func (pointer *CoreRequestResult) ToProof() (*AccountResult, error) {
 	value0 := pointer.Result
 	println(value0)
 	if value, ok := pointer.Result.(string); ok {
-		//come from websock
+		// come from websock
 		data = []byte(value)
 	} else {
-		//come from http
+		// come from http
 		result := (pointer).Result.(map[string]interface{})
 
 		if len(result) == 0 {

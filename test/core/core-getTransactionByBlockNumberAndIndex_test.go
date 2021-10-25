@@ -73,7 +73,7 @@ func TestGetTransactionByBlockNumberAndIndex(t *testing.T) {
 		t.FailNow()
 	}
 
-	if tx.From != generator || tx.To != generator || tx.Value.Cmp(txVal) != 0 || tx.Hash != txID {
+	if tx.Sender != generator || tx.Recipient != generator || tx.Amount.Cmp(txVal) != 0 || tx.Hash != txID {
 		t.Errorf("Incorrect transaction from hash and index")
 		t.FailNow()
 	}

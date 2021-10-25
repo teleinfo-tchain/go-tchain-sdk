@@ -1,4 +1,4 @@
-package accounts
+package types
 
 import (
 	"github.com/bif/bif-sdk-go/utils"

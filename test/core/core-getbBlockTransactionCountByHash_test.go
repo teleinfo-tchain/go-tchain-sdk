@@ -16,10 +16,12 @@ package test
 
 import (
 	"github.com/bif/bif-sdk-go"
+	"github.com/bif/bif-sdk-go/account"
 	block2 "github.com/bif/bif-sdk-go/core/block"
 	"github.com/bif/bif-sdk-go/dto"
 	"github.com/bif/bif-sdk-go/providers"
 	"github.com/bif/bif-sdk-go/test/resources"
+	"github.com/bif/bif-sdk-go/utils"
 	"math/big"
 	"strconv"
 	"testing"
@@ -44,41 +46,43 @@ func TestGetBlockTransactionCountByHash(t *testing.T) {
 	}
 	t.Log("txCount:", txCount)
 
-	// submit a transaction, wait for the block and there should be 1 tx.
-	generator, err := connection.Core.GetGenerator()
+	chainId, _ := connection.Core.GetChainId()
+
+	nonce, _ := connection.Core.GetTransactionCount(resources.Addr1, block2.LATEST)
+
+	var sender utils.Address
+	sender = utils.StringToAddress(resources.Addr1)
+	var recipient utils.Address
+	recipient = utils.StringToAddress(resources.Addr2)
+
+	tx := &account.SignTxParams{
+		ChainId:   chainId,
+		Nonce:     nonce,
+		GasPrice:  big.NewInt(200),
+		GasLimit:  200000,
+		Sender:    &sender,
+		Recipient: &recipient,
+		Amount:    big.NewInt(10000),
+	}
+
+	res, err := account.SignTransaction(tx, resources.Addr1Pri, false)
 
 	if err != nil {
 		t.Error(err)
 		t.FailNow()
 	}
 
-	transaction := new(dto.TransactionParameters)
-	transaction.Sender = generator
-	transaction.Recipient = generator
-	transaction.Amount = big.NewInt(200000)
-	transaction.GasLimit = uint64(40000)
-
-	txID, err := connection.Core.SendTransaction(transaction)
-
+	txHah, err := connection.Core.SendRawTransaction(res.Raw.String())
 	if err != nil {
 		t.Error(err)
 		t.FailNow()
 	}
 
-	t.Log("txID:", txID)
+	t.Logf("txHash is %s \n", txHah)
 
-	tx, err := connection.Core.GetTransactionByHash(txID)
-	if err != nil {
-		t.Error(err)
-		t.FailNow()
-	}
+	time.Sleep(time.Second*6)
 
-	for tx.BlockNumber.Uint64() == 0 {
-		time.Sleep(time.Second*2)
-		tx, _ = connection.Core.GetTransactionByHash(txID)
-	}
-
-	txCount, err = connection.Core.GetBlockTransactionCountByHash(tx.BlockHash)
+	txCount, err = connection.Core.GetBlockTransactionCountByHash(block.(*dto.BlockNoDetails).Hash)
 
 	if err != nil {
 		t.Error(err)

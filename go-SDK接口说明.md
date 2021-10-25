@@ -239,8 +239,8 @@ dpos_test.go            | dpos属性单元测试
 ##### 1） 如果是core的接口，参考core模块，其单元测试在 ../src/bif-sdk-go/test/core
 
 ##### 2） 涉及到账户生成和解密的参照account模块，其单元测试在 ../src/bif-sdk-go/test/account,  
-    账户相关的操作在keyManager.go, 如果需要生成keyStore文件，用GenerateKeyStore;GetPrivateKeyFromFile可以从文件导出私钥；
-    PrivateKeyToKeyStoreFile可以将私钥变为keyStore文件存储；  GetPublicKeyFromFile从keyStore文件中获取公钥；  CheckPublicKeyToAccount查看公钥是否与账户匹配
+    账户相关的操作在keyManager.go, 如果需要生成keyStore文件，用GenKeyStore;PriKeyFromKeyStore可以从文件导出私钥；
+    PriKeyToKeyStore可以将私钥变为keyStore文件存储；  PublicKeyFromFile从keyStore文件中获取公钥；  CheckPublicKeyToAccount查看公钥是否与账户匹配
  
 ## 1. 节点可信合约
 ### 1)  GetActive(id string) (bool, error)

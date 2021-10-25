@@ -23,18 +23,18 @@ import (
 	"github.com/bif/bif-sdk-go/testutil"
 	"github.com/stretchr/testify/assert"
 	"math/big"
+	"path"
 	"strconv"
 	"testing"
 	"time"
-
 )
 
 func TestCoreContract(t *testing.T) {
 
 	cc := &testutil.Contract{}
 
-	demoPath := "D:\\Go\\src\\github.com\\bif\\bif-sdk-go\\test\\resources\\simple-token.sol"
-	artifact, err := cc.Compile(demoPath)
+	file := path.Join(bif.GetCurrentAbPath(), "test", "resources", "simple-token.sol")
+	artifact, err := cc.Compile(file)
 	assert.NoError(t, err)
 
 	type TruffleContract struct {
@@ -148,26 +148,26 @@ func TestCoreContract(t *testing.T) {
 		}
 	}
 
-	//hash, err = contract.Send(transaction, "approve", utils.StringToAddress(generator), big.NewInt(10))
-	//if err != nil {
+	// hash, err = contract.Send(transaction, "approve", utils.StringToAddress(generator), big.NewInt(10))
+	// if err != nil {
 	//	t.Log(err)
 	//	t.Errorf("Can't send approve transaction")
 	//	t.FailNow()
-	//}
+	// }
 	//
-	//t.Log(hash)
+	// t.Log(hash)
 	//
-	//receipt = nil
-	//for receipt == nil {
+	// receipt = nil
+	// for receipt == nil {
 	//	time.Sleep(time.Second)
 	//	receipt, err = connection.Core.GetTransactionReceipt(hash)
-	//}
-	//t.Log(receipt.Logs[0].Data)
+	// }
+	// t.Log(receipt.Logs[0].Data)
 	//
-	//reallyBigInt, _ := big.NewInt(0).SetString("20", 16)
-	//_, err = contract.Send(transaction, "approve", utils.StringToAddress(generator), reallyBigInt)
-	//if err != nil {
+	// reallyBigInt, _ := big.NewInt(0).SetString("20", 16)
+	// _, err = contract.Send(transaction, "approve", utils.StringToAddress(generator), reallyBigInt)
+	// if err != nil {
 	//	t.Errorf("Can't send approve transaction")
 	//	t.FailNow()
-	//}
+	// }
 }

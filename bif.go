@@ -16,7 +16,7 @@
 package bif
 
 import (
-	"github.com/bif/bif-sdk-go/account"
+	"github.com/bif/bif-sdk-go/account/types"
 	"github.com/bif/bif-sdk-go/core"
 	"github.com/bif/bif-sdk-go/debug"
 	"github.com/bif/bif-sdk-go/dto"
@@ -25,7 +25,11 @@ import (
 	"github.com/bif/bif-sdk-go/providers"
 	"github.com/bif/bif-sdk-go/system"
 	"github.com/bif/bif-sdk-go/txpool"
-	"github.com/bif/bif-sdk-go/utils"
+	"os"
+	"path"
+	"path/filepath"
+	"runtime"
+	"strings"
 )
 
 /*
@@ -37,9 +41,8 @@ type Bif struct {
 	Provider providers.ProviderInterface
 	Core     *core.Core
 	Gb       *gb.GB
-	Account  *account.Account
+	Account  *types.Account
 	Net      *net.Net
-	Utils    *utils.Utils
 	System   *system.System
 	Debug    *debug.Debug
 	TxPool   *txpool.TxPool
@@ -55,9 +58,7 @@ func NewBif(provider providers.ProviderInterface) *Bif {
 	bif.Provider = provider
 	bif.Core = core.NewCore(provider)
 	bif.Gb = gb.NewGB(provider)
-	bif.Account = account.NewAccount(provider)
 	bif.Net = net.NewNet(provider)
-	bif.Utils = utils.NewUtils()
 	bif.System = system.NewSystem(provider)
 	bif.TxPool = txpool.NewTxPool(provider)
 	bif.Debug = debug.NewDebug(provider)
@@ -88,4 +89,35 @@ func (bif Bif) ClientVersion() (string, error) {
 
 	return pointer.ToString()
 
+}
+
+// GetCurrentAbPath 最终方案-全兼容  获取项目路径
+func GetCurrentAbPath() string {
+	dir := getCurrentAbPathByExecutable()
+
+	tmpDir, _ := filepath.EvalSymlinks(os.TempDir())
+	if strings.Contains(dir, tmpDir) {
+		return getCurrentAbPathByCaller()
+	}
+	return dir
+}
+
+// 获取当前执行文件绝对路径
+func getCurrentAbPathByExecutable() string {
+	exePath, err := os.Executable()
+	if err != nil {
+		panic(err)
+	}
+	res, _ := filepath.EvalSymlinks(filepath.Dir(exePath))
+	return res
+}
+
+// 获取当前执行文件绝对路径（go run）
+func getCurrentAbPathByCaller() string {
+	var abPath string
+	_, filename, _, ok := runtime.Caller(0)
+	if ok {
+		abPath = path.Dir(filename)
+	}
+	return abPath
 }

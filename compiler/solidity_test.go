@@ -2,9 +2,11 @@ package compiler
 
 import (
 	"bytes"
+	"github.com/bif/bif-sdk-go"
 	"io/ioutil"
 	"os"
 	"os/exec"
+	"path"
 	"path/filepath"
 	"reflect"
 	"strings"
@@ -12,8 +14,7 @@ import (
 )
 
 var (
-	solcDir  = "D:\\Go\\src\\github.com\\umbracle\\go-web3\\compiler\\tmp"
-	solcPath = solcDir + "\\solc.exe"
+	solcPath  = path.Join(bif.GetCurrentAbPath(), "compiler", "tmp", "solc.exe")
 )
 
 

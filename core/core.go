@@ -359,26 +359,7 @@ func (core *Core) EstimateGas(transaction *dto.TransactionParameters) (*big.Int,
 	return pointer.ToBigInt()
 }
 
-/*
-  SendTransaction:
-	EN - Creates a transaction for the given argument, sign it and submit it to the transaction pool,return transaction hash
- 	CN - 对给定参数创建交易，对其进行签名并将其提交到交易池，返回交易哈希
-  Params:
-  	- transaction: 要发送的交易对象(*dto.TransactionParameters)
-		from: string，20 Bytes - 指定的发送者的地址。
-		to: string，20 Bytes - （可选）交易消息的目标地址，如果是合约创建，则不填.
-		gas: *big.Int - （可选）默认是自动，交易可使用的gas，未使用的gas会退回。
-		gasPrice: *big.Int - （可选）默认是自动确定，交易的gas价格，默认是网络gas价格的平均值 。
-		data: string - （可选）或者包含相关数据的字节字符串，如果是合约创建，则是初始化要用到的代码。
-		value: *big.Int - （可选）交易携带的货币量，以bifer为单位。如果合约创建交易，则为初始的基金
-		nonce: *big.Int - （可选）整数，使用此值，可以允许你覆盖你自己的相同nonce的，待pending中的交易
-
-  Returns:
-  	- string, transactionHash，32 Bytes，交易哈希，如果交易尚不可用，则为零哈希
- 	- error
-
-  Call permissions: Anyone
-*/
+// Deprecated: This operation is not supported
 func (core *Core) SendTransaction(transaction *dto.TransactionParameters) (string, error) {
 
 	params := make([]*dto.RequestTransactionParameters, 1)
@@ -560,7 +541,7 @@ func (core *Core) GetTransactionReceipt(hash string) (*dto.TransactionReceipt, e
    	EN - Returns the number of transactions in the block with the given hash
  	CN - 根据区块哈希获取该区块内包含的交易数
   Params:
-  	- hash，32 bytes - block hash
+  	- blockHash，32 bytes - block hash
 
   Returns:
   	- uint64, 区块包含的交易数
@@ -568,22 +549,22 @@ func (core *Core) GetTransactionReceipt(hash string) (*dto.TransactionReceipt, e
 
   Call permissions: Anyone
 */
-func (core *Core) GetBlockTransactionCountByHash(hash string) (uint64, error) {
+func (core *Core) GetBlockTransactionCountByHash(blockHash string) (uint64, error) {
 	// ensure that the hash is correctly formatted
-	if strings.HasPrefix(hash, "0x") {
-		if len(hash) != 66 {
+	if strings.HasPrefix(blockHash, "0x") {
+		if len(blockHash) != 66 {
 			return 0, errors.New("malformed block hash")
 		}
 	} else {
-		if len(hash) != 64 {
+		if len(blockHash) != 64 {
 			return 0, errors.New("malformed block hash")
 		}
-		hash = "0x" + hash
+		blockHash = "0x" + blockHash
 	}
 
 	pointer := &dto.CoreRequestResult{}
 
-	err := core.provider.SendRequest(pointer, "core_getBlockTransactionCountByHash", []string{hash})
+	err := core.provider.SendRequest(pointer, "core_getBlockTransactionCountByHash", []string{blockHash})
 
 	if err != nil {
 		return 0, err
@@ -978,7 +959,7 @@ func (core *Core) GetRawTransactionByHash(hash string) (string, error) {
  	CN - 根据区块哈希和交易索引，返回交易信息
   Params:
   	- hash,string,32 Bytes,区块哈希
-  	- index, *big.Int, 交易在区块中的索引
+  	- index, uint, 交易在区块中的索引
 
   Returns:
   	- *dto.TransactionResponse, 参照GetTransactionByHash的返回值，二者一致
@@ -986,7 +967,7 @@ func (core *Core) GetRawTransactionByHash(hash string) (string, error) {
 
   Call permissions: Anyone
 */
-func (core *Core) GetTransactionByBlockHashAndIndex(hash string, index *big.Int) (*dto.TransactionResponse, error) {
+func (core *Core) GetTransactionByBlockHashAndIndex(hash string, index uint) (*dto.TransactionResponse, error) {
 
 	// ensure that the hash is correctly formatted
 	if strings.HasPrefix(hash, "0x") {
@@ -1003,7 +984,7 @@ func (core *Core) GetTransactionByBlockHashAndIndex(hash string, index *big.Int)
 
 	params := make([]string, 2)
 	params[0] = hash
-	params[1] = hexutil.EncodeBig(index)
+	params[1] = string(index)
 
 	pointer := &dto.CoreRequestResult{}
 
@@ -1022,7 +1003,7 @@ func (core *Core) GetTransactionByBlockHashAndIndex(hash string, index *big.Int)
  	CN - 根据区块哈希和交易索引，返回交易信息
   Params:
   	- hash,string,32 Bytes,区块哈希
-  	- index, *big.Int, 交易在区块中的索引
+  	- index,  uint, 交易在区块中的索引
 
   Returns:
   	- string
@@ -1030,7 +1011,7 @@ func (core *Core) GetTransactionByBlockHashAndIndex(hash string, index *big.Int)
 
   Call permissions: Anyone
 */
-func (core *Core) GetRawTransactionByBlockHashAndIndex(hash string, index *big.Int) (string, error) {
+func (core *Core) GetRawTransactionByBlockHashAndIndex(hash string, index uint) (string, error) {
 
 	// ensure that the hash is correctly formatted
 	if strings.HasPrefix(hash, "0x") {
@@ -1047,7 +1028,7 @@ func (core *Core) GetRawTransactionByBlockHashAndIndex(hash string, index *big.I
 
 	params := make([]string, 2)
 	params[0] = hash
-	params[1] = hexutil.EncodeBig(index)
+	params[1] = string(index)
 
 	pointer := &dto.CoreRequestResult{}
 
@@ -1069,7 +1050,7 @@ func (core *Core) GetRawTransactionByBlockHashAndIndex(hash string, index *big.I
 	 (1) HEX String - an integer block number
 	 (2) String "latest" - for the latest mined block
 	 (3) String "pending" - for the pending state/transactions
-  	- index, *big.Int, 交易在区块中的索引
+  	- index,  uint, 交易在区块中的索引
 
   Returns:
   	- *dto.TransactionResponse, 参照GetTransactionByHash的返回值，二者一致
@@ -1077,11 +1058,11 @@ func (core *Core) GetRawTransactionByBlockHashAndIndex(hash string, index *big.I
 
   Call permissions: Anyone
 */
-func (core *Core) GetTransactionByBlockNumberAndIndex(blockNumber string, index *big.Int) (*dto.TransactionResponse, error) {
+func (core *Core) GetTransactionByBlockNumberAndIndex(blockNumber string, index uint) (*dto.TransactionResponse, error) {
 
 	params := make([]string, 2)
 	params[0] = blockNumber
-	params[1] = hexutil.EncodeBig(index)
+	params[1] = string(index)
 
 	pointer := &dto.CoreRequestResult{}
 
@@ -1104,7 +1085,7 @@ func (core *Core) GetTransactionByBlockNumberAndIndex(blockNumber string, index 
 	 (1) HEX String - an integer block number
 	 (2) String "latest" - for the latest mined block
 	 (3) String "pending" - for the pending state/transactions
-  	- index, *big.Int, 交易在区块中的索引
+  	- index, uint, 交易在区块中的索引
 
   Returns:
   	- string (如果返回0x，则表示交易未执行或不存在)
@@ -1112,11 +1093,11 @@ func (core *Core) GetTransactionByBlockNumberAndIndex(blockNumber string, index 
 
   Call permissions: Anyone
 */
-func (core *Core) GetRawTransactionByBlockNumberAndIndex(blockNumber string, index *big.Int) (string, error) {
+func (core *Core) GetRawTransactionByBlockNumberAndIndex(blockNumber string, index uint) (string, error) {
 
 	params := make([]string, 2)
 	params[0] = blockNumber
-	params[1] = hexutil.EncodeBig(index)
+	params[1] = string(index)
 
 	pointer := &dto.CoreRequestResult{}
 

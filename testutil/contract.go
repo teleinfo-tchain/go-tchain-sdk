@@ -3,6 +3,8 @@ package testutil
 import (
 	"encoding/hex"
 	"fmt"
+	"github.com/bif/bif-sdk-go"
+	"path"
 	"strconv"
 	"strings"
 
@@ -60,13 +62,14 @@ func (c *Contract) addCallback(f func() string) {
 
 // Compile compiles the contract
 func (c *Contract) Compile(demoPath string) (*compiler.Artifact, error) {
-	output, err := compiler.NewSolidityCompiler("solc").(*compiler.Solidity).CompileCode(demoPath)
+	solcPath := path.Join(bif.GetCurrentAbPath(), "compiler", "tmp", "solc.exe")
+	output, err := compiler.NewSolidityCompiler(solcPath).(*compiler.Solidity).CompileCode(demoPath)
 	if err != nil {
 		return nil, err
 	}
 	solcContract, ok := output["D:/Go/src/github.com/bif/bif-sdk-go/test/resources/simple-token.sol:Sample"]
 	if !ok {
-		return nil, fmt.Errorf("Expected the contract to be called Sample")
+		return nil, fmt.Errorf("expected the contract to be called Sample")
 	}
 	return solcContract, nil
 }

@@ -1,4 +1,4 @@
-package accounts
+package types
 
 import (
 	"encoding/json"

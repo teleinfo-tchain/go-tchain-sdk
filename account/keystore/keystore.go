@@ -22,7 +22,7 @@ package keystore
 import (
 	"crypto/ecdsa"
 	"errors"
-	"github.com/bif/bif-sdk-go/account/accounts"
+	"github.com/bif/bif-sdk-go/account/types"
 	"path/filepath"
 )
 
@@ -54,15 +54,15 @@ func NewKeyStore(keydir string, scryptN, scryptP int) *KeyStore {
 }
 
 // ImportECDSA stores the given key into the key directory, encrypting it with the passphrase.
-func (ks *KeyStore) ImportECDSA(priv *ecdsa.PrivateKey, passphrase, chainCode string) (accounts.Account, error) {
+func (ks *KeyStore) ImportECDSA(priv *ecdsa.PrivateKey, passphrase, chainCode string) (types.Account, error) {
 	key := NewKeyFromECDSA(priv)
 	return ks.importKey(key, passphrase, chainCode)
 }
 
-func (ks *KeyStore) importKey(key *Key, passphrase, chainCode string) (accounts.Account, error) {
-	a := accounts.Account{Address: key.Address, URL: accounts.URL{Scheme: KeyStoreScheme, Path: ks.storage.JoinPath(keyFileName(key.Address, chainCode))}}
+func (ks *KeyStore) importKey(key *Key, passphrase, chainCode string) (types.Account, error) {
+	a := types.Account{Address: key.Address, URL: types.URL{Scheme: KeyStoreScheme, Path: ks.storage.JoinPath(keyFileName(key.Address, chainCode))}}
 	if err := ks.storage.StoreKey(a.URL.Path, key, passphrase, chainCode); err != nil {
-		return accounts.Account{}, err
+		return types.Account{}, err
 	}
 	return a, nil
 }

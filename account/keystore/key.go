@@ -22,7 +22,7 @@ import (
 	"encoding/hex"
 	"encoding/json"
 	"fmt"
-	"github.com/bif/bif-sdk-go/account/accounts"
+	"github.com/bif/bif-sdk-go/account/types"
 	"github.com/bif/bif-sdk-go/crypto/config"
 	"github.com/bif/bif-sdk-go/utils"
 	"io"
@@ -153,14 +153,14 @@ func newKey(rand io.Reader, cryptoType config.CryptoType) (*Key, error) {
 	return NewKeyFromECDSA(privateKeyECDSA), nil
 }
 
-func storeNewKey(ks keyStore, rand io.Reader, auth, chainCode string, cryptoType config.CryptoType) (*Key, accounts.Account, error) {
+func storeNewKey(ks keyStore, rand io.Reader, auth, chainCode string, cryptoType config.CryptoType) (*Key, types.Account, error) {
 	key, err := newKey(rand, cryptoType)
 	if err != nil {
-		return nil, accounts.Account{}, err
+		return nil, types.Account{}, err
 	}
-	a := accounts.Account{
+	a := types.Account{
 		Address: key.Address,
-		URL:     accounts.URL{Scheme: KeyStoreScheme, Path: ks.JoinPath(keyFileName(key.Address, chainCode))},
+		URL:     types.URL{Scheme: KeyStoreScheme, Path: ks.JoinPath(keyFileName(key.Address, chainCode))},
 	}
 	if err := ks.StoreKey(a.URL.Path, key, auth, chainCode); err != nil {
 		zeroKey(key.PrivateKey)

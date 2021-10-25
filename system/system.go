@@ -4,6 +4,7 @@ import (
 	"errors"
 	"github.com/bif/bif-sdk-go/abi"
 	"github.com/bif/bif-sdk-go/account"
+	"github.com/bif/bif-sdk-go/account/types"
 	"github.com/bif/bif-sdk-go/dto"
 	"github.com/bif/bif-sdk-go/providers"
 	"github.com/bif/bif-sdk-go/utils"
@@ -17,7 +18,7 @@ import (
 // System - The System Module
 type System struct {
 	provider providers.ProviderInterface
-	acc      *account.Account
+	acc      *types.Account
 }
 
 type LogData struct {
@@ -35,7 +36,7 @@ type SysTxParams struct {
 	KeyFileData []byte   // keystore文件内容
 	GasPrice    *big.Int // 交易的gas价格，默认是网络gas价格的平均值
 	Gas         uint64   // 交易可使用的gas，未使用的gas会退回
-	Nonce       uint64   // 从该账户发起交易的Nonce值
+	Nonce       *big.Int // 从该账户发起交易的Nonce值
 	ChainId     uint64   // 链的ChainId
 	Version     uint64
 }
@@ -44,7 +45,6 @@ type SysTxParams struct {
 func NewSystem(provider providers.ProviderInterface) *System {
 	system := new(System)
 	system.provider = provider
-	system.acc = account.NewAccount(provider)
 	return system
 }
 
@@ -62,16 +62,16 @@ func (sys *System) prePareSignTransaction(signTxParams *SysTxParams, payLoad []b
 	sender := utils.StringToAddress(signTxParams.From)
 	recipient := utils.StringToAddress(contractAddr)
 	signTx := &account.SignTxParams{
-		Sender:       &sender,
-		Recipient:    &recipient,
-		AccountNonce: signTxParams.Nonce,
-		GasPrice:     signTxParams.GasPrice,
-		GasLimit:     signTxParams.Gas,
-		Amount:       nil,
-		Payload:      payLoad,
-		ChainId:      signTxParams.ChainId,
+		Sender:    &sender,
+		Recipient: &recipient,
+		Nonce:     signTxParams.Nonce,
+		GasPrice:  signTxParams.GasPrice,
+		GasLimit:  signTxParams.Gas,
+		Amount:    nil,
+		Payload:   payLoad,
+		ChainId:   signTxParams.ChainId,
 	}
-	signResult, err := sys.acc.SignTransaction(signTx, privateKey, signTxParams.IsSM2)
+	signResult, err := account.SignTransaction(signTx, privateKey, signTxParams.IsSM2)
 	if err != nil {
 		return "", err
 	}

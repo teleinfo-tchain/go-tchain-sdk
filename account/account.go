@@ -9,145 +9,40 @@ import (
 	"github.com/bif/bif-sdk-go/account/keystore"
 	"github.com/bif/bif-sdk-go/crypto"
 	"github.com/bif/bif-sdk-go/crypto/config"
-	"github.com/bif/bif-sdk-go/dto"
-	"github.com/bif/bif-sdk-go/providers"
 	"github.com/bif/bif-sdk-go/utils"
-	"github.com/bif/bif-sdk-go/utils/rlp"
-	"math/big"
+	libp2pcorecrypto "github.com/libp2p/go-libp2p-core/crypto"
+	libp2pcorepeer "github.com/libp2p/go-libp2p-core/peer"
+	"io/ioutil"
+	"regexp"
 	"strconv"
 )
 
-// SignatureLength indicates the byte length required to carry a signature with recovery id.
-// deprecated: 注意由于已经经过国密改造，这个的意义是否有改变？？
-const SignatureLength = 64 + 1 // 64 bytes ECDSA signature + 1 byte recovery id
+func preCheck(keyStorePath string, password string, UseLightweightKDF bool) (int, int, error) {
+	if keyStorePath == "" {
+		return -1, -1, errors.New("empty keyStorePath, please check")
+	}
+	if password == "" {
+		return -1, -1, errors.New("empty password, please check")
+	}
 
-// Account - The Account Module
-type Account struct {
-	provider providers.ProviderInterface
+	scryptN := keystore.StandardScryptN
+	scryptP := keystore.StandardScryptP
+	if UseLightweightKDF {
+		scryptN = keystore.LightScryptN
+		scryptP = keystore.LightScryptP
+	}
+	return scryptN, scryptP, nil
 }
 
-//  NewAccount - 初始化Account
-func NewAccount(provider providers.ProviderInterface) *Account {
-	account := new(Account)
-	account.provider = provider
-	return account
-}
-
-func cryptoType(isSM2 bool) config.CryptoType {
-	if isSM2 {
-		return config.SM2
-	}
-	return config.SECP256K1
-}
-
-func publicKeyStrToAddress(pubBytes []byte, isSM2 bool, chainCode string) (string, error) {
-	var addr []byte
-	if isSM2 {
-		addr = crypto.Keccak256(config.SECP256K1, pubBytes[1:])[12:]
-		addr[8] = 115
-	} else {
-		addr = crypto.Keccak256(config.SECP256K1, pubBytes[1:])[12:]
-		if addr[8] == 115 {
-			addr[8] = 103
-		}
-	}
-	return utils.BytesToAddress(addr).String(chainCode), nil
-}
-
-func (account *Account) getChainId() (uint64, error) {
-	pointer := &dto.CoreRequestResult{}
-
-	err := account.provider.SendRequest(pointer, "core_chainId", nil)
-
-	if err != nil {
-		return 0, err
-	}
-
-	return pointer.ToUint64()
-}
-
-func (account *Account) getGasPrice() (*big.Int, error) {
-	pointer := &dto.CoreRequestResult{}
-
-	err := account.provider.SendRequest(pointer, "core_gasPrice", nil)
-
-	if err != nil {
-		return nil, err
-	}
-
-	return pointer.ToBigInt()
-}
-
-func (account *Account) getTransactionCount(publicAddr string) (uint64, error) {
-	pointer := &dto.CoreRequestResult{}
-	err := account.provider.SendRequest(pointer, "core_getTransactionCount", []string{publicAddr, "latest"})
-
-	if err != nil {
-		return 0, err
-	}
-
-	return pointer.ToUint64()
-}
-
-func (account *Account) preCheckTx(signData *SignTxParams, privateKey string, isSM2 bool) (*txData, error) {
-
-	publicAddr, err := GetAddressFromPrivate(privateKey, isSM2)
-	if err != nil {
-		return nil, errors.New("not invalid privateKey")
-	}
-
-	// 校验Nonce(谁签名就取谁的Nonce)
-	if signData.AccountNonce == 0 {
-		signData.AccountNonce, err = account.getTransactionCount(publicAddr.String(""))
-		if err != nil {
-			return nil, err
-		}
-	}
-
-	// 校验gas
-	if signData.GasLimit < 21000 {
-		return nil, errors.New("gas should be at least 21000")
-	}
-
-	// 校验gasPrice
-	if signData.GasPrice == nil {
-		signData.GasPrice, err = account.getGasPrice()
-		// fmt.Println("gas ", signData.GasLimit)
-		// 20000000000
-		if err != nil {
-			return nil, err
-		}
-	} else if signData.GasPrice != nil && signData.GasPrice.Cmp(big.NewInt(0)) != 1 {
-		return nil, errors.New("gasPrice should be greater than 0")
-	}
-
-	// 校验Value
-	if signData.Amount != nil && signData.Amount.Cmp(big.NewInt(0)) != 1 {
-		return nil, errors.New("value should be greater than 0")
-	}
-
-	// 校验Data
-
-	// 校验ChainId
-	if signData.ChainId == 0 {
-		signData.ChainId, err = account.getChainId()
-		if err != nil {
-			return nil, err
-		}
-	}
-
-	tx := &txData{
-		ChainId:      signData.ChainId,
-		AccountNonce: signData.AccountNonce,
-		GasPrice:     signData.GasPrice,
-		GasLimit:     signData.GasLimit,
-		Sender:       signData.Sender,
-		Recipient:    signData.Recipient,
-		Amount:       signData.Amount,
-		Payload:      signData.Payload,
-		SignUser:     nil,
-	}
-	return tx, nil
+func isLegalIP(ip string) bool {
+	// ip地址范围：(1~255).(0~255).(0~255).(0~255)
+	// ipRegEx := "^([1-9]|([1-9][0-9])|(1[0-9][0-9])|(2[0-4][0-9])|(25[0-5]))(\\.([0-9]|([1-9][0-9])|(1[0-9][0-9])|(2[0-4][0-9])|(25[0-5]))){3}$"
+	ipRegEx := "^([1-9]|([1-9]\\d)|(1\\d{2})|(2[0-4]\\d)|(25[0-5]))(\\.(\\d|([1-9]\\d)|(1\\d{2})|(2[0-4]\\d)|(25[0-5]))){3}$"
+	// ipRegEx := "^(([1-9]\\d?)|(1\\d{2})|(2[0-4]\\d)|(25[0-5]))(\\.(0|([1-9]\\d?)|(1\\d{2})|(2[0-4]\\d)|(25[0-5]))){3}$"
+	// Pattern
+	reg, _ := regexp.Compile(ipRegEx)
+	// Matcher
+	return reg.MatchString(ip)
 }
 
 /*
@@ -163,39 +58,325 @@ func (account *Account) preCheckTx(signData *SignTxParams, privateKey string, is
 
   Call permissions: Anyone
 */
-func (account *Account) Create(isSM2 bool, chainCode string) (string, string, error) {
-	cryptoType := cryptoType(isSM2)
+func Create(isSM2 bool, chainCode string) (string, string, error) {
+	var cryptoType config.CryptoType
+	if isSM2 {
+		cryptoType = config.SM2
+	} else {
+		cryptoType = config.SECP256K1
+	}
 	privateKeyECDSA, err := crypto.GenerateKey(cryptoType)
 	if err != nil {
 		return "", "", err
 	}
-	accountAddress := crypto.PubkeyToAddress(*privateKeyECDSA.Public().(*ecdsa.PublicKey)).String(chainCode)
+	account := crypto.PubkeyToAddress(*privateKeyECDSA.Public().(*ecdsa.PublicKey)).String(chainCode)
 	privateKey := hex.EncodeToString(privateKeyECDSA.D.Bytes())
-	return accountAddress, privateKey, nil
+	return account, privateKey, nil
 }
 
 /*
-  PrivateKeyToAccount:
-   	EN - Generate account address based on private key
- 	CN - 根据私钥生成账户地址
+  GenKeyStore:
+   	EN - Generate private key file
+	CN - 生成私钥文件
   Params:
-	- privateKey, string, 私钥的hex string
-	- cryType, uint， 加密的类型，0为国密加密；1为非国密；输入其他数值则默认为国密
+  	- keyStorePath string          私钥文件生成的存储地址
+  	- isSM2   bool            是否采用国密生成私钥，true为是国密，false为否
+  	- password string        私钥文件密码，用于加密私钥
+  	- UseLightweightKDF bool 一般选择false；如果是true会降低密钥库的内存和CPU要求,不过是以牺牲安全性为代价
 
   Returns:
-  	- string, 账户地址(hexString)
- 	- error
+  	- string  账户地址
+	- error
 
   Call permissions: Anyone
 */
-func (account *Account) PrivateKeyToAccount(privateKey, chainCode string, isSM2 bool) (string, error) {
-	cryptoType := cryptoType(isSM2)
-	privKey, err := crypto.HexToECDSA(privateKey, cryptoType)
+func GenKeyStore(keyStorePath string, isSM2 bool, password, chainCode string, UseLightweightKDF bool) (string, error) {
+
+	scryptN, scryptP, err := preCheck(keyStorePath, password, UseLightweightKDF)
+	if err != nil {
+		return "", err
+	}
+	var cryptoType config.CryptoType
+	if isSM2 {
+		cryptoType = config.SM2
+	} else {
+		cryptoType = config.SECP256K1
+	}
+
+	address, err := keystore.StoreKey(keyStorePath, password, chainCode, scryptN, scryptP, cryptoType)
+	if err != nil {
+		return "", err
+	}
+	return address.String(chainCode), nil
+}
+
+/*
+  描述:
+   	EN - Get the private key and account from the keyStore file
+	CN - 从文件获取私钥和账户地址
+  Params:
+  	- address string         要解析的账户地址
+  	- keyStorePath string     keyStore文件地址
+  	- password string        keyStore加密密码
+
+  Returns:
+  	- string privateKey      私钥
+	- error
+
+  Call permissions: Anyone
+*/
+func PriKeyFromKeyStore(address string, keyStorePath, password string) (string, error) {
+	keyJson, err := ioutil.ReadFile(keyStorePath)
+	if err != nil {
+		return "", err
+	}
+	var key *keystore.Key
+
+	addr := utils.StringToAddress(address)
+	key, _, err = keystore.DecryptKey(keyJson, password, addr.CryptoType())
+
+	if err != nil {
+		return "", err
+	}
+	privateKey := hex.EncodeToString(key.PrivateKey.D.Bytes())
+	addrRes := crypto.PubkeyToAddress(key.PrivateKey.PublicKey)
+	if addr != addrRes {
+		return "", errors.New("address Not Match keyStoreFile")
+	}
+	return privateKey, nil
+}
+
+/*
+  PriKeyToKeyStore(默认私钥文件生成采用UseLightweightKDF为false即安全模式):
+   	EN - Transfer private key to keyStore file
+	CN - 私钥转keyStore文件
+  Params:
+  	- keyStorePath string      keyStore文件地址
+  	- isSM2   bool       是否采用国密生成私钥，true为是国密，false为否
+  	- privateKey string  私钥
+  	- password string    keyStore加密密码
+
+  Returns:
+  	- bool     true为转换成功,false为转换失败
+	- error
+
+  Call permissions: Anyone
+*/
+func PriKeyToKeyStore(keyStorePath string, isSM2 bool, privateKey string, password, chainCode string) (bool, error) {
+	if utils.Has0xPrefix(privateKey) {
+		privateKey = privateKey[2:]
+	}
+
+	if !utils.IsHex(privateKey) || len(privateKey) != 64 {
+		return false, errors.New("privateKey is not hex string or not 32 Bytes")
+	}
+
+	var cryptoType config.CryptoType
+	if isSM2 {
+		cryptoType = config.SM2
+	} else {
+		cryptoType = config.SECP256K1
+	}
+
+	privateKeyN, err := crypto.HexToECDSA(privateKey, cryptoType)
+	if err != nil {
+		return false, err
+	}
+
+	scryptN, scryptP, err := preCheck(keyStorePath, password, false)
+	if err != nil {
+		return false, err
+	}
+
+	key := keystore.NewKeyStore(keyStorePath, scryptN, scryptP)
+	_, err = key.ImportECDSA(privateKeyN, password, chainCode)
+	if err != nil {
+		return false, err
+	}
+	return true, nil
+}
+
+/*
+  PriKeyToAccount:
+   	EN - Get address based on private key
+	CN - 根据私钥获取账户地址
+  Params:
+  	- privateKey string  私钥
+  	- isSM2      bool    是否采用国密生成私钥，true为是国密，false为否
+
+  Returns:
+  	- string  账户地址
+	- error
+
+  Call permissions: Anyone
+*/
+func PriKeyToAccount(privateKey string, isSM2 bool, chainCode string) (string, error) {
+	if utils.Has0xPrefix(privateKey) {
+		privateKey = privateKey[2:]
+	}
+
+	if !utils.IsHex(privateKey) || len(privateKey) != 64 {
+		return "", errors.New("privateKey is not hex string or not 32 Bytes")
+	}
+
+	var cryptoType config.CryptoType
+	if isSM2 {
+		cryptoType = config.SM2
+	} else {
+		cryptoType = config.SECP256K1
+	}
+
+	privateKeyN, err := crypto.HexToECDSA(privateKey, cryptoType)
 	if err != nil {
 		return "", err
 	}
 	// 转换成地址
-	return crypto.PubkeyToAddress(*privKey.Public().(*ecdsa.PublicKey)).String(chainCode), nil
+	return crypto.PubkeyToAddress(*privateKeyN.Public().(*ecdsa.PublicKey)).String(chainCode), nil
+}
+
+/*
+  PriKeyToPublicKey:
+   	EN - Get the public key based on the private key
+	CN - 根据私钥获取公钥
+  Params:
+  	- privateKey string   私钥
+  	- isSM2      bool     是否采用国密生成私钥，true为是国密，false为否
+
+  Returns:
+  	- string  公钥（65字节）
+	- error
+
+  Call permissions: Anyone
+*/
+func PriKeyToPublicKey(privateKey string, isSM2 bool) (string, error) {
+	if utils.Has0xPrefix(privateKey) {
+		privateKey = privateKey[2:]
+	}
+
+	if !utils.IsHex(privateKey) || len(privateKey) != 64 {
+		return "", errors.New("privateKey is not hex string or not 32 Bytes")
+	}
+
+	var cryptoType config.CryptoType
+	if isSM2 {
+		cryptoType = config.SM2
+	} else {
+		cryptoType = config.SECP256K1
+	}
+
+	privateKeyN, err := crypto.HexToECDSA(privateKey, cryptoType)
+	if err != nil {
+		return "", err
+	}
+	pubBytes := crypto.FromECDSAPub(privateKeyN.Public().(*ecdsa.PublicKey))
+	if isSM2 {
+		return "0x" + utils.Bytes2Hex(pubBytes) + utils.Bytes2Hex(privateKeyN.Public().(*ecdsa.PublicKey).Y.Bytes()), nil
+	} else {
+		return "0x" + utils.Bytes2Hex(pubBytes), nil
+	}
+}
+
+/*
+  PublicKeyFromFile:
+   	EN -
+	CN - 根据keyStore获取公钥
+  Params:
+  	- keyStorePath       string   keyStore的存储路径
+  	- password           string   keyStore的加密密码
+	- isSM2              bool     是否采用国密生成私钥，true为是国密，false为否
+
+  Returns:
+  	- string  公钥（65字节）
+	- error
+
+  Call permissions: Anyone
+*/
+func PublicKeyFromFile(keyStorePath, password string, isSM2 bool) (string, error) {
+	keyJson, err := ioutil.ReadFile(keyStorePath)
+	if err != nil {
+		return "", errors.New("not find privateKeyFile")
+	}
+
+	var cryptoType config.CryptoType
+	if isSM2 {
+		cryptoType = config.SM2
+	} else {
+		cryptoType = config.SECP256K1
+	}
+
+	key, _, err := keystore.DecryptKey(keyJson, password, cryptoType)
+	if err != nil {
+		return "", err
+	}
+	privateKey := hex.EncodeToString(key.PrivateKey.D.Bytes())
+	privateKeyN, err := crypto.HexToECDSA(privateKey, cryptoType)
+	if err != nil {
+		return "", err
+	}
+	pubBytes := crypto.FromECDSAPub(privateKeyN.Public().(*ecdsa.PublicKey))
+	if isSM2 {
+		return "0x" + utils.Bytes2Hex(pubBytes) + utils.Bytes2Hex(privateKeyN.Public().(*ecdsa.PublicKey).Y.Bytes()), nil
+	} else {
+		return "0x" + utils.Bytes2Hex(pubBytes), nil
+	}
+}
+
+func PublicKeyToAccount(pubBytes []byte, isSM2 bool, chainCode string) (string, error) {
+	var addr []byte
+	if isSM2 {
+		addr = crypto.Keccak256(config.SECP256K1, pubBytes[1:])[12:]
+		addr[8] = 115
+	} else {
+		addr = crypto.Keccak256(config.SECP256K1, pubBytes[1:])[12:]
+		if addr[8] == 115 {
+			addr[8] = 103
+		}
+	}
+	return utils.BytesToAddress(addr).String(chainCode), nil
+}
+
+/*
+  CheckPublicKeyToAccount:
+   	EN -
+	CN - 判断给定的公钥是否与账户地址相匹配
+  Params:
+  	-
+  	-
+
+  Returns:
+  	-
+     - error
+
+  Call permissions: Anyone
+*/
+func CheckPublicKeyToAccount(account, publicKey string) (bool, error) {
+
+	addr := utils.StringToAddress(account)
+
+	// 检测是否带有前缀
+	if utils.Has0xPrefix(publicKey) {
+		publicKey = publicKey[2:]
+	}
+
+	// 检测公钥合法性
+	if !(utils.IsHex(publicKey) && len(publicKey) == 130) {
+		return false, errors.New("publicKey is not a hexadecimal string or the length is less than 130(132 with prefix '0x'")
+	}
+
+	pubBytes, err := hex.DecodeString(publicKey)
+	if err != nil {
+		return false, errors.New("publicKey can't be decode to bytes")
+	}
+	key, err := crypto.UnmarshalPubkey(pubBytes)
+	if err != nil {
+		return false, errors.New("publicKey is not valid")
+	}
+	addrParse := crypto.PubkeyToAddress(*key)
+	if addr != addrParse {
+		return false, errors.New("publicKey does not match account")
+	}
+
+	return true, nil
 }
 
 /*
@@ -214,7 +395,7 @@ func (account *Account) PrivateKeyToAccount(privateKey, chainCode string, isSM2 
 
   Call permissions: Anyone
 */
-func (account *Account) Encrypt(privateKey string, isSM2 bool, password, chainCode string, UseLightweightKDF bool) ([]byte, error) {
+func Encrypt(privateKey string, isSM2 bool, password, chainCode string, UseLightweightKDF bool) ([]byte, error) {
 	if password == "" {
 		return nil, errors.New("empty password, please check")
 	}
@@ -226,7 +407,12 @@ func (account *Account) Encrypt(privateKey string, isSM2 bool, password, chainCo
 		scryptP = keystore.LightScryptP
 	}
 
-	cryptoType := cryptoType(isSM2)
+	var cryptoType config.CryptoType
+	if isSM2 {
+		cryptoType = config.SM2
+	} else {
+		cryptoType = config.SECP256K1
+	}
 
 	var privkey *ecdsa.PrivateKey
 	privkey, err := crypto.HexToECDSA(privateKey, cryptoType)
@@ -258,7 +444,12 @@ func Decrypt(keystoreJson []byte, isSM2 bool, password string) (string, string, 
 		return "", "", errors.New("keystoreJson is empty")
 	}
 
-	cryptoType := cryptoType(isSM2)
+	var cryptoType config.CryptoType
+	if isSM2 {
+		cryptoType = config.SM2
+	} else {
+		cryptoType = config.SECP256K1
+	}
 
 	var addressString string
 	key, addressString, err := keystore.DecryptKey(keystoreJson, password, cryptoType)
@@ -269,141 +460,36 @@ func Decrypt(keystoreJson []byte, isSM2 bool, password string) (string, string, 
 	return addressString, hex.EncodeToString(key.PrivateKey.D.Bytes()), nil
 }
 
-/*
-  SignTransaction:
-   	EN -
- 	CN - 使用地址私钥给指定的交易签名，返回签名结果
-  Params:
-  	- transaction: *SignTxParams 指定的交易信息
-		- Recipient        string    （可选）交易的接收方，如果是部署合约，则为空
-		- AccountNonce     uint64    （可选）整数，可以允许你覆盖你自己的相同nonce的，待pending中的交易；默认是Core.GetTransactionCount()
-		- GasPrice       uint64     交易可使用的gas，未使用的gas会退回。
-		- GasLimit  *big.Int  （可选）默认是自动确定，交易的gas价格，默认是 Core.GetGasPrice()
-		- Amount     *big.Int  （可选）交易转移的bifer，以wei为单位
-		- Payload      []byte    （可选）合约函数交互中调用的数据的ABI字节字符串或者合约创建时初始的字节码
-		- ChainId   *big.Int   签署此交易时要使用的链ID，默认是Core.GetChainId
- 	- privateKey: string, 私钥（transaction中的from地址对应的私钥）
- 	- isSM2: bool,  私钥生成是否采用国密，是的话为True，否则为false
+func MessageSignatureBtc(message, password string, keyFileData []byte) (string, string, error) {
+	messageSha3 := utils.Sha3Raw(message)
 
-  Returns:
-  	- *SignTransactionResult
- 	- error
-
-  Call permissions: Anyone
-  TODO: 签署交易在构造交易时，*txData中的NT， NV， NR，NS暂未处理，后期需要加上(现在未加，因为加上后，使用Send_rawTransaction)报错。rlp: input list has too many elements for types.Txdata
-*/
-func (account *Account) SignTransaction(signData *SignTxParams, privateKey string, isSM2 bool) (*SignTransactionResult, error) {
-	// 1 check input
-	tx, err := account.preCheckTx(signData, privateKey, isSM2)
+	_, privateKey, err := Decrypt(keyFileData, false, password)
+	privKey, err := crypto.HexToECDSA(privateKey, config.SECP256K1)
 	if err != nil {
-		return nil, err
+		return "", "", err
 	}
 
-	// 2 Get signature type based on Sender type
 	var cryptoType config.CryptoType
-	if isSM2 {
-		cryptoType = config.SM2
-	} else {
-		cryptoType = config.SECP256K1
-	}
+	cryptoType = config.SECP256K1
 
-	privKey, err := crypto.HexToECDSA(privateKey, cryptoType)
+	messageSha3Bytes := utils.Hex2Bytes(messageSha3[2:])
+	sig, err := crypto.Sign(messageSha3Bytes, privKey, cryptoType)
 	if err != nil {
-		return nil, err
+		return "", "", err
 	}
-
-	// 3 New Signer
-	signer := &BIFSigner{}
-	signed, err := SignTx(tx, *signer, privKey, cryptoType)
-	if err != nil {
-		return nil, err
-	}
-
-	data, err := rlp.EncodeToBytes(signed)
-
-	if err != nil {
-		return nil, err
-	}
-	fmt.Printf("signed  %#v \n", signed)
-	//fmt.Printf("signed  from %#v \n", signed.Sender.String(""))
-	return &SignTransactionResult{data, signed}, nil
-}
-
-/*
-  RecoverTransaction:
-   	EN - Recovers the Bif address which was used to sign the given RLP encoded transaction.
- 	CN - 恢复用于签名给定RLP编码交易的Bif地址。
-  Params:
-  	- rlpTransaction, string, RLP编码的交易
-
-  Returns:
-  	- string, 签名该交易的地址，为hexString
- 	- error
-
-  Call permissions: Anyone
-  BUG:国密解密有问题(SM2初始化的问题)
-  TODO：由于解密交易和签名交易的还没统一，后期需要修改，将rlp.DecodeBytes(rawTx, &tx)加上错误处理（即上文注释的部分）,暂时不做这个接口
-
-*/
-func (account *Account) RecoverTransaction(rawTxString string, isSM2 bool) (string, error) {
-	if utils.Has0xPrefix(rawTxString) {
-		rawTxString = rawTxString[2:]
-	}
-
-	rawTx, err := hex.DecodeString(rawTxString)
-	if err != nil {
-		return "", err
-	}
-
-	var tx txData
-	rawTx, err = hex.DecodeString(rawTxString)
-	if err != nil {
-		return "", err
-	}
-
-	// err = rlp.DecodeBytes(rawTx, &tx)
-	// // fmt.Printf("tx is %v \n", tx)
-	// if err != nil {
-	// 	return "", err
-	// }
-	rlp.DecodeBytes(rawTx, &tx)
-
-	// // fmt.Printf("%v \n ", tx)
-	// chainId, err := account.getChainId()
-	// if err != nil {
-	// 	return "", err
-	// }
-	//
-	// signer := &BIFSigner{}
-	// sigHash := signer.Hash(&tx)
-	//
-	// r, s := tx.R.Bytes(), tx.S.Bytes()
-	// // deprecated: 国密加密不知道为啥会变长
-	// sig := make([]byte, SignatureLength+1)
-	// copy(sig[32-len(r):32], r)
-	// copy(sig[64-len(s):64], s)
-	// var v byte
-	// if signer.chainId.Sign() != 0 {
-	// 	tx.V.Sub(tx.V, signer.chainIdMul)
-	// 	v = byte(tx.V.Uint64() - 35)
-	// } else {
-	// 	v = byte(tx.V.Uint64() - 27)
-	//
-	// }
-	//
-	// sig[64] = v
-	// if isSM2 {
-	// 	sig[65] = byte(0)
-	// } else {
-	// 	sig[65] = byte(1)
-	// }
-	// // _, err = crypto.HexToECDSA(resources.AddressPriKey, crypto.SM2)
-	// pubBytes, err := crypto.Ecrecover(sigHash[:], sig)
-	// if err != nil {
-	// 	return "", err
-	// }
-	// return publicKeyStrToAddress(pubBytes, isSM2)
-	return "", err
+	// r := new(big.Int).SetBytes(sig[:32])
+	// s := new(big.Int).SetBytes(sig[32:64])
+	// v := new(big.Int).SetBytes([]byte{sig[64] + 27})
+	// fmt.Printf("r %x \n", r)
+	// fmt.Printf("s %x \n", s)
+	// fmt.Printf("v %x \n", v)
+	// fmt.Printf("sig len is  %x \n", len(sig))
+	var buf bytes.Buffer
+	// 链的代码已经撤销这个
+	// buf.Write([]byte{sig[64] + 27})
+	buf.Write(sig[:64])
+	// fmt.Printf("sig is  %s \n", t+utils.Bytes2Hex(buf.Bytes()))
+	return messageSha3, utils.Bytes2Hex(buf.Bytes()), err
 }
 
 /*
@@ -419,11 +505,10 @@ func (account *Account) RecoverTransaction(rawTxString string, isSM2 bool) (stri
 
   Call permissions: Anyone
 */
-func (account *Account) HashMessage(message string, isSm2 bool) string {
-	util := utils.NewUtils()
+func HashMessage(message string, isSm2 bool) string {
 	var messageHex string
-	if !util.IsHexStrict(message) {
-		messageHex = util.Utf8ToHex(message)
+	if !utils.IsHexStrict(message) {
+		messageHex = utils.Utf8ToHex(message)
 	} else {
 		messageHex = message
 	}
@@ -443,159 +528,58 @@ func (account *Account) HashMessage(message string, isSm2 bool) string {
 	return "0x" + utils.Bytes2Hex(hashBytes)
 }
 
-/*
-  Sign:
-   	EN - Signs arbitrary data
- 	CN - 根据给定数据进行签名
-  Params:
-  	- signData: *SignData 指定的签名数据
- 	- privateKey: string, 私钥（transaction中的from地址对应的私钥）
- 	- isSm2: bool, 私钥生成的类型是否采用国密，如果是则为true，否则为false
- 	- chainId: int64, 链的ChainId
-
-  Returns:
-  	- *Signature
- 	- error
-
-  Call permissions: Anyone
-  Deprecated: 这个接口暂时没有用
-*/
-func (account *Account) Sign(signData *SignData, privateKey string, isSm2 bool, chainId uint64) (*SignData, error) {
-	// // 1 Get signature type based on Sender type
-	// var cryptoType crypto.CryptoType
-	// if isSm2 {
-	// 	signData.T = utils.Big0
-	// 	cryptoType = crypto.SM2
-	// } else {
-	// 	signData.T = utils.Big1
-	// 	cryptoType = crypto.SECP256K1
-	// }
-	//
-	// privKey, err := crypto.HexToECDSA(privateKey, cryptoType)
-	// if err != nil {
-	// 	return nil, err
-	// }
-	//
-	// // 2 New Signer
-	// signer := &BIFSigner{}
-	//
-	// signed, err := SignDt(signData, *signer, privKey)
-	//
-	// if err != nil {
-	// 	return nil, err
-	// }
-	//
-	// return signed, nil
-	return nil, errors.New("接口待修改")
-}
-
-/*
-  Recover:
-   	EN - Recovers the Bif address which was used to sign the given data
- 	CN - 恢复用于签名给定数据的Bif地址
-  Params:
-  	- rlpTransaction, string, RLP编码的交易
-
-  Returns:
-  	- string, 签名该交易的地址，为hexString
- 	- error
-
-  Call permissions: Anyone
-  Bug:国密解密有问题
-todo:暂时注释这个接口
-*/
-func (account *Account) Recover(rawTxString string, isSM2 bool) (string, error) {
-	// if utils.Has0xPrefix(rawTxString) {
-	// 	rawTxString = rawTxString[2:]
-	// }
-	//
-	// rawTx, err := hex.DecodeString(rawTxString)
-	// if err != nil {
-	// 	return "", err
-	// }
-	//
-	// var tx txData
-	// rawTx, err = hex.DecodeString(rawTxString)
-	// if err != nil {
-	// 	return "", err
-	// }
-	//
-	// // err = rlp.DecodeBytes(rawTx, &tx)
-	// // // fmt.Printf("tx is %v \n", tx)
-	// // if err != nil {
-	// // 	return "", err
-	// // }
-	// rlp.DecodeBytes(rawTx, &tx)
-	//
-	// // fmt.Printf("%v \n ", tx)
-	// chainId, err := account.getChainId()
-	// if err != nil {
-	// 	return "", err
-	// }
-	//
-	// signer := &BIFSigner{
-	// 	chainId:    chainId,
-	// 	chainIdMul: new(big.Int).Mul(chainId, big.NewInt(2)),
-	// }
-	// sigHash := signer.Hash(&tx)
-	//
-	// r, s := tx.R.Bytes(), tx.S.Bytes()
-	// // deprecated: 国密加密不知道为啥会变长
-	// sig := make([]byte, SignatureLength+1)
-	// copy(sig[32-len(r):32], r)
-	// copy(sig[64-len(s):64], s)
-	// var v byte
-	// if signer.chainId.Sign() != 0 {
-	// 	tx.V.Sub(tx.V, signer.chainIdMul)
-	// 	v = byte(tx.V.Uint64() - 35)
-	// } else {
-	// 	v = byte(tx.V.Uint64() - 27)
-	//
-	// }
-	//
-	// sig[64] = v
-	// if isSM2 {
-	// 	sig[65] = byte(0)
-	// } else {
-	// 	sig[65] = byte(1)
-	// }
-	// // _, err = crypto.HexToECDSA(resources.AddressPriKey, crypto.SM2)
-	// pubBytes, err := crypto.Ecrecover(sigHash[:], sig)
-	// if err != nil {
-	// 	return "", err
-	// }
-	// return publicKeyStrToAddress(pubBytes, isSM2)
-	return "", errors.New("接口待修改")
-}
-
-func MessageSignatureBtc(message, password string, keyFileData []byte) (string, string, error) {
-	messageSha3 := utils.NewUtils().Sha3Raw(message)
-
-	_, privateKey, err := Decrypt(keyFileData, false, password)
-	privKey, err := crypto.HexToECDSA(privateKey, config.SECP256K1)
-	if err != nil {
-		return "", "", err
+// 节点的私钥全部是采用Secp256k1的方式生成的，解密也是按照这个方式
+func GenNodeUrlFromKeyStore(nodePrivateKeyPath, password, host string, port uint64) (string, error) {
+	if !isLegalIP(host) {
+		return "", errors.New("host is illegal")
+	}
+	if port > 65535 {
+		return "", errors.New("port should be in range 0 to 65535")
 	}
 
-	var cryptoType config.CryptoType
-	cryptoType = config.SECP256K1
-
-	messageSha3Bytes :=  utils.Hex2Bytes(messageSha3[2:])
-	sig, err := crypto.Sign(messageSha3Bytes, privKey, cryptoType)
+	keyJson, err := ioutil.ReadFile(nodePrivateKeyPath)
 	if err != nil {
-		return "", "", err
+		return "", err
 	}
-	// r := new(big.Int).SetBytes(sig[:32])
-	// s := new(big.Int).SetBytes(sig[32:64])
-	// v := new(big.Int).SetBytes([]byte{sig[64] + 27})
-	// fmt.Printf("r %x \n", r)
-	// fmt.Printf("s %x \n", s)
-	// fmt.Printf("v %x \n", v)
-	// fmt.Printf("sig len is  %x \n", len(sig))
-	var buf bytes.Buffer
-	// 链的代码已经撤销这个
-	//buf.Write([]byte{sig[64] + 27})
-	buf.Write(sig[:64])
-	// fmt.Printf("sig is  %s \n", t+utils.Bytes2Hex(buf.Bytes()))
-	return messageSha3, utils.Bytes2Hex(buf.Bytes()), err
+
+	key, _, err := keystore.DecryptKey(keyJson, password, config.SECP256K1)
+
+	if err != nil {
+		return "", err
+	}
+
+	var peerId libp2pcorepeer.ID
+	if peerId, err = libp2pcorepeer.IDFromPrivateKey((*libp2pcorecrypto.Secp256k1PrivateKey)(key.PrivateKey)); err != nil {
+		return "", err
+	}
+
+	return fmt.Sprintf("/ip4/%s/tcp/%d/p2p/%s", host, port, peerId.String()), nil
+}
+
+func GenNodeUrlFromPriKey(privateKey, host string, port uint64) (string, error) {
+	if !isLegalIP(host) {
+		return "", errors.New("host is illegal")
+	}
+	if port > 65535 {
+		return "", errors.New("port should be in range 0 to 65535")
+	}
+
+	if utils.Has0xPrefix(privateKey) {
+		privateKey = privateKey[2:]
+	}
+
+	if !utils.IsHex(privateKey) || len(privateKey) != 64 {
+		return "", errors.New("privateKey is not hex string or not 32 Bytes")
+	}
+
+	privateKeyN, err := crypto.HexToECDSA(privateKey, config.SECP256K1)
+	if err != nil {
+		return "", err
+	}
+	var peerId libp2pcorepeer.ID
+	if peerId, err = libp2pcorepeer.IDFromPrivateKey((*libp2pcorecrypto.Secp256k1PrivateKey)(privateKeyN)); err != nil {
+		return "", err
+	}
+
+	return fmt.Sprintf("/ip4/%s/tcp/%d/p2p/%s", host, port, peerId.String()), nil
 }

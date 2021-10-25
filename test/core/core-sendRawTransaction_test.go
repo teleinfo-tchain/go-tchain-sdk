@@ -36,7 +36,7 @@ func TestCoreSendRawTransaction(t *testing.T) {
 
 	tx := &account.SignTxParams{
 		Recipient:    &recipient,
-		AccountNonce: nonce.Uint64(),
+		Nonce: nonce,
 		GasPrice:     big.NewInt(2000000),
 		GasLimit:     uint64(41000),
 		Amount:       big.NewInt(50000000000),
@@ -44,7 +44,7 @@ func TestCoreSendRawTransaction(t *testing.T) {
 		ChainId:      chainId,
 	}
 
-	res, err := connection.Account.SignTransaction(tx, privKey, false)
+	res, err := account.SignTransaction(tx, privKey, false)
 	if err != nil {
 		t.Error(err)
 		t.FailNow()
