@@ -116,9 +116,9 @@ func (sp *SignedTransactionParams) UnmarshalJSON(data []byte) error {
 
 	temp := &struct {
 		ChainId  string `json:"chainId"`
+		Nonce    string `json:"nonce"`
 		GasPrice string `json:"gasPrice"`
 		GasLimit string `json:"gas"`
-		Nonce    string `json:"nonce"`
 		Value    string `json:"amount"`
 		*Alias
 	}{
@@ -173,28 +173,35 @@ type TransactionResponse struct {
 	BlockHash        string              `json:"blockHash"`
 	BlockNumber      *big.Int            `json:"blockNumber"`
 	Sender           string              `json:"sender"`
-	Gas              uint64              `json:"gas,omitempty"`
-	GasPrice         *big.Int            `json:"gasPrice,omitempty"`
+	Gas              uint64              `json:"gas"`
+	GasPrice         *big.Int            `json:"gasPrice"`
 	Hash             string              `json:"hash"`
 	Payload          string              `json:"payload"`
 	Nonce            uint64              `json:"nonce"`
 	Recipient        string              `json:"recipient"`
 	TransactionIndex uint                `json:"transactionIndex"`
-	Amount           *big.Int            `json:"Amount"`
+	Amount           *big.Int            `json:"amount"`
 	SignNode         *crypto.Signature   `json:"signNode"`
-	SignUser         []*crypto.Signature `json:"singUser"`
+	SignUser         []*crypto.Signature `json:"signUser"`
 }
 
 func (t *TransactionResponse) UnmarshalJSON(data []byte) error {
 	type Alias TransactionResponse
+
+	type Signature struct {
+		PublicKey  []byte `json:"publicKey"    gencodec:"required"`  // 公钥，33字节，第1个字节是类型0, 1, 2，3，后32字节是公钥的x
+		CryptoType []byte `json:"cryptoType"    gencodec:"required"` // 签名类型，0是sm2，1是secp
+		Signature  []byte `json:"signature"    gencodec:"required"`  // 签名，64字字，前32字节是r，后32字节是s
+	}
+
 	temp := &struct {
-		ChainId          string `json:"chainId"`
-		BlockNumber      string `json:"blockNumber"`
-		Gas              string `json:"gas,omitempty"`
-		GasPrice         string `json:"gasPrice,omitempty"`
-		Nonce            string `json:"nonce"`
-		TransactionIndex string `json:"transactionIndex"`
-		Amount           string `json:"amount"`
+		ChainId          string        `json:"chainId"`
+		BlockNumber      string        `json:"blockNumber"`
+		Gas              string        `json:"gas"`
+		GasPrice         string        `json:"gasPrice"`
+		Nonce            string        `json:"nonce"`
+		TransactionIndex string        `json:"transactionIndex"`
+		Amount           string        `json:"amount"`
 		*Alias
 	}{
 		Alias: (*Alias)(t),

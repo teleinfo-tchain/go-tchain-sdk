@@ -984,7 +984,7 @@ func (core *Core) GetTransactionByBlockHashAndIndex(hash string, index uint) (*d
 
 	params := make([]string, 2)
 	params[0] = hash
-	params[1] = string(index)
+	params[1] = hexutil.EncodeUint64(uint64(index))
 
 	pointer := &dto.CoreRequestResult{}
 
@@ -1028,7 +1028,7 @@ func (core *Core) GetRawTransactionByBlockHashAndIndex(hash string, index uint) 
 
 	params := make([]string, 2)
 	params[0] = hash
-	params[1] = string(index)
+	params[1] = hexutil.EncodeUint64(uint64(index))
 
 	pointer := &dto.CoreRequestResult{}
 
@@ -1062,7 +1062,7 @@ func (core *Core) GetTransactionByBlockNumberAndIndex(blockNumber string, index 
 
 	params := make([]string, 2)
 	params[0] = blockNumber
-	params[1] = string(index)
+	params[1] = hexutil.EncodeUint64(uint64(index))
 
 	pointer := &dto.CoreRequestResult{}
 
@@ -1097,7 +1097,7 @@ func (core *Core) GetRawTransactionByBlockNumberAndIndex(blockNumber string, ind
 
 	params := make([]string, 2)
 	params[0] = blockNumber
-	params[1] = string(index)
+	params[1] = hexutil.EncodeUint64(uint64(index))
 
 	pointer := &dto.CoreRequestResult{}
 

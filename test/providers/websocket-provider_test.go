@@ -34,15 +34,14 @@ func Test_Websocket_Core_ToSyncingResponse(t *testing.T) {
 
 	var connection = bif.NewBif(providers.NewWebSocketProvider("ws://" + resources.IP00 + ":" + strconv.FormatUint(resources.WebsocketPort, 10)))
 
-	for index := 0; index < 2; index++ {
-		var _, err = connection.ClientVersion()
-		if err != nil {
-			t.Error(err)
-			t.Fail()
-		}
+	var _, err = connection.ClientVersion()
+
+	if err != nil {
+		t.Error(err)
+		t.Fail()
 	}
 
-	_, err := connection.Core.IsSyncing()
+	_, err = connection.Core.IsSyncing()
 
 	if err != nil {
 		t.Error(err)

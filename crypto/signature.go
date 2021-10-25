@@ -24,14 +24,15 @@ import (
 	"fmt"
 	"github.com/bif/bif-sdk-go/crypto/config"
 	"github.com/bif/bif-sdk-go/utils"
+	"github.com/bif/bif-sdk-go/utils/hexutil"
 	"github.com/prometheus/common/log"
 	"time"
 )
 
 type Signature struct {
-	PublicKey  []byte `json:"publicKey"    gencodec:"required"`  // 公钥，33字节，第1个字节是类型0, 1, 2，3，后32字节是公钥的x
-	CryptoType []byte `json:"cryptoType"    gencodec:"required"` // 签名类型，0是sm2，1是secp
-	Signature  []byte `json:"signature"    gencodec:"required"`  // 签名，64字字，前32字节是r，后32字节是s
+	PublicKey  hexutil.Bytes `json:"publicKey"    gencodec:"required"`  // 公钥，33字节，第1个字节是类型0, 1, 2，3，后32字节是公钥的x
+	CryptoType hexutil.Bytes `json:"cryptoType"    gencodec:"required"` // 签名类型，0是sm2，1是secp
+	Signature  hexutil.Bytes `json:"signature"    gencodec:"required"`  // 签名，64字字，前32字节是r，后32字节是s
 }
 
 func GenSignature(hash []byte, prv *ecdsa.PrivateKey, cryptoType config.CryptoType) (*Signature, error) {

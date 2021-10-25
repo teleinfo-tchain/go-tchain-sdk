@@ -15,94 +15,95 @@
 package test
 
 import (
-	"encoding/json"
+	"fmt"
+	"github.com/bif/bif-sdk-go/net"
 	"github.com/bif/bif-sdk-go/test/resources"
-	"io/ioutil"
+	"sort"
 	"strconv"
 	"testing"
-	"time"
-
-	"github.com/bif/bif-sdk-go/core/block"
 
 	"github.com/bif/bif-sdk-go"
-	"github.com/bif/bif-sdk-go/dto"
 	"github.com/bif/bif-sdk-go/providers"
 )
 
-func TestCoreGetCode(t *testing.T) {
-
-	content, err := ioutil.ReadFile("../resources/simple-token.json")
-
-	if err != nil {
-		t.Error(err)
-		t.FailNow()
-	}
-
-	type TruffleContract struct {
-		Abi              string `json:"abi"`
-		ByteCode         string `json:"byteCode"`
-		DeployedByteCode string `json:"deployedByteCode"`
-	}
-
-	var unmarshalResponse TruffleContract
-
-	err = json.Unmarshal(content, &unmarshalResponse)
-	if err != nil{
-		t.Error(err)
-		t.FailNow()
-	}
+func TestNetPeerCount(t *testing.T) {
 
 	var connection = bif.NewBif(providers.NewHTTPProvider(resources.IP00+":"+strconv.FormatUint(resources.Port, 10), 10, false))
-	byteCode := unmarshalResponse.ByteCode
-	deployedByteCode := unmarshalResponse.DeployedByteCode
 
-	contract, err := connection.Core.NewContract(unmarshalResponse.Abi)
+	peers, err := connection.Net.GetPeerCount()
 
 	if err != nil {
 		t.Error(err)
 		t.FailNow()
 	}
 
-	transaction := new(dto.TransactionParameters)
-	generator, err := connection.Core.GetGenerator()
+	t.Log(peers.Uint64())
+
+}
+
+func TestNetListening(t *testing.T) {
+
+	var connection = bif.NewBif(providers.NewHTTPProvider(resources.IP00+":"+strconv.FormatUint(resources.Port, 10), 10, false))
+
+	listening, err := connection.Net.IsListening()
+
+	if err != nil {
+		t.Error(err)
+		t.Fail()
+	}
+
+	if !listening {
+		t.Error("not listening")
+		t.Fail()
+	}
+}
+
+func TestGetDataDir(t *testing.T) {
+
+	var connection = net.NewNet(providers.NewHTTPProvider(resources.IP00+":"+strconv.FormatUint(resources.Port, 10), 10, false))
+
+	dataDir, err := connection.GetDataDir()
 
 	if err != nil {
 		t.Error(err)
 		t.FailNow()
 	}
 
-	transaction.Sender = generator
-	transaction.GasLimit = uint64(4000000)
-	hash, err := contract.Deploy(transaction, byteCode)
+	t.Log(dataDir)
+}
+
+func TestGetNodeInfo(t *testing.T) {
+
+	var connection = net.NewNet(providers.NewHTTPProvider(resources.IP00+":"+strconv.FormatUint(resources.Port, 10), 10, false))
+
+	nodeInfo, err := connection.GetNodeInfo()
 
 	if err != nil {
 		t.Error(err)
 		t.FailNow()
 	}
 
-	var receipt *dto.TransactionReceipt
+	t.Logf("%#v \n ", nodeInfo)
+}
 
-	for receipt == nil {
-		time.Sleep(time.Second)
-		receipt, err = connection.Core.GetTransactionReceipt(hash)
-	}
+func TestNetVersion(t *testing.T) {
 
+	var connection = bif.NewBif(providers.NewHTTPProvider(resources.IP00+":"+strconv.FormatUint(resources.Port, 10), 10, false))
+
+	// Possible options
+	po := []string{"1", "2", "3", "4", "42", "333"}
+
+	version, err := connection.Net.GetVersion()
 	if err != nil {
 		t.Error(err)
 		t.FailNow()
 	}
 
-	address := receipt.ContractAddress
-	code, err := connection.Core.GetCode(address, block.LATEST)
-	if err != nil {
-		t.Error(err)
-		t.FailNow()
+	fmt.Printf("version is %s \n", version)
+	sort.Strings(po)
+	if found := sort.SearchStrings(po, version); found < len(po) && po[found] != version {
+		t.Error("invalid network")
+		t.Fail()
 	}
 
-	if deployedByteCode != code {
-		t.Error("Contract code not expected")
-		t.FailNow()
-	}
-
-	t.Log("code is ", code)
 }

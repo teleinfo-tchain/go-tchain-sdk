@@ -15,13 +15,16 @@
 package test
 
 import (
+	"encoding/json"
 	"fmt"
 	"github.com/bif/bif-sdk-go"
+	"github.com/bif/bif-sdk-go/core/block"
 	"github.com/bif/bif-sdk-go/dto"
 	"github.com/bif/bif-sdk-go/providers"
 	"github.com/bif/bif-sdk-go/test/resources"
 	"github.com/bif/bif-sdk-go/testutil"
 	"github.com/stretchr/testify/assert"
+	"io/ioutil"
 	"math/big"
 	"path"
 	"strconv"
@@ -170,4 +173,82 @@ func TestCoreContract(t *testing.T) {
 	//	t.Errorf("Can't send approve transaction")
 	//	t.FailNow()
 	// }
+}
+
+func TestCoreGetCode(t *testing.T) {
+
+	content, err := ioutil.ReadFile("../resources/simple-token.json")
+
+	if err != nil {
+		t.Error(err)
+		t.FailNow()
+	}
+
+	type TruffleContract struct {
+		Abi              string `json:"abi"`
+		ByteCode         string `json:"byteCode"`
+		DeployedByteCode string `json:"deployedByteCode"`
+	}
+
+	var unmarshalResponse TruffleContract
+
+	err = json.Unmarshal(content, &unmarshalResponse)
+	if err != nil{
+		t.Error(err)
+		t.FailNow()
+	}
+
+	var connection = bif.NewBif(providers.NewHTTPProvider(resources.IP00+":"+strconv.FormatUint(resources.Port, 10), 10, false))
+	byteCode := unmarshalResponse.ByteCode
+	deployedByteCode := unmarshalResponse.DeployedByteCode
+
+	contract, err := connection.Core.NewContract(unmarshalResponse.Abi)
+
+	if err != nil {
+		t.Error(err)
+		t.FailNow()
+	}
+
+	transaction := new(dto.TransactionParameters)
+	generator, err := connection.Core.GetGenerator()
+
+	if err != nil {
+		t.Error(err)
+		t.FailNow()
+	}
+
+	transaction.Sender = generator
+	transaction.GasLimit = uint64(4000000)
+	hash, err := contract.Deploy(transaction, byteCode)
+
+	if err != nil {
+		t.Error(err)
+		t.FailNow()
+	}
+
+	var receipt *dto.TransactionReceipt
+
+	for receipt == nil {
+		time.Sleep(time.Second)
+		receipt, err = connection.Core.GetTransactionReceipt(hash)
+	}
+
+	if err != nil {
+		t.Error(err)
+		t.FailNow()
+	}
+
+	address := receipt.ContractAddress
+	code, err := connection.Core.GetCode(address, block.LATEST)
+	if err != nil {
+		t.Error(err)
+		t.FailNow()
+	}
+
+	if deployedByteCode != code {
+		t.Error("Contract code not expected")
+		t.FailNow()
+	}
+
+	t.Log("code is ", code)
 }

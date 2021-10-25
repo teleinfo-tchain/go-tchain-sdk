@@ -9,7 +9,7 @@ const (
 	IP55 string = "172.17.6.55"
 
 	Port          uint64 = 44002
-	WebsocketPort uint64 = 5003
+	WebsocketPort uint64 = 44003
 
 	ChainCode string = "tele"
 	PassWord  string = "tele"
