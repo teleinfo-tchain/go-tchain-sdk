@@ -314,6 +314,11 @@ func basePreCheck(signData *SignTxParams, privateKey string, isSM2 bool) (*txDat
 		return nil, errors.New("not invalid privateKey")
 	}
 
+	// 校验Nonce是否为0
+	if signData.Nonce == nil{
+		return nil, errors.New("nonce is nil")
+	}
+
 	// 校验gas
 	if signData.GasLimit < 21000 {
 		return nil, errors.New("gas should be at least 21000")

@@ -91,22 +91,25 @@ func Test_HTTP_Core_ToTransactionResponse(t *testing.T) {
 		t.FailNow()
 	}
 
-	time.Sleep(8)
+	time.Sleep(time.Second*8)
 
-	txFromHash, err := connection.Core.GetTransactionByHash(txHash)
+	txResponse, err := connection.Core.GetTransactionByHash(txHash)
 
 	if err != nil {
 		t.Error(err)
 		t.FailNow()
 	}
 
-	fmt.Println(txFromHash)
+	fmt.Printf("txRes is %+v \n",  txResponse)
 }
 
 func Test_HTTP_Core_ToSignTransactionResponse(t *testing.T) {
 	var connection = bif.NewBif(providers.NewHTTPProvider(resources.IP00+":"+strconv.FormatUint(resources.Port, 10), 10, false))
 
+	chainId, _ := connection.Core.GetChainId()
+
 	transaction := new(dto.TransactionParameters)
+	transaction.ChainId = chainId
 	transaction.AccountNonce = uint64(2)
 	transaction.Sender = resources.Addr1
 	transaction.Recipient = resources.Addr2
@@ -387,23 +390,35 @@ func Test_HTTP_Request_ToBoolean(t *testing.T) {
 func Test_HTTP_Request_ToTransactionReceipt(t *testing.T) {
 	var connection = bif.NewBif(providers.NewHTTPProvider(resources.IP00+":"+strconv.FormatUint(resources.Port, 10), 10, false))
 
+
+	from := "did:bid:qwer:sf25XGBQU8E8wGFo9wGKo95jUgtYPM24Y"
+	fromPriKey := "e41219552564c956edeb0fa782c7760a6f5ade504768b3570c68dc0459a7889a"
+
+	to := "did:bid:qwer:zftAgNtnQzLMGJHKPMdn9quPvuikNWUZ"
+
 	chainId, _ := connection.Core.GetChainId()
 
-	var sender utils.Address
-	sender = utils.StringToAddress(resources.Addr1)
+	// sender := utils.StringToAddress(from)
 	var recipient utils.Address
-	recipient = utils.StringToAddress(resources.Addr2)
+	recipient = utils.StringToAddress(to)
 
-	tx := &account.SignTxParams{
-		Sender:    &sender,
-		Recipient: &recipient,
-		Amount:    big.NewInt(10000),
-		GasLimit:  200000,
-		GasPrice:  big.NewInt(30),
-		ChainId:   chainId,
+	nonce, err := connection.Core.GetTransactionCount(from, block2.LATEST)
+	if err != nil {
+		t.Error(err)
+		t.FailNow()
 	}
 
-	res, err := account.SignTransaction(tx, resources.Addr1, false)
+	tx := &account.SignTxParams{
+		ChainId:   chainId,
+		Nonce:     nonce,
+		GasPrice:  big.NewInt(0),
+		GasLimit:  21000,
+		Recipient: &recipient,
+		Amount:    big.NewInt(500000000),
+		Payload:   nil,
+	}
+
+	res, err := account.SignTransaction(tx, fromPriKey, false)
 
 	if err != nil {
 		t.Error(err)
@@ -416,6 +431,8 @@ func Test_HTTP_Request_ToTransactionReceipt(t *testing.T) {
 		t.Error(err)
 		t.FailNow()
 	}
+
+	time.Sleep(time.Second*8)
 
 	txReceipt, err := connection.Core.GetTransactionReceipt(txHash)
 
@@ -469,141 +486,3 @@ func Test_HTTP_Txpool_ToTxPoolContent(t *testing.T) {
 	fmt.Println(content)
 }
 
-func Test_HTTP_System_ToCertificateInfo(t *testing.T) {
-
-	var connection = bif.NewBif(providers.NewHTTPProvider(resources.IP00+":"+strconv.FormatUint(resources.Port, 10), 10, false))
-
-	var _, err = connection.ClientVersion()
-
-	if err != nil {
-		t.Error(err)
-		t.Fail()
-	}
-
-	_, err = connection.Core.GetChainId()
-	if err != nil {
-		t.Error(err)
-		t.FailNow()
-	}
-	cer := connection.System.NewCertificate()
-
-	certificate, err := cer.GetCertificate("did:bid:sf26xSMerRVcs9E642Rkbq4TxLrhQsWzk")
-	if err != nil {
-		t.Error(err)
-		t.FailNow()
-	}
-
-	fmt.Println(certificate)
-
-	err = connection.Provider.Close()
-
-	if err != nil {
-		t.Error(err)
-		t.Fail()
-	}
-}
-
-func Test_HTTP_System_ToCertificateIssuerSignature(t *testing.T) {
-
-	var connection = bif.NewBif(providers.NewHTTPProvider(resources.IP00+":"+strconv.FormatUint(resources.Port, 10), 10, false))
-
-	var _, err = connection.ClientVersion()
-
-	if err != nil {
-		t.Error(err)
-		t.Fail()
-	}
-
-	_, err = connection.Core.GetChainId()
-	if err != nil {
-		t.Error(err)
-		t.FailNow()
-	}
-	cer := connection.System.NewCertificate()
-
-	issuer, err := cer.GetIssuer("did:bid:sf26xSMerRVcs9E642Rkbq4TxLrhQsWzk")
-	if err != nil {
-		t.Error(err)
-		t.FailNow()
-	}
-
-	fmt.Println(issuer)
-
-	err = connection.Provider.Close()
-
-	if err != nil {
-		t.Error(err)
-		t.Fail()
-	}
-}
-
-func Test_HTTP_System_ToCertificateSubjectSignature(t *testing.T) {
-
-	var connection = bif.NewBif(providers.NewHTTPProvider(resources.IP00+":"+strconv.FormatUint(resources.Port, 10), 10, false))
-
-	var _, err = connection.ClientVersion()
-
-	if err != nil {
-		t.Error(err)
-		t.Fail()
-	}
-
-	_, err = connection.Core.GetChainId()
-	if err != nil {
-		t.Error(err)
-		t.FailNow()
-	}
-	cer := connection.System.NewCertificate()
-
-	subjectSignature, err := cer.GetSubject("did:bid:sf26xSMerRVcs9E642Rkbq4TxLrhQsWzk")
-
-	if err != nil {
-		t.Error(err)
-		t.FailNow()
-	}
-
-	fmt.Println(subjectSignature)
-
-	err = connection.Provider.Close()
-
-	if err != nil {
-		t.Error(err)
-		t.Fail()
-	}
-}
-
-func Test_HTTP_System_ToDocument(t *testing.T) {
-
-	var connection = bif.NewBif(providers.NewHTTPProvider(resources.IP00+":"+strconv.FormatUint(resources.Port, 10), 10, false))
-
-	var _, err = connection.ClientVersion()
-
-	if err != nil {
-		t.Error(err)
-		t.Fail()
-	}
-
-	_, err = connection.Core.GetChainId()
-	if err != nil {
-		t.Error(err)
-		t.FailNow()
-	}
-
-	doc := connection.System.NewDoc()
-
-	document, err := doc.GetDocument("did:bid:sf26xSMerRVcs9E642Rkbq4TxLrhQsWzk")
-
-	if err != nil {
-		t.Error(err)
-		t.FailNow()
-	}
-
-	fmt.Println(document)
-
-	err = connection.Provider.Close()
-
-	if err != nil {
-		t.Error(err)
-		t.Fail()
-	}
-}

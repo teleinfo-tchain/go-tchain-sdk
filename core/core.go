@@ -343,6 +343,9 @@ func (core *Core) GetTransactionCount(address string, blockNumber string) (*big.
   Call permissions: Anyone
 */
 func (core *Core) EstimateGas(transaction *dto.TransactionParameters) (*big.Int, error) {
+	if transaction.ChainId == 0 {
+		return nil, errors.New("chainId can't be zero")
+	}
 
 	params := make([]*dto.RequestTransactionParameters, 1)
 
@@ -361,6 +364,9 @@ func (core *Core) EstimateGas(transaction *dto.TransactionParameters) (*big.Int,
 
 // Deprecated: This operation is not supported
 func (core *Core) SendTransaction(transaction *dto.TransactionParameters) (string, error) {
+	if transaction.ChainId == 0 {
+		return "", errors.New("chainId can't be zero")
+	}
 
 	params := make([]*dto.RequestTransactionParameters, 1)
 	params[0] = transaction.Transform()
@@ -441,6 +447,10 @@ func (core *Core) SendRawTransaction(encodedTx string) (string, error) {
 
 */
 func (core *Core) SignTransaction(transaction *dto.TransactionParameters) (*dto.SignTransactionResponse, error) {
+	if transaction.ChainId == 0 {
+		return nil, errors.New("chainId can't be zero")
+	}
+
 	params := make([]*dto.RequestTransactionParameters, 1)
 	params[0] = transaction.Transform()
 
@@ -477,6 +487,9 @@ func (core *Core) SignTransaction(transaction *dto.TransactionParameters) (*dto.
   Bug 待测试，需要比对rpc中的callArgs和sendTxArgs！！！！！，数据结构
 */
 func (core *Core) Call(transaction *dto.TransactionParameters) (*dto.RequestResult, error) {
+	if transaction.ChainId == 0 {
+		return nil, errors.New("chainId can't be zero")
+	}
 
 	params := make([]interface{}, 2)
 	params[0] = transaction.Transform()

@@ -271,7 +271,8 @@ func TestPersonalListWallets(t *testing.T) {
 func TestPersonaNewAccount(t *testing.T) {
 	var connection = newPersonal(providers.NewHTTPProvider(resources.IP00+":"+strconv.FormatUint(resources.Port, 10), 10, false))
 
-	auth := "node"
+	// did:bid:qwer:zfQj3iztQbQQr5duzej1gbX8d1WYWhZG
+	auth := "tele"
 	cryptoType := 0
 
 	res, err := connection.personalNewAccount(auth, cryptoType)

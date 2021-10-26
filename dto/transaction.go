@@ -106,7 +106,7 @@ type SignedTransactionParams struct {
 	Input    string              `json:"input"`
 	Nonce    *big.Int            `json:"nonce"`
 	To       string              `json:"to"`
-	Value    *big.Int            `json:"value"`
+	Amount   *big.Int            `json:"value"`
 	SignNode *crypto.Signature   `json:"signNode"`
 	SignUser []*crypto.Signature `json:"singUser"`
 }
@@ -119,7 +119,7 @@ func (sp *SignedTransactionParams) UnmarshalJSON(data []byte) error {
 		Nonce    string `json:"nonce"`
 		GasPrice string `json:"gasPrice"`
 		GasLimit string `json:"gas"`
-		Value    string `json:"amount"`
+		Amount   string `json:"value"`
 		*Alias
 	}{
 		Alias: (*Alias)(sp),
@@ -128,11 +128,6 @@ func (sp *SignedTransactionParams) UnmarshalJSON(data []byte) error {
 	if err := json.Unmarshal(data, &temp); err != nil {
 		return err
 	}
-
-	// version, err := strconv.ParseUint(temp.Version, 0, 64)
-	// if err != nil {
-	//	return errors.New(fmt.Sprintf("Error converting %s to uint64", temp.Version))
-	// }
 
 	chainId, err := strconv.ParseUint(temp.ChainId, 0, 64)
 	if err != nil {
@@ -154,16 +149,16 @@ func (sp *SignedTransactionParams) UnmarshalJSON(data []byte) error {
 		return errors.New(fmt.Sprintf("Error converting %s to BigInt", temp.Nonce))
 	}
 
-	val, success := big.NewInt(0).SetString(temp.Value[2:], 16)
+	val, success := big.NewInt(0).SetString(temp.Amount[2:], 16)
 	if !success {
-		return errors.New(fmt.Sprintf("Error converting %s to BigInt", temp.Value))
+		return errors.New(fmt.Sprintf("Error converting %s to BigInt", temp.Amount))
 	}
 
 	sp.ChainId = chainId
 	sp.GasLimit = gas
 	sp.GasPrice = gasPrice
 	sp.Nonce = nonce
-	sp.Value = val
+	sp.Amount = val
 
 	return nil
 }
@@ -188,20 +183,14 @@ type TransactionResponse struct {
 func (t *TransactionResponse) UnmarshalJSON(data []byte) error {
 	type Alias TransactionResponse
 
-	type Signature struct {
-		PublicKey  []byte `json:"publicKey"    gencodec:"required"`  // 公钥，33字节，第1个字节是类型0, 1, 2，3，后32字节是公钥的x
-		CryptoType []byte `json:"cryptoType"    gencodec:"required"` // 签名类型，0是sm2，1是secp
-		Signature  []byte `json:"signature"    gencodec:"required"`  // 签名，64字字，前32字节是r，后32字节是s
-	}
-
 	temp := &struct {
-		ChainId          string        `json:"chainId"`
-		BlockNumber      string        `json:"blockNumber"`
-		Gas              string        `json:"gas"`
-		GasPrice         string        `json:"gasPrice"`
-		Nonce            string        `json:"nonce"`
-		TransactionIndex string        `json:"transactionIndex"`
-		Amount           string        `json:"amount"`
+		ChainId          string `json:"chainId"`
+		BlockNumber      string `json:"blockNumber"`
+		Gas              string `json:"gas"`
+		GasPrice         string `json:"gasPrice"`
+		Nonce            string `json:"nonce"`
+		TransactionIndex string `json:"transactionIndex"`
+		Amount           string `json:"amount"`
 		*Alias
 	}{
 		Alias: (*Alias)(t),

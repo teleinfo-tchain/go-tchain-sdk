@@ -423,7 +423,7 @@ func TestCoreSendRawTransaction(t *testing.T) {
 
 }
 
-// todo: 测试失败
+// todo: 测试失败 链上 SignTransaction rpc 错误的问题
 func TestCoreSignTransaction(t *testing.T) {
 	var connection = bif.NewBif(providers.NewHTTPProvider(resources.IP00+":"+strconv.FormatUint(resources.Port, 10), 10, false))
 
@@ -467,8 +467,8 @@ func TestCoreSignTransaction(t *testing.T) {
 		t.FailNow()
 	}
 
-	if txID.Transaction.Value.Cmp(transaction.Amount) != 0 {
-		t.Errorf(fmt.Sprintf("Expected %d | Got: %d", transaction.Amount.Uint64(), txID.Transaction.Value.Uint64()))
+	if txID.Transaction.Amount.Cmp(transaction.Amount) != 0 {
+		t.Errorf(fmt.Sprintf("Expected %d | Got: %d", transaction.Amount.Uint64(), txID.Transaction.Amount.Uint64()))
 		t.FailNow()
 	}
 
