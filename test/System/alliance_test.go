@@ -1,15 +1,16 @@
 package System
 
 import (
+	"github.com/bif/bif-sdk-go"
 	"github.com/bif/bif-sdk-go/dto"
 	"github.com/bif/bif-sdk-go/test/resources"
-	"path/filepath"
+	"path"
 	"testing"
 	"time"
 )
 
 func TestRegisterDirector(t *testing.T) {
-	file := filepath.Dir(GetCurrentAbPath())+resources.KeyStoreFile+resources.TestAddressRegulatoryFile
+	file := path.Join(bif.GetCurrentAbPath(), "test", "resources", "keystore", resources.TestAddressRegulatoryFile)
 	con, sigPara, err := connectWithSig(resources.TestAddressRegulatory, file)
 	if err != nil {
 		t.Error(err)
@@ -47,7 +48,7 @@ func TestRegisterDirector(t *testing.T) {
 }
 
 func TestUpgradeDirector(t *testing.T) {
-	file := filepath.Dir(GetCurrentAbPath())+resources.KeyStoreFile+resources.TestAddressRegulatoryFile
+	file := path.Join(bif.GetCurrentAbPath(), "test", "resources", "keystore", resources.TestAddressRegulatoryFile)
 	con, sigPara, err := connectWithSig(resources.TestAddressRegulatory, file)
 	if err != nil {
 		t.Error(err)
@@ -78,7 +79,7 @@ func TestUpgradeDirector(t *testing.T) {
 }
 
 func TestRevoke(t *testing.T) {
-	file := filepath.Dir(GetCurrentAbPath())+resources.KeyStoreFile+resources.TestAddressRegulatoryFile
+	file := path.Join(bif.GetCurrentAbPath(), "test", "resources", "keystore", resources.TestAddressRegulatoryFile)
 	con, sigPara, err := connectWithSig(resources.TestAddressRegulatory, file)
 	if err != nil {
 		t.Error(err)
@@ -111,7 +112,7 @@ func TestRevoke(t *testing.T) {
 }
 
 func TestSetWeights(t *testing.T) {
-	file := filepath.Dir(GetCurrentAbPath())+resources.KeyStoreFile+resources.TestAddressRegulatoryFile
+	file := path.Join(bif.GetCurrentAbPath(), "test", "resources", "keystore", resources.TestAddressRegulatoryFile)
 	con, sigPara, err := connectWithSig(resources.TestAddressRegulatory, file)
 	if err != nil {
 		t.Error(err)

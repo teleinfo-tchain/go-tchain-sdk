@@ -43,7 +43,7 @@ func TestAddWords(t *testing.T) {
 	sysTxParams.KeyFileData = keyFileData
 	sysTxParams.GasPrice = big.NewInt(45)
 	sysTxParams.Gas = 2000000
-	sysTxParams.Nonce = nonce.Uint64()
+	sysTxParams.Nonce = nonce
 	sysTxParams.ChainId = chainId
 
 	sen := connection.System.NewSensitiveWord()
@@ -89,7 +89,7 @@ func TestDelWord(t *testing.T) {
 	sysTxParams.KeyFileData = keyFileData
 	sysTxParams.GasPrice = big.NewInt(35)
 	sysTxParams.Gas = 2000000
-	sysTxParams.Nonce = nonce.Uint64()
+	sysTxParams.Nonce = nonce
 	sysTxParams.ChainId = chainId
 
 	sen := connection.System.NewSensitiveWord()
