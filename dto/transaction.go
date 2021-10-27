@@ -257,8 +257,8 @@ type TransactionReceipt struct {
 	TransactionIndex  *big.Int          `json:"transactionIndex"`
 	BlockHash         string            `json:"blockHash"`
 	BlockNumber       *big.Int          `json:"blockNumber"`
-	From              string            `json:"from"`
-	To                string            `json:"to"`
+	From              string            `json:"sender"`
+	To                string            `json:"recipient"`
 	CumulativeGasUsed uint64            `json:"cumulativeGasUsed"`
 	GasUsed           uint64            `json:"gasUsed"`
 	ContractAddress   string            `json:"contractAddress"`

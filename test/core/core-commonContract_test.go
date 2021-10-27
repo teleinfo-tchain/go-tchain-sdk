@@ -15,72 +15,88 @@
 package test
 
 import (
-	"encoding/json"
 	"fmt"
 	"github.com/bif/bif-sdk-go"
+	"github.com/bif/bif-sdk-go/account"
+	"github.com/bif/bif-sdk-go/compiler"
 	"github.com/bif/bif-sdk-go/core/block"
 	"github.com/bif/bif-sdk-go/dto"
 	"github.com/bif/bif-sdk-go/providers"
 	"github.com/bif/bif-sdk-go/test/resources"
-	"github.com/bif/bif-sdk-go/testutil"
-	"github.com/stretchr/testify/assert"
-	"io/ioutil"
+	"github.com/bif/bif-sdk-go/utils"
 	"math/big"
 	"path"
+	"runtime"
 	"strconv"
 	"testing"
 	"time"
 )
 
+//  部署合约及合约的call方法调用
 func TestCoreContract(t *testing.T) {
+	solcDir  := path.Join(bif.GetCurrentAbPath(), "compiler", "tmp")
+	sysType := runtime.GOOS
+	version := "v0.5.5"
+	if sysType == "windows"{
+		solcDir = path.Join(solcDir, version, sysType, "solc.exe")
+	}else {
+		solcDir = path.Join(solcDir, version, sysType, "solc-static-linux")
+	}
 
-	cc := &testutil.Contract{}
+	solFile  := path.Join(bif.GetCurrentAbPath(), "compiler", "contract", "simple-token.sol")
 
-	file := path.Join(bif.GetCurrentAbPath(), "test", "resources", "simple-token.sol")
-	artifact, err := cc.Compile(file)
-	assert.NoError(t, err)
+	solc := compiler.NewSolidityCompiler(solcDir)
 
-	type TruffleContract struct {
+	output, err := solc.Compile(solFile)
+	if err != nil{
+		t.Error(err)
+		t.FailNow()
+	}
+
+	type Contract struct {
 		Abi      string `json:"abi"`
 		ByteCode string `json:"byteCode"`
 	}
+	var contract Contract
 
-	var unmarshalResponse TruffleContract
+	for _, v := range output.Contracts{
+		contract.Abi = v.Abi
+		contract.ByteCode = v.Bin
+	}
 
-	unmarshalResponse.Abi = artifact.Abi
-	unmarshalResponse.ByteCode = artifact.Bin
 
 	var connection = bif.NewBif(providers.NewHTTPProvider(resources.IP00+":"+strconv.FormatUint(resources.Port, 10), 10, false))
-	byteCode := unmarshalResponse.ByteCode
-	contract, err := connection.Core.NewContract(unmarshalResponse.Abi)
+
+	contractObj, err := connection.Core.NewContract(contract.Abi)
 	if err != nil {
 		t.Error(err)
 		t.FailNow()
 	}
 
-	transaction := new(dto.TransactionParameters)
-	generator, err := connection.Core.GetGenerator()
+	chainId, _ := connection.Core.GetChainId()
+
+	nonce, _ := connection.Core.GetTransactionCount(resources.Addr1, block.LATEST)
+
+	var sender utils.Address
+	sender = utils.StringToAddress(resources.Addr1)
+
+	tx := &account.SignTxParams{
+		ChainId:   chainId,
+		Nonce:     nonce,
+		GasPrice:  big.NewInt(200),
+		GasLimit:  200000,
+		Sender:    &sender,
+		Recipient: nil,
+		Amount:    nil,
+	}
+
+	hash, err := contractObj.Deploy(tx, false, resources.Addr1Pri, contract.ByteCode)
+
 	if err != nil {
 		t.Error(err)
 		t.FailNow()
 	}
-
-	transaction.ChainId, err = connection.Core.GetChainId()
-	if err != nil {
-		t.Error(err)
-		t.FailNow()
-	}
-
-	transaction.Sender = generator
-	transaction.GasLimit = uint64(4000000)
-
-	hash, err := contract.Deploy(transaction, byteCode)
-
-	if err != nil {
-		t.Error(err)
-		t.FailNow()
-	}
-	t.Log("hash is ", hash)
+	t.Log("txHash is ", hash)
 
 	var receipt *dto.TransactionReceipt
 
@@ -96,9 +112,25 @@ func TestCoreContract(t *testing.T) {
 
 	t.Log("Contract Address: ", receipt.ContractAddress)
 
-	transaction.Recipient = receipt.ContractAddress
 
-	result, err := contract.Call(transaction, "getName")
+	transaction := new(dto.TransactionParameters)
+	generator, err := connection.Core.GetGenerator()
+	if err != nil {
+		t.Error(err)
+		t.FailNow()
+	}
+
+	// txHash is  0x0e57cc103a20ebdbd3ac36530e440e95af68b4e6b3ce2f55d845218c7a7b1add
+	// Contract Address:  did:bid:qwer:sfzxtY15dmcYSKN9r5sWs3GDBFvCU2Sq
+
+	// chainId, _ := connection.Core.GetChainId()
+	// nonce, _ := connection.Core.GetTransactionCount(resources.Addr1, block.LATEST)
+	transaction.ChainId = chainId
+	transaction.Sender = generator
+	transaction.Recipient = receipt.ContractAddress
+	transaction.AccountNonce = nonce.Uint64()
+
+	result, err := contractObj.Call(transaction, "getName")
 
 	if err != nil {
 		t.Error(err)
@@ -106,125 +138,78 @@ func TestCoreContract(t *testing.T) {
 	}
 
 	if result != nil {
-		name, _ := result.ToComplexString()
-		if name.ToString() != "" {
-			t.Errorf(fmt.Sprintf("Name not expected; [Expected %s | Got %s]", "demo", name.ToString()))
-			t.FailNow()
-		}
+		val, _ := result.ToComplexString()
+		fmt.Println(val)
 	}
-
-	result, err = contract.Call(transaction, "symbol")
-	if result != nil && err == nil {
-		symbol, _ := result.ToComplexString()
-		if symbol.ToString() != "SET" {
-			t.Errorf("Symbol not expected")
-			t.FailNow()
-		}
-	}
-
-	result, err = contract.Call(transaction, "decimals")
-	if result != nil && err == nil {
-		decimals, _ := result.ToBigInt()
-		if decimals.Int64() != 18 {
-			t.Errorf("Decimals not expected")
-			t.FailNow()
-		}
-	}
-
-	bigInt, _ := new(big.Int).SetString("000000000000000000000000000000000000000000000d3c21bcecceda1000000", 16)
-
-	result, err = contract.Call(transaction, "totalSupply")
-	if result != nil && err == nil {
-		total, _ := result.ToBigInt()
-		if total.Cmp(bigInt) != 0 {
-			t.Errorf("Total not expected")
-			t.FailNow()
-		}
-	}
-
-	result, err = contract.Call(transaction, "balanceOf", generator)
-	if result != nil && err == nil {
-		balance, _ := result.ToBigInt()
-		if balance.Cmp(bigInt) != 0 {
-			t.Errorf("Balance not expected")
-			t.FailNow()
-		}
-	}
-
-	// hash, err = contract.Send(transaction, "approve", utils.StringToAddress(generator), big.NewInt(10))
-	// if err != nil {
-	//	t.Log(err)
-	//	t.Errorf("Can't send approve transaction")
-	//	t.FailNow()
-	// }
-	//
-	// t.Log(hash)
-	//
-	// receipt = nil
-	// for receipt == nil {
-	//	time.Sleep(time.Second)
-	//	receipt, err = connection.Core.GetTransactionReceipt(hash)
-	// }
-	// t.Log(receipt.Logs[0].Data)
-	//
-	// reallyBigInt, _ := big.NewInt(0).SetString("20", 16)
-	// _, err = contract.Send(transaction, "approve", utils.StringToAddress(generator), reallyBigInt)
-	// if err != nil {
-	//	t.Errorf("Can't send approve transaction")
-	//	t.FailNow()
-	// }
 }
 
-func TestCoreGetCode(t *testing.T) {
-
-	content, err := ioutil.ReadFile("../resources/simple-token.json")
-
-	if err != nil {
-		t.Error(err)
-		t.FailNow()
+func ballotDeploy(t *testing.T) string {
+	solcDir  := path.Join(bif.GetCurrentAbPath(), "compiler", "tmp")
+	sysType := runtime.GOOS
+	version := "v0.5.5"
+	if sysType == "windows"{
+		solcDir = path.Join(solcDir, version, sysType, "solc.exe")
+	}else {
+		solcDir = path.Join(solcDir, version, sysType, "solc-static-linux")
 	}
 
-	type TruffleContract struct {
-		Abi              string `json:"abi"`
-		ByteCode         string `json:"byteCode"`
-		DeployedByteCode string `json:"deployedByteCode"`
-	}
+	solFile  := path.Join(bif.GetCurrentAbPath(), "compiler", "contract", "ballot.sol")
 
-	var unmarshalResponse TruffleContract
+	solc := compiler.NewSolidityCompiler(solcDir)
 
-	err = json.Unmarshal(content, &unmarshalResponse)
+	output, err := solc.Compile(solFile)
 	if err != nil{
 		t.Error(err)
 		t.FailNow()
 	}
 
+	type Contract struct {
+		Abi      string `json:"abi"`
+		ByteCode string `json:"byteCode"`
+	}
+	var contract Contract
+
+	for _, v := range output.Contracts{
+		contract.Abi = v.Abi
+		contract.ByteCode = v.Bin
+	}
+
+
 	var connection = bif.NewBif(providers.NewHTTPProvider(resources.IP00+":"+strconv.FormatUint(resources.Port, 10), 10, false))
-	byteCode := unmarshalResponse.ByteCode
-	deployedByteCode := unmarshalResponse.DeployedByteCode
 
-	contract, err := connection.Core.NewContract(unmarshalResponse.Abi)
-
+	contractObj, err := connection.Core.NewContract(contract.Abi)
 	if err != nil {
 		t.Error(err)
 		t.FailNow()
 	}
 
-	transaction := new(dto.TransactionParameters)
-	generator, err := connection.Core.GetGenerator()
+	chainId, _ := connection.Core.GetChainId()
 
-	if err != nil {
+	nonce, _ := connection.Core.GetTransactionCount(resources.Addr1, block.LATEST)
+
+	var sender utils.Address
+	sender = utils.StringToAddress(resources.Addr1)
+
+	tx := &account.SignTxParams{
+		ChainId:   chainId,
+		Nonce:     nonce,
+		GasPrice:  big.NewInt(200),
+		GasLimit:  200000,
+		Sender:    &sender,
+		Recipient: nil,
+		Amount:    nil,
+	}
+
+	proposalNames := "0100000000000000000000000000000000000000000000000000000000000000"
+
+	hash, err := contractObj.Deploy(tx, false, resources.Addr1Pri, contract.ByteCode, proposalNames)
+
+	if err != nil{
 		t.Error(err)
 		t.FailNow()
 	}
 
-	transaction.Sender = generator
-	transaction.GasLimit = uint64(4000000)
-	hash, err := contract.Deploy(transaction, byteCode)
-
-	if err != nil {
-		t.Error(err)
-		t.FailNow()
-	}
+	t.Log("txHash is ", hash)
 
 	var receipt *dto.TransactionReceipt
 
@@ -238,17 +223,12 @@ func TestCoreGetCode(t *testing.T) {
 		t.FailNow()
 	}
 
-	address := receipt.ContractAddress
-	code, err := connection.Core.GetCode(address, block.LATEST)
-	if err != nil {
-		t.Error(err)
-		t.FailNow()
-	}
+	t.Log("Contract Address: ", receipt.ContractAddress)
 
-	if deployedByteCode != code {
-		t.Error("Contract code not expected")
-		t.FailNow()
-	}
-
-	t.Log("code is ", code)
+	return hash
+}
+// 测试合约的交互(只是为了测试合约交互，实际使用contract中的Call或者Send)
+func TestCoreSendTransactionInteractContract(t *testing.T) {
+	txHash := ballotDeploy(t)
+	fmt.Println(txHash)
 }

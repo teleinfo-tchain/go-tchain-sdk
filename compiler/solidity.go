@@ -3,24 +3,28 @@ package compiler
 import (
 	"bytes"
 	"encoding/json"
+	"errors"
 	"fmt"
-	"io"
-	"io/ioutil"
-	"net/http"
-	"os"
 	"os/exec"
-	"path/filepath"
+	"strings"
 )
 
-type solcOutput struct {
-	Contracts map[string]*solcContract
+type Output struct {
+	Contracts map[string]*Artifact
+	Sources   map[string]*Source
 	Version   string
 }
 
-type solcContract struct {
-	BinRuntime string `json:"bin-runtime"`
-	Bin        string
-	Abi        string
+type Source struct {
+	AST map[string]interface{}
+}
+
+type Artifact struct {
+	Abi           string
+	Bin           string
+	BinRuntime    string `json:"bin-runtime"`
+	SrcMap        string `json:"srcmap"`
+	SrcMapRuntime string `json:"srcmap-runtime"`
 }
 
 // Solidity is the solidity compiler
@@ -29,40 +33,47 @@ type Solidity struct {
 }
 
 // NewSolidityCompiler instantiates a new solidity compiler
-func NewSolidityCompiler(path string) Compiler {
+func NewSolidityCompiler(path string) *Solidity {
 	return &Solidity{path}
 }
 
 // CompileCode compiles a solidity code
-func (s *Solidity) CompileCode(demoPath string) (map[string]*Artifact, error) {
-	if demoPath == "" {
-		return nil, fmt.Errorf("demoPath is empty and files not exist")
+func (s *Solidity) CompileCode(code string) (*Output, error) {
+	if code == "" {
+		return nil, errors.New("code is empty")
 	}
-	artifacts, err := s.compileImpl(demoPath)
+	output, err := s.compileImpl(code)
 	if err != nil {
 		return nil, err
 	}
-	return artifacts, nil
+	return output, nil
 }
 
 // Compile implements the compiler interface
-func (s *Solidity) Compile(demoPath string) (map[string]*Artifact, error) {
-	if len(demoPath) == 0 {
-		return nil, fmt.Errorf("no input files")
+func (s *Solidity) Compile(files ...string) (*Output, error) {
+	if len(files) == 0 {
+		return nil, errors.New("no input files")
 	}
-	return s.compileImpl(demoPath)
+	return s.compileImpl("", files...)
 }
 
-func (s *Solidity) compileImpl(demoPath string) (map[string]*Artifact, error) {
+func (s *Solidity) compileImpl(code string, files ...string) (*Output, error) {
 	args := []string{
 		"--combined-json",
-		"bin,bin-runtime,abi",
+		"bin,bin-runtime,srcmap-runtime,abi,srcmap,ast",
+	}
+	if code != "" {
+		args = append(args, "-")
+	}
+	if len(files) != 0 {
+		args = append(args, files...)
 	}
 
-	args = append(args, demoPath)
-
 	var stdout, stderr bytes.Buffer
-	cmd := exec.Command("D:\\Go\\src\\github.com\\bif\\bif-sdk-go\\compiler\\tmp\\solc.exe", args...)
+	cmd := exec.Command(s.path, args...)
+	if code != "" {
+		cmd.Stdin = strings.NewReader(code)
+	}
 
 	cmd.Stdout = &stdout
 	cmd.Stderr = &stderr
@@ -71,92 +82,9 @@ func (s *Solidity) compileImpl(demoPath string) (map[string]*Artifact, error) {
 		return nil, fmt.Errorf("failed to compile: %s", string(stderr.Bytes()))
 	}
 
-	var output *solcOutput
+	var output *Output
 	if err := json.Unmarshal(stdout.Bytes(), &output); err != nil {
 		return nil, err
 	}
-
-	artifacts := map[string]*Artifact{}
-	for name, i := range output.Contracts {
-		artifacts[name] = &Artifact{
-			Bin:        i.Bin,
-			BinRuntime: i.BinRuntime,
-			Abi:        i.Abi,
-		}
-	}
-	return artifacts, nil
-}
-
-// DownloadSolidity downloads the solidity compiler
-func DownloadSolidity(version string, dst string, renameDst bool) error {
-	url := "https://github.com/ethereum/solidity/releases/download/v" + version + "/solc-windows.exe"
-
-	// check if the dst is correct
-	exists := false
-	fi, err := os.Stat(dst)
-	if err == nil {
-		switch mode := fi.Mode(); {
-		case mode.IsDir():
-			exists = true
-		case mode.IsRegular():
-			return fmt.Errorf("dst is a file")
-		}
-	} else {
-		if !os.IsNotExist(err) {
-			return fmt.Errorf("failed to stat dst '%s': %v", dst, err)
-		}
-	}
-
-	// create the destiny path if does not exists
-	if !exists {
-		if err := os.MkdirAll(dst, 0755); err != nil {
-			return fmt.Errorf("cannot create dst path: %v", err)
-		}
-	}
-
-	// rename binary
-	name := "solidity"
-	if renameDst {
-		name += "-" + version
-	}
-
-	// tmp folder to download the binary
-	tmpDir, err := ioutil.TempDir("/tmp", "solc-")
-	if err != nil {
-		return err
-	}
-	defer os.RemoveAll(tmpDir)
-
-	path := filepath.Join(tmpDir, name)
-
-	// Get the data
-	resp, err := http.Get(url)
-	if err != nil {
-		return err
-	}
-	defer resp.Body.Close()
-
-	// Create the file
-	out, err := os.Create(path)
-	if err != nil {
-		return err
-	}
-	defer out.Close()
-
-	// Write the body to file
-	_, err = io.Copy(out, resp.Body)
-	if err != nil {
-		return err
-	}
-
-	// make binary executable
-	if err := os.Chmod(path, 0755); err != nil {
-		return err
-	}
-
-	// move file to dst
-	if err := os.Rename(path, filepath.Join(dst, name)); err != nil {
-		return err
-	}
-	return nil
+	return output, nil
 }

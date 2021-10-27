@@ -16,6 +16,7 @@ package core
 
 import (
 	Abi "github.com/bif/bif-sdk-go/abi"
+	"github.com/bif/bif-sdk-go/account"
 	"github.com/bif/bif-sdk-go/dto"
 	"github.com/bif/bif-sdk-go/utils"
 	"github.com/bif/bif-sdk-go/utils/types"
@@ -74,12 +75,19 @@ func (contract *Contract) Send(transaction *dto.TransactionParameters, functionN
 
 }
 
-func (contract *Contract) Deploy(transaction *dto.TransactionParameters, byteCode string, args ...interface{}) (string, error) {
+func (contract *Contract) Deploy(tx *account.SignTxParams, isSM2 bool,  signPriKey, byteCode string, args ...interface{}) (string, error) {
 	inputEncode, err := contract.abi.Pack("", args...)
 	if err != nil {
 		return "", err
 	}
-	transaction.Payload = types.ComplexString(byteCode) + types.ComplexString(utils.Bytes2Hex(inputEncode))
-	return contract.super.SendTransaction(transaction)
+
+	tx.Payload = append(utils.Hex2Bytes(byteCode), inputEncode...)
+
+	signTx, err := account.SignTransaction(tx, signPriKey, isSM2)
+	if err != nil{
+		return "", err
+	}
+
+	return contract.super.SendRawTransaction(signTx.Raw.String())
 }
 

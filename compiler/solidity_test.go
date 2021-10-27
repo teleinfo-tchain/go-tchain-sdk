@@ -1,25 +1,33 @@
 package compiler
 
 import (
-	"bytes"
+	"fmt"
 	"github.com/bif/bif-sdk-go"
-	"io/ioutil"
-	"os"
-	"os/exec"
 	"path"
-	"path/filepath"
 	"reflect"
+	"runtime"
 	"strings"
 	"testing"
+
+	"github.com/stretchr/testify/assert"
 )
 
 var (
-	solcPath  = path.Join(bif.GetCurrentAbPath(), "compiler", "tmp", "solc.exe")
+	solcDir  = path.Join(bif.GetCurrentAbPath(), "compiler", "tmp")
+	solFile  = path.Join(bif.GetCurrentAbPath(), "compiler", "contract")
 )
 
 
 func TestSolidityInline(t *testing.T) {
-	solc := NewSolidityCompiler(solcPath).(*Solidity)
+	sysType := runtime.GOOS
+	version := "v0.5.5"
+	if sysType == "windows"{
+		solcDir = path.Join(solcDir, version, sysType, "solc.exe")
+	}else {
+		solcDir = path.Join(solcDir, version, sysType, "solc-static-linux")
+	}
+
+	solc := NewSolidityCompiler(solcDir)
 
 	cases := []struct {
 		code      string
@@ -55,9 +63,12 @@ func TestSolidityInline(t *testing.T) {
 			}
 
 			result := map[string]struct{}{}
-			for i := range output {
+			for i := range output.Contracts {
 				result[strings.TrimPrefix(i, "<stdin>:")] = struct{}{}
 			}
+
+			// only one source file
+			assert.Len(t, output.Sources, 1)
 
 			expected := map[string]struct{}{}
 			for _, i := range c.contracts {
@@ -72,69 +83,32 @@ func TestSolidityInline(t *testing.T) {
 }
 
 func TestSolidity(t *testing.T) {
-	solc := NewSolidityCompiler(solcPath)
-	demoPath := "D:\\Go\\src\\github.com\\bif\\bif-sdk-go\\test\\resources\\simple-token.sol"
-	output, err := solc.Compile(demoPath)
+	sysType := runtime.GOOS
+	version := "v0.5.5"
+	if sysType == "windows"{
+		solcDir = path.Join(solcDir, version, sysType, "solc.exe")
+	}else {
+		solcDir = path.Join(solcDir, version, sysType, "solc-static-linux")
+	}
+
+	solc := NewSolidityCompiler(solcDir)
+
+	files := []string{
+		path.Join(solFile, "ballot.sol"),
+		path.Join(solFile, "simple_auction.sol"),
+	}
+	output, err := solc.Compile(files...)
 	if err != nil {
 		t.Fatal(err)
 	}
-	if len(output) != 2 {
+	if len(output.Contracts) != 2 {
 		t.Fatal("two expected")
 	}
-}
 
-func existsSolidity(t *testing.T, path string) bool {
-	_, err := os.Stat(path)
-	if err != nil {
-		if os.IsNotExist(err) {
-			return false
-		}
-		t.Fatal(err)
+	for k, v := range output.Contracts {
+		fmt.Println(k)
+		fmt.Println(v)
 	}
 
-	cmd := exec.Command(path, "--version")
-	var stderr, stdout bytes.Buffer
-	cmd.Stderr = &stderr
-	cmd.Stdout = &stdout
-	if err := cmd.Run(); err != nil {
-		t.Fatalf("solidity version failed: %s", string(stderr.Bytes()))
-	}
-	if len(stdout.Bytes()) == 0 {
-		t.Fatal("empty output")
-	}
-	return true
-}
 
-func TestDownloadSolidityCompiler(t *testing.T) {
-	dst1, err := ioutil.TempDir("/tmp", "go-web3-")
-	if err != nil {
-		t.Fatal(err)
-	}
-	defer os.RemoveAll(dst1)
-
-	if err := DownloadSolidity("0.5.5", dst1, true); err != nil {
-		t.Fatal(err)
-	}
-	if existsSolidity(t, filepath.Join(dst1, "solidity")) {
-		t.Fatal("it should not exist")
-	}
-	if !existsSolidity(t, filepath.Join(dst1, "solidity-0.5.5")) {
-		t.Fatal("it should exist")
-	}
-
-	dst2, err := ioutil.TempDir("/tmp", "go-web3-")
-	if err != nil {
-		t.Fatal(err)
-	}
-	defer os.RemoveAll(dst2)
-
-	if err := DownloadSolidity("0.5.5", dst2, false); err != nil {
-		t.Fatal(err)
-	}
-	if !existsSolidity(t, filepath.Join(dst2, "solidity")) {
-		t.Fatal("it should exist")
-	}
-	if existsSolidity(t, filepath.Join(dst2, "solidity-0.5.5")) {
-		t.Fatal("it should not exist")
-	}
 }

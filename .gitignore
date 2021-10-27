@@ -24,3 +24,5 @@ build/_vendor/pkg
 
 test/resources/node
 test/resources/keystore
+
+compiler/tmp
