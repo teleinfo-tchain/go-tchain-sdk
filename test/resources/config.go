@@ -11,7 +11,7 @@ const (
 	Port          uint64 = 44002
 	WebsocketPort uint64 = 44003
 
-	ChainCode string = "tele"
+	ChainCode string = "qwer"
 	PassWord  string = "tele"
 )
 
@@ -34,27 +34,27 @@ const (
 	NotSm2         = false
 	SystemPassword = "tele"
 
-	TestAddressRegulatory     = "did:bid:tele:sf25XGBQU8E8wGFo9wGKo95jUgtYPM24Y"
-	TestAddressRegulatoryFile = "UTC--2021-10-18T03-00-25.788254467Z--did:bid:tele:sf25XGBQU8E8wGFo9wGKo95jUgtYPM24Y"
+	TestAddressRegulatory     = "did:bid:qwer:sf25XGBQU8E8wGFo9wGKo95jUgtYPM24Y"
+	TestAddressRegulatoryFile = "UTC--2021-10-19T05-33-49.419105162Z--did_bid_qwer_sf25XGBQU8E8wGFo9wGKo95jUgtYPM24Y"
 
-	TestAddressAlliance     = "did:bid:tele:sf25XGBQU8E8wGFo9wGKo95jUgtYPM24Y"
-	TestAddressAllianceFile = "UTC--2021-10-18T03-00-25.788254467Z--did:bid:tele:sf25XGBQU8E8wGFo9wGKo95jUgtYPM24Y"
+	TestAddressAlliance     = "did:bid:qwer:sf25XGBQU8E8wGFo9wGKo95jUgtYPM24Y"
+	TestAddressAllianceFile = "UTC--2021-10-18T03-00-25.788254467Z--did:bid:qwer:sf25XGBQU8E8wGFo9wGKo95jUgtYPM24Y"
 
 	// RegisterAllianceOnePubKey 联盟合约配置
 	RegisterAllianceOnePubKey = "16Uiu2HAm3z3rBzpH5tpFkdTxf7CU2JSdEDT4A6JH78ieKc69Aotp"
 	RegisterAllianceOnePriKey = "78a0fc8f2e8440e1cc13eb12e5eb0a76c70e4cb0b864dfcc4d9530832f259363"
-	RegisterAllianceOne       = "did:bid:tele:sf2BX7RNbmdtGgyYuD3HL7H7w1XmGSTFY"
-	RegisterAllianceOneFile   = "UTC--2021-10-18T03-00-25.866164055Z--did:bid:tele:sf2BX7RNbmdtGgyYuD3HL7H7w1XmGSTFY"
+	RegisterAllianceOne       = "did:bid:qwer:sf2BX7RNbmdtGgyYuD3HL7H7w1XmGSTFY"
+	RegisterAllianceOneFile   = "UTC--2021-10-18T03-00-25.866164055Z--did:bid:qwer:sf2BX7RNbmdtGgyYuD3HL7H7w1XmGSTFY"
 
 	RegisterAllianceTwoPubKey = "16Uiu2HAmPR6ruDPZnoAJEo8PzJXPBfaRT8ureQtkhabXgdMyuttc"
 	RegisterAllianceTwoPriKey = "344d73bf98e1b9afdd6451ce7bb531d54b3c5cdbe6611d9252f3826b458ef5e9"
-	RegisterAllianceTwo       = "did:bid:tele:sfrVXK5LxB6ZYrqXsaqp6g3izMkm2r8n"
-	RegisterAllianceTwoFile   = "UTC--2021-10-18T03-00-25.911112270Z--did:bid:tele:sfrVXK5LxB6ZYrqXsaqp6g3izMkm2r8n"
+	RegisterAllianceTwo       = "did:bid:qwer:sfrVXK5LxB6ZYrqXsaqp6g3izMkm2r8n"
+	RegisterAllianceTwoFile   = "UTC--2021-10-18T03-00-25.911112270Z--did:bid:qwer:sfrVXK5LxB6ZYrqXsaqp6g3izMkm2r8n"
 
 	RegisterAllianceThreePubKey = "16Uiu2HAmAomJHsiKfnYsBAdKSbzqFdoZetoyKPEdG5g8vdDKPHny"
 	RegisterAllianceThreePriKey = "7499f87d504b672f0671eaa7dcde51581bd3b1e9f5c7fcde1bade03766dbcdfa"
-	RegisterAllianceThree       = "did:bid:tele:sfCXQusR8SEWgp8fQ9BQu61riWdDLCMN"
-	RegisterAllianceThreeFile   = "UTC--2021-10-18T03-00-25.953464329Z--did:bid:tele:sfCXQusR8SEWgp8fQ9BQu61riWdDLCMN"
+	RegisterAllianceThree       = "did:bid:qwer:sfCXQusR8SEWgp8fQ9BQu61riWdDLCMN"
+	RegisterAllianceThreeFile   = "UTC--2021-10-18T03-00-25.953464329Z--did:bid:qwer:sfCXQusR8SEWgp8fQ9BQu61riWdDLCMN"
 
 	// TestAddressElect 选举合约配置
 
@@ -89,15 +89,15 @@ const (
 
 //node1
 //rm -rf node1/gbif/
-//./gbifBone init --datadir node1 --chain.code tele genesis.json
-//./gbifBone --syncmode full --datadir node1 --verbosity 3 --port 5101 --rpc --rpcaddr 0.0.0.0 --rpcport 5102 --rpcapi core,gb,admin,personal,db,net,txpool,bif,dpos,alliance,election,certificate,document,sensitive,supermanager --unlock did:bid:tele:sf2BX7RNbmdtGgyYuD3HL7H7w1XmGSTFY --password ./password.txt --chain.code tele --generate console
+//./gbifBone init --datadir node1 --chain.code qwer genesis.json
+//./gbifBone --syncmode full --datadir node1 --verbosity 3 --port 5101 --rpc --rpcaddr 0.0.0.0 --rpcport 5102 --rpcapi core,gb,admin,personal,db,net,txpool,bif,dpos,alliance,election,certificate,document,sensitive,supermanager --unlock did:bid:qwer:sf2BX7RNbmdtGgyYuD3HL7H7w1XmGSTFY --password ./password.txt --chain.code qwer --generate console
 
 //node2
 //rm -rf ./node2/gbif/
-//./gbifBone init --datadir ./node2/ --chain.code tele genesis.json
-//./gbifBone --syncmode full --datadir node2 --verbosity 3 --port 5201 --rpc --rpcaddr 0.0.0.0 --rpcport 5202 --rpcapi core,gb,admin,personal,db,net,txpool,bif,dpos,alliance,election,certificate,document,sensitive,supermanager --unlock did:bid:tele:sfrVXK5LxB6ZYrqXsaqp6g3izMkm2r8n --password ./password.txt --chain.code tele --generate console
+//./gbifBone init --datadir ./node2/ --chain.code qwer genesis.json
+//./gbifBone --syncmode full --datadir node2 --verbosity 3 --port 5201 --rpc --rpcaddr 0.0.0.0 --rpcport 5202 --rpcapi core,gb,admin,personal,db,net,txpool,bif,dpos,alliance,election,certificate,document,sensitive,supermanager --unlock did:bid:qwer:sfrVXK5LxB6ZYrqXsaqp6g3izMkm2r8n --password ./password.txt --chain.code qwer --generate console
 
 //node3
 //rm -rf node3/gbif/
-//./gbifBone init --datadir ./node3/ --chain.code tele genesis.json
-//./gbifBone --syncmode full --datadir node3 --verbosity 3 --port 5301 --rpc --rpcaddr 0.0.0.0 --rpcport 5302 --rpcapi core,gb,admin,personal,db,net,txpool,bif,dpos,alliance,election,certificate,document,sensitive,supermanager --unlock did:bid:tele:sfCXQusR8SEWgp8fQ9BQu61riWdDLCMN --password ./password.txt --chain.code tele --generate console
+//./gbifBone init --datadir ./node3/ --chain.code qwer genesis.json
+//./gbifBone --syncmode full --datadir node3 --verbosity 3 --port 5301 --rpc --rpcaddr 0.0.0.0 --rpcport 5302 --rpcapi core,gb,admin,personal,db,net,txpool,bif,dpos,alliance,election,certificate,document,sensitive,supermanager --unlock did:bid:qwer:sfCXQusR8SEWgp8fQ9BQu61riWdDLCMN --password ./password.txt --chain.code qwer --generate console
