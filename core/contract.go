@@ -42,36 +42,31 @@ func (core *Core) NewContract(abi string) (*Contract, error) {
 	return contract, nil
 }
 
-// prepareTransaction ...
-func (contract *Contract) prepareTransaction(transaction *dto.TransactionParameters, functionName string, args []interface{}) (*dto.TransactionParameters, error) {
+func (contract *Contract) Call(transaction *dto.TransactionParameters, functionName string, args ...interface{}) (*dto.RequestResult, error) {
 	inputEncode, err := contract.abi.Pack(functionName, args...)
 	if err != nil {
 		return nil, err
 	}
 	transaction.Payload = types.ComplexString("0x"+utils.Bytes2Hex(inputEncode))
-	return transaction, nil
-
-}
-
-func (contract *Contract) Call(transaction *dto.TransactionParameters, functionName string, args ...interface{}) (*dto.RequestResult, error) {
-	transaction, err := contract.prepareTransaction(transaction, functionName, args)
-	if err != nil {
-		return nil, err
-	}
 
 	return contract.super.Call(transaction)
 
 }
 
-func (contract *Contract) Send(transaction *dto.TransactionParameters, functionName string, args ...interface{}) (string, error) {
-
-	transaction, err := contract.prepareTransaction(transaction, functionName, args)
-
+func (contract *Contract) Send(tx *account.SignTxParams, isSM2 bool,  signPriKey, functionName string, args ...interface{}) (string, error) {
+	inputEncode, err := contract.abi.Pack(functionName, args...)
 	if err != nil {
 		return "", err
 	}
 
-	return contract.super.SendTransaction(transaction)
+	tx.Payload = inputEncode
+
+	signTx, err := account.SignTransaction(tx, signPriKey, isSM2)
+	if err != nil{
+		return "", err
+	}
+
+	return contract.super.SendRawTransaction(signTx.Raw.String())
 
 }
 

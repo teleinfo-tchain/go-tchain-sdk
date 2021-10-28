@@ -14,7 +14,6 @@ require (
 	github.com/prometheus/common v0.9.1
 	github.com/stretchr/testify v1.5.1
 	github.com/teleinfo-bif/bit-gmsm v1.0.5
-	github.com/umbracle/go-web3 v0.0.0-20210921184341-1a00db77b7ed
 	golang.org/x/crypto v0.0.0-20201221181555-eec23a3978ad
 	golang.org/x/sys v0.0.0-20200219091948-cb0a6d8edb6c
 	gopkg.in/check.v1 v1.0.0-20200227125254-8fa46927fb4f
