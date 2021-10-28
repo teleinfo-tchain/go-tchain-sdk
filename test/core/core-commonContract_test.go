@@ -24,6 +24,7 @@ import (
 	"github.com/bif/bif-sdk-go/providers"
 	"github.com/bif/bif-sdk-go/test/resources"
 	"github.com/bif/bif-sdk-go/utils"
+	bif "go-sdk"
 	"math/big"
 	"path"
 	"runtime"
@@ -307,9 +308,9 @@ func ballotCallVoters(t *testing.T) {
 		t.FailNow()
 	}
 
-	// voter := utils.StringToAddress("did:bid:qwer:sfrVXK5LxB6ZYrqXsaqp6g3izMkm2r8n")
+	voter := utils.StringToAddress("did:bid:qwer:sfrVXK5LxB6ZYrqXsaqp6g3izMkm2r8n")
 
-	result, err := contractObj.Call(transaction, "chairperson")
+	result, err := contractObj.Call(transaction, "voters", voter)
 
 	if err != nil {
 		t.Error(err)
@@ -386,14 +387,14 @@ func TestCoreSendTransactionInteractContract(t *testing.T) {
 	// txHash is  0x8e17880962519fa1421f1eea19a3503290758db10ce37524239030b9b7aa17c3
 	// Contract Address:  did:bid:qwer:sfjGbVtUc3RNBNhMdPBJXrmRN2tzTCH8
 
-	// 合约交互 查询 call 方法
+	// // 合约交互 查询 call 方法
 	// ballotCallWinnerName(t)
 
 	// // 合约交互 交易 send 方法
 	// ballotSend(t)
 	//
-	// // call voters
-	// // ballotCallVoters(t)
+	// call voters
+	ballotCallVoters(t)
 }
 
 func TestEVMQue(t *testing.T){
