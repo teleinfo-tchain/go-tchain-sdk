@@ -24,7 +24,6 @@ import (
 	"github.com/bif/bif-sdk-go/providers"
 	"github.com/bif/bif-sdk-go/test/resources"
 	"github.com/bif/bif-sdk-go/utils"
-	bif "go-sdk"
 	"math/big"
 	"path"
 	"runtime"
