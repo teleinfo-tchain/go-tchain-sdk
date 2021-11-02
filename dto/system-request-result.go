@@ -415,3 +415,62 @@ func (pointer *SystemRequestResult) ToAllContract() ([]AllContract, error) {
 
 	return contracts, nil
 }
+
+func (pointer *SystemRequestResult) ToSubChain() (*SubChainDetail, error) {
+	if err := pointer.checkResponse(); err != nil {
+		return nil, err
+	}
+
+	result := (pointer).Result.(map[string]interface{})
+
+	if len(result) == 0 {
+		return nil, EMPTYRESPONSE
+	}
+
+	subChainDetail := &SubChainDetail{}
+
+	marshal, err := json.Marshal(result)
+
+	err = json.Unmarshal(marshal, subChainDetail)
+
+	return subChainDetail, err
+}
+
+func (pointer *SystemRequestResult) ToSubChains() ([]*SubChainDetail, error) {
+	if err := pointer.checkResponse(); err != nil {
+		if err == EMPTYRESPONSE {
+			return nil, errors.New("subChain not exist")
+		}
+		return nil, err
+	}
+
+	subChainLi := (pointer).Result.([]interface{})
+	subChains := make([]*SubChainDetail, len(subChainLi))
+
+	for i, v := range subChainLi {
+
+		result := v.(map[string]interface{})
+
+		if len(result) == 0 {
+			return nil, EMPTYRESPONSE
+		}
+
+		info := &SubChainDetail{}
+
+		marshal, err := json.Marshal(result)
+
+		if err != nil {
+			return nil, UNPARSEABLEINTERFACE
+		}
+
+		err = json.Unmarshal(marshal, info)
+		if err != nil {
+			return nil, UNPARSEABLEINTERFACE
+		}
+
+		subChains[i] = info
+
+	}
+
+	return subChains, nil
+}

@@ -283,3 +283,31 @@ type AllContract struct {
 	ContractName string `json:"contractName"` // 用户地址
 	IsEnable     bool   `json:"isEnable"`     // 用户权限,1启用合约，2禁用合约，4授权  // 3=1+2, 5=1+4, 6=2+4, 7=1+2+4 类linux权限管理
 }
+
+type SubChainInfo struct {
+	Id             string `json:"id"`             // 子链的bid
+	Apply          string `json:"apply"`          // 子链申请者的bid
+	SubChainName   string `json:"subChainName"`   // 子链名
+	ChainCode      string `json:"chainCode"`      // 子链AC码
+	ChainIndustry  string `json:"chainIndustry"`  // 子链所属行业
+	ChainFramework string `json:"chainFramework"` // 子链架构
+	Consensus      string `json:"consensus"`      // 子链共识
+	ChainMsgHash   string `json:"chainMsgHash"`   // 子链其他信息存储哈希
+}
+
+type SubChainDetail struct {
+	Id             string   `json:"id"`             // 子链的bid
+	Apply          string   `json:"apply"`          // 子链申请者的bid
+	Auditor        string   `json:"auditor"`        // 子链审核的理事长bid
+	SubChainName   string   `json:"subChainName"`   // 子链名
+	ChainCode      string   `json:"chainCode"`      // 子链AC码
+	ChainIndustry  string   `json:"chainIndustry"`  // 子链所属行业
+	ChainFramework string   `json:"chainFramework"` // 子链架构
+	Consensus      string   `json:"consensus"`      // 子链共识
+	ChainMsgHash   string   `json:"chainMsgHash"`   // 子链其他信息存储哈希
+	Status         uint64   `json:"status"`         // 该子链的状态, 1为申请投票中, 2为成功 3 失效（投票时间过期/撤销）
+	RevokeReason   string   `json:"revokeReason"`   // 撤销原由
+	StartTime      uint64   `json:"startTime"`      // 投票开始时间
+	Score          uint64   `json:"score"`          // 投票得分
+	VoterList      []string `json:"voterList"`      // 投票给这个节点的投票人列表
+}

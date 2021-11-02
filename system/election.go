@@ -183,13 +183,14 @@ func (e *Election) CancelCandidate(signTxParams *SysTxParams, candidateAddress s
 	return e.super.sendRawTransaction(signedTx)
 }
 
-func (e *Election) VoteCandidate(signTxParams *SysTxParams, candidateAddress string) (string, error) {
-	if !isValidHexAddress(candidateAddress) {
+func (e *Election) VoteCandidate(signTxParams *SysTxParams, candidates string) (string, error) {
+	candis := strings.TrimSpace(candidates)
+	if len(candis) == 0 {
 		return "", errors.New("candidateAddress is not valid bid")
 	}
 
 	// encoding
-	inputEncode, err := e.abi.Pack("voteCandidate", candidateAddress)
+	inputEncode, err := e.abi.Pack("voteCandidate", candis)
 	if err != nil {
 		return "", err
 	}

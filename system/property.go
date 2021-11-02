@@ -7,6 +7,7 @@ const (
 	DocumentContract     = "did:bid:sfcR79cThpmU8pjgvbxXZUsh4jTVoLGz"
 	SensitiveContract    = "did:bid:sf2BJooAfaZoUiCHhtwxP4pUJBA19u5Fh"
 	SuperManagerContract = "did:bid:sfmQGYcy2knexz9iJxd2fmuQa3GQugK8"
+	SubChainContract     = "did:bid:sfiGyvAxK7d2PT8UDpEssL6MVdj6F8g1"
 )
 
 const AllianceAbiJSON = `[
@@ -66,4 +67,12 @@ const ManagerAbiJSON = `[
 {"constant": false,"name":"disable","inputs":[{"name":"contract_address","type":"string"}],"outputs":[],"type":"function"},
 {"constant": false,"name":"power","inputs":[{"name":"user_address","type":"string"},{"name":"power","type":"uint64"}],"outputs":[],"type":"function"},
 {"anonymous":false,"inputs":[{"indexed":false,"name":"method_name","type":"string"},{"indexed":false,"name":"status","type":"uint32"},{"indexed":false,"name":"reason","type":"string"}],"name":"superManagerEvent","type":"event"}
+]`
+
+const SubChainAbiJSON = `[
+{"constant": false,"name":"applySubChain","inputs":[{"name":"id","type":"string"},{"name":"apply","type":"string"},{"name":"subChainName","type":"string"},{"name":"chainCode","type":"string"},{"name":"chainIndustry","type":"string"},{"name":"chainFramework","type":"string"},{"name":"consensus","type":"string"},{"name":"chainMsgHash","type":"string"}],"outputs":[],"type":"function"}, 
+{"constant": false,"name":"voteSubChain","inputs":[{"name":"candidates","type":"string"}],"outputs":[],"type":"function"},
+{"constant": false,"name":"setDeadline","inputs":[{"name":"deadline","type":"uint64"}],"outputs":[],"type":"function"},
+{"constant": false,"name":"revoke","inputs":[{"name":"subChainId","type":"string"}, {"name":"revokeReason","type":"string"}],"outputs":[],"type":"function"},
+{"anonymous":false,"inputs":[{"indexed":false,"name":"method_name","type":"string"},{"indexed":false,"name":"status","type":"uint32"},{"indexed":false,"name":"reason","type":"string"}],"name":"subChainEvent","type":"event"}
 ]`
