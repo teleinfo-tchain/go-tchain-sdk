@@ -13,8 +13,8 @@ import (
 // 注册成为可信节点（只有理事长可以注册，即监管节点）
 func TestRegisterTrustNode(t *testing.T) {
 	// 签名的节点是联盟成员
-	file := bif.GetCurrentAbPath() + resources.KeyStoreFile + resources.TestAddressRegulatoryFile
-	con, sigPara, err := connectWithSig(resources.TestAddressRegulatory, file)
+	file := bif.GetCurrentAbPath() + resources.KeyStoreFile + "UTC--2021-08-26T09-21-33.005300071Z--did-bid-llj1-sfYVq8gWNHSFhwUtA5KcKCVMszR86Zgc"
+	con, sigPara, err := connectWithSig("did:bid:llj1:sfYVq8gWNHSFhwUtA5KcKCVMszR86Zgc", file)
 	if err != nil {
 		t.Error(err)
 		t.FailNow()
@@ -23,27 +23,20 @@ func TestRegisterTrustNode(t *testing.T) {
 	ele := con.System.NewElection()
 
 	// 注册的ID（地址） 对应的keystore文件的密码
-	idPassword := resources.SystemPassword
+	idPassword := "teleinfo"
 
 	for _, registerTrustNode := range []dto.PeerNodeInfo{
-		//{resources.RegisterAllianceOne, resources.RegisterAllianceOne,
-		//	resources.RegisterAllianceOnePubKey, "node1",
-		//	"", "",
-		//	"/ip4/127.0.0.1/tcp/5101/p2p/16Uiu2HAm3z3rBzpH5tpFkdTxf7CU2JSdEDT4A6JH78ieKc69Aotp",
-		//	"https://www.teleinfo.com", 0, "teleInfo",
-		//	"110112", "127.0.0.1", 5101,
-		//},
 		{
-			resources.RegisterAllianceTwo, resources.RegisterAllianceTwo,
-			resources.RegisterAllianceTwoPubKey, "node2",
+			"did:bid:llj1:sfYVq8gWNHSFhwUtA5KcKCVMszR86Zgc", "did:bid:llj1:sfYVq8gWNHSFhwUtA5KcKCVMszR86Zgc",
+			"16Uiu2HAmSgtVcHBHe79Ey3H3DHHxqbFBCFLL5UcEAUz8sBBxouui", "node2",
 			"", "",
-			"/ip4/127.0.0.1/tcp/5201/p2p/16Uiu2HAmPR6ruDPZnoAJEo8PzJXPBfaRT8ureQtkhabXgdMyuttc",
 			"https://www.teleinfo.com", 0, "teleInfo",
-			"110002", "127.0.0.1", 5201,
+			"91310000717854505W", "127.0.0.1", 44444,
+			1,
 		},
 	} {
 		// 注册的ID（地址）对应的keystore文件
-		registerNodeIdFile := bif.GetCurrentAbPath() + resources.KeyStoreFile + resources.RegisterAllianceTwoFile
+		registerNodeIdFile := bif.GetCurrentAbPath() + resources.KeyStoreFile + "UTC--2021-08-26T09-21-33.005300071Z--did-bid-llj1-sfYVq8gWNHSFhwUtA5KcKCVMszR86Zgc"
 		idKeyFileData, err := ioutil.ReadFile(registerNodeIdFile)
 		if err != nil {
 			t.Error(err)

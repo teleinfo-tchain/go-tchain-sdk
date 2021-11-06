@@ -39,7 +39,6 @@ func registerTrustNodePreCheck(trustNode *dto.PeerNodeInfo) error {
 	trustNode.Apply = strings.TrimSpace(trustNode.Apply)
 	trustNode.PublicKey = strings.TrimSpace(trustNode.PublicKey)
 	trustNode.NodeName = strings.TrimSpace(trustNode.NodeName)
-	trustNode.Url = strings.TrimSpace(trustNode.Url)
 
 	if !isValidHexAddress(trustNode.Id) {
 		return errors.New("registerTrustNode id is not valid bid")
@@ -51,10 +50,6 @@ func registerTrustNodePreCheck(trustNode *dto.PeerNodeInfo) error {
 
 	if len(trustNode.PublicKey) != 53 {
 		return fmt.Errorf("parameter is not illegal, parameter is %s, length is not 53", "")
-	}
-
-	if len(trustNode.Url) == 0 {
-		return fmt.Errorf("parameter is not illegal, parameter is %s, length is 0", "Url")
 	}
 
 	if len(trustNode.NodeName) < 4 || len(trustNode.NodeName) > 20 {

@@ -248,13 +248,13 @@ type PeerNodeInfo struct {
 	NodeName    string `json:"nodeName"`    // 节点名称
 	MessageSha3 string `json:"messageSha3"` // 要签名的内容sha3的hash
 	Signature   string `json:"signature"`   // 节点签名内容
-	Url         string `json:"url"`         // 节点URL
 	Website     string `json:"website"`     // 节点网站地址
 	NodeType    uint64 `json:"nodeType"`    // 节点类型0企业，1个人
 	CompanyName string `json:"companyName"` // 公司名称
 	CompanyCode string `json:"companyCode"` // 公司信用代码
 	Ip          string `json:"ip"`          // ip
 	Port        uint64 `json:"port"`        // 端口
+	IpType      uint64 `json:"ipType"`      // ip的类型，ip v4或v6  0是v4 1 是v6
 }
 
 type PeerNodeDetail struct {

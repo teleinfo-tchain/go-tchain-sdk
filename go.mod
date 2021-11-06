@@ -7,6 +7,7 @@ require (
 	github.com/btcsuite/btcd v0.21.0-beta
 	github.com/btcsuite/btcutil v1.0.2
 	github.com/davecgh/go-spew v1.1.1
+	github.com/dlclark/regexp2 v1.4.0
 	github.com/gorilla/websocket v1.4.2
 	github.com/libp2p/go-libp2p-core v0.5.2
 	github.com/niemeyer/pretty v0.0.0-20200227124842-a10e7caefd8e // indirect
