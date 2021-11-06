@@ -59,12 +59,16 @@ const (
 	// TestAddressElect 选举合约配置
 
 	// PersonCertificate 证书合约配置
-	PersonCertificate = ""
+	PersonCertificateId = "did:bid:qwer:sfC4zGkAfe2r7YwdwsiMAfhnGUkp6ey4"
+
+	SubjectCertificatedId = "did:bid:qwer:sfTxeWakgwLBZ7JKQFxgfZ9gwQ4HFq8U"
+	SubjectCertificatedIdPriKey = "709f9669b4e99a028731aa0b80c64296bd66bb38f6033f3e3a2647be231e9720"
+	SubjectCertificatedIdPubKey = "0x04aeb02ce61906bb836de8b9a0280ac72b14a96079ecf21be2f87f68953f8edd369f814fc864819ed165b912f0ee15f0fec3ef5baaf8751da19b818b2b1992c4a0"
 
 	// PersonCertificatePublicKey 与personCertificate对应的公钥
 	PersonCertificatePublicKey = ""
-	TestAddressCertificate     = ""
-	TestAddressCertificateFile = ""
+	TestAddressCertificate     = "did:bid:qwer:sf25XGBQU8E8wGFo9wGKo95jUgtYPM24Y"
+	TestAddressCertificateFile = "UTC--2021-10-19T05-33-49.419105162Z--did_bid_qwer_sf25XGBQU8E8wGFo9wGKo95jUgtYPM24Y"
 
 	// TestAddressDoc did文档合约配置
 	TestAddressDoc = ""

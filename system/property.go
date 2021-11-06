@@ -32,10 +32,10 @@ const ElectionAbiJSON = `[
 ]`
 
 const CertificateAbiJSON = `[
-{"constant": false,"name":"registerCertificate","inputs":[{"name":"Id","type":"string"},{"name":"Context","type":"string"},{"name":"Subject","type":"string"},{"name":"Period","type":"uint64"},{"name":"IssuerAlgorithm","type":"string"},{"name":"IssuerSignature","type":"string"},{"name":"SubjectPublicKey","type":"string"},{"name":"SubjectAlgorithm","type":"string"},{"name":"SubjectSignature","type":"string"}],"outputs":[],"type":"function"},
+{"constant": false,"name":"issueCertificate","inputs":[{"name":"id","type":"string"},{"name":"context","type":"string"},{"name":"subject","type":"string"},{"name":"period","type":"uint64"},{"name":"issuer_algorithm","type":"string"},{"name":"issuer_signature","type":"string"},{"name":"subject_public_key","type":"string"},{"name":"subject_algorithm","type":"string"},{"name":"subject_signature","type":"string"}],"outputs":[],"type":"function"},
 {"constant": false,"name":"revokedCertificate","inputs":[{"name":"id","type":"string"}],"outputs":[],"type":"function"},
 {"constant": false,"name":"revokedCertificates","inputs":[],"outputs":[],"type":"function"},
-{"anonymous":false,"inputs":[{"indexed":false,"name":"methodName","type":"string"},{"indexed":false,"name":"status","type":"uint32"},{"indexed":false,"name":"reason","type":"string"},{"indexed":false,"name":"time","type":"uint256"}],"name":"cerdEvent","type":"event"}
+{"anonymous":false,"inputs":[{"indexed":false,"name":"method_name","type":"string"},{"indexed":false,"name":"status","type":"uint32"},{"indexed":false,"name":"reason","type":"string"}],"name":"cerdEvent","type":"event"}
 ]`
 
 const DocAbiJSON = `[

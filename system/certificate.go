@@ -99,7 +99,7 @@ func (cer *Certificate) RegisterCertificate(signTxParams *SysTxParams, registerC
 	// registerCertificate is a struct we need to use the components.
 	var values []interface{}
 	values = cer.super.structToInterface(*registerCertificate, values)
-	inputEncode, err := cer.abi.Pack("registerCertificate", values...)
+	inputEncode, err := cer.abi.Pack("issueCertificate", values...)
 	if err != nil {
 		return "", err
 	}

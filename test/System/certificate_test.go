@@ -9,8 +9,10 @@ import (
 	"github.com/bif/bif-sdk-go/test/resources"
 	"io/ioutil"
 	"math/big"
+	"path"
 	"strconv"
 	"testing"
+	"time"
 )
 
 func TestRegisterCertificate(t *testing.T) {
@@ -28,7 +30,8 @@ func TestRegisterCertificate(t *testing.T) {
 	}
 
 	// keyFileData 还可以进一步校验
-	keyFileData, err := ioutil.ReadFile(resources.TestAddressCertificateFile)
+	file := path.Join(bif.GetCurrentAbPath(), "test", "resources", "keystore", resources.TestAddressCertificateFile)
+	keyFileData, err := ioutil.ReadFile(file)
 	if err != nil {
 		t.Error(err)
 		t.FailNow()
@@ -39,6 +42,7 @@ func TestRegisterCertificate(t *testing.T) {
 	}
 
 	sysTxParams := new(system.SysTxParams)
+	sysTxParams.From = resources.TestAddressCertificate
 	sysTxParams.IsSM2 = resources.NotSm2
 	sysTxParams.Password = resources.SystemPassword
 	sysTxParams.KeyFileData = keyFileData
@@ -50,23 +54,36 @@ func TestRegisterCertificate(t *testing.T) {
 	cer := connection.System.NewCertificate()
 
 	registerCertificate := new(dto.RegisterCertificate)
-	registerCertificate.Id = resources.PersonCertificate
+	registerCertificate.Id = resources.PersonCertificateId
 	registerCertificate.Context = "test context"
-	registerCertificate.Subject = resources.PersonCertificate
+	registerCertificate.Subject = resources.SubjectCertificatedId
 	registerCertificate.Period = 1
 	registerCertificate.IssuerAlgorithm = "test"
 	registerCertificate.IssuerSignature = "test"
-	registerCertificate.SubjectPublicKey = resources.PersonCertificatePublicKey
+	registerCertificate.SubjectPublicKey = resources.SubjectCertificatedIdPubKey
 	registerCertificate.SubjectAlgorithm = "test"
 	registerCertificate.SubjectSignature = "test"
 	// registerCertificate
 	registerCertificateHash, err := cer.RegisterCertificate(sysTxParams, registerCertificate)
 	if err != nil {
 		t.Error(err)
+
 		t.FailNow()
 	}
 	// 0x03b536ee4e2764aa78d8455e730971be00de89b65677395dea4c0bfa1ec7f753
 	t.Log(registerCertificateHash, err)
+	time.Sleep(10 * time.Second)
+	log, err := connection.System.SystemLogDecode(registerCertificateHash)
+
+	if err != nil {
+		t.Errorf("err log : %v ", err)
+		t.FailNow()
+	}
+
+	if !log.Status {
+		t.Errorf("err, method is %s , err is %s ", log.Method, log.Result)
+	}
+
 }
 
 func TestRevokedCertificate(t *testing.T) {
@@ -105,7 +122,7 @@ func TestRevokedCertificate(t *testing.T) {
 
 	cer := connection.System.NewCertificate()
 
-	transactionHash, err := cer.RevokedCertificate(sysTxParams, resources.PersonCertificate)
+	transactionHash, err := cer.RevokedCertificate(sysTxParams, resources.PersonCertificateId)
 	if err != nil {
 		t.Error(err)
 		t.FailNow()
@@ -166,7 +183,7 @@ func TestGetPeriod(t *testing.T) {
 	}
 	cer := connection.System.NewCertificate()
 
-	period, err := cer.GetPeriod(resources.PersonCertificate)
+	period, err := cer.GetPeriod(resources.PersonCertificateId)
 	if err != nil {
 		t.Error(err)
 		t.FailNow()
@@ -183,7 +200,7 @@ func TestGetActive(t *testing.T) {
 	}
 	cer := connection.System.NewCertificate()
 
-	isEnable, err := cer.GetActive(resources.PersonCertificate)
+	isEnable, err := cer.GetActive(resources.PersonCertificateId)
 	if err != nil {
 		t.Error(err)
 		t.FailNow()
@@ -201,7 +218,7 @@ func TestGetCertificate(t *testing.T) {
 	}
 	cer := connection.System.NewCertificate()
 
-	certificate, err := cer.GetCertificate(resources.PersonCertificate)
+	certificate, err := cer.GetCertificate(resources.PersonCertificateId)
 	if err != nil {
 		t.Error(err)
 		t.FailNow()
@@ -219,7 +236,7 @@ func TestGetIssuer(t *testing.T) {
 	}
 	cer := connection.System.NewCertificate()
 
-	issuer, err := cer.GetIssuer(resources.PersonCertificate)
+	issuer, err := cer.GetIssuer(resources.PersonCertificateId)
 	if err != nil {
 		t.Error(err)
 		t.FailNow()
@@ -236,7 +253,7 @@ func TestGetSubject(t *testing.T) {
 	}
 	cer := connection.System.NewCertificate()
 
-	subjectSignature, err := cer.GetSubject(resources.PersonCertificate)
+	subjectSignature, err := cer.GetSubject(resources.PersonCertificateId)
 	if err != nil {
 		t.Error(err)
 		t.FailNow()
