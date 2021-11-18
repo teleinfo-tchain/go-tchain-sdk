@@ -279,7 +279,7 @@ func (e *Election) GetRestBIFBounty() (*big.Int, error) {
 	return res, nil
 }
 
-func (e *Election) GetAllTrusted() ([]*dto.PeerNodeDetail, error) {
+func (e *Election) AllTrusted() ([]*dto.PeerNodeDetail, error) {
 	pointer := &dto.SystemRequestResult{}
 
 	err := e.super.provider.SendRequest(pointer, "election_allTrusted", nil)
@@ -295,7 +295,7 @@ func (e *Election) GetAllTrusted() ([]*dto.PeerNodeDetail, error) {
 	return res, nil
 }
 
-func (e *Election) GetAllCandidates() ([]*dto.PeerNodeDetail, error) {
+func (e *Election) AllCandidates() ([]*dto.PeerNodeDetail, error) {
 	pointer := &dto.SystemRequestResult{}
 
 	err := e.super.provider.SendRequest(pointer, "election_allCandidates", nil)
@@ -311,7 +311,7 @@ func (e *Election) GetAllCandidates() ([]*dto.PeerNodeDetail, error) {
 	return res, nil
 }
 
-func (e *Election) GetAllConsensus() ([]*dto.PeerNodeDetail, error) {
+func (e *Election) AllConsensus() ([]*dto.PeerNodeDetail, error) {
 	pointer := &dto.SystemRequestResult{}
 
 	err := e.super.provider.SendRequest(pointer, "election_allConsensus", nil)
@@ -327,7 +327,7 @@ func (e *Election) GetAllConsensus() ([]*dto.PeerNodeDetail, error) {
 	return res, nil
 }
 
-func (e *Election) GetAllNodes() ([]*dto.PeerNodeDetail, error) {
+func (e *Election) AllNodes() ([]*dto.PeerNodeDetail, error) {
 	pointer := &dto.SystemRequestResult{}
 
 	err := e.super.provider.SendRequest(pointer, "election_allNodes", nil)
@@ -366,7 +366,7 @@ func (e *Election) GetPeerNode(peerNodeId string) (*dto.PeerNodeDetail, error) {
 	return res, nil
 }
 
-func (e *Election) GetVoteNodes(voter string) ([]*dto.PeerNodeDetail, error) {
+func (e *Election) VoteNodes(voter string) ([]*dto.PeerNodeDetail, error) {
 	if !isValidHexAddress(voter) {
 		return nil, errors.New("voter is not valid bid")
 	}
@@ -389,7 +389,7 @@ func (e *Election) GetVoteNodes(voter string) ([]*dto.PeerNodeDetail, error) {
 	return res, nil
 }
 
-func (e *Election) GetApplyNodes(apply string) ([]*dto.PeerNodeDetail, error) {
+func (e *Election) ApplyNodes(apply string) ([]*dto.PeerNodeDetail, error) {
 	if !isValidHexAddress(apply) {
 		return nil, errors.New("apply is not valid bid")
 	}
@@ -423,6 +423,29 @@ func (e *Election) GetDeadline() (uint64, error) {
 	res, err := pointer.ToUint64()
 	if err != nil {
 		return 0, err
+	}
+
+	return res, nil
+}
+
+func (e *Election) NodeBounty(peerNodeId string) (*dto.PeerNodeBounty, error) {
+	if !isValidHexAddress(peerNodeId) {
+		return nil, errors.New("peerNodeId is not valid bid")
+	}
+
+	params := make([]string, 1)
+	params[0] = peerNodeId
+
+	pointer := &dto.SystemRequestResult{}
+
+	err := e.super.provider.SendRequest(pointer, "election_nodeBounty", params)
+	if err != nil {
+		return nil, err
+	}
+
+	res, err := pointer.ToElectionNodeBounty()
+	if err != nil {
+		return nil, err
 	}
 
 	return res, nil

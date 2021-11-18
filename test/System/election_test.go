@@ -3,6 +3,7 @@ package System
 import (
 	"fmt"
 	"github.com/bif/bif-sdk-go"
+	"github.com/bif/bif-sdk-go/core/block"
 	"github.com/bif/bif-sdk-go/dto"
 	"github.com/bif/bif-sdk-go/test/resources"
 	"io/ioutil"
@@ -13,8 +14,10 @@ import (
 // 注册成为可信节点（只有理事长可以注册，即监管节点）
 func TestRegisterTrustNode(t *testing.T) {
 	// 签名的节点是联盟成员
-	file := bif.GetCurrentAbPath() + resources.KeyStoreFile + "UTC--2021-08-26T09-21-33.005300071Z--did-bid-llj1-sfYVq8gWNHSFhwUtA5KcKCVMszR86Zgc"
-	con, sigPara, err := connectWithSig("did:bid:llj1:sfYVq8gWNHSFhwUtA5KcKCVMszR86Zgc", file)
+	// file := bif.GetCurrentAbPath() + resources.KeyStoreFile + "UTC--2021-08-26T09-21-33.005300071Z--did-bid-llj1-sfYVq8gWNHSFhwUtA5KcKCVMszR86Zgc"
+	// con, sigPara, err := connectWithSig("did:bid:llj1:sfYVq8gWNHSFhwUtA5KcKCVMszR86Zgc", file)
+	file := bif.GetCurrentAbPath() + resources.KeyStoreFile + "UTC--2021-10-19T05-33-49.419105162Z--did_bid_qwer_sf25XGBQU8E8wGFo9wGKo95jUgtYPM24Y"
+	con, sigPara, err := connectWithSig("did:bid:qwer:sf25XGBQU8E8wGFo9wGKo95jUgtYPM24Y", file)
 	if err != nil {
 		t.Error(err)
 		t.FailNow()
@@ -23,20 +26,46 @@ func TestRegisterTrustNode(t *testing.T) {
 	ele := con.System.NewElection()
 
 	// 注册的ID（地址） 对应的keystore文件的密码
-	idPassword := "teleinfo"
+	idPassword := "tele"
 
-	for _, registerTrustNode := range []dto.PeerNodeInfo{
+	for _, registerTrustNode := range []struct {
+		*dto.PeerNodeInfo
+		KeyStoreFile string
+	}{
 		{
-			"did:bid:llj1:sfYVq8gWNHSFhwUtA5KcKCVMszR86Zgc", "did:bid:llj1:sfYVq8gWNHSFhwUtA5KcKCVMszR86Zgc",
-			"16Uiu2HAmSgtVcHBHe79Ey3H3DHHxqbFBCFLL5UcEAUz8sBBxouui", "node2",
-			"", "",
-			"https://www.teleinfo.com", 0, "teleInfo",
-			"91310000717854505W", "127.0.0.1", 44444,
-			1,
+			PeerNodeInfo: &dto.PeerNodeInfo{
+				Id:        "did:bid:qwer:sfbg3EBvpfCkqzh2dweGH217Gm758w9w",
+				Apply:     "did:bid:qwer:sf25XGBQU8E8wGFo9wGKo95jUgtYPM24Y",
+				PublicKey: "16Uiu2HAmVDhHxPFetMHXZxHeZSxmPX95AKbD7Y1PFzFZbeDJi3tx", NodeName: "node4",
+				Website: "https://www.teleinfo4.com", CompanyName: "teleInfo",
+				CompanyCode: "91310000717854505W", Ip: "192.168.1.30", Port: 44402,
+			},
+			KeyStoreFile: "UTC--2021-11-15T02-13-59.857639300Z--did-bid-qwer-sfbg3EBvpfCkqzh2dweGH217Gm758w9w",
 		},
+		// {
+		// 	PeerNodeInfo: &dto.PeerNodeInfo{
+		// 		Id:        "did:bid:qwer:sf8MD76bSGkxCzFXnyDNvtrGgCdodhBF",
+		// 		Apply:     "did:bid:qwer:sf25XGBQU8E8wGFo9wGKo95jUgtYPM24Y",
+		// 		PublicKey: "16Uiu2HAmDbHWA7MdEh9EQvbAPKb4AcrFMp9RwTevuNqzxLU57goD", NodeName: "node5",
+		// 		Website: "https://www.teleinfo5.com", CompanyName: "teleInfo",
+		// 		CompanyCode: "91310000717854505W", Ip: "139.198.15.29", Port: 44502,
+		// 	},
+		// 	KeyStoreFile: "UTC--2021-11-15T02-14-01.409690300Z--did-bid-qwer-sf8MD76bSGkxCzFXnyDNvtrGgCdodhBF",
+		// },
+		// {
+		// 	PeerNodeInfo: &dto.PeerNodeInfo{Id: "did:bid:qwer:sf2BX7RNbmdtGgyYuD3HL7H7w1XmGSTFY",
+		// 		Apply:     "did:bid:qwer:sf25XGBQU8E8wGFo9wGKo95jUgtYPM24Y",
+		// 		PublicKey: "16Uiu2HAm3z3rBzpH5tpFkdTxf7CU2JSdEDT4A6JH78ieKc69Aotp",
+		// 		NodeName:  "node2",
+		// 		Website:   "https://www.teleinfo4.com", CompanyName: "teleInfo",
+		// 		CompanyCode: "91310000717854505W", Ip: "139.198.15.29", Port: 44101},
+		// 	KeyStoreFile: "UTC--2021-10-19T05-33-49.486361230Z--did_bid_qwer_sf2BX7RNbmdtGgyYuD3HL7H7w1XmGSTFY",
+		// },
 	} {
+
+		fmt.Println(con.Core.GetBalance(registerTrustNode.Id, block.LATEST))
 		// 注册的ID（地址）对应的keystore文件
-		registerNodeIdFile := bif.GetCurrentAbPath() + resources.KeyStoreFile + "UTC--2021-08-26T09-21-33.005300071Z--did-bid-llj1-sfYVq8gWNHSFhwUtA5KcKCVMszR86Zgc"
+		registerNodeIdFile := bif.GetCurrentAbPath() + resources.KeyStoreFile + registerTrustNode.KeyStoreFile
 		idKeyFileData, err := ioutil.ReadFile(registerNodeIdFile)
 		if err != nil {
 			t.Error(err)
@@ -47,7 +76,7 @@ func TestRegisterTrustNode(t *testing.T) {
 			t.FailNow()
 		}
 
-		transactionHash, err := ele.RegisterTrustNode(sigPara, &registerTrustNode, idPassword, idKeyFileData)
+		transactionHash, err := ele.RegisterTrustNode(sigPara, registerTrustNode.PeerNodeInfo, idPassword, idKeyFileData)
 		if err != nil {
 			t.Error(err)
 			t.FailNow()
@@ -82,8 +111,8 @@ func TestDeleteTrustNode(t *testing.T) {
 
 	ele := con.System.NewElection()
 
-	deleteReason := "节点违规"
-	transactionHash, err := ele.DeleteTrustNode(sigPara, resources.RegisterAllianceOne, deleteReason)
+	deleteReason := "节点信息注册错误"
+	transactionHash, err := ele.DeleteTrustNode(sigPara, "did:bid:qwer:sf8MD76bSGkxCzFXnyDNvtrGgCdodhBF", deleteReason)
 	if err != nil {
 		t.Error(err)
 		t.FailNow()
@@ -108,8 +137,8 @@ func TestDeleteTrustNode(t *testing.T) {
 // 申请成为候选节点
 func TestApplyCandidate(t *testing.T) {
 	// 签名的节点是联盟成员
-	file := bif.GetCurrentAbPath() + resources.KeyStoreFile + resources.RegisterAllianceTwoFile
-	con, sigPara, err := connectWithSig(resources.RegisterAllianceTwo, file)
+	file := bif.GetCurrentAbPath() + resources.KeyStoreFile + "UTC--2021-10-19T05-33-49.419105162Z--did_bid_qwer_sf25XGBQU8E8wGFo9wGKo95jUgtYPM24Y"
+	con, sigPara, err := connectWithSig("did:bid:qwer:sf25XGBQU8E8wGFo9wGKo95jUgtYPM24Y", file)
 	if err != nil {
 		t.Error(err)
 		t.FailNow()
@@ -117,7 +146,7 @@ func TestApplyCandidate(t *testing.T) {
 
 	ele := con.System.NewElection()
 
-	transactionHash, err := ele.ApplyCandidate(sigPara, resources.RegisterAllianceTwo)
+	transactionHash, err := ele.ApplyCandidate(sigPara, "did:bid:qwer:sfbg3EBvpfCkqzh2dweGH217Gm758w9w")
 	if err != nil {
 		t.Error(err)
 		t.FailNow()
@@ -175,8 +204,8 @@ func TestCancelCandidate(t *testing.T) {
 
 func TestVoteCandidate(t *testing.T) {
 	// 签名的节点是联盟成员
-	file := bif.GetCurrentAbPath() + resources.KeyStoreFile + resources.RegisterAllianceTwoFile
-	con, sigPara, err := connectWithSig(resources.RegisterAllianceTwo, file)
+	file := bif.GetCurrentAbPath() + resources.KeyStoreFile + "UTC--2021-10-19T05-33-49.419105162Z--did_bid_qwer_sf25XGBQU8E8wGFo9wGKo95jUgtYPM24Y"
+	con, sigPara, err := connectWithSig("did:bid:qwer:sf25XGBQU8E8wGFo9wGKo95jUgtYPM24Y", file)
 	if err != nil {
 		t.Error(err)
 		t.FailNow()
@@ -184,7 +213,7 @@ func TestVoteCandidate(t *testing.T) {
 
 	ele := con.System.NewElection()
 
-	transactionHash, err := ele.VoteCandidate(sigPara, resources.RegisterAllianceTwo)
+	transactionHash, err := ele.VoteCandidate(sigPara, "did:bid:qwer:sfbg3EBvpfCkqzh2dweGH217Gm758w9w")
 	if err != nil {
 		t.Error(err)
 		t.FailNow()
@@ -218,7 +247,7 @@ func TestCancelConsensusNode(t *testing.T) {
 	ele := con.System.NewElection()
 
 	cancleReason := "违背规则"
-	transactionHash, err := ele.CancelConsensusNode(sigPara, resources.RegisterAllianceTwo, cancleReason)
+	transactionHash, err := ele.CancelConsensusNode(sigPara, "did:bid:qwer:sfH7tKf9ohrsWGacPsr8TNvFdLEbvcej", cancleReason)
 	if err != nil {
 		t.Error(err)
 		t.FailNow()
@@ -229,7 +258,7 @@ func TestCancelConsensusNode(t *testing.T) {
 	time.Sleep(8 * time.Second)
 
 	log, err := con.System.SystemLogDecode(transactionHash)
-	//0x57357c41bbdb60037c9b58b4995194208dcc71eb47192a76e4feaf23cb929eb6
+	// 0x57357c41bbdb60037c9b58b4995194208dcc71eb47192a76e4feaf23cb929eb6
 
 	if err != nil {
 		t.Errorf("err log : %v ", err)
@@ -244,7 +273,7 @@ func TestCancelConsensusNode(t *testing.T) {
 // 设置投票期限  只能监管节点设置
 func TestSetDeadline(t *testing.T) {
 	// 签名的节点是联盟成员
-	file := bif.GetCurrentAbPath()+ resources.KeyStoreFile + resources.TestAddressRegulatoryFile
+	file := bif.GetCurrentAbPath() + resources.KeyStoreFile + resources.TestAddressRegulatoryFile
 	con, sigPara, err := connectWithSig(resources.TestAddressRegulatory, file)
 	if err != nil {
 		t.Error(err)
@@ -312,7 +341,7 @@ func TestExtractOwnBounty(t *testing.T) {
 
 func TestIssueAdditionalBounty(t *testing.T) {
 	// 签名的节点是联盟成员
-	file := bif.GetCurrentAbPath()+ resources.KeyStoreFile + resources.TestAddressRegulatoryFile
+	file := bif.GetCurrentAbPath() + resources.KeyStoreFile + resources.TestAddressRegulatoryFile
 	con, sigPara, err := connectWithSig(resources.TestAddressRegulatory, file)
 	if err != nil {
 		t.Error(err)
@@ -360,12 +389,12 @@ func TestGetRestBIFBounty(t *testing.T) {
 		t.FailNow()
 	}
 
-	//999984574000000000000000000
-	//1049984514000000000000000000
+	// 999984574000000000000000000
+	// 1049984514000000000000000000
 	fmt.Printf("restBounty %s \n", restBounty.String())
 }
 
-func TestGetAllTrusted(t *testing.T) {
+func TestAllTrusted(t *testing.T) {
 	con, err := connectBif()
 	if err != nil {
 		t.Error(err)
@@ -374,7 +403,7 @@ func TestGetAllTrusted(t *testing.T) {
 
 	ele := con.System.NewElection()
 
-	nodes, err := ele.GetAllTrusted()
+	nodes, err := ele.AllTrusted()
 	if err != nil {
 		t.Error(err)
 		t.FailNow()
@@ -384,7 +413,7 @@ func TestGetAllTrusted(t *testing.T) {
 	}
 }
 
-func TestGetAllCandidates(t *testing.T) {
+func TestAllCandidates(t *testing.T) {
 	con, err := connectBif()
 	if err != nil {
 		t.Error(err)
@@ -393,7 +422,7 @@ func TestGetAllCandidates(t *testing.T) {
 
 	ele := con.System.NewElection()
 
-	nodes, err := ele.GetAllCandidates()
+	nodes, err := ele.AllCandidates()
 	if err != nil {
 		t.Error(err)
 		t.FailNow()
@@ -412,7 +441,7 @@ func TestGetAllConsensus(t *testing.T) {
 
 	ele := con.System.NewElection()
 
-	nodes, err := ele.GetAllConsensus()
+	nodes, err := ele.AllConsensus()
 	if err != nil {
 		t.Error(err)
 		t.FailNow()
@@ -420,9 +449,10 @@ func TestGetAllConsensus(t *testing.T) {
 	for _, node := range nodes {
 		t.Logf("AllConsensus nodes is %+v \n", node)
 	}
+
 }
 
-func TestGetAllNodes(t *testing.T) {
+func TestAllNodes(t *testing.T) {
 	con, err := connectBif()
 	if err != nil {
 		t.Error(err)
@@ -431,13 +461,13 @@ func TestGetAllNodes(t *testing.T) {
 
 	ele := con.System.NewElection()
 
-	nodes, err := ele.GetAllNodes()
+	nodes, err := ele.AllNodes()
 	if err != nil {
 		t.Error(err)
 		t.FailNow()
 	}
 	for _, node := range nodes {
-		t.Logf("AllNodes node is %+v \n", node)
+		t.Logf("AllNodes node is %s , %d\n", node.Id, node.Role)
 	}
 }
 
@@ -460,7 +490,7 @@ func TestGetPeerNode(t *testing.T) {
 	t.Logf("PeerNode is %+v \n", node)
 }
 
-func TestGetVoteNodes(t *testing.T) {
+func TestVoteNodes(t *testing.T) {
 	con, err := connectBif()
 	if err != nil {
 		t.Error(err)
@@ -470,7 +500,7 @@ func TestGetVoteNodes(t *testing.T) {
 	ele := con.System.NewElection()
 
 	voter := resources.RegisterAllianceTwo
-	nodes, err := ele.GetVoteNodes(voter)
+	nodes, err := ele.VoteNodes(voter)
 	if err != nil {
 		t.Error(err)
 		t.FailNow()
@@ -480,7 +510,7 @@ func TestGetVoteNodes(t *testing.T) {
 	}
 }
 
-func TestGetApplyNodes(t *testing.T) {
+func TestApplyNodes(t *testing.T) {
 	con, err := connectBif()
 	if err != nil {
 		t.Error(err)
@@ -490,7 +520,7 @@ func TestGetApplyNodes(t *testing.T) {
 	ele := con.System.NewElection()
 
 	apply := resources.RegisterAllianceTwo
-	nodes, err := ele.GetApplyNodes(apply)
+	nodes, err := ele.ApplyNodes(apply)
 	if err != nil {
 		t.Error(err)
 		t.FailNow()
@@ -515,4 +545,21 @@ func TestGetDeadline(t *testing.T) {
 		t.FailNow()
 	}
 	t.Logf("deadline is %v \n", deadline)
+}
+
+func TestNodeBounty(t *testing.T) {
+	con, err := connectBif()
+	if err != nil {
+		t.Error(err)
+		t.FailNow()
+	}
+
+	ele := con.System.NewElection()
+
+	nodeBounty, err := ele.NodeBounty("did:bid:qwer:sf25XGBQU8E8wGFo9wGKo95jUgtYPM24Y")
+	if err != nil {
+		t.Error(err)
+		t.FailNow()
+	}
+	t.Logf("nodeBounty is %v \n", nodeBounty)
 }

@@ -279,6 +279,13 @@ type PeerNodeDetail struct {
 	VoterList       []string `json:"voterList"`       // 投票给这个节点的投票人列表
 }
 
+type PeerNodeBounty struct {
+	Id              string   `json:"id"`              // 唯一索引，节点id
+	TotalBounty     *big.Int `json:"totalBounty"`     // 总奖励金额
+	ExtractedBounty *big.Int `json:"extractedBounty"` // 已提取的金额
+	LastExtractTime uint64   `json:"lastExtractTime"` // 上次提取时间
+}
+
 type AllContract struct {
 	ContractName string `json:"contractName"` // 用户地址
 	IsEnable     bool   `json:"isEnable"`     // 用户权限,1启用合约，2禁用合约，4授权  // 3=1+2, 5=1+4, 6=2+4, 7=1+2+4 类linux权限管理

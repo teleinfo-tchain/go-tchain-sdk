@@ -2,6 +2,7 @@ package System
 
 import (
 	"errors"
+	"fmt"
 	"github.com/bif/bif-sdk-go"
 	"github.com/bif/bif-sdk-go/core/block"
 	"github.com/bif/bif-sdk-go/dto"
@@ -70,13 +71,21 @@ func TestApplySubChain(t *testing.T) {
 
 	for _, subChain := range []dto.SubChainInfo{
 		{
-			"did:bid:llj1:sfrVXK5LxB6ZYrqXsaqp6g3izMkm2r8n", "did:bid:llj1:sfYVq8gWNHSFhwUtA5KcKCVMszR86Zgc",
-			"node2",
+			"did:bid:llj1:sf25XGBQU8E8wGFo9wGKo95jUgtYPM24Y", "did:bid:llj1:sfYVq8gWNHSFhwUtA5KcKCVMszR86Zgc",
+			"node1",
 			"llj1", "煤炭12",
 			"公链",
 			"hotStuff", "0xc1912fee45d61c87cc5ea59dae311904cd86b84fee17cc96966216f811ce6a79",
 		},
+		// {
+		// 	"did:bid:llj1:sf2BX7RNbmdtGgyYuD3HL7H7w1XmGSTFY", "did:bid:llj1:sfYVq8gWNHSFhwUtA5KcKCVMszR86Zgc",
+		// 	"node2",
+		// 	"qwer", "煤炭12",
+		// 	"公链",
+		// 	"hotStuff", "0xc1912fee45d61c87cc5ea59dae311904cd86b84fee17cc96966216f811ce6a79",
+		// },
 	} {
+		fmt.Println("now apply is ", subChain.Id)
 		// 注册的ID（地址）对应的keystore文件
 		applySubChainIdFile := bif.GetCurrentAbPath() + resources.KeyStoreFile + "UTC--2021-08-26T09-21-33.005300071Z--did-bid-llj1-sfYVq8gWNHSFhwUtA5KcKCVMszR86Zgc"
 		idKeyFileData, err := ioutil.ReadFile(applySubChainIdFile)
@@ -124,7 +133,7 @@ func TestRevokeSubChain(t *testing.T) {
 	subchain := con.System.NewSubChain()
 
 	deleteReason := "违规"
-	transactionHash, err := subchain.Revoke(sigPara, "did:bid:llj1:sfrVXK5LxB6ZYrqXsaqp6g3izMkm2r8n", deleteReason)
+	transactionHash, err := subchain.Revoke(sigPara, "did:bid:llj1:sf25XGBQU8E8wGFo9wGKo95jUgtYPM24Y", deleteReason)
 	if err != nil {
 		t.Error(err)
 		t.FailNow()
@@ -156,7 +165,8 @@ func TestVoteSubChain(t *testing.T) {
 
 	subChain := con.System.NewSubChain()
 
-	transactionHash, err := subChain.VoteSubChain(sigPara, "did:bid:llj1:sfrVXK5LxB6ZYrqXsaqp6g3izMkm2r8n")
+	transactionHash, err := subChain.VoteSubChain(sigPara, "did:bid:llj1:sf2BX7RNbmdtGgyYuD3HL7H7w1XmGSTFY")
+	// transactionHash, err := subChain.VoteSubChain(sigPara, "did:bid:llj1:sf25XGBQU8E8wGFo9wGKo95jUgtYPM24Y")
 	if err != nil {
 		t.Error(err)
 		t.FailNow()

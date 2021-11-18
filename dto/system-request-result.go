@@ -315,6 +315,27 @@ func (pointer *SystemRequestResult) ToElectionPeerNode() (*PeerNodeDetail, error
 	return peerNodeDetail, err
 }
 
+
+func (pointer *SystemRequestResult) ToElectionNodeBounty() (*PeerNodeBounty, error) {
+	if err := pointer.checkResponse(); err != nil {
+		return nil, err
+	}
+
+	result := (pointer).Result.(map[string]interface{})
+
+	if len(result) == 0 {
+		return nil, EMPTYRESPONSE
+	}
+
+	peerNodeBounty := &PeerNodeBounty{}
+
+	marshal, err := json.Marshal(result)
+
+	err = json.Unmarshal(marshal, peerNodeBounty)
+
+	return peerNodeBounty, err
+}
+
 func (pointer *SystemRequestResult) ToRoundStateInfo() (*RoundStateInfo, error) {
 	if err := pointer.checkResponse(); err != nil {
 		return nil, err

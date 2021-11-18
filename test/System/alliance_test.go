@@ -142,7 +142,7 @@ func TestSetWeights(t *testing.T) {
 	}
 }
 
-func TestGetAllDirectors(t *testing.T) {
+func TestAllDirectors(t *testing.T) {
 	con, err := connectBif()
 	if err != nil {
 		t.Error(err)
@@ -151,7 +151,7 @@ func TestGetAllDirectors(t *testing.T) {
 
 	ali := con.System.NewAlliance()
 
-	directors, err := ali.GetAllDirectors()
+	directors, err := ali.AllDirectors()
 	if err != nil {
 		t.Error(err)
 		t.FailNow()
@@ -162,7 +162,7 @@ func TestGetAllDirectors(t *testing.T) {
 	}
 }
 
-func TestGetAllVices(t *testing.T) {
+func TestAllVices(t *testing.T) {
 	con, err := connectBif()
 	if err != nil {
 		t.Error(err)
@@ -171,7 +171,7 @@ func TestGetAllVices(t *testing.T) {
 
 	ali := con.System.NewAlliance()
 
-	vices, err := ali.GetAllVices()
+	vices, err := ali.AllVices()
 	if err != nil {
 		t.Error(err)
 		t.FailNow()
@@ -179,6 +179,26 @@ func TestGetAllVices(t *testing.T) {
 
 	for _, v := range vices{
 		t.Logf("vices is %+v \n", v)
+	}
+}
+
+func TestAllAlliance(t *testing.T) {
+	con, err := connectBif()
+	if err != nil {
+		t.Error(err)
+		t.FailNow()
+	}
+
+	ali := con.System.NewAlliance()
+
+	alliances, err := ali.AllAlliances()
+	if err != nil {
+		t.Error(err)
+		t.FailNow()
+	}
+
+	for _, v := range alliances{
+		t.Logf("alliances is %+v \n", v)
 	}
 }
 
@@ -191,7 +211,6 @@ func TestGetAlliance(t *testing.T) {
 
 	ali := con.System.NewAlliance()
 
-	//alliance, err := ali.GetAlliance(resources.TestAddressAlliance)
 	alliance, err := ali.GetAlliance(resources.RegisterAllianceOne)
 	if err != nil {
 		t.Error(err)

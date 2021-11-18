@@ -58,7 +58,7 @@ func registerDirectorPreCheck(directorInfo dto.AllianceInfo) error {
 
 	//  Verify the address by PublicKey
 	if address != Id {
-		return fmt.Errorf("alliance | registerDirector id is not match the address by PublicKey" )
+		return fmt.Errorf("alliance | registerDirector id is not match the address by PublicKey")
 	}
 	return nil
 }
@@ -155,7 +155,7 @@ func (ali *Alliance) SetWeights(signTxParams *SysTxParams, directorWeights, vice
 	return ali.super.sendRawTransaction(signedTx)
 }
 
-func(ali *Alliance) GetAllDirectors() ([]*dto.Alliance, error){
+func (ali *Alliance) AllDirectors() ([]*dto.Alliance, error) {
 	pointer := &dto.SystemRequestResult{}
 
 	err := ali.super.provider.SendRequest(pointer, "alliance_directors", nil)
@@ -164,14 +164,14 @@ func(ali *Alliance) GetAllDirectors() ([]*dto.Alliance, error){
 	}
 
 	res, err := pointer.ToAllianceDirectors()
-	if err != nil{
+	if err != nil {
 		return nil, err
 	}
 
 	return res, nil
 }
 
-func(ali *Alliance) GetAllVices() ([]*dto.Alliance, error){
+func (ali *Alliance) AllVices() ([]*dto.Alliance, error) {
 	pointer := &dto.SystemRequestResult{}
 
 	err := ali.super.provider.SendRequest(pointer, "alliance_vices", nil)
@@ -180,14 +180,46 @@ func(ali *Alliance) GetAllVices() ([]*dto.Alliance, error){
 	}
 
 	res, err := pointer.ToAllianceVices()
-	if err != nil{
+	if err != nil {
 		return nil, err
 	}
 
 	return res, nil
 }
 
-func(ali *Alliance) GetAlliance(id string) (*dto.Alliance, error){
+func (ali *Alliance) AllDirectorGenerals() ([]*dto.Alliance, error) {
+	pointer := &dto.SystemRequestResult{}
+
+	err := ali.super.provider.SendRequest(pointer, "alliance_directorGenerals", nil)
+	if err != nil {
+		return nil, err
+	}
+
+	res, err := pointer.ToAllianceDirectors()
+	if err != nil {
+		return nil, err
+	}
+
+	return res, nil
+}
+
+func (ali *Alliance) AllAlliances() ([]*dto.Alliance, error) {
+	pointer := &dto.SystemRequestResult{}
+
+	err := ali.super.provider.SendRequest(pointer, "alliance_alliances", nil)
+	if err != nil {
+		return nil, err
+	}
+
+	res, err := pointer.ToAllianceDirectors()
+	if err != nil {
+		return nil, err
+	}
+
+	return res, nil
+}
+
+func (ali *Alliance) GetAlliance(id string) (*dto.Alliance, error) {
 	if !isValidHexAddress(id) {
 		return nil, errors.New("id is not valid bid")
 	}
@@ -203,14 +235,14 @@ func(ali *Alliance) GetAlliance(id string) (*dto.Alliance, error){
 	}
 
 	res, err := pointer.ToAlliance()
-	if err != nil{
+	if err != nil {
 		return nil, err
 	}
 
 	return res, nil
 }
 
-func(ali *Alliance) GetWeights()(*dto.Weights, error){
+func (ali *Alliance) GetWeights() (*dto.Weights, error) {
 	pointer := &dto.SystemRequestResult{}
 
 	err := ali.super.provider.SendRequest(pointer, "alliance_weights", nil)
@@ -219,7 +251,7 @@ func(ali *Alliance) GetWeights()(*dto.Weights, error){
 	}
 
 	res, err := pointer.ToWeights()
-	if err != nil{
+	if err != nil {
 		return nil, err
 	}
 

@@ -13,7 +13,7 @@ import (
 )
 
 func TestCreate(t *testing.T) {
-	accountAddress, privateKey, err := account.Create(false, resources.ChainCode)
+	accountAddress, privateKey, err := account.Create(false, "sqtx")
 	if err != nil {
 		t.Error(err)
 		t.FailNow()
@@ -179,7 +179,7 @@ func TestPriKeyFromKeyStore(t *testing.T) {
 		address  string
 		keyDir   string
 	}{
-		{resources.PassWord, resources.Addr1, "UTC--2021-10-19T05-33-49.419105162Z--did_bid_qwer_sf25XGBQU8E8wGFo9wGKo95jUgtYPM24Y"},
+		{"teleinfo", "did:bid:sqtx:sfBUW9rkT9VCVLVwvHd8G8qEUaSFr5GN", "UTC--2021-11-17T09-20-40.402116724Z--did_bid_sqtx_sfBUW9rkT9VCVLVwvHd8G8qEUaSFr5GN"},
 	} {
 		path := bif.GetCurrentAbPath()+resources.KeyStoreFile+test.keyDir
 		pri, err := account.PriKeyFromKeyStore(test.address, path, test.password)

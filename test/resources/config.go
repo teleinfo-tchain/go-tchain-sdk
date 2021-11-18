@@ -3,8 +3,8 @@ package resources
 // base config
 const (
 	IP00 string = "39.99.132.122"
-	IP51 string = "172.17.6.51"
-	IP52 string = "172.17.6.52"
+	IP51 string = "138.198.15.29"
+	IP52 string = "127.0.0.1"
 	IP54 string = "172.17.6.54"
 	IP55 string = "172.17.6.55"
 
