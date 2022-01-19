@@ -72,7 +72,7 @@ func (bfs BIFSigner) Hash(tx *txData) utils.Hash {
 func SignTx(tx *txData, s BIFSigner, prv *ecdsa.PrivateKey, cryptoType config.CryptoType) (*txData, error) {
 	h := s.Hash(tx)
 	var err error
-	Signature, err := crypto.GenSignature(h[:], prv, cryptoType)
+	Signature, err := crypto.NewSignature(h[:], prv, cryptoType)
 	if err != nil {
 		return nil, err
 	}

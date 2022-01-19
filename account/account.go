@@ -473,7 +473,7 @@ func MessageSignatureBtc(message, password string, keyFileData []byte) (string, 
 	cryptoType = config.SECP256K1
 
 	messageSha3Bytes := utils.Hex2Bytes(messageSha3[2:])
-	sig, err := crypto.Sign(messageSha3Bytes, privKey, cryptoType)
+	sig, err := crypto.NewSignature(messageSha3Bytes, privKey, cryptoType)
 	if err != nil {
 		return "", "", err
 	}
@@ -487,7 +487,7 @@ func MessageSignatureBtc(message, password string, keyFileData []byte) (string, 
 	var buf bytes.Buffer
 	// 链的代码已经撤销这个
 	// buf.Write([]byte{sig[64] + 27})
-	buf.Write(sig[:64])
+	buf.Write(sig.Signature[:64])
 	// fmt.Printf("sig is  %s \n", t+utils.Bytes2Hex(buf.Bytes()))
 	return messageSha3, utils.Bytes2Hex(buf.Bytes()), err
 }

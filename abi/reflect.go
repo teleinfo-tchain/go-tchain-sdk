@@ -103,7 +103,7 @@ func setSlice(dst, src reflect.Value) error {
 				return err
 			}
 		} else {
-			// e.g. [][32]uint8 to []common.Hash
+			// e.g. [][32]uint8 to []utils.Hash
 			if err := set(slice.Index(i), src.Index(i)); err != nil {
 				return err
 			}

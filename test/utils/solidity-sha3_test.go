@@ -3,7 +3,7 @@ package test
 // import (
 // 	"encoding/hex"
 // 	"fmt"
-// 	"github.com/bif/bif-sdk-go/common"
+// 	"github.com/bif/bif-sdk-go/utils"
 // 	"github.com/bif/bif-sdk-go/utils"
 // 	"math/big"
 // 	"testing"
@@ -33,7 +33,7 @@ package test
 // 			{
 // 				utils.SoliditySHA3(
 // 					utils.Bid(
-// 						common.OriHexToBid("0x12459c951127e0c374ff9105dda097662a027092"),
+// 						utils.OriHexToBid("0x12459c951127e0c374ff9105dda097662a027092"),
 // 					),
 // 				),
 // 				"4b998b071d7bb74aee1ce2cdcc268cb0f6409b4a3387fc915617ec08415298ad",
@@ -330,7 +330,7 @@ package test
 // 			{
 // 				utils.SoliditySHA3(
 // 					[]string{"bid"},
-// 					common.OriHexToBid("0x12459c951127e0c374ff9105dda097662a027092"),
+// 					utils.OriHexToBid("0x12459c951127e0c374ff9105dda097662a027092"),
 // 				),
 // 				"4b998b071d7bb74aee1ce2cdcc268cb0f6409b4a3387fc915617ec08415298ad",
 // 			},

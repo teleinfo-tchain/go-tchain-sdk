@@ -94,7 +94,7 @@ func (ks keyStorePassphrase) StoreKey(filename string, key *Key, auth, chainCode
 			"This indicates that the keystore is corrupted. \n" +
 			"The corrupted file is stored at \n%v\n" +
 			"Please file a ticket at:\n\n" +
-			"https://github.com/bif/go-bif/issues." +
+			"https://github.com/bif/bif-sdk-go/issues." +
 			"The error was : %s"
 		return fmt.Errorf(msg, tmpName, err)
 	}

@@ -39,15 +39,3 @@ const (
 	BASE64_Prefix AddressPrefix = "s"
 	BASE58_Prefix AddressPrefix = "f"
 )
-
-type Config struct {
-	crypto_type CryptoType
-}
-
-func (c *Config) CryptoType() CryptoType {
-	return c.crypto_type
-}
-
-func (c *Config) SetCryptoType(_type CryptoType) {
-	c.crypto_type = _type
-}

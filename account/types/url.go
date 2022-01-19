@@ -36,7 +36,7 @@ func parseURL(url string) (URL, error) {
 	}, nil
 }
 
-// String implements the stringer common.
+// String implements the stringer utils.
 func (u URL) String() string {
 	if u.Scheme != "" {
 		return fmt.Sprintf("%s://%s", u.Scheme, u.Path)
@@ -44,7 +44,7 @@ func (u URL) String() string {
 	return u.Path
 }
 
-// TerminalString implements the log.TerminalStringer common.
+// TerminalString implements the log.TerminalStringer utils.
 func (u URL) TerminalString() string {
 	url := u.String()
 	if len(url) > 32 {
@@ -53,7 +53,7 @@ func (u URL) TerminalString() string {
 	return url
 }
 
-// MarshalJSON implements the json.Marshaller common.
+// MarshalJSON implements the json.Marshaller utils.
 func (u URL) MarshalJSON() ([]byte, error) {
 	return json.Marshal(u.String())
 }
