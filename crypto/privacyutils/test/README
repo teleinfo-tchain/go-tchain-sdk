@@ -1,0 +1,15 @@
+Privacy performance test
+
+Source code:
+aes_tool.cpp: provide aes encrypt function
+main.cpp: do privacy function and performance test
+
+Build:
+Makefile, the Makefile will build libbuchain_secp256k1.a first, and then build mail.cpp
+
+How to run:
+# make
+# ./privacy_test --perf-test 100
+
+or
+# make run
