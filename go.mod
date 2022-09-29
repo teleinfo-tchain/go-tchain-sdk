@@ -14,7 +14,7 @@ require (
 	github.com/stretchr/testify v1.5.1
 	github.com/teleinfo-bif/bit-gmsm v1.0.5
 	golang.org/x/crypto v0.0.0-20201221181555-eec23a3978ad
-	golang.org/x/sys v0.0.0-20200219091948-cb0a6d8edb6c
+	golang.org/x/sys v0.0.0-20220808155132-1c4a2a72c664
 	gopkg.in/check.v1 v1.0.0-20200227125254-8fa46927fb4f
 )
 
