@@ -6,8 +6,8 @@ import (
 	"crypto/elliptic"
 	"errors"
 	"fmt"
-	"github.com/tchain/go-tchain-sdk/utils/hexutil"
 	"github.com/prometheus/common/log"
+	"github.com/tchain/go-tchain-sdk/utils/hexutil"
 
 	"github.com/tchain/go-tchain-sdk/crypto/config"
 	"github.com/tchain/go-tchain-sdk/crypto/secp"
@@ -16,7 +16,7 @@ import (
 
 	"github.com/btcsuite/btcd/btcec"
 
-	gmsm2 "github.com/teleinfo-bif/bit-gmsm/sm2"
+	gmsm2 "github.com/tchain/go-tgmsm/sm2"
 )
 
 type Signature struct {

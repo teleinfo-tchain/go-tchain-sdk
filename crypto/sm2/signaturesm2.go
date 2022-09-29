@@ -4,7 +4,7 @@ import (
 	"crypto/ecdsa"
 	"crypto/elliptic"
 	"fmt"
-	gmsm2 "github.com/teleinfo-bif/bit-gmsm/sm2"
+	gmsm2 "github.com/tchain/go-tgmsm/sm2"
 	"math/big"
 )
 

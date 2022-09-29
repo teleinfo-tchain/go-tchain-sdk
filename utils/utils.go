@@ -7,7 +7,7 @@ import (
 	"fmt"
 	"github.com/tchain/go-tchain-sdk/utils/hexutil"
 	"github.com/tchain/go-tchain-sdk/utils/math"
-	"github.com/teleinfo-bif/bit-gmsm/sm3"
+	"github.com/tchain/go-tgmsm/sm3"
 	"golang.org/x/crypto/sha3"
 	"math/big"
 	"math/rand"
@@ -37,7 +37,7 @@ var (
 	ErrBigInt      = errors.New("big int not in -2*255——2*255-1")
 )
 
-// bifUint 
+// bifUint
 var bifUint = map[string]string{
 	"nobif":    "0",
 	"wei":      "1",

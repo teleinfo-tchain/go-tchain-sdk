@@ -4,10 +4,10 @@ import (
 	"crypto/ecdsa"
 	"crypto/elliptic"
 	"errors"
-	"github.com/tchain/go-tchain-sdk/utils"
 	"github.com/prometheus/common/log"
-	gmsm2 "github.com/teleinfo-bif/bit-gmsm/sm2"
-	gmsm3 "github.com/teleinfo-bif/bit-gmsm/sm3"
+	"github.com/tchain/go-tchain-sdk/utils"
+	gmsm2 "github.com/tchain/go-tgmsm/sm2"
+	gmsm3 "github.com/tchain/go-tgmsm/sm3"
 )
 
 var errInvalidPubkey = errors.New("invalid sm2 public key")
