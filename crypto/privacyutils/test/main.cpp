@@ -143,6 +143,21 @@ void function_test()
 		ret = privacy.PedersenTallyVerify(input_commits, output_commits, msg, sig);
 		if(ret != 0) break;
 		std::cout << "Pedersen tally verify done" << std::endl;
+
+		//public combine
+		std::vector<std::string>  input_pubs;
+		std::string combine_pubs;
+
+		input_pubs.push_back("03435091d48b13056a3a1c63fec9909eaaf7c290d4179cb7a1362a653b2d1cbce6");
+		input_pubs.push_back("03435091d48b13056a3a1c63fec9909eaaf7c290d4179cb7a1362a653b2d1cbce6");
+		ret = privacy.PublicKeyCombine(input_pubs, combine_pubs);
+		if(ret != 0 || combine_pubs != "0320b0be5eb417e0d227f43285f0a98fbca0a67f24985beff68e8a29b477195b44")
+		{
+			std::cout << "Failed to combine public keys" << std::endl;
+		}
+		
+		std::cout << "Combine public keys done" << std::endl;
+		
 	} while(false);
 
 	if(ret != 0) {

@@ -284,6 +284,53 @@ namespace secp256k1 {
 		return BPERRORCODE::ERRCODE_SUCCESS;
 	}
 
+	int64_t Privacy::CombinePublicKey(const std::vector<std::string>& inputs, std::string &combine_key){
+		unsigned char* pubs[200];
+		unsigned char pubs_temp[200][33];
+		if ((inputs.size() > 100)){
+			return BPERRORCODE::ERRCODE_OUT_RANGE;
+		}
+
+		secp256k1_pubkey pubkey_combine;
+		secp256k1_pubkey *pubkey[100];
+		size_t new_pub_size = 0;
+		int64_t ret = 0;
+		do 
+		{
+			unsigned char pub[33];
+			for (size_t i = 0; i < inputs.size(); i++)
+			{
+				HexStrToArray(inputs[i], pub);
+				pubkey[i] = new secp256k1_pubkey;
+				new_pub_size++;
+				if (!secp256k1_ec_pubkey_parse(ctx_, pubkey[i], pub, 33)) {
+					ret = ERRCODE_PARSE_PUBKEY;
+					break;
+				}
+			}
+			if (ret > 0) break;
+
+			if (secp256k1_ec_pubkey_combine(ctx_, &pubkey_combine, (const secp256k1_pubkey * const *)pubkey, inputs.size()) == 0){
+				ret = ERRCODE_CREATE_PUBKEY;
+				break;
+			}
+
+			size_t pub_len = 33;
+			unsigned char pub_compress[33];
+			if (!secp256k1_ec_pubkey_serialize(ctx_, pub_compress, &pub_len, &pubkey_combine, SECP256K1_EC_COMPRESSED)){
+				ret = ERRCODE_SERIALIZE_PUBKEY;
+				break;
+			}
+			combine_key = ArrayToHexStr(pub_compress, 33);
+		} while (false);
+
+		for (size_t i = 0; i < new_pub_size; i++){
+			delete pubkey[i];
+		}
+
+		return ret;
+	}
+
 	//验证等式平衡
 	int64_t Privacy::TallyVerify(const std::vector<std::string>& inputs, const std::vector<std::string>& outputs) {
 
@@ -438,6 +485,45 @@ namespace secp256k1 {
 			if (!secp256k1_ec_pubkey_serialize(ctx_, pub_compress, &pub_len, &pub, SECP256K1_EC_COMPRESSED)) return BPERRORCODE::ERRCODE_SERIALIZE_PUBKEY;
 
 			pub_key = ArrayToHexStr(pub_compress, 33);
+		}
+		catch (std::exception& e){
+			error_msg_ = e.what();
+			return BPERRORCODE::ERRCODE_BP_LIB_INTERNAL;
+		}
+		return BPERRORCODE::ERRCODE_SUCCESS;
+	}
+
+
+	int64_t Privacy::ExcessBlind(const std::vector<std::string>& inputs, const std::vector<std::string>& outputs, std::string& blind_ret){
+		unsigned char* blinds[200];
+		unsigned char blinds_temp[200][32];
+		unsigned char blind_out[32];
+		int64_t input_size = inputs.size();
+		int64_t output_size = outputs.size();
+		if ((input_size > 100) || (output_size > 100)){
+			return BPERRORCODE::ERRCODE_OUT_RANGE;
+		}
+
+		for (int i = 0; i < input_size; i++){
+			if (inputs[i].length() != 64) return BPERRORCODE::ERRCODE_INVALID_PARAMETER;
+			HexStrToArray(inputs[i], blinds_temp[i]);
+			blinds[i] = blinds_temp[i];
+		}
+
+		for (int i = 0; i < output_size; i++){
+			if (outputs[i].length() != 64) return BPERRORCODE::ERRCODE_INVALID_PARAMETER;
+			HexStrToArray(outputs[i], blinds_temp[i + input_size]);
+			blinds[i + input_size] = blinds_temp[i + input_size];
+		}
+
+		try{
+			//对所有私钥求和
+			if (secp256k1_pedersen_blind_sum(ctx_, blind_out, blinds, input_size + output_size, input_size) != 1){
+				return BPERRORCODE::ERRCODE_BLIND_SUM;
+			}
+
+			blind_ret = ArrayToHexStr(blind_out, 32);
+			return BPERRORCODE::ERRCODE_SUCCESS;
 		}
 		catch (std::exception& e){
 			error_msg_ = e.what();

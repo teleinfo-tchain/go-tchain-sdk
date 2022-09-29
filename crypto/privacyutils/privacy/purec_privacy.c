@@ -1,6 +1,6 @@
 #include <stdio.h>
 
-#if 0
+#if WIN32
 #include "include/secp256k1.h"
 #include "util.h"
 #include "num_impl.h"
@@ -14,6 +14,7 @@
 #include "eckey_impl.h"
 #include "hash_impl.h"
 #include "scratch_impl.h"
+#include "testrand_impl.h"
 
 #ifdef ENABLE_MODULE_GENERATOR
 # include "include/secp256k1_generator.h"
@@ -32,7 +33,9 @@
 #endif
 
 #include "purec_privacy.h"
+#include "src/secp256k1.c"
 #else
+#include <time.h>
 #include "src/secp256k1.c"
 #include "src/testrand_impl.h"
 #include "purec_privacy.h"
@@ -426,6 +429,59 @@ int64_t PurecGetPublicKey(uint64_t obj_ptr, const pure_string *priv_key, pure_st
 		return PUREC_ERRCODE_SUCCESS;
 }
 
+int64_t PurecPublicKeyCombine(uint64_t obj_ptr, const pure_string **inputs, int inputs_length, pure_string *pubCombine){
+	purec_privacy *ptr = (purec_privacy *)obj_ptr;
+	const pure_string *inputs_array = (const pure_string *)inputs;
+
+	//printf("inputlen:%d, output:%d\n", inputs_length, outputs_length);
+	int64_t input_size = inputs_length;
+	if (input_size > 100) { // the extra one is excess
+		return PUREC_ERRCODE_OUT_RANGE;
+	}
+
+	secp256k1_pubkey * pubkey[100];
+	size_t pubkey_new = 0;
+	unsigned char pub[33];
+	unsigned char sig_data[128];
+	secp256k1_pubkey pubkey_combine;
+	int64_t ret = 0;
+	do
+	{
+		for (size_t i = 0; i < inputs_length; i++)
+		{	
+			pubkey[i] =  malloc(sizeof(secp256k1_pubkey));
+			pubkey_new ++;
+			PurecHexStrToArray(&inputs_array[i], pub); 
+			if (!secp256k1_ec_pubkey_parse(ptr->ctx_, pubkey[i], pub, 33)){
+				ret = PUREC_ERRCODE_PARSE_PUBKEY;
+				break;
+			}
+		}
+		if( ret > 0 ) break;
+
+		if (secp256k1_ec_pubkey_combine(ptr->ctx_, &pubkey_combine, (const secp256k1_pubkey * const *)pubkey, inputs_length) == 0){
+			ret = PUREC_ERRCODE_CREATE_PUBKEY;
+			break;
+		}
+		
+		size_t pub_len = 33;
+		unsigned char pub_compress[33];
+		if (!secp256k1_ec_pubkey_serialize(ptr->ctx_, pub_compress, &pub_len, &pubkey_combine, SECP256K1_EC_COMPRESSED)){
+			ret = PUREC_ERRCODE_SERIALIZE_PUBKEY;
+			break;
+		}
+
+		PurecArrayToHexStr(pub_compress, 33, pubCombine);
+
+	} while (0);
+
+	for (size_t i = 0; i < pubkey_new; i++){
+		free(pubkey[i]);
+	}
+	
+	return ret;
+}
+
 //
 int64_t PurecExcessSign(uint64_t obj_ptr, const pure_string **inputs, int inputs_length,
 	const pure_string **outputs, int outputs_length,
@@ -467,6 +523,50 @@ int64_t PurecExcessSign(uint64_t obj_ptr, const pure_string **inputs, int inputs
 		PurecDelString(&priv_key);
 
 		return ret;
+	//}
+	//catch (std::exception& e) {
+	//	error_msg_ = e.what();
+	//	return BPERRORCODE::ERRCODE_BP_LIB_INTERNAL;
+	//}
+	//	return PUREC_ERRCODE_SUCCESS;
+}
+
+int64_t PurecExcessBlind(uint64_t obj_ptr, const pure_string **inputs, int inputs_length,
+	const pure_string **outputs, int outputs_length,
+	pure_string *blind_ret) {
+	purec_privacy *ptr = (purec_privacy *)obj_ptr;
+	unsigned char* blinds[200];
+	unsigned char blinds_temp[200][32];
+	unsigned char blind_out[32];
+	int64_t input_size = inputs_length;
+	int64_t output_size = outputs_length;
+	if ((input_size > 100) || (output_size > 100)) {
+		return PUREC_ERRCODE_OUT_RANGE;
+	}
+	const pure_string *inputs_array = (const pure_string *)inputs;
+	const pure_string *outputs_array = (const pure_string *)outputs;
+
+	int i = 0;
+	for (; i < input_size; i++) {
+		if (inputs_array[i].length != 64) return PUREC_ERRCODE_INVALID_PARAMETER;
+		PurecHexStrToArray(&inputs_array[i], blinds_temp[i]);
+		blinds[i] = blinds_temp[i];
+	}
+
+	i = 0;
+	for (; i < output_size; i++) {
+		if (outputs_array[i].length != 64) return PUREC_ERRCODE_INVALID_PARAMETER;
+		PurecHexStrToArray(&outputs_array[i], blinds_temp[i + input_size]);
+		blinds[i + input_size] = blinds_temp[i + input_size];
+	}
+
+	//try {
+	if (secp256k1_pedersen_blind_sum(ptr->ctx_, blind_out, (const unsigned char * const*)blinds, input_size + output_size, input_size) != 1) {
+			return PUREC_ERRCODE_BLIND_SUM;
+		}
+
+		PurecArrayToHexStr(blind_out, 32, blind_ret);
+		return PUREC_ERRCODE_SUCCESS;
 	//}
 	//catch (std::exception& e) {
 	//	error_msg_ = e.what();
@@ -625,7 +725,7 @@ int64_t PurecRand(unsigned char* rand) {
 	if (frand) {
 		fclose(frand);
 	}
-//#endif 
+//#endif   
 	uint64_t t = time(NULL) * (uint64_t)1337;
 	seed16[0] ^= t;
 	seed16[1] ^= t >> 8;

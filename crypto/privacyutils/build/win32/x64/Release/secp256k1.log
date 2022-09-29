@@ -1,0 +1,19 @@
+﻿生成启动时间为 2022/6/22 11:39:44。
+     1>项目“D:\SourceCode\teleinfo-privacy-go-sdk\build\win32\secp256k1.vcxproj”在节点 2 上(Build 个目标)。
+     1>ClCompile:
+         D:\Program Files (x86)\Microsoft Visual Studio 12.0\VC\bin\x86_amd64\CL.exe /c /I..\..\ /I..\..\src /I..\..\include /Zi /nologo /W3 /WX- /O2 /Oi /GL /D WIN32 /D NDEBUG /D _WINDOWS /D _USRDLL /D SECP256K1_EXPORTS /D USE_NUM_NONE /D ENABLE_MODULE_RECOVERY /D ENABLE_MODULE_ECDH /D ENABLE_MODULE_RANGEPROOF /D ENABLE_MODULE_BULLETPROOF /D ENABLE_MODULE_GENERATOR /D USE_FIELD_INV_BUILTIN /D USE_SCALAR_INV_BUILTIN /D USE_FIELD_10X26 /D USE_SCALAR_8X32 /D _WINDLL /D _MBCS /Gm- /EHsc /MD /GS /Gy /fp:precise /Zc:wchar_t /Zc:forScope /Fo"x64\Release\\" /Fd"x64\Release\vc120.pdb" /Gd /TP /errorReport:prompt ..\..\jni\com_Privacy.cpp
+         com_Privacy.cpp
+     1>..\..\jni\com_Privacy.cpp(35): warning C4996: '_snprintf': This function or variable may be unsafe. Consider using _snprintf_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+                 D:\Program Files (x86)\Microsoft Visual Studio 12.0\VC\include\stdio.h(346) : 参见“_snprintf”的声明
+       Link:
+         D:\Program Files (x86)\Microsoft Visual Studio 12.0\VC\bin\x86_amd64\link.exe /ERRORREPORT:PROMPT /OUT:"D:\SourceCode\teleinfo-privacy-go-sdk\build\win32\x64\Release\privacy.dll" /INCREMENTAL:NO /NOLOGO kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /MANIFEST /MANIFESTUAC:"level='asInvoker' uiAccess='false'" /manifest:embed /DEBUG /PDB:"D:\SourceCode\teleinfo-privacy-go-sdk\build\win32\x64\Release\privacy.pdb" /SUBSYSTEM:WINDOWS /OPT:REF /OPT:ICF /LTCG /TLBID:1 /DYNAMICBASE /NXCOMPAT /IMPLIB:"D:\SourceCode\teleinfo-privacy-go-sdk\build\win32\x64\Release\privacy.lib" /MACHINE:X64 /DLL x64\Release\com_Privacy.obj
+         x64\Release\privacy.obj
+            正在创建库 D:\SourceCode\teleinfo-privacy-go-sdk\build\win32\x64\Release\privacy.lib 和对象 D:\SourceCode\teleinfo-privacy-go-sdk\build\win32\x64\Release\privacy.exp
+         正在生成代码
+         已完成代码的生成
+         secp256k1.vcxproj -> D:\SourceCode\teleinfo-privacy-go-sdk\build\win32\x64\Release\privacy.dll
+     1>已完成生成项目“D:\SourceCode\teleinfo-privacy-go-sdk\build\win32\secp256k1.vcxproj”(Build 个目标)的操作。
+
+生成成功。
+
+已用时间 00:00:01.55

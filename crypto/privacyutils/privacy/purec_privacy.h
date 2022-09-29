@@ -51,6 +51,7 @@ int64_t PurecTallyVerify(uint64_t obj_ptr, const pure_string **inputs, int input
 int64_t PurecEcdsaVerify(uint64_t obj_ptr, const pure_string *pub_key, const pure_string *data, const pure_string *sig);
 int64_t PurecCreateEcdhKey(uint64_t obj_ptr, const pure_string *priv_key, const pure_string *pub_key, pure_string *ecdh_key);
 int64_t PurecEcdsaSign(uint64_t obj_ptr, const pure_string *priv_key, const pure_string *data, pure_string *sig);
+int64_t PurecPublicKeyCombine(uint64_t obj_ptr, const pure_string **inputs, int inputs_length, pure_string *pubCombine);
 
 int64_t PurecCreateKeyPair(uint64_t obj_ptr, pure_string *pub_key, pure_string *priv_key);
 int64_t PurecGetPublicKey(uint64_t obj_ptr, const pure_string *priv_key, pure_string *pub_key);

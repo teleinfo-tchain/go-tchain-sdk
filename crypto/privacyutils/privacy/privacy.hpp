@@ -68,11 +68,16 @@ namespace secp256k1 {
 		//验证ECDSA签名
 		int64_t EcdsaVerify(const std::string& pub_key, const std::string& data, const std::string& sig);
 
+		int64_t ExcessBlind(const std::vector<std::string>& inputs, const std::vector<std::string>& outputs, std::string& blind);
+
 		//验证余项签名
 		int64_t ExcessSign(const std::vector<std::string>& inputs, const std::vector<std::string>& outputs, const std::string& msg, std::string& sig);
 		//验证等式平衡
 		int64_t PedersenTallyVerify(const std::vector<std::string>& inputs, const std::vector<std::string>& outputs, const std::string& msg, const std::string& sig);
 		
+		//Combine public key
+		int64_t CombinePublicKey(const std::vector<std::string>& inputs, std::string &combine_key);
+
 		std::string GetErrorMsg(int64_t err_code);
 		std::string GetErrorMsg() { return error_msg_; }
 		static std::string ArrayToHexStr(unsigned char *array, int len) {

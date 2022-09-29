@@ -1,18 +1,2 @@
-SRC_FILE=main.cpp
-PROG=privacy_test
-
-$(PROG): privacy
-	g++ --std=c++11 $(SRC_FILE) -o $@ -L../ -lbuchain_secp256k1 -lssl -lcrypto -I../ 
-
-.PHONY: privacy
-privacy:
-	cmake ../
-	make -C ../
-
-
-.PHONY: clean run
-clean:
-	rm -f $(PROG)
-
-run: $(PROG)
-	./$(PROG) --perf-test 100
+all:
+	g++ --std=c++11 main.cpp ../privacy/privacy.cpp -O2 -o privacy_test -lssl -lcrypto -I../ -I../src -I../include -DENABLE_MODULE_RECOVERY -DENABLE_MODULE_ECDH -DENABLE_MODULE_RANGEPROOF -DENABLE_MODULE_BULLETPROOF -DENABLE_MODULE_GENERATOR -DUSE_FIELD_INV_BUILTIN -DUSE_NUM_NONE -DUSE_SCALAR_INV_BUILTIN -DUSE_FIELD_10X26 -DUSE_SCALAR_8X32 -DHAVE_BUILTIN_EXPECT
