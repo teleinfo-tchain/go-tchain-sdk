@@ -24,6 +24,7 @@ import (
 	"github.com/tchain/go-tchain-sdk/net"
 	"github.com/tchain/go-tchain-sdk/providers"
 	"github.com/tchain/go-tchain-sdk/system"
+	"github.com/tchain/go-tchain-sdk/test/privacycontract"
 	"github.com/tchain/go-tchain-sdk/txpool"
 	"os"
 	"path"
@@ -38,14 +39,15 @@ import (
 	Bif - Bif模块
 */
 type Bif struct {
-	Provider providers.ProviderInterface
-	Core     *core.Core
-	Gb       *gb.GB
-	Account  *types.Account
-	Net      *net.Net
-	System   *system.System
-	Debug    *debug.Debug
-	TxPool   *txpool.TxPool
+	Provider        providers.ProviderInterface
+	Core            *core.Core
+	Gb              *gb.GB
+	Account         *types.Account
+	Net             *net.Net
+	System          *system.System
+	Debug           *debug.Debug
+	TxPool          *txpool.TxPool
+	PrivacyContract *privacycontract.BaseContract
 }
 
 /*
