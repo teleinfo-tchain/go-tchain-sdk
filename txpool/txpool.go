@@ -15,9 +15,9 @@
 package txpool
 
 import (
-	"github.com/bif/bif-sdk-go/dto"
-	"github.com/bif/bif-sdk-go/providers"
-	"github.com/bif/bif-sdk-go/utils/hexutil"
+	"github.com/tchain/go-tchain-sdk/dto"
+	"github.com/tchain/go-tchain-sdk/providers"
+	"github.com/tchain/go-tchain-sdk/utils/hexutil"
 )
 
 type TxPool struct {

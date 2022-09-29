@@ -16,14 +16,14 @@ package test
 
 import (
 	"fmt"
-	"github.com/bif/bif-sdk-go"
-	"github.com/bif/bif-sdk-go/account"
-	"github.com/bif/bif-sdk-go/compiler"
-	"github.com/bif/bif-sdk-go/core/block"
-	"github.com/bif/bif-sdk-go/dto"
-	"github.com/bif/bif-sdk-go/providers"
-	"github.com/bif/bif-sdk-go/test/resources"
-	"github.com/bif/bif-sdk-go/utils"
+	"github.com/tchain/go-tchain-sdk"
+	"github.com/tchain/go-tchain-sdk/account"
+	"github.com/tchain/go-tchain-sdk/compiler"
+	"github.com/tchain/go-tchain-sdk/core/block"
+	"github.com/tchain/go-tchain-sdk/dto"
+	"github.com/tchain/go-tchain-sdk/providers"
+	"github.com/tchain/go-tchain-sdk/test/resources"
+	"github.com/tchain/go-tchain-sdk/utils"
 	"math/big"
 	"path"
 	"runtime"
@@ -396,7 +396,7 @@ func TestCoreSendTransactionInteractContract(t *testing.T) {
 	ballotCallVoters(t)
 }
 
-func TestEVMQue(t *testing.T){
+func TestEVMQue(t *testing.T) {
 	// 编译器的问题，telChain的链已经做了其它的修改
 	// var singAddr = "did:bid:sf25XGBQU8E8wGFo9wGKo95jUgtYPM24Y"
 	// // 0x000000000000000000000000b39229c015c595850c16948d72f940303c8f3e11
@@ -417,7 +417,7 @@ func TestEVMQue(t *testing.T){
 	// fmt.Println(sender)
 }
 
-func TestTelChainEVM(t *testing.T){
+func TestTelChainEVM(t *testing.T) {
 	// // 基于新的合约编译器进行部署
 	// ballotDeployTelChainEVM(t)
 	// txHash 0x0d122db927efe4cf8247390486141a0b2e44d0b4fea2c70d61711589ebc47330

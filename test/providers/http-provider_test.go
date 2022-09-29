@@ -16,14 +16,14 @@ package test
 
 import (
 	"fmt"
-	"github.com/bif/bif-sdk-go"
-	"github.com/bif/bif-sdk-go/account"
-	block2 "github.com/bif/bif-sdk-go/core/block"
-	"github.com/bif/bif-sdk-go/dto"
-	"github.com/bif/bif-sdk-go/providers"
-	"github.com/bif/bif-sdk-go/test/resources"
-	"github.com/bif/bif-sdk-go/txpool"
-	"github.com/bif/bif-sdk-go/utils"
+	"github.com/tchain/go-tchain-sdk"
+	"github.com/tchain/go-tchain-sdk/account"
+	block2 "github.com/tchain/go-tchain-sdk/core/block"
+	"github.com/tchain/go-tchain-sdk/dto"
+	"github.com/tchain/go-tchain-sdk/providers"
+	"github.com/tchain/go-tchain-sdk/test/resources"
+	"github.com/tchain/go-tchain-sdk/txpool"
+	"github.com/tchain/go-tchain-sdk/utils"
 	"math/big"
 	"strconv"
 	"testing"
@@ -91,7 +91,7 @@ func Test_HTTP_Core_ToTransactionResponse(t *testing.T) {
 		t.FailNow()
 	}
 
-	time.Sleep(time.Second*8)
+	time.Sleep(time.Second * 8)
 
 	txResponse, err := connection.Core.GetTransactionByHash(txHash)
 
@@ -100,7 +100,7 @@ func Test_HTTP_Core_ToTransactionResponse(t *testing.T) {
 		t.FailNow()
 	}
 
-	fmt.Printf("txRes is %+v \n",  txResponse)
+	fmt.Printf("txRes is %+v \n", txResponse)
 }
 
 func Test_HTTP_Core_ToSignTransactionResponse(t *testing.T) {
@@ -390,7 +390,6 @@ func Test_HTTP_Request_ToBoolean(t *testing.T) {
 func Test_HTTP_Request_ToTransactionReceipt(t *testing.T) {
 	var connection = bif.NewBif(providers.NewHTTPProvider(resources.IP00+":"+strconv.FormatUint(resources.Port, 10), 10, false))
 
-
 	from := "did:bid:qwer:sf25XGBQU8E8wGFo9wGKo95jUgtYPM24Y"
 	fromPriKey := "e41219552564c956edeb0fa782c7760a6f5ade504768b3570c68dc0459a7889a"
 
@@ -432,7 +431,7 @@ func Test_HTTP_Request_ToTransactionReceipt(t *testing.T) {
 		t.FailNow()
 	}
 
-	time.Sleep(time.Second*8)
+	time.Sleep(time.Second * 8)
 
 	txReceipt, err := connection.Core.GetTransactionReceipt(txHash)
 

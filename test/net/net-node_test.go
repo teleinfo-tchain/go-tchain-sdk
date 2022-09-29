@@ -16,12 +16,12 @@ package test
 
 import (
 	"fmt"
-	"github.com/bif/bif-sdk-go/test/resources"
+	"github.com/tchain/go-tchain-sdk/test/resources"
 	"strconv"
 	"testing"
 
-	"github.com/bif/bif-sdk-go/net"
-	"github.com/bif/bif-sdk-go/providers"
+	"github.com/tchain/go-tchain-sdk/net"
+	"github.com/tchain/go-tchain-sdk/providers"
 )
 
 func TestNodePeers(t *testing.T) {

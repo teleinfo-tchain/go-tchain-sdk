@@ -2,12 +2,10 @@ package system
 
 import (
 	"errors"
-	"github.com/bif/bif-sdk-go/abi"
-	"github.com/bif/bif-sdk-go/dto"
+	"github.com/tchain/go-tchain-sdk/abi"
+	"github.com/tchain/go-tchain-sdk/dto"
 	"strings"
 )
-
-
 
 // Manager - The Manager Module
 type Manager struct {

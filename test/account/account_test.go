@@ -1,12 +1,12 @@
 package account
 
 import (
-	"github.com/bif/bif-sdk-go"
-	"github.com/bif/bif-sdk-go/account"
-	"github.com/bif/bif-sdk-go/core/block"
-	"github.com/bif/bif-sdk-go/providers"
-	"github.com/bif/bif-sdk-go/test/resources"
-	"github.com/bif/bif-sdk-go/utils"
+	"github.com/tchain/go-tchain-sdk"
+	"github.com/tchain/go-tchain-sdk/account"
+	"github.com/tchain/go-tchain-sdk/core/block"
+	"github.com/tchain/go-tchain-sdk/providers"
+	"github.com/tchain/go-tchain-sdk/test/resources"
+	"github.com/tchain/go-tchain-sdk/utils"
 	"io/ioutil"
 	"math/big"
 	"testing"
@@ -65,7 +65,7 @@ func TestDecrypt(t *testing.T) {
 	}{
 		{false, resources.PassWord, "UTC--2021-10-19T05-33-49.419105162Z--did_bid_qwer_sf25XGBQU8E8wGFo9wGKo95jUgtYPM24Y", "did:bid:qwer:sf25XGBQU8E8wGFo9wGKo95jUgtYPM24Y"},
 	} {
-		file := bif.GetCurrentAbPath()+resources.KeyStoreFile+test.keyDir
+		file := bif.GetCurrentAbPath() + resources.KeyStoreFile + test.keyDir
 		keyJson, err := ioutil.ReadFile(file)
 		if err != nil {
 			t.Error(err)
@@ -181,7 +181,7 @@ func TestPriKeyFromKeyStore(t *testing.T) {
 	}{
 		{"teleinfo", "did:bid:sqtx:sfBUW9rkT9VCVLVwvHd8G8qEUaSFr5GN", "UTC--2021-11-17T09-20-40.402116724Z--did_bid_sqtx_sfBUW9rkT9VCVLVwvHd8G8qEUaSFr5GN"},
 	} {
-		path := bif.GetCurrentAbPath()+resources.KeyStoreFile+test.keyDir
+		path := bif.GetCurrentAbPath() + resources.KeyStoreFile + test.keyDir
 		pri, err := account.PriKeyFromKeyStore(test.address, path, test.password)
 		if err != nil {
 			t.Error(err)
@@ -262,7 +262,7 @@ func TestGetPublicKeyFromFile(t *testing.T) {
 	}{
 		{"UTC--2021-10-19T05-33-49.419105162Z--did_bid_qwer_sf25XGBQU8E8wGFo9wGKo95jUgtYPM24Y", "tele", false, "0x04647f729afb309e4cd20f4b186a7883e1cd23b245e9fb6eb939ad74e47cc16c55e60aa12f20ed21bee8d23291aae377ad319b166604dec1a81dfb2b008bdc3c68"},
 	} {
-		file := bif.GetCurrentAbPath()+resources.KeyStoreFile+test.privateKeyFilePath
+		file := bif.GetCurrentAbPath() + resources.KeyStoreFile + test.privateKeyFilePath
 		publicKey, err := account.PublicKeyFromFile(file, test.password, test.isSM2)
 		if err != nil {
 			t.Error(err)
@@ -286,7 +286,7 @@ func TestGenNodeUrlFromKeyStore(t *testing.T) {
 	}{
 		{"UTC--2021-10-19T05-33-49.419105162Z--did_bid_qwer_sf25XGBQU8E8wGFo9wGKo95jUgtYPM24Y", "tele", "127.0.0.1", 55555},
 	} {
-		file := bif.GetCurrentAbPath()+resources.KeyStoreFile+test.nodePrivateKeyPath
+		file := bif.GetCurrentAbPath() + resources.KeyStoreFile + test.nodePrivateKeyPath
 		nodeUrl, err := account.GenNodeUrlFromKeyStore(file, test.password, test.host, test.port)
 		if err != nil {
 			t.Error(err)

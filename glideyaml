@@ -1,4 +1,4 @@
-package: github.com/bif/bif-sdk-go
+package: github.com/tchain/go-tchain-sdk
 import:
 - package: golang.org/x/net
   subpackages:

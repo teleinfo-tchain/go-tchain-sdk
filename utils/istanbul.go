@@ -2,7 +2,7 @@ package utils
 
 import (
 	"errors"
-	"github.com/bif/bif-sdk-go/utils/rlp"
+	"github.com/tchain/go-tchain-sdk/utils/rlp"
 	"io"
 )
 

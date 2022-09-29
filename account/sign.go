@@ -5,11 +5,11 @@ import (
 	"crypto/ecdsa"
 	"encoding/hex"
 	"errors"
-	"github.com/bif/bif-sdk-go/crypto"
-	"github.com/bif/bif-sdk-go/crypto/config"
-	"github.com/bif/bif-sdk-go/utils"
-	"github.com/bif/bif-sdk-go/utils/hexutil"
-	"github.com/bif/bif-sdk-go/utils/rlp"
+	"github.com/tchain/go-tchain-sdk/crypto"
+	"github.com/tchain/go-tchain-sdk/crypto/config"
+	"github.com/tchain/go-tchain-sdk/utils"
+	"github.com/tchain/go-tchain-sdk/utils/hexutil"
+	"github.com/tchain/go-tchain-sdk/utils/rlp"
 	"golang.org/x/crypto/sha3"
 	"math/big"
 )
@@ -315,7 +315,7 @@ func basePreCheck(signData *SignTxParams, privateKey string, isSM2 bool) (*txDat
 	}
 
 	// 校验Nonce是否为0
-	if signData.Nonce == nil{
+	if signData.Nonce == nil {
 		return nil, errors.New("nonce is nil")
 	}
 

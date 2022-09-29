@@ -17,7 +17,7 @@ package abi
 import (
 	"errors"
 	"fmt"
-	"github.com/bif/bif-sdk-go/utils"
+	"github.com/tchain/go-tchain-sdk/utils"
 	"reflect"
 	"regexp"
 	"strconv"

@@ -17,8 +17,8 @@ package test
 import (
 	"testing"
 
-	"github.com/bif/bif-sdk-go"
-	"github.com/bif/bif-sdk-go/providers"
+	"github.com/tchain/go-tchain-sdk"
+	"github.com/tchain/go-tchain-sdk/providers"
 )
 
 func Test_IPCProvider(t *testing.T) {

@@ -18,8 +18,8 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"github.com/bif/bif-sdk-go/crypto"
-	"github.com/bif/bif-sdk-go/utils/types"
+	"github.com/tchain/go-tchain-sdk/crypto"
+	"github.com/tchain/go-tchain-sdk/utils/types"
 	"math/big"
 	"strconv"
 )

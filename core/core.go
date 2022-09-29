@@ -17,10 +17,10 @@ package core
 import (
 	"errors"
 	"fmt"
-	"github.com/bif/bif-sdk-go/core/block"
-	"github.com/bif/bif-sdk-go/dto"
-	"github.com/bif/bif-sdk-go/providers"
-	"github.com/bif/bif-sdk-go/utils/hexutil"
+	"github.com/tchain/go-tchain-sdk/core/block"
+	"github.com/tchain/go-tchain-sdk/dto"
+	"github.com/tchain/go-tchain-sdk/providers"
+	"github.com/tchain/go-tchain-sdk/utils/hexutil"
 	"math/big"
 	"strings"
 )
@@ -649,7 +649,7 @@ func (core *Core) GetBlockByNumber(blockNumber string, transactionDetails bool) 
 		_, ok := number.SetString(blockNumber, 0)
 		if ok {
 			params[0] = fmt.Sprintf("0x%x", number)
-		}else{
+		} else {
 			return nil, errors.New("invalid blockNumber")
 		}
 	}

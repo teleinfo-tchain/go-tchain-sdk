@@ -2,8 +2,8 @@ package dto
 
 import (
 	"encoding/json"
-	"github.com/bif/bif-sdk-go/utils"
-	"github.com/bif/bif-sdk-go/utils/hexutil"
+	"github.com/tchain/go-tchain-sdk/utils"
+	"github.com/tchain/go-tchain-sdk/utils/hexutil"
 )
 
 type TxPoolRequestResult struct {
@@ -31,7 +31,6 @@ func (pointer *TxPoolRequestResult) ToTxPoolStatus() (map[string]hexutil.Uint, e
 	if err := pointer.checkResponse(); err != nil {
 		return nil, err
 	}
-
 
 	var data []byte
 	var err error

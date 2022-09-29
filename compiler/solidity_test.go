@@ -2,7 +2,7 @@ package compiler
 
 import (
 	"fmt"
-	"github.com/bif/bif-sdk-go"
+	"github.com/tchain/go-tchain-sdk"
 	"path"
 	"reflect"
 	"runtime"
@@ -13,17 +13,16 @@ import (
 )
 
 var (
-	solcDir  = path.Join(bif.GetCurrentAbPath(), "compiler", "tmp")
-	solFile  = path.Join(bif.GetCurrentAbPath(), "compiler", "contract")
+	solcDir = path.Join(bif.GetCurrentAbPath(), "compiler", "tmp")
+	solFile = path.Join(bif.GetCurrentAbPath(), "compiler", "contract")
 )
-
 
 func TestSolidityInline(t *testing.T) {
 	sysType := runtime.GOOS
 	version := "v0.5.5"
-	if sysType == "windows"{
+	if sysType == "windows" {
 		solcDir = path.Join(solcDir, version, sysType, "solc.exe")
-	}else {
+	} else {
 		solcDir = path.Join(solcDir, version, sysType, "solc-static-linux")
 	}
 
@@ -85,9 +84,9 @@ func TestSolidityInline(t *testing.T) {
 func TestSolidity(t *testing.T) {
 	sysType := runtime.GOOS
 	version := "v0.5.5"
-	if sysType == "windows"{
+	if sysType == "windows" {
 		solcDir = path.Join(solcDir, version, sysType, "solc.exe")
-	}else {
+	} else {
 		solcDir = path.Join(solcDir, version, sysType, "solc-static-linux")
 	}
 

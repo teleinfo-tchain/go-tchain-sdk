@@ -1,12 +1,13 @@
 package utils
+
 //
 // import (
 // 	"bytes"
 // 	"encoding/binary"
 // 	"encoding/hex"
 // 	"fmt"
-// 	"github.com/bif/bif-sdk-go/utils"
-// 	"github.com/bif/bif-sdk-go/utils/math"
+// 	"github.com/tchain/go-tchain-sdk/utils"
+// 	"github.com/tchain/go-tchain-sdk/utils/math"
 // 	"math/big"
 // 	"reflect"
 // 	"regexp"

@@ -1,8 +1,8 @@
 package test
 
 import (
-	"github.com/bif/bif-sdk-go/genesistool"
-	"github.com/bif/bif-sdk-go/test/resources"
+	"github.com/tchain/go-tchain-sdk/genesistool"
+	"github.com/tchain/go-tchain-sdk/test/resources"
 	"testing"
 )
 

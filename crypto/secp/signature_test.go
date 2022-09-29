@@ -7,9 +7,9 @@ import (
 	"reflect"
 	"testing"
 
-	"github.com/bif/bif-sdk-go/utils"
-	"github.com/bif/bif-sdk-go/utils/hexutil"
-	"github.com/bif/bif-sdk-go/utils/math"
+	"github.com/tchain/go-tchain-sdk/utils"
+	"github.com/tchain/go-tchain-sdk/utils/hexutil"
+	"github.com/tchain/go-tchain-sdk/utils/math"
 )
 
 var (

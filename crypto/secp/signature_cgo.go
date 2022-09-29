@@ -7,8 +7,8 @@ import (
 	"crypto/elliptic"
 	"fmt"
 
-	"github.com/bif/bif-sdk-go/crypto/secp256k1"
-	"github.com/bif/bif-sdk-go/utils/math"
+	"github.com/tchain/go-tchain-sdk/crypto/secp256k1"
+	"github.com/tchain/go-tchain-sdk/utils/math"
 )
 
 // Ecrecover returns the uncompressed public key that created the given signature.

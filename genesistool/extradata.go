@@ -2,17 +2,17 @@ package genesistool
 
 import (
 	"bytes"
-	"github.com/bif/bif-sdk-go/utils"
-	"github.com/bif/bif-sdk-go/utils/hexutil"
-	"github.com/bif/bif-sdk-go/utils/rlp"
+	"github.com/tchain/go-tchain-sdk/utils"
+	"github.com/tchain/go-tchain-sdk/utils/hexutil"
+	"github.com/tchain/go-tchain-sdk/utils/rlp"
 )
 
 var (
 	istanbulExtraVanity = 32 // Fixed number of extra-data bytes reserved for validator vanity
 	istanbulExtraSeal   = 98 // 33 + 1 + 64
 
-	hotStuffExtraVanity = 32        // Fixed number of extra-data bytes reserved for validator vanity
-	hotStuffExtraSeal   = 98        // Fixed number of extra-data bytes reserved for validator seal
+	hotStuffExtraVanity = 32 // Fixed number of extra-data bytes reserved for validator vanity
+	hotStuffExtraSeal   = 98 // Fixed number of extra-data bytes reserved for validator seal
 )
 
 type istanbulExtra struct {

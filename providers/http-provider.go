@@ -23,7 +23,7 @@ import (
 
 	"encoding/json"
 
-	"github.com/bif/bif-sdk-go/providers/util"
+	"github.com/tchain/go-tchain-sdk/providers/util"
 )
 
 type HTTPProvider struct {

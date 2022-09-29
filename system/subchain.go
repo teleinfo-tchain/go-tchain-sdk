@@ -3,8 +3,8 @@ package system
 import (
 	"errors"
 	"fmt"
-	"github.com/bif/bif-sdk-go/abi"
-	"github.com/bif/bif-sdk-go/dto"
+	"github.com/tchain/go-tchain-sdk/abi"
+	"github.com/tchain/go-tchain-sdk/dto"
 	"github.com/prometheus/common/log"
 	"regexp"
 	"strings"

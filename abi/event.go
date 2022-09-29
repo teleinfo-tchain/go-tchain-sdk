@@ -16,11 +16,11 @@ package abi
 
 import (
 	"fmt"
-	"github.com/bif/bif-sdk-go/crypto/config"
-	"github.com/bif/bif-sdk-go/utils"
+	"github.com/tchain/go-tchain-sdk/crypto/config"
+	"github.com/tchain/go-tchain-sdk/utils"
 	"strings"
 
-	"github.com/bif/bif-sdk-go/crypto"
+	"github.com/tchain/go-tchain-sdk/crypto"
 )
 
 // Event is an event potentially triggered by the EVM's LOG mechanism. The Event

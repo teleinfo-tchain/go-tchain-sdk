@@ -18,7 +18,7 @@ package test
 
 import (
 	"bytes"
-	"github.com/bif/bif-sdk-go/utils"
+	"github.com/tchain/go-tchain-sdk/utils"
 	"testing"
 
 	checker "gopkg.in/check.v1"

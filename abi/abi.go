@@ -19,11 +19,11 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"github.com/bif/bif-sdk-go/crypto/config"
-	"github.com/bif/bif-sdk-go/utils"
+	"github.com/tchain/go-tchain-sdk/crypto/config"
+	"github.com/tchain/go-tchain-sdk/utils"
 	"io"
 
-	"github.com/bif/bif-sdk-go/crypto"
+	"github.com/tchain/go-tchain-sdk/crypto"
 )
 
 // The ABI holds information about a contract's context and available

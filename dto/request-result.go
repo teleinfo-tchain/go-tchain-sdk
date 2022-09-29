@@ -20,7 +20,7 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/bif/bif-sdk-go/utils/types"
+	"github.com/tchain/go-tchain-sdk/utils/types"
 
 	"encoding/json"
 	"fmt"
@@ -154,7 +154,7 @@ func (pointer *RequestResult) ToUint64() (uint64, error) {
 	if strings.HasPrefix(hex, "0") {
 		hex = hex[2:]
 	} else {
-		hex = hex[3:len(hex)-1]
+		hex = hex[3 : len(hex)-1]
 	}
 
 	numericResult, err := strconv.ParseUint(hex, 16, 64)

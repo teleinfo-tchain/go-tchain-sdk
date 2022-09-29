@@ -18,14 +18,14 @@ import (
 	"bytes"
 	"encoding/hex"
 	"encoding/json"
-	"github.com/bif/bif-sdk-go/crypto/config"
-	"github.com/bif/bif-sdk-go/utils"
+	"github.com/tchain/go-tchain-sdk/crypto/config"
+	"github.com/tchain/go-tchain-sdk/utils"
 	"math/big"
 	"reflect"
 	"strings"
 	"testing"
 
-	"github.com/bif/bif-sdk-go/crypto"
+	"github.com/tchain/go-tchain-sdk/crypto"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )

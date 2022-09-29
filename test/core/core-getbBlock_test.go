@@ -15,14 +15,14 @@
 package test
 
 import (
-	"github.com/bif/bif-sdk-go"
-	"github.com/bif/bif-sdk-go/account"
-	block2 "github.com/bif/bif-sdk-go/core/block"
-	"github.com/bif/bif-sdk-go/dto"
-	"github.com/bif/bif-sdk-go/providers"
-	"github.com/bif/bif-sdk-go/test/resources"
-	"github.com/bif/bif-sdk-go/utils"
-	"github.com/bif/bif-sdk-go/utils/hexutil"
+	"github.com/tchain/go-tchain-sdk"
+	"github.com/tchain/go-tchain-sdk/account"
+	block2 "github.com/tchain/go-tchain-sdk/core/block"
+	"github.com/tchain/go-tchain-sdk/dto"
+	"github.com/tchain/go-tchain-sdk/providers"
+	"github.com/tchain/go-tchain-sdk/test/resources"
+	"github.com/tchain/go-tchain-sdk/utils"
+	"github.com/tchain/go-tchain-sdk/utils/hexutil"
 	"math/big"
 	"strconv"
 	"testing"
@@ -221,7 +221,7 @@ func TestGetBlockTransactionCountByHash(t *testing.T) {
 
 	t.Logf("txHash is %s \n", txHah)
 
-	time.Sleep(time.Second*8)
+	time.Sleep(time.Second * 8)
 
 	txCount, err = connection.Core.GetBlockTransactionCountByHash(block.(*dto.BlockNoDetails).Hash)
 
@@ -241,7 +241,6 @@ func TestGetBlockTransactionCountByHash(t *testing.T) {
 func TestGetBlockTransactionCountByNumber(t *testing.T) {
 
 	var connection = bif.NewBif(providers.NewHTTPProvider(resources.IP00+":"+strconv.FormatUint(resources.Port, 10), 10, false))
-
 
 	chainId, _ := connection.Core.GetChainId()
 
@@ -275,7 +274,7 @@ func TestGetBlockTransactionCountByNumber(t *testing.T) {
 		t.FailNow()
 	}
 
-	time.Sleep(time.Second*8)
+	time.Sleep(time.Second * 8)
 
 	txRes, _ := connection.Core.GetTransactionByHash(txHah)
 

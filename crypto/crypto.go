@@ -11,11 +11,11 @@ import (
 	"os"
 	"strings"
 
-	"github.com/bif/bif-sdk-go/crypto/config"
-	"github.com/bif/bif-sdk-go/crypto/secp"
-	"github.com/bif/bif-sdk-go/crypto/sm2"
-	"github.com/bif/bif-sdk-go/utils"
-	"github.com/bif/bif-sdk-go/utils/math"
+	"github.com/tchain/go-tchain-sdk/crypto/config"
+	"github.com/tchain/go-tchain-sdk/crypto/secp"
+	"github.com/tchain/go-tchain-sdk/crypto/sm2"
+	"github.com/tchain/go-tchain-sdk/utils"
+	"github.com/tchain/go-tchain-sdk/utils/math"
 )
 
 // Keccak256 calculates and returns the Keccak256 hash of the input data.

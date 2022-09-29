@@ -1,11 +1,11 @@
 package System
 
 import (
-	"github.com/bif/bif-sdk-go"
-	"github.com/bif/bif-sdk-go/core/block"
-	"github.com/bif/bif-sdk-go/providers"
-	"github.com/bif/bif-sdk-go/system"
-	"github.com/bif/bif-sdk-go/test/resources"
+	"github.com/tchain/go-tchain-sdk"
+	"github.com/tchain/go-tchain-sdk/core/block"
+	"github.com/tchain/go-tchain-sdk/providers"
+	"github.com/tchain/go-tchain-sdk/system"
+	"github.com/tchain/go-tchain-sdk/test/resources"
 	"io/ioutil"
 	"math/big"
 	"strconv"

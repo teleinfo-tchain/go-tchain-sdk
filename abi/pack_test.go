@@ -18,7 +18,7 @@ import (
 	"bytes"
 	"encoding/hex"
 	"fmt"
-	"github.com/bif/bif-sdk-go/utils"
+	"github.com/tchain/go-tchain-sdk/utils"
 	"math"
 	"math/big"
 	"reflect"

@@ -15,11 +15,11 @@
 package core
 
 import (
-	Abi "github.com/bif/bif-sdk-go/abi"
-	"github.com/bif/bif-sdk-go/account"
-	"github.com/bif/bif-sdk-go/dto"
-	"github.com/bif/bif-sdk-go/utils"
-	"github.com/bif/bif-sdk-go/utils/types"
+	Abi "github.com/tchain/go-tchain-sdk/abi"
+	"github.com/tchain/go-tchain-sdk/account"
+	"github.com/tchain/go-tchain-sdk/dto"
+	"github.com/tchain/go-tchain-sdk/utils"
+	"github.com/tchain/go-tchain-sdk/utils/types"
 	"strings"
 )
 
@@ -32,7 +32,7 @@ type Contract struct {
 // NewContract - Contract abstraction
 func (core *Core) NewContract(abi string) (*Contract, error) {
 	parsedAbi, err := Abi.JSON(strings.NewReader(abi))
-	if err != nil{
+	if err != nil {
 		return nil, err
 	}
 
@@ -47,13 +47,13 @@ func (contract *Contract) Call(transaction *dto.TransactionParameters, functionN
 	if err != nil {
 		return nil, err
 	}
-	transaction.Payload = types.ComplexString("0x"+utils.Bytes2Hex(inputEncode))
+	transaction.Payload = types.ComplexString("0x" + utils.Bytes2Hex(inputEncode))
 
 	return contract.super.Call(transaction)
 
 }
 
-func (contract *Contract) Send(tx *account.SignTxParams, isSM2 bool,  signPriKey, functionName string, args ...interface{}) (string, error) {
+func (contract *Contract) Send(tx *account.SignTxParams, isSM2 bool, signPriKey, functionName string, args ...interface{}) (string, error) {
 	inputEncode, err := contract.abi.Pack(functionName, args...)
 	if err != nil {
 		return "", err
@@ -62,7 +62,7 @@ func (contract *Contract) Send(tx *account.SignTxParams, isSM2 bool,  signPriKey
 	tx.Payload = inputEncode
 
 	signTx, err := account.SignTransaction(tx, signPriKey, isSM2)
-	if err != nil{
+	if err != nil {
 		return "", err
 	}
 
@@ -70,7 +70,7 @@ func (contract *Contract) Send(tx *account.SignTxParams, isSM2 bool,  signPriKey
 
 }
 
-func (contract *Contract) Deploy(tx *account.SignTxParams, isSM2 bool,  signPriKey, byteCode string, args ...interface{}) (string, error) {
+func (contract *Contract) Deploy(tx *account.SignTxParams, isSM2 bool, signPriKey, byteCode string, args ...interface{}) (string, error) {
 	inputEncode, err := contract.abi.Pack("", args...)
 	if err != nil {
 		return "", err
@@ -79,7 +79,7 @@ func (contract *Contract) Deploy(tx *account.SignTxParams, isSM2 bool,  signPriK
 	tx.Payload = append(utils.Hex2Bytes(byteCode), inputEncode...)
 
 	signTx, err := account.SignTransaction(tx, signPriKey, isSM2)
-	if err != nil{
+	if err != nil {
 		return "", err
 	}
 

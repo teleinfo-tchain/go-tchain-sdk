@@ -2,10 +2,10 @@ package System
 
 import (
 	"fmt"
-	"github.com/bif/bif-sdk-go"
-	"github.com/bif/bif-sdk-go/core/block"
-	"github.com/bif/bif-sdk-go/dto"
-	"github.com/bif/bif-sdk-go/test/resources"
+	"github.com/tchain/go-tchain-sdk"
+	"github.com/tchain/go-tchain-sdk/core/block"
+	"github.com/tchain/go-tchain-sdk/dto"
+	"github.com/tchain/go-tchain-sdk/test/resources"
 	"io/ioutil"
 	"testing"
 	"time"

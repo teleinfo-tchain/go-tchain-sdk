@@ -18,12 +18,12 @@ import (
 	"encoding/binary"
 	"errors"
 	"fmt"
-	"github.com/bif/bif-sdk-go/crypto/config"
-	"github.com/bif/bif-sdk-go/utils"
+	"github.com/tchain/go-tchain-sdk/crypto/config"
+	"github.com/tchain/go-tchain-sdk/utils"
 	"math/big"
 	"reflect"
 
-	"github.com/bif/bif-sdk-go/crypto"
+	"github.com/tchain/go-tchain-sdk/crypto"
 )
 
 // MakeTopics converts a filter query argument list into a filter topic set.

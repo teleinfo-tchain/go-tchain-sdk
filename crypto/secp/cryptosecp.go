@@ -6,9 +6,9 @@ import (
 	"crypto/rand"
 	"errors"
 	"fmt"
-	"github.com/bif/bif-sdk-go/utils"
-	"github.com/bif/bif-sdk-go/utils/math"
-	"github.com/bif/bif-sdk-go/utils/rlp"
+	"github.com/tchain/go-tchain-sdk/utils"
+	"github.com/tchain/go-tchain-sdk/utils/math"
+	"github.com/tchain/go-tchain-sdk/utils/rlp"
 	"golang.org/x/crypto/sha3"
 	"math/big"
 )

@@ -15,11 +15,11 @@
 package test
 
 import (
-	"github.com/bif/bif-sdk-go"
-	"github.com/bif/bif-sdk-go/core/block"
-	"github.com/bif/bif-sdk-go/dto"
-	"github.com/bif/bif-sdk-go/providers"
-	"github.com/bif/bif-sdk-go/test/resources"
+	"github.com/tchain/go-tchain-sdk"
+	"github.com/tchain/go-tchain-sdk/core/block"
+	"github.com/tchain/go-tchain-sdk/dto"
+	"github.com/tchain/go-tchain-sdk/providers"
+	"github.com/tchain/go-tchain-sdk/test/resources"
 	"math/big"
 	"strconv"
 	"testing"
@@ -133,9 +133,6 @@ func TestGetChainId(t *testing.T) {
 	t.Log(chainId)
 }
 
-
-
-
 func TestGetGenerator(t *testing.T) {
 
 	var connection = bif.NewBif(providers.NewHTTPProvider(resources.IP00+":"+strconv.FormatUint(resources.Port, 10), 10, false))
@@ -189,10 +186,8 @@ func TestCoreGetPendingTransactions(t *testing.T) {
 
 	var connection = bif.NewBif(providers.NewHTTPProvider(resources.IP00+":"+strconv.FormatUint(resources.Port, 10), 10, false))
 
-
-
 	generator, err := connection.Core.GetGenerator()
-	if err != nil{
+	if err != nil {
 		t.Error(err)
 		t.FailNow()
 	}
@@ -205,12 +200,12 @@ func TestCoreGetPendingTransactions(t *testing.T) {
 	transaction.Payload = "Transfer test"
 
 	_, err = connection.Core.SendTransaction(transaction)
-	if err != nil{
+	if err != nil {
 		t.FailNow()
 	}
 	pendingTransactions, _ := connection.Core.GetPendingTransactions()
 
-	if len(pendingTransactions)!=0{
+	if len(pendingTransactions) != 0 {
 		t.Logf("%#v \n", pendingTransactions[0])
 	}
 }
@@ -242,7 +237,6 @@ func TestCoreGetProtocolVersion(t *testing.T) {
 		t.Error(err)
 		t.FailNow()
 	}
-
 
 	t.Log(version)
 

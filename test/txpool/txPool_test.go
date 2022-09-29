@@ -15,12 +15,12 @@
 package test
 
 import (
-	"github.com/bif/bif-sdk-go/test/resources"
-	"github.com/bif/bif-sdk-go/txpool"
+	"github.com/tchain/go-tchain-sdk/test/resources"
+	"github.com/tchain/go-tchain-sdk/txpool"
 	"strconv"
 	"testing"
 
-	"github.com/bif/bif-sdk-go/providers"
+	"github.com/tchain/go-tchain-sdk/providers"
 )
 
 func TestGetStatus(t *testing.T) {

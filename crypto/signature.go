@@ -6,13 +6,13 @@ import (
 	"crypto/elliptic"
 	"errors"
 	"fmt"
-	"github.com/bif/bif-sdk-go/utils/hexutil"
+	"github.com/tchain/go-tchain-sdk/utils/hexutil"
 	"github.com/prometheus/common/log"
 
-	"github.com/bif/bif-sdk-go/crypto/config"
-	"github.com/bif/bif-sdk-go/crypto/secp"
-	"github.com/bif/bif-sdk-go/crypto/sm2"
-	"github.com/bif/bif-sdk-go/utils"
+	"github.com/tchain/go-tchain-sdk/crypto/config"
+	"github.com/tchain/go-tchain-sdk/crypto/secp"
+	"github.com/tchain/go-tchain-sdk/crypto/sm2"
+	"github.com/tchain/go-tchain-sdk/utils"
 
 	"github.com/btcsuite/btcd/btcec"
 

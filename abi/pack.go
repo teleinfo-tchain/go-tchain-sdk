@@ -15,11 +15,11 @@
 package abi
 
 import (
-	"github.com/bif/bif-sdk-go/utils"
+	"github.com/tchain/go-tchain-sdk/utils"
 	"math/big"
 	"reflect"
 
-	"github.com/bif/bif-sdk-go/utils/math"
+	"github.com/tchain/go-tchain-sdk/utils/math"
 )
 
 // packBytesSlice packs the given bytes as [L, V] as the canonical representation

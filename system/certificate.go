@@ -2,10 +2,10 @@ package system
 
 import (
 	"errors"
-	"github.com/bif/bif-sdk-go/abi"
-	"github.com/bif/bif-sdk-go/account"
-	"github.com/bif/bif-sdk-go/dto"
-	"github.com/bif/bif-sdk-go/utils"
+	"github.com/tchain/go-tchain-sdk/abi"
+	"github.com/tchain/go-tchain-sdk/account"
+	"github.com/tchain/go-tchain-sdk/dto"
+	"github.com/tchain/go-tchain-sdk/utils"
 	"strings"
 )
 
@@ -43,7 +43,6 @@ func (cer *Certificate) registerCertificatePreCheck(registerCertificate dto.Regi
 	if !ok {
 		return false, err
 	}
-
 
 	if len(registerCertificate.IssuerAlgorithm) == 0 || isBlankCharacter(registerCertificate.IssuerAlgorithm) {
 		return false, errors.New("registerCertificate IssuerAlgorithm can't be empty")
@@ -92,7 +91,7 @@ func (cer *Certificate) RegisterCertificate(signTxParams *SysTxParams, registerC
 		return "", err
 	}
 
-	if utils.Has0xPrefix(registerCertificate.SubjectPublicKey){
+	if utils.Has0xPrefix(registerCertificate.SubjectPublicKey) {
 		registerCertificate.SubjectPublicKey = registerCertificate.SubjectPublicKey[2:]
 	}
 
@@ -270,7 +269,7 @@ func (cer *Certificate) GetCertificate(id string) (dto.CertificateInfo, error) {
 	}
 
 	res, err := pointer.ToCertificateInfo()
-	if err != nil{
+	if err != nil {
 		return certificate, err
 	}
 
@@ -311,7 +310,7 @@ func (cer *Certificate) GetIssuer(id string) (dto.IssuerSignature, error) {
 	}
 
 	res, err := pointer.ToCertificateIssuerSignature()
-	if err != nil{
+	if err != nil {
 		return issuerSignature, err
 	}
 
@@ -352,7 +351,7 @@ func (cer *Certificate) GetSubject(id string) (dto.SubjectSignature, error) {
 	}
 
 	res, err := pointer.ToCertificateSubjectSignature()
-	if err != nil{
+	if err != nil {
 		return subjectSignature, err
 	}
 

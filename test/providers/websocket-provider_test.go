@@ -16,20 +16,20 @@ package test
 
 import (
 	"fmt"
-	"github.com/bif/bif-sdk-go/account"
-	block2 "github.com/bif/bif-sdk-go/core/block"
-	"github.com/bif/bif-sdk-go/dto"
-	"github.com/bif/bif-sdk-go/test/resources"
-	"github.com/bif/bif-sdk-go/txpool"
-	"github.com/bif/bif-sdk-go/utils"
+	"github.com/tchain/go-tchain-sdk/account"
+	block2 "github.com/tchain/go-tchain-sdk/core/block"
+	"github.com/tchain/go-tchain-sdk/dto"
+	"github.com/tchain/go-tchain-sdk/test/resources"
+	"github.com/tchain/go-tchain-sdk/txpool"
+	"github.com/tchain/go-tchain-sdk/utils"
 	"math/big"
 	"strconv"
 	"strings"
 	"testing"
 	"time"
 
-	"github.com/bif/bif-sdk-go"
-	"github.com/bif/bif-sdk-go/providers"
+	"github.com/tchain/go-tchain-sdk"
+	"github.com/tchain/go-tchain-sdk/providers"
 )
 
 func Test_Websocket_Core_ToSyncingResponse(t *testing.T) {
@@ -86,7 +86,7 @@ func Test_Websocket_Core_ToTransactionResponse(t *testing.T) {
 		t.FailNow()
 	}
 
-	time.Sleep(time.Second*8)
+	time.Sleep(time.Second * 8)
 
 	txHash = strings.Replace(txHash, "\"", "", 2)
 	txResponse, err := connection.Core.GetTransactionByHash(txHash)
@@ -96,7 +96,7 @@ func Test_Websocket_Core_ToTransactionResponse(t *testing.T) {
 		t.FailNow()
 	}
 
-	fmt.Printf("txRes is %+v \n",  txResponse)
+	fmt.Printf("txRes is %+v \n", txResponse)
 }
 
 func Test_Websocket_Core_ToSignTransactionResponse(t *testing.T) {

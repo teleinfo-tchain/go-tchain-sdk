@@ -1,10 +1,10 @@
 package genesistool
 
 import (
-	"github.com/bif/bif-sdk-go/crypto"
-	"github.com/bif/bif-sdk-go/crypto/config"
 	libp2pcorecrypto "github.com/libp2p/go-libp2p-core/crypto"
 	libp2pcorepeer "github.com/libp2p/go-libp2p-core/peer"
+	"github.com/tchain/go-tchain-sdk/crypto"
+	"github.com/tchain/go-tchain-sdk/crypto/config"
 )
 
 func PeerIdGen(nodePrivateHex string) (string, error) {

@@ -2,13 +2,11 @@ package system
 
 import (
 	"errors"
-	"github.com/bif/bif-sdk-go/abi"
-	"github.com/bif/bif-sdk-go/dto"
-	"github.com/bif/bif-sdk-go/utils"
+	"github.com/tchain/go-tchain-sdk/abi"
+	"github.com/tchain/go-tchain-sdk/dto"
+	"github.com/tchain/go-tchain-sdk/utils"
 	"strings"
 )
-
-
 
 // Doc - The Doc Module
 type Doc struct {
@@ -141,7 +139,7 @@ func (doc *Doc) GetDocument(did string) (dto.Document, error) {
 	}
 
 	res, err := pointer.ToDocument()
-	if err != nil{
+	if err != nil {
 		return document, err
 	}
 

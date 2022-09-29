@@ -1,9 +1,9 @@
 package System
 
 import (
-	"github.com/bif/bif-sdk-go"
-	"github.com/bif/bif-sdk-go/dto"
-	"github.com/bif/bif-sdk-go/test/resources"
+	"github.com/tchain/go-tchain-sdk"
+	"github.com/tchain/go-tchain-sdk/dto"
+	"github.com/tchain/go-tchain-sdk/test/resources"
 	"path"
 	"testing"
 	"time"
@@ -33,7 +33,7 @@ func TestRegisterDirector(t *testing.T) {
 
 	t.Log(registerDirectorHash, err)
 
-	time.Sleep(8*time.Second)
+	time.Sleep(8 * time.Second)
 
 	log, err := con.System.SystemLogDecode(registerDirectorHash)
 
@@ -64,7 +64,7 @@ func TestUpgradeDirector(t *testing.T) {
 	}
 	t.Log(transactionHash, err)
 
-	time.Sleep(8*time.Second)
+	time.Sleep(8 * time.Second)
 
 	log, err := con.System.SystemLogDecode(transactionHash)
 
@@ -97,7 +97,7 @@ func TestRevoke(t *testing.T) {
 	}
 	t.Log(transactionHash, err)
 
-	time.Sleep(8*time.Second)
+	time.Sleep(8 * time.Second)
 
 	log, err := con.System.SystemLogDecode(transactionHash)
 
@@ -128,7 +128,7 @@ func TestSetWeights(t *testing.T) {
 	}
 	t.Log(transactionHash, err)
 
-	time.Sleep(8*time.Second)
+	time.Sleep(8 * time.Second)
 
 	log, err := con.System.SystemLogDecode(transactionHash)
 
@@ -157,7 +157,7 @@ func TestAllDirectors(t *testing.T) {
 		t.FailNow()
 	}
 
-	for _, v := range directors{
+	for _, v := range directors {
 		t.Logf("directors is %+v \n", v)
 	}
 }
@@ -177,7 +177,7 @@ func TestAllVices(t *testing.T) {
 		t.FailNow()
 	}
 
-	for _, v := range vices{
+	for _, v := range vices {
 		t.Logf("vices is %+v \n", v)
 	}
 }
@@ -197,7 +197,7 @@ func TestAllAlliance(t *testing.T) {
 		t.FailNow()
 	}
 
-	for _, v := range alliances{
+	for _, v := range alliances {
 		t.Logf("alliances is %+v \n", v)
 	}
 }

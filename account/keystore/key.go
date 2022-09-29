@@ -22,9 +22,9 @@ import (
 	"encoding/hex"
 	"encoding/json"
 	"fmt"
-	"github.com/bif/bif-sdk-go/account/types"
-	"github.com/bif/bif-sdk-go/crypto/config"
-	"github.com/bif/bif-sdk-go/utils"
+	"github.com/tchain/go-tchain-sdk/account/types"
+	"github.com/tchain/go-tchain-sdk/crypto/config"
+	"github.com/tchain/go-tchain-sdk/utils"
 	"io"
 	"io/ioutil"
 	"os"
@@ -32,7 +32,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/bif/bif-sdk-go/crypto"
+	"github.com/tchain/go-tchain-sdk/crypto"
 	"github.com/pborman/uuid"
 )
 

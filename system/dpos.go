@@ -1,8 +1,8 @@
 package system
 
 import (
-	"github.com/bif/bif-sdk-go/dto"
-	"github.com/bif/bif-sdk-go/utils/hexutil"
+	"github.com/tchain/go-tchain-sdk/dto"
+	"github.com/tchain/go-tchain-sdk/utils/hexutil"
 	"math/big"
 )
 

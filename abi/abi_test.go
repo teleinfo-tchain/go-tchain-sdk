@@ -19,15 +19,15 @@ import (
 	"encoding/hex"
 	"errors"
 	"fmt"
-	"github.com/bif/bif-sdk-go/crypto/config"
-	"github.com/bif/bif-sdk-go/utils"
+	"github.com/tchain/go-tchain-sdk/crypto/config"
+	"github.com/tchain/go-tchain-sdk/utils"
 	"math/big"
 	"reflect"
 	"strings"
 	"testing"
 
-	"github.com/bif/bif-sdk-go/crypto"
-	"github.com/bif/bif-sdk-go/utils/math"
+	"github.com/tchain/go-tchain-sdk/crypto"
+	"github.com/tchain/go-tchain-sdk/utils/math"
 )
 
 const jsondata = `

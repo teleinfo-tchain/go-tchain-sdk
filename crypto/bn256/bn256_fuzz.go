@@ -6,8 +6,8 @@ import (
 	"bytes"
 	"math/big"
 
-	cloudflare "github.com/bif/bif-sdk-go/crypto/bn256/cloudflare"
-	google "github.com/bif/bif-sdk-go/crypto/bn256/google"
+	cloudflare "github.com/tchain/go-tchain-sdk/crypto/bn256/cloudflare"
+	google "github.com/tchain/go-tchain-sdk/crypto/bn256/google"
 )
 
 // FuzzAdd fuzzez bn256 addition between the Google and Cloudflare libraries.

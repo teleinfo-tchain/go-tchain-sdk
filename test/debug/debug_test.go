@@ -1,9 +1,9 @@
 package debug
 
 import (
-	"github.com/bif/bif-sdk-go"
-	"github.com/bif/bif-sdk-go/providers"
-	"github.com/bif/bif-sdk-go/test/resources"
+	"github.com/tchain/go-tchain-sdk"
+	"github.com/tchain/go-tchain-sdk/providers"
+	"github.com/tchain/go-tchain-sdk/test/resources"
 	"strconv"
 	"testing"
 )
@@ -12,7 +12,7 @@ func TestDumpBlock(t *testing.T) {
 	var connection = bif.NewBif(providers.NewHTTPProvider(resources.IP00+":"+strconv.FormatUint(resources.Port, 10), 10, false))
 
 	_, err := connection.Core.GetBlockNumber()
-	if err != nil{
+	if err != nil {
 		t.Error(err)
 		t.FailNow()
 	}
@@ -32,7 +32,7 @@ func TestGetBlockRlp(t *testing.T) {
 	var connection = bif.NewBif(providers.NewHTTPProvider(resources.IP00+":"+strconv.FormatUint(resources.Port, 10), 10, false))
 
 	_, err := connection.Core.GetBlockNumber()
-	if err != nil{
+	if err != nil {
 		t.Error(err)
 		t.FailNow()
 	}
@@ -51,7 +51,7 @@ func TestPrintBlock(t *testing.T) {
 	var connection = bif.NewBif(providers.NewHTTPProvider(resources.IP00+":"+strconv.FormatUint(resources.Port, 10), 10, false))
 
 	_, err := connection.Core.GetBlockNumber()
-	if err != nil{
+	if err != nil {
 		t.Error(err)
 		t.FailNow()
 	}

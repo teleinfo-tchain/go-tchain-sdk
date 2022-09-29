@@ -15,12 +15,12 @@
 package test
 
 import (
-	"github.com/bif/bif-sdk-go/test/resources"
+	"github.com/tchain/go-tchain-sdk/test/resources"
 	"strconv"
 	"testing"
 
-	"github.com/bif/bif-sdk-go/gb"
-	"github.com/bif/bif-sdk-go/providers"
+	"github.com/tchain/go-tchain-sdk/gb"
+	"github.com/tchain/go-tchain-sdk/providers"
 )
 
 func TestGbStart(t *testing.T) {

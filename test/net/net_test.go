@@ -16,14 +16,14 @@ package test
 
 import (
 	"fmt"
-	"github.com/bif/bif-sdk-go/net"
-	"github.com/bif/bif-sdk-go/test/resources"
+	"github.com/tchain/go-tchain-sdk/net"
+	"github.com/tchain/go-tchain-sdk/test/resources"
 	"sort"
 	"strconv"
 	"testing"
 
-	"github.com/bif/bif-sdk-go"
-	"github.com/bif/bif-sdk-go/providers"
+	"github.com/tchain/go-tchain-sdk"
+	"github.com/tchain/go-tchain-sdk/providers"
 )
 
 func TestNetPeerCount(t *testing.T) {

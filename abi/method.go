@@ -16,10 +16,10 @@ package abi
 
 import (
 	"fmt"
-	"github.com/bif/bif-sdk-go/crypto/config"
+	"github.com/tchain/go-tchain-sdk/crypto/config"
 	"strings"
 
-	"github.com/bif/bif-sdk-go/crypto"
+	"github.com/tchain/go-tchain-sdk/crypto"
 )
 
 // FunctionType represents different types of functions a contract might have.

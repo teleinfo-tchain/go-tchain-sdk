@@ -1,4 +1,4 @@
-module github.com/bif/bif-sdk-go
+module github.com/tchain/go-tchain-sdk
 
 go 1.17
 

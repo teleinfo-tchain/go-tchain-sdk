@@ -8,10 +8,10 @@ import (
 	"encoding/hex"
 	"encoding/json"
 	"fmt"
-	"github.com/bif/bif-sdk-go/crypto"
-	"github.com/bif/bif-sdk-go/crypto/config"
-	"github.com/bif/bif-sdk-go/utils"
-	"github.com/bif/bif-sdk-go/utils/math"
+	"github.com/tchain/go-tchain-sdk/crypto"
+	"github.com/tchain/go-tchain-sdk/crypto/config"
+	"github.com/tchain/go-tchain-sdk/utils"
+	"github.com/tchain/go-tchain-sdk/utils/math"
 	"github.com/pborman/uuid"
 	"golang.org/x/crypto/pbkdf2"
 	"golang.org/x/crypto/scrypt"
@@ -94,7 +94,7 @@ func (ks keyStorePassphrase) StoreKey(filename string, key *Key, auth, chainCode
 			"This indicates that the keystore is corrupted. \n" +
 			"The corrupted file is stored at \n%v\n" +
 			"Please file a ticket at:\n\n" +
-			"https://github.com/bif/bif-sdk-go/issues." +
+			"https://github.com/tchain/go-tchain-sdk/issues." +
 			"The error was : %s"
 		return fmt.Errorf(msg, tmpName, err)
 	}

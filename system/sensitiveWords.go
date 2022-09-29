@@ -2,8 +2,8 @@ package system
 
 import (
 	"errors"
-	"github.com/bif/bif-sdk-go/abi"
-	"github.com/bif/bif-sdk-go/dto"
+	"github.com/tchain/go-tchain-sdk/abi"
+	"github.com/tchain/go-tchain-sdk/dto"
 	"strings"
 )
 
@@ -46,7 +46,7 @@ func (sen *SensitiveWord) AddWords(signTxParams *SysTxParams, wordsLi []string) 
 	var b strings.Builder
 	l := len(wordsLi)
 	for i := 0; i < l; i++ {
-		if len(wordsLi[i]) == 0 || isBlankCharacter(wordsLi[i]){
+		if len(wordsLi[i]) == 0 || isBlankCharacter(wordsLi[i]) {
 			return "", errors.New("wordsLi's element can't be empty or blank character")
 		}
 		b.WriteString(wordsLi[i])

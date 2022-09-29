@@ -22,7 +22,7 @@ import (
 
 	"log"
 
-	"github.com/bif/bif-sdk-go/providers/util"
+	"github.com/tchain/go-tchain-sdk/providers/util"
 )
 
 type IPCProvider struct {

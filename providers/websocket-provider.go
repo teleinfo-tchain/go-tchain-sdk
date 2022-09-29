@@ -17,8 +17,8 @@ package providers
 import (
 	"errors"
 	"fmt"
-	"github.com/bif/bif-sdk-go/dto"
-	"github.com/bif/bif-sdk-go/providers/util"
+	"github.com/tchain/go-tchain-sdk/dto"
+	"github.com/tchain/go-tchain-sdk/providers/util"
 
 	"encoding/json"
 	"github.com/gorilla/websocket"
@@ -226,10 +226,10 @@ func (s *stream) Call(method string, out interface{}, params interface{}) (inter
 		return nil, resp.err
 	}
 
-	return dto.RequestResult {
-		ID: int(seq),
+	return dto.RequestResult{
+		ID:      int(seq),
 		Version: util.Version,
-		Result: resp.buf,
+		Result:  resp.buf,
 	}, nil
 
 }

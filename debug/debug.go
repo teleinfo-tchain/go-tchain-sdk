@@ -1,14 +1,13 @@
 package debug
 
 import (
-	"github.com/bif/bif-sdk-go/dto"
-	"github.com/bif/bif-sdk-go/providers"
+	"github.com/tchain/go-tchain-sdk/dto"
+	"github.com/tchain/go-tchain-sdk/providers"
 )
 
 type Debug struct {
 	provider providers.ProviderInterface
 }
-
 
 func NewDebug(provider providers.ProviderInterface) *Debug {
 	debug := new(Debug)
@@ -16,7 +15,7 @@ func NewDebug(provider providers.ProviderInterface) *Debug {
 	return debug
 }
 
- /*
+/*
   DumpBlock:
    	EN - retrieves the entire state of the database at a given block
  	CN - 根据指定的区块检索数据库的整个状态
@@ -31,23 +30,22 @@ func NewDebug(provider providers.ProviderInterface) *Debug {
  	- error
 
   Call permissions: Anyone
-  */
-func(debug *Debug) DumpBlock(blockNumber string)(*dto.Dump, error){
-	params := make([]string , 1)
+*/
+func (debug *Debug) DumpBlock(blockNumber string) (*dto.Dump, error) {
+	params := make([]string, 1)
 	params[0] = blockNumber
 
 	pointer := &dto.DebugRequestResult{}
 	err := debug.provider.SendRequest(pointer, "debug_dumpBlock", params)
-	if err != nil{
+	if err != nil {
 		return nil, err
 	}
 
 	return pointer.ToDumpBlock()
 
-
 }
 
- /*
+/*
   GetBlockRlp:
    	EN - retrieves the RLP encoded for of a single block
  	CN - 获取指定区块的RLP编码
@@ -59,14 +57,14 @@ func(debug *Debug) DumpBlock(blockNumber string)(*dto.Dump, error){
  	- error
 
   Call permissions: Anyone
-  */
-func(debug *Debug) GetBlockRlp(number uint64)(string, error){
+*/
+func (debug *Debug) GetBlockRlp(number uint64) (string, error) {
 	params := make([]uint64, 1)
 	params[0] = number
 
 	pointer := &dto.DebugRequestResult{}
 	err := debug.provider.SendRequest(pointer, "debug_getBlockRlp", params)
-	if err != nil{
+	if err != nil {
 		return "", err
 	}
 
@@ -74,7 +72,7 @@ func(debug *Debug) GetBlockRlp(number uint64)(string, error){
 
 }
 
- /*
+/*
   PrintBlock:
    	EN - retrieves a block and returns its pretty printed form
  	CN - 根据指定的区块号返回区块的表示格式
@@ -86,14 +84,14 @@ func(debug *Debug) GetBlockRlp(number uint64)(string, error){
  	- error
 
   Call permissions: Anyone
-  */
-func(debug *Debug) PrintBlock(number uint64)(string, error){
+*/
+func (debug *Debug) PrintBlock(number uint64) (string, error) {
 	params := make([]uint64, 1)
 	params[0] = number
 
 	pointer := &dto.DebugRequestResult{}
 	err := debug.provider.SendRequest(pointer, "debug_printBlock", params)
-	if err != nil{
+	if err != nil {
 		return "", err
 	}
 

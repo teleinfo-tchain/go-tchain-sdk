@@ -2,8 +2,8 @@ package dto
 
 import (
 	"encoding/json"
-	"github.com/bif/bif-sdk-go/utils"
-	"github.com/bif/bif-sdk-go/utils/hexutil"
+	"github.com/tchain/go-tchain-sdk/utils"
+	"github.com/tchain/go-tchain-sdk/utils/hexutil"
 	"math/big"
 )
 

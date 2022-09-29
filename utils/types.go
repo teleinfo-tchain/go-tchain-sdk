@@ -19,14 +19,14 @@ package utils
 import (
 	"bytes"
 	"fmt"
-	"github.com/bif/bif-sdk-go/crypto/config"
+	"github.com/tchain/go-tchain-sdk/crypto/config"
 	"github.com/btcsuite/btcutil/base58"
 	"math/big"
 	"reflect"
 	"regexp"
 	"strings"
 
-	"github.com/bif/bif-sdk-go/utils/hexutil"
+	"github.com/tchain/go-tchain-sdk/utils/hexutil"
 )
 
 // todo: 需要置于加密模块中

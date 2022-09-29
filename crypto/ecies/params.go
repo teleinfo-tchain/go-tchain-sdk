@@ -11,7 +11,7 @@ import (
 	"crypto/sha256"
 	"crypto/sha512"
 	"fmt"
-	"github.com/bif/bif-sdk-go/crypto/secp"
+	"github.com/tchain/go-tchain-sdk/crypto/secp"
 	"hash"
 )
 

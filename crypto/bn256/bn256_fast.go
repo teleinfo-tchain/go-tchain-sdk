@@ -2,7 +2,7 @@
 
 package bn256
 
-import "github.com/bif/bif-sdk-go/crypto/bn256/cloudflare"
+import "github.com/tchain/go-tchain-sdk/crypto/bn256/cloudflare"
 
 // G1 is an abstract cyclic group. The zero value is suitable for use as the
 // output of an operation, but cannot be used as an input.

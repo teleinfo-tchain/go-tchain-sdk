@@ -2,7 +2,7 @@ language: go
 go:
     - 1.8.x
     - 1.10.x
-go_import_path: github.com/bif/bif-sdk-go
+go_import_path: github.com/tchain/go-tchain-sdk
 sudo: false
 before_install:
     - sudo apt-get install software-properties-common -y -qq

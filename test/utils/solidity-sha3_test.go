@@ -1,10 +1,11 @@
 package test
+
 //
 // import (
 // 	"encoding/hex"
 // 	"fmt"
-// 	"github.com/bif/bif-sdk-go/utils"
-// 	"github.com/bif/bif-sdk-go/utils"
+// 	"github.com/tchain/go-tchain-sdk/utils"
+// 	"github.com/tchain/go-tchain-sdk/utils"
 // 	"math/big"
 // 	"testing"
 // )

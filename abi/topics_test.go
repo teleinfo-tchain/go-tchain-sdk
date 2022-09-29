@@ -15,13 +15,13 @@
 package abi
 
 import (
-	"github.com/bif/bif-sdk-go/crypto/config"
-	"github.com/bif/bif-sdk-go/utils"
+	"github.com/tchain/go-tchain-sdk/crypto/config"
+	"github.com/tchain/go-tchain-sdk/utils"
 	"math/big"
 	"reflect"
 	"testing"
 
-	"github.com/bif/bif-sdk-go/crypto"
+	"github.com/tchain/go-tchain-sdk/crypto"
 )
 
 func TestMakeTopics(t *testing.T) {
