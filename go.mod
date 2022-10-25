@@ -45,4 +45,4 @@ require (
 	gopkg.in/yaml.v2 v2.2.8 // indirect
 )
 
-replace github.com/tchain/go-tgmsm v1.1.4 => codeup.teambition.com/teleinfo/tchain/go-tgmsm.git v1.1.4
+replace github.com/tchain/go-tgmsm v1.1.4 => github.com/teleinfo-tchain/go-tgmsm v1.1.4
