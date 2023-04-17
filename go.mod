@@ -2,6 +2,8 @@ module github.com/tchain/go-tchain-sdk
 
 go 1.18
 
+replace github.com/tchain/go-tgmsm v1.1.4 => github.com/teleinfo-tchain/go-tgmsm v1.1.4
+
 require (
 	github.com/aristanetworks/goarista v0.0.0-20200423211322-0b5ff220aee9
 	github.com/btcsuite/btcd v0.21.0-beta
@@ -45,4 +47,4 @@ require (
 	gopkg.in/yaml.v2 v2.2.8 // indirect
 )
 
-replace github.com/tchain/go-tgmsm v1.1.4 => github.com/teleinfo-tchain/go-tgmsm v1.1.4
+
